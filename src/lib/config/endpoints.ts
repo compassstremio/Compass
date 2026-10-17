@@ -34,5 +34,5 @@ export const COMPASS_RELAY_BASE = resolveBase(
 
 export const COMPASS_DISCORD_INVITE = resolveBase(
   import.meta.env.VITE_COMPASS_DISCORD_INVITE,
-  "https://discord.gg/compass",
+  "https://discord.gg/pQBRmN9XdD",
 );

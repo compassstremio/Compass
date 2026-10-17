@@ -45,8 +45,8 @@ const LINKS = [
   {
     icon: "chat",
     lead: "Community",
-    value: "discord.gg/compass",
-    url: "https://discord.gg/compass",
+    value: "discord.gg/pQBRmN9XdD",
+    url: "https://discord.gg/pQBRmN9XdD",
   },
 ];
 

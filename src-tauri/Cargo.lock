@@ -930,7 +930,7 @@ dependencies = [
 
 [[package]]
 name = "compass"
-version = "0.9.133"
+version = "0.9.134"
 dependencies = [
  "anyhow",
  "async-trait",

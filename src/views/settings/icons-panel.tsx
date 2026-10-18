@@ -80,8 +80,6 @@ const LOTTIE_NAV = import.meta.glob("../../assets/lottie/nav/*.json") as LazyGlo
 const LOTTIE_MAIN = import.meta.glob("../../assets/lottie/*.json") as LazyGlob;
 const LOTTIE_APP: LazyGlob = {
   "../../assets/compass-lottie.json": () => import("../../assets/compass-lottie.json"),
-  "../../../installer/ui/assets/boot-box.json": () =>
-    import("../../../installer/ui/assets/boot-box.json"),
 };
 
 function stem(path: string): string {

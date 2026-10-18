@@ -1,5 +1,37 @@
 {
   "notes": {
+    "0.9.135": {
+      "title": "Compass Beta 0.9.135",
+      "intro": "A redesigned Windows installer: one clean screen, clearer choices, and the Compass icon throughout. You will see it the next time you install or repair Compass; updating from inside the app keeps working as before.",
+      "sections": [
+        {
+          "heading": "New installer",
+          "items": [
+            "Rebuilt the Windows installer around a single screen: tick the terms, press Install, and Compass is set up for your account with no administrator rights.",
+            "Added Customize installation to pick the install folder, create a desktop shortcut and launch Compass when setup finishes.",
+            "Added a What's new panel with beta and stable release notes inside the installer.",
+            "The installer follows your Windows language, with a menu to switch between English, Português, Русский and العربية.",
+            "Update, Repair and Downgrade are detected automatically when Compass is already installed."
+          ]
+        },
+        {
+          "heading": "Reliability",
+          "items": [
+            "A failed install now explains what went wrong, offers Retry, and lets you copy the details for a bug report.",
+            "Closing the window while files are being written is blocked, so an install can no longer be left half finished.",
+            "A desktop shortcut is now created by default; you can turn it off in Customize installation."
+          ]
+        },
+        {
+          "heading": "Look",
+          "items": [
+            "The installer, its window and the uninstaller now use the Compass icon instead of the old boat.",
+            "Full right-to-left layout for Arabic.",
+            "The installer's own interface is about 3 MB lighter."
+          ]
+        }
+      ]
+    },
     "0.9.128": {
       "title": "Compass Beta 0.9.128",
       "intro": "The biggest beta yet: a full Sports section, a complete DJ deck, a much larger Music experience, a rebuilt Manga library with a phone remote, and a curated film canon running through discovery and detail pages, alongside a deep pass on speed, caching and reliability.",

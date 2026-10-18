@@ -1,0 +1,45 @@
+.cn-title-sm { font-size: 40px; }
+
+.cn-progress { width: min(520px, 90vw); display: grid; gap: 14px; justify-items: center; }
+.cn-pct { font-size: 44px; font-weight: 300; color: var(--ink); }
+.cn-bar { width: 100%; height: var(--h-bar); border-radius: var(--r-pill); background: var(--track); overflow: hidden; }
+.cn-bar-fill { width: 0; height: 100%; background: var(--accent); transition: width 240ms var(--ease); }
+.cn-step { margin: 0; min-height: 20px; color: var(--ink-muted); }
+.cn-caption { margin: 18px 0 0; min-height: 22px; color: var(--ink-subtle); }
+.cn-caption.is-in { animation: cn-rise-in var(--t-enter) var(--ease) both; }
+.cn-warn { margin: 0; color: var(--accent); }
+
+.cn-failure { width: min(560px, 90vw); display: grid; gap: 14px; justify-items: center; }
+.cn-fail-title { margin: 0; font-family: var(--font-display); font-size: 30px; }
+.cn-details {
+  width: 100%;
+  margin: 0;
+  padding: 12px 14px;
+  border-radius: var(--r-md);
+  background: var(--canvas);
+  box-shadow: inset 0 0 0 1px var(--edge-soft);
+  font: 12px/1.5 var(--font-mono);
+  color: var(--ink-muted);
+  text-align: start;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+  user-select: text;
+}
+
+.cn-badge {
+  width: 64px;
+  height: 64px;
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  background: var(--accent-ring);
+  color: var(--accent);
+}
+.cn-badge svg { width: 30px; height: 30px; }
+.cn-lines { display: grid; gap: 6px; text-align: start; }
+.cn-lines p { margin: 0; color: var(--ink-muted); }
+.cn-lists { display: grid; grid-template-columns: 1fr 1fr; gap: 32px; text-align: start; margin: 8px 0; }
+.cn-lists ul { list-style: none; margin: 8px 0 0; padding: 0; display: grid; gap: 8px; }
+.cn-lists li { color: var(--ink-muted); }
+.cn-lists .is-struck li { text-decoration: line-through; opacity: 0.6; }
+.cn-actions { display: flex; gap: 14px; align-items: center; justify-content: center; margin-top: 6px; }

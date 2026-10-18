@@ -115,6 +115,22 @@ foreach ($name in $staged.Keys) {
   Write-Host "  staged $name"
 }
 
+Step 'Authenticode (optional)'
+# Must run before the minisign step below: minisign signs the final bytes of each staged file.
+# Uses a certificate already in the Windows store (hardware tokens work too), so no secret is passed on a command line.
+if ($env:COMPASS_SIGN_THUMBPRINT) {
+  $signtool = if ($env:COMPASS_SIGNTOOL) { $env:COMPASS_SIGNTOOL } else { 'signtool' }
+  $timestamp = if ($env:COMPASS_SIGN_TIMESTAMP) { $env:COMPASS_SIGN_TIMESTAMP } else { 'http://timestamp.digicert.com' }
+  foreach ($name in $staged.Keys) {
+    $target = Join-Path $stage $name
+    Run $signtool @('sign', '/fd', 'SHA256', '/sha1', $env:COMPASS_SIGN_THUMBPRINT, '/tr', $timestamp, '/td', 'SHA256', $target)
+    Run $signtool @('verify', '/pa', $target)
+    Write-Host "  authenticode signed $name"
+  }
+} else {
+  Write-Host '  skipped: COMPASS_SIGN_THUMBPRINT is not set, so Windows SmartScreen will warn on these installers (see installer/SIGNING.md)' -ForegroundColor Yellow
+}
+
 Step 'Sign (each exe gets its own signature)'
 foreach ($name in $staged.Keys) {
   $target = Join-Path $stage $name

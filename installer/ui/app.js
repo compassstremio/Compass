@@ -1,328 +1,129 @@
-import { t, onLocaleChange } from './i18n.js';
-import { minimizeWindow, toggleMaximizeWindow, isMaximized, onWindowResized, compassVersion, isUninstallMode, isNative } from './bridge.js';
-import * as start from './screens/start.js';
-import * as uninstall from './screens/uninstall.js';
-import * as removed from './screens/removed.js';
-import * as language from './screens/language.js';
-import * as terms from './screens/terms.js';
-import * as welcome from './screens/welcome.js';
-import * as installing from './screens/installing.js';
-import * as finished from './screens/finished.js';
+import { setLocale, onLocaleChange } from "./i18n.js";
+import { pickLocale } from "./lib/locale-detect.js";
+import {
+  isNative,
+  isUninstallMode,
+  compassVersion,
+  closeWindow,
+  minimizeWindow,
+  toggleMaximizeWindow,
+  isMaximized,
+  onWindowResized,
+} from "./bridge.js";
+import { mountWall } from "./components/wall.js";
 
-const INSTALL_SCREENS = [start, language, terms, welcome, installing, finished];
-const UNINSTALL_SCREENS = [uninstall, removed];
-let SCREENS = INSTALL_SCREENS;
-
-const el = {
-  titleLine: document.getElementById('hb-title-line'),
-  screen: document.getElementById('screen'),
-  consequence: document.getElementById('hb-consequence'),
-  actions: document.getElementById('hb-actions'),
-  back: document.getElementById('hb-back'),
-  next: document.getElementById('hb-next'),
-  close: document.getElementById('hb-close')
+const LOADERS = {
+  main: () => import("./screens/main.js"),
+  installing: () => import("./screens/installing.js"),
+  finished: () => import("./screens/finished.js"),
+  uninstall: () => import("./screens/uninstall.js"),
+  removed: () => import("./screens/removed.js"),
 };
 
-const reduced = window.matchMedia('(prefers-reduced-motion: reduce)');
-
-const state = {
-  lang: 'en',
-  accepted: false,
-  progress: 0,
-  dest: '',
-  launchNow: true,
-  desktopShortcut: false,
-  mode: 'install',
-  repair: null
-};
-
-let index = 0;
-let cleanup = null;
-let busy = false;
-let rendering = false;
-let pending = defaultFooter();
-
-function defaultFooter() {
-  return {
-    backLabel: null,
-    nextLabel: 'Continue',
-    nextEnabled: true,
-    onNext: null,
-    onBack: null
-  };
-}
-
-function outDuration() {
-  return reduced.matches ? 120 : 160;
-}
-
-function labelDuration() {
-  return reduced.matches ? 0 : 140;
-}
-
-const labelTargets = new Map();
-const labelTimers = new Map();
-
-[el.back, el.next].forEach((button) => {
-  const label = button.querySelector('.hb-pill-label');
-  if (label) labelTargets.set(button, label.textContent);
-});
-
-function setPillLabel(button, text) {
-  const label = button.querySelector('.hb-pill-label');
-  if (!label) return;
-  if (labelTargets.get(button) === text) return;
-  labelTargets.set(button, text);
-  window.clearTimeout(labelTimers.get(button));
-  if (!button.isConnected) {
-    label.textContent = text;
-    return;
-  }
-  label.classList.remove('hb-anim-label-in');
-  label.classList.add('hb-anim-label-out');
-  labelTimers.set(
-    button,
-    window.setTimeout(() => {
-      label.textContent = text;
-      label.classList.remove('hb-anim-label-out');
-      label.classList.add('hb-anim-label-in');
-    }, labelDuration())
-  );
-}
-
-function applyFooter(cfg) {
-  if (cfg.nextLabel) {
-    if (!el.next.isConnected) el.actions.appendChild(el.next);
-    setPillLabel(el.next, cfg.nextLabel);
-    el.next.disabled = !cfg.nextEnabled;
-  } else if (el.next.isConnected) {
-    el.next.remove();
-  }
-
-  if (cfg.backLabel) {
-    if (!el.back.isConnected) {
-      el.actions.insertBefore(el.back, el.next.isConnected ? el.next : null);
-    }
-    setPillLabel(el.back, cfg.backLabel);
-  } else if (el.back.isConnected) {
-    el.back.remove();
-  }
-}
-
-function setFooter(cfg) {
-  pending = Object.assign(pending, cfg || {});
-  if (!rendering) applyFooter(pending);
-}
-
-function setState(patch) {
-  Object.assign(state, patch || {});
-  return state;
-}
-
-function next() {
-  goTo(index + 1);
-}
-
-function back() {
-  goTo(index - 1);
-}
-
-const ctx = {
-  get state() {
-    return state;
-  },
-  setState,
-  next,
-  back,
-  setFooter
-};
-
-function resolveIndex(target) {
-  if (typeof target === 'number') return target;
-  return SCREENS.findIndex((screen) => screen.id === target);
-}
-
-function goTo(target) {
-  const nextIndex = resolveIndex(target);
-  if (nextIndex < 0 || nextIndex >= SCREENS.length) return;
-  if (nextIndex === index && el.screen.childElementCount > 0) return;
-  if (busy) return;
-
-  if (el.screen.childElementCount === 0) {
-    mount(nextIndex);
-    return;
-  }
-
-  busy = true;
-  el.screen.classList.remove('hb-anim-screen-in');
-  el.screen.classList.add('hb-anim-screen-out');
-  el.titleLine.classList.remove('hb-anim-title-in');
-  el.titleLine.classList.add('hb-anim-title-out');
-
-  window.setTimeout(() => {
-    try {
-      mount(nextIndex);
-    } finally {
-      busy = false;
-    }
-  }, outDuration());
-}
-
-function mount(nextIndex) {
-  if (typeof cleanup === 'function') {
-    try {
-      cleanup();
-    } catch (err) {
-      console.error('[compass-installer] cleanup threw', err);
-    }
-  }
-  cleanup = null;
-
-  index = nextIndex;
-  const screen = SCREENS[index];
-
-  el.screen.classList.remove('hb-anim-screen-out', 'hb-anim-screen-in');
-  el.screen.replaceChildren();
-  el.consequence.replaceChildren();
-
-  el.titleLine.classList.remove('hb-anim-title-out', 'hb-anim-title-in');
-  el.titleLine.textContent = t(screen.title);
-
-  void el.screen.offsetWidth;
-  el.screen.classList.add('hb-anim-screen-in');
-  el.titleLine.classList.add('hb-anim-title-in');
-
-  pending = defaultFooter();
-  rendering = true;
-  let result = null;
-  try {
-    result = screen.render(el.screen, ctx);
-  } catch (err) {
-    console.error('[compass-installer] render threw in screen "' + screen.id + '"', err);
-  } finally {
-    rendering = false;
-  }
-  cleanup = typeof result === 'function' ? result : null;
-
-  applyFooter(pending);
-}
-
-el.next.addEventListener('click', () => {
-  if (el.next.disabled) return;
-  if (typeof pending.onNext === 'function') pending.onNext();
-  else next();
-});
-
-el.back.addEventListener('click', () => {
-  if (typeof pending.onBack === 'function') pending.onBack();
-  else back();
-});
-
-el.close.addEventListener('click', () => {
-  document.dispatchEvent(new CustomEvent('hb:close'));
-  const tauri = window.__TAURI__;
-  if (tauri && tauri.window && typeof tauri.window.getCurrentWindow === 'function') {
-    tauri.window.getCurrentWindow().close();
-    return;
-  }
-  window.close();
-});
-
-SCREENS.forEach((screen, i) => {
-  if (typeof screen.id !== 'string' || typeof screen.title !== 'string' || typeof screen.render !== 'function') {
-    console.error('[compass-installer] screen at index ' + i + ' does not satisfy the module contract');
-  }
-});
-
-window.CompassInstaller = {
-  state,
-  screens: SCREENS.map((screen) => screen.id),
-  goTo,
-  next,
-  back
-};
-
-onLocaleChange(() => {
-  applyFooter(pending);
-  mount(index);
-});
-
-if (!isNative()) {
-  const eyebrow = document.getElementById('hb-eyebrow');
-  if (eyebrow) {
-    const tag = document.createElement('span');
-    tag.className = 'hb-preview-tag';
-    tag.textContent = 'PREVIEW DATA';
-    eyebrow.appendChild(tag);
-  }
-}
-
-const versionEl = document.getElementById('hb-version');
-const bootLayer = document.getElementById('hb-boot');
-const BOOT_HOLD = 3900;
-
-function playBootAnimation() {
-  const host = document.getElementById('bx-lottie');
-  if (!host || !window.lottie) return;
-  const reduce = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-  const anim = window.lottie.loadAnimation({
-    container: host,
-    renderer: 'svg',
-    loop: false,
-    autoplay: !reduce,
-    path: 'assets/boot-box.json',
-  });
-  if (reduce) anim.addEventListener('DOMLoaded', function () { anim.goToAndStop(anim.totalFrames - 1, true); });
-}
-
-function dismissBoot() {
-  if (!bootLayer || bootLayer.classList.contains('is-gone')) return;
-  bootLayer.classList.add('is-gone');
-  window.setTimeout(function () { bootLayer.remove(); }, 520);
-}
-
-function startInstallFlow() {
-  compassVersion().then(function (v) {
-    if (!v) return;
-    if (versionEl) versionEl.textContent = v;
-  });
-
-  if (!bootLayer) return;
-  bootLayer.hidden = false;
-  playBootAnimation();
-  const reduce = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-  const hold = typeof location !== 'undefined' && /[?&]hold/.test(location.search);
-  if (!hold) window.setTimeout(dismissBoot, reduce ? 900 : BOOT_HOLD);
-  bootLayer.addEventListener('click', dismissBoot);
-}
-
-isUninstallMode().then(function (yes) {
-  if (yes) {
-    if (bootLayer) bootLayer.remove();
-    SCREENS = UNINSTALL_SCREENS;
-    index = 0;
-    mount(0);
-    return;
-  }
-  startInstallFlow();
-  mount(0);
-});
-
-const winMin = document.getElementById('hb-min');
-const winMax = document.getElementById('hb-max');
-const stage = document.getElementById('hb-window');
+// The old flow started this at false, so no desktop shortcut was ever made by default even though the
+// components list promised one. It is now chosen before installing, in "Customize installation".
+const DEFAULT_DESKTOP_SHORTCUT = true;
 const BASE_W = 1028;
 const BASE_H = 632;
 
+const preview = isNative() ? null : new URLSearchParams(window.location.search);
+
+const state = {
+  accepted: preview ? preview.get("accepted") === "1" : false,
+  dest: "",
+  mode: "install",
+  kind: "install",
+  from: "",
+  version: "",
+  installedSize: "",
+  facts: null,
+  prior: null,
+  repair: null,
+  error: "",
+  launchNow: true,
+  desktopShortcut: DEFAULT_DESKTOP_SHORTCUT,
+  removeData: false,
+  busy: false,
+};
+if (preview) {
+  Object.assign(state, { dest: String.raw`C:\Users\you\AppData\Local\Compass`, version: "0.9.134", installedSize: "558 MB" });
+}
+
+const host = document.getElementById("screen");
+const wallEl = document.getElementById("cn-wall");
+const versionEl = document.getElementById("hb-version");
+const stage = document.getElementById("hb-window");
+
+let current = null;
+let token = 0;
+
+const ctx = {
+  state,
+  preview,
+  setState(patch) {
+    return Object.assign(state, patch || {});
+  },
+  goTo,
+  setDim(on) {
+    wallEl.dataset.dim = String(Boolean(on));
+  },
+};
+
+async function goTo(id) {
+  const mine = ++token;
+  let screen;
+  try {
+    screen = await LOADERS[id]();
+  } catch (err) {
+    console.error('[compass-installer] cannot load screen "' + id + '"', err);
+    return;
+  }
+  if (mine !== token) return;
+
+  if (current && typeof current.cleanup === "function") {
+    try {
+      current.cleanup();
+    } catch (err) {
+      console.error("[compass-installer] cleanup threw", err);
+    }
+  }
+
+  host.replaceChildren();
+  host.classList.remove("cn-in");
+  void host.offsetWidth;
+  host.classList.add("cn-in");
+
+  let cleanup = null;
+  try {
+    cleanup = screen.render(host, ctx);
+  } catch (err) {
+    console.error('[compass-installer] render threw in screen "' + id + '"', err);
+  }
+  current = { id, cleanup: typeof cleanup === "function" ? cleanup : null };
+}
+
+document.getElementById("hb-close").addEventListener("click", () => {
+  if (state.busy) {
+    document.dispatchEvent(new CustomEvent("cn:close-blocked"));
+    return;
+  }
+  document.dispatchEvent(new CustomEvent("hb:close"));
+  closeWindow();
+});
+
+// Language is changed from the main screen only; never re-render while a job is running.
+onLocaleChange(() => {
+  if (current && !state.busy) goTo(current.id);
+});
+
 function fitStage(maxed) {
-  if (!stage) return;
-  document.body.classList.toggle('is-maximized', !!maxed);
+  document.body.classList.toggle("is-maximized", !!maxed);
   if (!maxed) {
-    stage.style.transform = '';
+    stage.style.transform = "";
     return;
   }
   const k = Math.min(window.innerWidth / BASE_W, window.innerHeight / BASE_H);
-  stage.style.transform = k > 1.001 ? 'scale(' + k.toFixed(4) + ')' : '';
+  stage.style.transform = k > 1.001 ? "scale(" + k.toFixed(4) + ")" : "";
 }
 
 async function syncWindowState() {
@@ -330,7 +131,31 @@ async function syncWindowState() {
 }
 
 onWindowResized(syncWindowState);
-window.addEventListener('resize', syncWindowState);
+window.addEventListener("resize", syncWindowState);
 syncWindowState();
-if (winMin) winMin.addEventListener('click', function () { minimizeWindow(); });
-if (winMax) winMax.addEventListener('click', function () { toggleMaximizeWindow().then(fitStage); });
+document.getElementById("hb-min").addEventListener("click", () => minimizeWindow());
+document.getElementById("hb-max").addEventListener("click", () => toggleMaximizeWindow().then(fitStage));
+
+async function start() {
+  const wanted = preview && preview.get("lang") ? [preview.get("lang")] : navigator.languages;
+  setLocale(pickLocale(wanted));
+  mountWall(wallEl);
+
+  versionEl.textContent = state.version ? "v" + state.version : "";
+  compassVersion().then((v) => {
+    if (!v) return;
+    state.version = v;
+    versionEl.textContent = "v" + v;
+  });
+  if (preview) {
+    const tag = document.createElement("span");
+    tag.className = "hb-preview-tag";
+    tag.textContent = "PREVIEW DATA";
+    versionEl.appendChild(tag);
+  }
+
+  const uninstalling = await isUninstallMode();
+  goTo((preview && preview.get("screen")) || (uninstalling ? "uninstall" : "main"));
+}
+
+start();

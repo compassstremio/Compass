@@ -2,13 +2,18 @@ import { PT } from './locales/pt.js';
 import { PT_PT } from './locales/pt-PT.js';
 import { RU } from './locales/ru.js';
 import { AR } from './locales/ar.js';
+import { CINEMA } from './locales/cinema.js';
 
 const DICT = {
-  pt: PT,
-  'pt-PT': Object.assign({}, PT, PT_PT),
-  ru: RU,
-  ar: AR
+  pt: Object.assign({}, PT, CINEMA.pt),
+  'pt-PT': Object.assign({}, PT, CINEMA.pt, PT_PT, CINEMA['pt-PT']),
+  ru: Object.assign({}, RU, CINEMA.ru),
+  ar: Object.assign({}, AR, CINEMA.ar)
 };
+
+export function dictionaryFor(code) {
+  return DICT[code] || {};
+}
 
 const RTL = new Set(['ar']);
 

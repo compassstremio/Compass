@@ -1,3 +1,4 @@
+import reviews from "./zh/reviews";
 import playOrders from "./zh/play-orders";
 import gameRomLibrary from "./zh/game-rom-library";
 import gameNotes from "./zh/game-notes";
@@ -341,6 +342,7 @@ const zh: Record<string, string> = {
   ...gameRomLibrary,
   ...gameNotes,
   ...playOrders,
+  ...reviews,
 };
 
 export default zh;

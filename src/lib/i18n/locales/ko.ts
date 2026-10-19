@@ -1,3 +1,4 @@
+import reviews from "./ko/reviews";
 import playOrders from "./ko/play-orders";
 import gameRomLibrary from "./ko/game-rom-library";
 import gameNotes from "./ko/game-notes";
@@ -337,6 +338,7 @@ const ko: Record<string, string> = {
   ...gameRomLibrary,
   ...gameNotes,
   ...playOrders,
+  ...reviews,
 };
 
 export default ko;

@@ -1,3 +1,4 @@
+import reviews from "./vi/reviews";
 import playOrders from "./vi/play-orders";
 import gameRomLibrary from "./vi/game-rom-library";
 import gameNotes from "./vi/game-notes";
@@ -378,6 +379,7 @@ const vi: Record<string, string> = {
   ...gameRomLibrary,
   ...gameNotes,
   ...playOrders,
+  ...reviews,
 };
 
 export default vi;

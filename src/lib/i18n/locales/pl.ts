@@ -1,3 +1,4 @@
+import reviews from "./pl/reviews";
 import playOrders from "./pl/play-orders";
 import gameRomLibrary from "./pl/game-rom-library";
 import gameNotes from "./pl/game-notes";
@@ -344,6 +345,7 @@ const pl: Record<string, string> = {
   ...gameRomLibrary,
   ...gameNotes,
   ...playOrders,
+  ...reviews,
 };
 
 export default pl;

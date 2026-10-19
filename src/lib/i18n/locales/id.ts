@@ -1,3 +1,4 @@
+import reviews from "./id/reviews";
 import playOrders from "./id/play-orders";
 import gameRomLibrary from "./id/game-rom-library";
 import gameNotes from "./id/game-notes";
@@ -340,6 +341,7 @@ const id: Record<string, string> = {
   ...gameRomLibrary,
   ...gameNotes,
   ...playOrders,
+  ...reviews,
 };
 
 export default id;

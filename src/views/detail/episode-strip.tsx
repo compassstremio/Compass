@@ -14,6 +14,7 @@ import { useT } from "@/lib/i18n";
 import { EpisodeGrid } from "./episode-grid";
 import type { GridEpisode } from "./episode-grid-types";
 import { EpisodeDownloadButton } from "./episode-download-button";
+import { EpisodeReviewsButton } from "./episode-reviews-dialog";
 import { isUpcomingDate } from "./helpers";
 
 type Progress = { ratio: number; watched: boolean; startedAt: number };
@@ -259,6 +260,14 @@ function EpisodeStripCard({
               overview: ep.overview || undefined,
             }}
             size={30}
+          />
+          <EpisodeReviewsButton
+            meta={meta}
+            seriesImdbId={seriesImdbId}
+            season={ep.seasonNumber}
+            episode={ep.episodeNumber}
+            episodeTitle={ep.name || undefined}
+            compact
           />
           <HoverTooltip label={t("Episode details")} align="center" className="shrink-0">
             <button

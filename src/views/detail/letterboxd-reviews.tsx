@@ -7,6 +7,7 @@ import {
   fetchLetterboxdFriendsReviews,
   fetchLetterboxdReviewsDirect,
   type LetterboxdReview,
+  type LetterboxdReviewSort,
 } from "@/lib/stremboxd/client";
 import { openUrl } from "@/lib/window";
 import { useT } from "@/lib/i18n";
@@ -27,6 +28,14 @@ class ReviewsBoundary extends Component<{ children: ReactNode }, { failed: boole
 }
 
 type Filter = "all" | "friends";
+
+const SORTS: { key: LetterboxdReviewSort; label: string }[] = [
+  { key: "popular", label: "Most liked" },
+  { key: "newest", label: "Most recent" },
+  { key: "highest", label: "Highest rated" },
+  { key: "lowest", label: "Lowest rated" },
+  { key: "longest", label: "Longest" },
+];
 
 export function LetterboxdReviews({ meta, imdbId }: { meta: Meta; imdbId: string | null }) {
   return (
@@ -49,6 +58,7 @@ function LetterboxdReviewsInner({ meta, imdbId }: { meta: Meta; imdbId: string |
   const [showAll, setShowAll] = useState(false); // "Load more" toggle
   const { settings } = useSettings();
   const [blurred, setBlurred] = useState(true);
+  const [sort, setSort] = useState<LetterboxdReviewSort>("popular");
 
   const effectiveImdbId = imdbId ?? (meta.id.startsWith("tt") ? meta.id : null);
 
@@ -61,7 +71,7 @@ function LetterboxdReviewsInner({ meta, imdbId }: { meta: Meta; imdbId: string |
     setReviews([]);
     setShowAll(false);
     try {
-      const result = await fetchLetterboxdReviewsDirect(effectiveImdbId);
+      const result = await fetchLetterboxdReviewsDirect(effectiveImdbId, 1, sort);
       setReviews(result.reviews);
       if (result.reviews[0]?.url) {
         const m = result.reviews[0].url.match(/letterboxd\.com\/film\/([^/]+)/);
@@ -87,11 +97,14 @@ function LetterboxdReviewsInner({ meta, imdbId }: { meta: Meta; imdbId: string |
         setLoadingFriends(false);
       }
     }
-  }, [effectiveImdbId, lb.isFullConnected, lb.username]);
+  }, [effectiveImdbId, lb.isFullConnected, lb.username, sort]);
 
+  // Only when the section is shown: fetching Letterboxd while it is off (or on a series page)
+  // made every detail page hit letterboxd.com, which can pop out its Cloudflare challenge.
+  const shown = lb.isActive && meta.type !== "series";
   useEffect(() => {
-    fetchReviews();
-  }, [fetchReviews]);
+    if (shown) fetchReviews();
+  }, [fetchReviews, shown]);
 
   if (!lb.isActive || meta.type === "series") return null;
   if (!effectiveImdbId) return null;
@@ -121,7 +134,7 @@ function LetterboxdReviewsInner({ meta, imdbId }: { meta: Meta; imdbId: string |
   }
 
   // Fallback if nothing loaded
-  if (tried && reviews.length === 0 && !loading) {
+  if (tried && reviews.length === 0 && !loading && sort === "popular") {
     const filmUrl = effectiveImdbId ? `https://letterboxd.com/imdb/${effectiveImdbId}/reviews/` : null;
     return (
       <section>
@@ -209,6 +222,25 @@ function LetterboxdReviewsInner({ meta, imdbId }: { meta: Meta; imdbId: string |
           )}
         </div>
       </div>
+
+      {filter === "all" && (
+        <div className="mb-4 flex flex-wrap gap-1.5" role="group" aria-label={t("Sort reviews")}>
+          {SORTS.map((s) => (
+            <button
+              key={s.key}
+              type="button"
+              aria-pressed={sort === s.key}
+              disabled={loading}
+              onClick={() => sort !== s.key && setSort(s.key)}
+              className={`rounded-full px-3 py-1 text-[12px] font-medium transition-colors disabled:opacity-60 ${
+                sort === s.key ? "bg-ink text-canvas" : "bg-white/[0.06] text-ink-muted hover:bg-white/[0.10] hover:text-ink"
+              }`}
+            >
+              {t(s.label)}
+            </button>
+          ))}
+        </div>
+      )}
 
       {filtered.length === 0 && !loading && (
         <p className="text-[14px] text-ink-muted py-4">

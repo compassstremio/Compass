@@ -1,3 +1,4 @@
+import reviews from "./tr/reviews";
 import playOrders from "./tr/play-orders";
 import gameRomLibrary from "./tr/game-rom-library";
 import gameNotes from "./tr/game-notes";
@@ -338,6 +339,7 @@ const tr: Record<string, string> = {
   ...gameRomLibrary,
   ...gameNotes,
   ...playOrders,
+  ...reviews,
 };
 
 export default tr;

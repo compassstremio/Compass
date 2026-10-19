@@ -1,3 +1,4 @@
+import reviews from "./de/reviews";
 import playOrders from "./de/play-orders";
 import gameRomLibrary from "./de/game-rom-library";
 import gameNotes from "./de/game-notes";
@@ -380,6 +381,7 @@ const de: Record<string, string> = {
   ...gameRomLibrary,
   ...gameNotes,
   ...playOrders,
+  ...reviews,
 };
 
 export default de;

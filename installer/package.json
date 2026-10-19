@@ -1,11 +1,10 @@
 {
   "name": "compass-setup",
-  "version": "0.9.135",
+  "version": "0.9.136",
   "private": true,
   "type": "module",
   "scripts": {
     "dev": "node serve.mjs 4500",
-    "test": "node --test tests/*.test.mjs",
     "tauri": "tauri"
   },
   "dependencies": {

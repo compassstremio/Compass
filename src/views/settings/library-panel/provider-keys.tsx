@@ -116,7 +116,7 @@ export function useProviderKeys({
       guide: guideButton(
         () => setTmdbGuide(true),
         t(
-          "TMDB asks for an app URL when you create the key. Put any URL at all, like https://compass.app. The only thing you need back is the API key.",
+          "TMDB asks for an app URL when you create the key. Put any URL at all, like https://compass.sarl. The only thing you need back is the API key.",
         ),
       ),
       field: (

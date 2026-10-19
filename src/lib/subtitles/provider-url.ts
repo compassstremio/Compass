@@ -1,3 +1,5 @@
+import { isLocalNetworkHostName } from "@/lib/local-network";
+
 /** Internal renderer-to-native policy marker. It must never be sent upstream. */
 export const SUBTITLE_PUBLIC_NETWORK_HEADER = "X-Compass-Public-Network-Only";
 
@@ -105,4 +107,58 @@ export function isSafeProviderSubtitleUrl(rawUrl: string): boolean {
   } catch {
     return false;
   }
+}
+
+/**
+ * A subtitle served by the same origin as a user-installed local-network addon.
+ * Only origins that are unambiguously local (loopback, link-local, private IP,
+ * localhost) are trusted; a DNS name's locality depends on name resolution, so
+ * it must never grant the exemption from its shape. Loopback aliases
+ * (`localhost`, `127.0.0.0/8`, `::1`) count as one host, so an addon installed
+ * under one alias can serve subtitles under another.
+ */
+export function isLocalAddonSubtitleUrl(rawUrl: string, addonBase: string): boolean {
+  try {
+    const url = new URL(rawUrl);
+    if (
+      (url.protocol !== "https:" && url.protocol !== "http:") ||
+      url.username ||
+      url.password
+    ) {
+      return false;
+    }
+    const base = new URL(addonBase);
+    if (
+      (base.protocol !== "https:" && base.protocol !== "http:") ||
+      !isLocalNetworkHostName(base.hostname)
+    ) {
+      return false;
+    }
+    return sameLocalOrigin(url, base);
+  } catch {
+    return false;
+  }
+}
+
+function loopbackAlias(hostname: string): boolean {
+  const bare = hostname.replace(/^\[|\]$/gu, "").toLowerCase();
+  if (bare === "localhost" || bare.endsWith(".localhost")) return true;
+  const v4 = ipv4Octets(bare);
+  if (v4) return v4[0] === 127;
+  const v6 = ipv6Segments(bare);
+  if (v6) {
+    if (v6.slice(0, 7).every((part) => part === 0) && v6[7] <= 1) return true;
+    const mapped = v6.slice(0, 5).every((part) => part === 0) && v6[5] === 0xffff;
+    if (mapped) return (v6[6] >> 8) === 127;
+  }
+  return false;
+}
+
+function sameLocalOrigin(url: URL, base: URL): boolean {
+  if (url.protocol !== base.protocol) return false;
+  const portOf = (entry: URL) => entry.port || (entry.protocol === "https:" ? "443" : "80");
+  if (portOf(url) !== portOf(base)) return false;
+  if (loopbackAlias(url.hostname) && loopbackAlias(base.hostname)) return true;
+  const strip = (hostname: string) => hostname.replace(/^\[|\]$/gu, "").toLowerCase();
+  return strip(url.hostname) === strip(base.hostname);
 }

@@ -282,7 +282,7 @@ const sweepA: Record<string, string> = {
   "{n} options active": "{n} 个选项生效",
   "{n} options#few": "{n} 个选项",
   "{n} options#one": "{n} 个选项",
-  "{n} other Compasses": "其他 {n} 个 Compass",
+  "{n} other Compasss": "其他 {n} 个 Compass",
   "{n} pages": "{n} 页",
   "{n} pages#few": "{n} 页",
   "{n} pages#one": "{n} 页",

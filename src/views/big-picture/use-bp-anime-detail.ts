@@ -9,6 +9,7 @@ import { parseKitsuId, type KitsuEpisode, type KitsuStreamer } from "@/lib/provi
 import type { TmdbDetail } from "@/lib/providers/tmdb";
 import type { TvdbOrderType, TvdbSeasonTypeOption } from "@/lib/providers/tvdb";
 import { pickTvdbImage } from "@/lib/providers/tvdb-proxy";
+import { fillAiredPlaceholderTitles } from "@/lib/providers/episode-placeholder";
 import { useSettings } from "@/lib/settings";
 import type { SpoilerMask } from "@/lib/spoilers";
 import { effectiveOrderProvider, tvdbPanelEnabled } from "@/lib/settings/episode-order";
@@ -19,6 +20,9 @@ import { useAnimePreferredSeason } from "@/views/detail/anime-episodes/use-anime
 import { useAnimeProgressMap } from "@/views/detail/anime-episodes/use-anime-progress-map";
 import { useAnimeTvdbPanel } from "@/views/detail/anime-episodes/use-anime-tvdb-panel";
 import { useTvdbProxyImages } from "@/views/detail/anime-episodes/use-tvdb-proxy-images";
+import { usePublicMetaDb } from "@/lib/publicmetadb/provider";
+import { fetchPmdbWatchedKeySet } from "@/lib/publicmetadb/history";
+import { resolvePmdbTarget } from "@/lib/publicmetadb/ids";
 import type { PickerItem } from "@/views/detail/series-episodes/season-arc-picker";
 import { isAnimeId } from "@/views/mobile/mobile-detail/anime-data";
 
@@ -185,6 +189,29 @@ export function useBpAnimeDetail(meta: Meta | null, opts?: BpAnimeDetailOptions)
   const mwVersion = useSyncExternalStore(subscribeManualWatched, manualWatchedVersion);
   const { watchedKeys: anilistWatched } = useAnilistWatched(isAnime ? canonicalId : "", episodes);
   const { watchedKeys: malWatched } = useMalWatched(isAnime ? canonicalId : "", episodes);
+  const { isConnected: pmdbConnected } = usePublicMetaDb();
+  const [pmdbWatched, setPmdbWatched] = useState<Set<string>>(() => new Set());
+
+  useEffect(() => {
+    if (!pmdbConnected || !isAnime) {
+      setPmdbWatched(new Set());
+      return;
+    }
+    let cancelled = false;
+    resolvePmdbTarget(metaId, "series")
+      .then((target) => (target ?? (canonicalId ? resolvePmdbTarget(canonicalId, "series") : null)))
+      .then((target) => {
+        if (cancelled) return;
+        return fetchPmdbWatchedKeySet(target ?? undefined);
+      })
+      .then((set) => {
+        if (!cancelled && set) setPmdbWatched(set);
+      })
+      .catch(() => {});
+    return () => {
+      cancelled = true;
+    };
+  }, [pmdbConnected, isAnime, metaId, canonicalId]);
 
   const preferredSeasonKey = useAnimePreferredSeason({
     episodes,
@@ -193,6 +220,7 @@ export function useBpAnimeDetail(meta: Meta | null, opts?: BpAnimeDetailOptions)
     traktWatched: NO_TRAKT,
     anilistWatched,
     malWatched,
+    pmdbWatched,
     mwVersion,
   });
 
@@ -246,12 +274,16 @@ export function useBpAnimeDetail(meta: Meta | null, opts?: BpAnimeDetailOptions)
   const visible = tvdb.panel ? tvdb.panel.visibleEpisodes : (order?.visibleEpisodes ?? episodes);
   const proxyImages = useTvdbProxyImages(kitsuId, imdbId, episodes.length, settings.tvdbSeasonType);
   const shown = useMemo(() => {
-    if (Object.keys(proxyImages).length === 0) return visible;
-    return visible.map((ep) => {
+    // The TVDB order can still say "TBA" for an episode that already aired while
+    // the entry's own episodes know the real title; fill those in, keep TBA for
+    // episodes that have not aired.
+    const filled = fillAiredPlaceholderTitles(visible, episodes);
+    if (Object.keys(proxyImages).length === 0) return filled;
+    return filled.map((ep) => {
       const img = pickTvdbImage(proxyImages, ep);
       return img ? { ...ep, thumbnail: img } : ep;
     });
-  }, [visible, proxyImages]);
+  }, [visible, proxyImages, episodes]);
 
   const progress = useAnimeProgressMap({
     episodes,
@@ -261,6 +293,7 @@ export function useBpAnimeDetail(meta: Meta | null, opts?: BpAnimeDetailOptions)
     traktWatched: NO_TRAKT,
     anilistWatched,
     malWatched,
+    pmdbWatched,
     mwVersion,
     settings,
   });

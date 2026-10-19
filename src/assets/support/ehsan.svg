@@ -1,0 +1,478 @@
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="48" height="48" viewBox="0 0 48 48"><rect width="48" height="48" fill="#ffffff"/><svg x="5" y="5" width="38" height="38" viewBox="0 0 13.561 7.174" preserveAspectRatio="xMidYMid meet">
+  <defs>
+    <clipPath id="clip-path">
+      <path id="Path_1" data-name="Path 1" d="M101.425,77.2a3.613,3.613,0,0,0,0,4.712,3.613,3.613,0,0,0,0-4.712Z" transform="translate(-100.551 -77.202)" fill="none"/>
+    </clipPath>
+    <clipPath id="clip-path-2">
+      <path id="Path_4" data-name="Path 4" d="M61,122.3a3.618,3.618,0,0,0-3.3-3.281A3.618,3.618,0,0,0,61,122.3Z" transform="translate(-57.699 -119.016)" fill="none"/>
+    </clipPath>
+    <clipPath id="clip-path-3">
+      <path id="Path_5" data-name="Path 5" d="M122.382,119.016a3.617,3.617,0,0,0-3.3,3.281A3.618,3.618,0,0,0,122.382,119.016Z" transform="translate(-119.085 -119.016)" fill="none"/>
+    </clipPath>
+    <clipPath id="clip-path-4">
+      <path id="Path_6" data-name="Path 6" d="M11.116,121.672a3.618,3.618,0,0,0-3.3-3.281A3.618,3.618,0,0,0,11.116,121.672Z" transform="translate(-7.819 -118.391)" fill="none"/>
+    </clipPath>
+    <clipPath id="clip-path-5">
+      <path id="Path_7" data-name="Path 7" d="M172.262,118.391a3.617,3.617,0,0,0-3.3,3.281A3.618,3.618,0,0,0,172.262,118.391Z" transform="translate(-168.965 -118.391)" fill="none"/>
+    </clipPath>
+  </defs>
+  <g id="Group_21" data-name="Group 21" transform="translate(-7.819 -57.89)">
+    <g id="Group_20" data-name="Group 20" transform="translate(7.819 57.89)">
+      <g id="Group_12" data-name="Group 12" transform="translate(3.177)">
+        <g id="Group_3" data-name="Group 3" transform="translate(2.73 1.23)">
+          <g id="Group_2" data-name="Group 2">
+            <g id="Group_1" data-name="Group 1" clip-path="url(#clip-path)">
+              <rect id="Rectangle_2" data-name="Rectangle 2" width="2" transform="translate(-0.126 5.042)" fill="#123d64"/>
+              <rect id="Rectangle_3" data-name="Rectangle 3" width="1.748" height="0.057" transform="translate(0 4.649)" fill="#123d64"/>
+              <rect id="Rectangle_4" data-name="Rectangle 4" width="1.748" height="0.057" transform="translate(0 4.591)" fill="#123e64"/>
+              <rect id="Rectangle_5" data-name="Rectangle 5" width="1.748" height="0.057" transform="translate(0 4.534)" fill="#123f64"/>
+              <rect id="Rectangle_6" data-name="Rectangle 6" width="1.748" height="0.057" transform="translate(0 4.476)" fill="#124065"/>
+              <rect id="Rectangle_7" data-name="Rectangle 7" width="1.748" height="0.057" transform="translate(0 4.419)" fill="#124165"/>
+              <rect id="Rectangle_8" data-name="Rectangle 8" width="1.748" height="0.057" transform="translate(0 4.362)" fill="#124265"/>
+              <rect id="Rectangle_9" data-name="Rectangle 9" width="1.748" height="0.057" transform="translate(0 4.304)" fill="#124365"/>
+              <rect id="Rectangle_10" data-name="Rectangle 10" width="1.748" height="0.057" transform="translate(0 4.247)" fill="#124465"/>
+              <rect id="Rectangle_11" data-name="Rectangle 11" width="1.748" height="0.057" transform="translate(0 4.19)" fill="#124566"/>
+              <rect id="Rectangle_12" data-name="Rectangle 12" width="1.748" height="0.057" transform="translate(0 4.132)" fill="#114666"/>
+              <rect id="Rectangle_13" data-name="Rectangle 13" width="1.748" height="0.057" transform="translate(0 4.075)" fill="#114766"/>
+              <rect id="Rectangle_14" data-name="Rectangle 14" width="1.748" height="0.057" transform="translate(0 4.017)" fill="#114866"/>
+              <rect id="Rectangle_15" data-name="Rectangle 15" width="1.748" height="0.057" transform="translate(0 3.96)" fill="#114967"/>
+              <rect id="Rectangle_16" data-name="Rectangle 16" width="1.748" height="0.057" transform="translate(0 3.903)" fill="#114a67"/>
+              <rect id="Rectangle_17" data-name="Rectangle 17" width="1.748" height="0.057" transform="translate(0 3.845)" fill="#114b67"/>
+              <rect id="Rectangle_18" data-name="Rectangle 18" width="1.748" height="0.057" transform="translate(0 3.788)" fill="#114c67"/>
+              <rect id="Rectangle_19" data-name="Rectangle 19" width="1.748" height="0.057" transform="translate(0 3.73)" fill="#114d67"/>
+              <rect id="Rectangle_20" data-name="Rectangle 20" width="1.748" height="0.057" transform="translate(0 3.673)" fill="#114e68"/>
+              <rect id="Rectangle_21" data-name="Rectangle 21" width="1.748" height="0.057" transform="translate(0 3.616)" fill="#114f68"/>
+              <rect id="Rectangle_22" data-name="Rectangle 22" width="1.748" height="0.057" transform="translate(0 3.558)" fill="#115068"/>
+              <rect id="Rectangle_23" data-name="Rectangle 23" width="1.748" height="0.057" transform="translate(0 3.501)" fill="#115168"/>
+              <rect id="Rectangle_24" data-name="Rectangle 24" width="1.748" height="0.057" transform="translate(0 3.443)" fill="#115268"/>
+              <rect id="Rectangle_25" data-name="Rectangle 25" width="1.748" height="0.057" transform="translate(0 3.386)" fill="#115369"/>
+              <rect id="Rectangle_26" data-name="Rectangle 26" width="1.748" height="0.057" transform="translate(0 3.329)" fill="#115469"/>
+              <rect id="Rectangle_27" data-name="Rectangle 27" width="1.748" height="0.057" transform="translate(0 3.271)" fill="#115569"/>
+              <rect id="Rectangle_28" data-name="Rectangle 28" width="1.748" height="0.057" transform="translate(0 3.214)" fill="#105669"/>
+              <rect id="Rectangle_29" data-name="Rectangle 29" width="1.748" height="0.057" transform="translate(0 3.156)" fill="#105769"/>
+              <rect id="Rectangle_30" data-name="Rectangle 30" width="1.748" height="0.057" transform="translate(0 3.099)" fill="#10586a"/>
+              <rect id="Rectangle_31" data-name="Rectangle 31" width="1.748" height="0.057" transform="translate(0 3.042)" fill="#10596a"/>
+              <rect id="Rectangle_32" data-name="Rectangle 32" width="1.748" height="0.057" transform="translate(0 2.984)" fill="#105a6a"/>
+              <rect id="Rectangle_33" data-name="Rectangle 33" width="1.748" height="0.057" transform="translate(0 2.927)" fill="#105b6a"/>
+              <rect id="Rectangle_34" data-name="Rectangle 34" width="1.748" height="0.057" transform="translate(0 2.87)" fill="#105c6b"/>
+              <rect id="Rectangle_35" data-name="Rectangle 35" width="1.748" height="0.057" transform="translate(0 2.812)" fill="#105d6b"/>
+              <rect id="Rectangle_36" data-name="Rectangle 36" width="1.748" height="0.057" transform="translate(0 2.755)" fill="#105e6b"/>
+              <rect id="Rectangle_37" data-name="Rectangle 37" width="1.748" height="0.057" transform="translate(0 2.697)" fill="#105f6b"/>
+              <rect id="Rectangle_38" data-name="Rectangle 38" width="1.748" height="0.057" transform="translate(0 2.64)" fill="#10606b"/>
+              <rect id="Rectangle_39" data-name="Rectangle 39" width="1.748" height="0.057" transform="translate(0 2.583)" fill="#10616c"/>
+              <rect id="Rectangle_40" data-name="Rectangle 40" width="1.748" height="0.057" transform="translate(0 2.525)" fill="#10626c"/>
+              <rect id="Rectangle_41" data-name="Rectangle 41" width="1.748" height="0.057" transform="translate(0 2.468)" fill="#10636c"/>
+              <rect id="Rectangle_42" data-name="Rectangle 42" width="1.748" height="0.057" transform="translate(0 2.41)" fill="#10646c"/>
+              <rect id="Rectangle_43" data-name="Rectangle 43" width="1.748" height="0.057" transform="translate(0 2.353)" fill="#10656c"/>
+              <rect id="Rectangle_44" data-name="Rectangle 44" width="1.748" height="0.057" transform="translate(0 2.296)" fill="#0f676d"/>
+              <rect id="Rectangle_45" data-name="Rectangle 45" width="1.748" height="0.057" transform="translate(0 2.238)" fill="#0f686d"/>
+              <rect id="Rectangle_46" data-name="Rectangle 46" width="1.748" height="0.057" transform="translate(0 2.181)" fill="#0f696d"/>
+              <rect id="Rectangle_47" data-name="Rectangle 47" width="1.748" height="0.057" transform="translate(0 2.123)" fill="#0f6a6d"/>
+              <rect id="Rectangle_48" data-name="Rectangle 48" width="1.748" height="0.057" transform="translate(0 2.066)" fill="#0f6b6d"/>
+              <rect id="Rectangle_49" data-name="Rectangle 49" width="1.748" height="0.057" transform="translate(0 2.009)" fill="#0f6c6e"/>
+              <rect id="Rectangle_50" data-name="Rectangle 50" width="1.748" height="0.057" transform="translate(0 1.951)" fill="#0f6d6e"/>
+              <rect id="Rectangle_51" data-name="Rectangle 51" width="1.748" height="0.057" transform="translate(0 1.894)" fill="#0f6e6e"/>
+              <rect id="Rectangle_52" data-name="Rectangle 52" width="1.748" height="0.057" transform="translate(0 1.836)" fill="#0f6f6e"/>
+              <rect id="Rectangle_53" data-name="Rectangle 53" width="1.748" height="0.057" transform="translate(0 1.779)" fill="#0f706e"/>
+              <rect id="Rectangle_54" data-name="Rectangle 54" width="1.748" height="0.057" transform="translate(0 1.722)" fill="#0f716f"/>
+              <rect id="Rectangle_55" data-name="Rectangle 55" width="1.748" height="0.057" transform="translate(0 1.664)" fill="#0f726f"/>
+              <rect id="Rectangle_56" data-name="Rectangle 56" width="1.748" height="0.057" transform="translate(0 1.607)" fill="#0f736f"/>
+              <rect id="Rectangle_57" data-name="Rectangle 57" width="1.748" height="0.057" transform="translate(0 1.55)" fill="#0f746f"/>
+              <rect id="Rectangle_58" data-name="Rectangle 58" width="1.748" height="0.057" transform="translate(0 1.492)" fill="#0f7570"/>
+              <rect id="Rectangle_59" data-name="Rectangle 59" width="1.748" height="0.057" transform="translate(0 1.435)" fill="#0f7670"/>
+              <rect id="Rectangle_60" data-name="Rectangle 60" width="1.748" height="0.057" transform="translate(0 1.377)" fill="#0e7770"/>
+              <rect id="Rectangle_61" data-name="Rectangle 61" width="1.748" height="0.057" transform="translate(0 1.32)" fill="#0e7870"/>
+              <rect id="Rectangle_62" data-name="Rectangle 62" width="1.748" height="0.057" transform="translate(0 1.263)" fill="#0e7970"/>
+              <rect id="Rectangle_63" data-name="Rectangle 63" width="1.748" height="0.057" transform="translate(0 1.205)" fill="#0e7a71"/>
+              <rect id="Rectangle_64" data-name="Rectangle 64" width="1.748" height="0.057" transform="translate(0 1.148)" fill="#0e7b71"/>
+              <rect id="Rectangle_65" data-name="Rectangle 65" width="1.748" height="0.057" transform="translate(0 1.09)" fill="#0e7c71"/>
+              <rect id="Rectangle_66" data-name="Rectangle 66" width="1.748" height="0.057" transform="translate(0 1.033)" fill="#0e7d71"/>
+              <rect id="Rectangle_67" data-name="Rectangle 67" width="1.748" height="0.057" transform="translate(0 0.976)" fill="#0e7e71"/>
+              <rect id="Rectangle_68" data-name="Rectangle 68" width="1.748" height="0.057" transform="translate(0 0.918)" fill="#0e7f72"/>
+              <rect id="Rectangle_69" data-name="Rectangle 69" width="1.748" height="0.057" transform="translate(0 0.861)" fill="#0e8072"/>
+              <rect id="Rectangle_70" data-name="Rectangle 70" width="1.748" height="0.057" transform="translate(0 0.803)" fill="#0e8172"/>
+              <rect id="Rectangle_71" data-name="Rectangle 71" width="1.748" height="0.057" transform="translate(0 0.746)" fill="#0e8272"/>
+              <rect id="Rectangle_72" data-name="Rectangle 72" width="1.748" height="0.057" transform="translate(0 0.689)" fill="#0e8372"/>
+              <rect id="Rectangle_73" data-name="Rectangle 73" width="1.748" height="0.057" transform="translate(0 0.631)" fill="#0e8473"/>
+              <rect id="Rectangle_74" data-name="Rectangle 74" width="1.748" height="0.057" transform="translate(0 0.574)" fill="#0e8573"/>
+              <rect id="Rectangle_75" data-name="Rectangle 75" width="1.748" height="0.057" transform="translate(0 0.516)" fill="#0e8673"/>
+              <rect id="Rectangle_76" data-name="Rectangle 76" width="1.748" height="0.057" transform="translate(0 0.459)" fill="#0d8773"/>
+              <rect id="Rectangle_77" data-name="Rectangle 77" width="1.748" height="0.057" transform="translate(0 0.402)" fill="#0d8874"/>
+              <rect id="Rectangle_78" data-name="Rectangle 78" width="1.748" height="0.057" transform="translate(0 0.344)" fill="#0d8974"/>
+              <rect id="Rectangle_79" data-name="Rectangle 79" width="1.748" height="0.057" transform="translate(0 0.287)" fill="#0d8a74"/>
+              <rect id="Rectangle_80" data-name="Rectangle 80" width="1.748" height="0.057" transform="translate(0 0.23)" fill="#0d8b74"/>
+              <rect id="Rectangle_81" data-name="Rectangle 81" width="1.748" height="0.057" transform="translate(0 0.172)" fill="#0d8c74"/>
+              <rect id="Rectangle_82" data-name="Rectangle 82" width="1.748" height="0.057" transform="translate(0 0.115)" fill="#0d8d75"/>
+              <rect id="Rectangle_83" data-name="Rectangle 83" width="1.748" height="0.057" transform="translate(0 0.057)" fill="#0d8e75"/>
+              <rect id="Rectangle_84" data-name="Rectangle 84" width="1.748" height="0.057" transform="translate(0 0)" fill="#0d8f75"/>
+            </g>
+          </g>
+        </g>
+        <g id="Group_4" data-name="Group 4">
+          <path id="Path_2" data-name="Path 2" d="M61,57.89a3.617,3.617,0,0,0-3.3,3.281A3.617,3.617,0,0,0,61,57.89Z" transform="translate(-57.699 -57.89)" fill="#0d8f75"/>
+        </g>
+        <g id="Group_5" data-name="Group 5" transform="translate(3.91)">
+          <path id="Path_3" data-name="Path 3" d="M122.382,61.171a3.618,3.618,0,0,0-3.3-3.281A3.617,3.617,0,0,0,122.382,61.171Z" transform="translate(-119.085 -57.89)" fill="#0d8f75"/>
+        </g>
+        <g id="Group_8" data-name="Group 8" transform="translate(0 3.894)">
+          <g id="Group_7" data-name="Group 7">
+            <g id="Group_6" data-name="Group 6" clip-path="url(#clip-path-2)">
+              <rect id="Rectangle_85" data-name="Rectangle 85" width="3.297" height="0.009" transform="translate(0 3.271)" fill="#123d64"/>
+              <rect id="Rectangle_86" data-name="Rectangle 86" width="3.297" height="0.04" transform="translate(0 3.231)" fill="#123d64"/>
+              <rect id="Rectangle_87" data-name="Rectangle 87" width="3.297" height="0.04" transform="translate(0 3.191)" fill="#123e64"/>
+              <rect id="Rectangle_88" data-name="Rectangle 88" width="3.297" height="0.04" transform="translate(0 3.151)" fill="#123f64"/>
+              <rect id="Rectangle_89" data-name="Rectangle 89" width="3.297" height="0.04" transform="translate(0 3.111)" fill="#124065"/>
+              <rect id="Rectangle_90" data-name="Rectangle 90" width="3.297" height="0.04" transform="translate(0 3.071)" fill="#124165"/>
+              <rect id="Rectangle_91" data-name="Rectangle 91" width="3.297" height="0.04" transform="translate(0 3.032)" fill="#124265"/>
+              <rect id="Rectangle_92" data-name="Rectangle 92" width="3.297" height="0.04" transform="translate(0 2.992)" fill="#124365"/>
+              <rect id="Rectangle_93" data-name="Rectangle 93" width="3.297" height="0.04" transform="translate(0 2.952)" fill="#124465"/>
+              <rect id="Rectangle_94" data-name="Rectangle 94" width="3.297" height="0.04" transform="translate(0 2.912)" fill="#124566"/>
+              <rect id="Rectangle_95" data-name="Rectangle 95" width="3.297" height="0.04" transform="translate(0 2.872)" fill="#114666"/>
+              <rect id="Rectangle_96" data-name="Rectangle 96" width="3.297" height="0.04" transform="translate(0 2.832)" fill="#114766"/>
+              <rect id="Rectangle_97" data-name="Rectangle 97" width="3.297" height="0.04" transform="translate(0 2.792)" fill="#114866"/>
+              <rect id="Rectangle_98" data-name="Rectangle 98" width="3.297" height="0.04" transform="translate(0 2.752)" fill="#114967"/>
+              <rect id="Rectangle_99" data-name="Rectangle 99" width="3.297" height="0.04" transform="translate(0 2.712)" fill="#114a67"/>
+              <rect id="Rectangle_100" data-name="Rectangle 100" width="3.297" height="0.04" transform="translate(0 2.672)" fill="#114b67"/>
+              <rect id="Rectangle_101" data-name="Rectangle 101" width="3.297" height="0.04" transform="translate(0 2.632)" fill="#114c67"/>
+              <rect id="Rectangle_102" data-name="Rectangle 102" width="3.297" height="0.04" transform="translate(0 2.592)" fill="#114d67"/>
+              <rect id="Rectangle_103" data-name="Rectangle 103" width="3.297" height="0.04" transform="translate(0 2.552)" fill="#114e68"/>
+              <rect id="Rectangle_104" data-name="Rectangle 104" width="3.297" height="0.04" transform="translate(0 2.512)" fill="#114f68"/>
+              <rect id="Rectangle_105" data-name="Rectangle 105" width="3.297" height="0.04" transform="translate(0 2.472)" fill="#115068"/>
+              <rect id="Rectangle_106" data-name="Rectangle 106" width="3.297" height="0.04" transform="translate(0 2.432)" fill="#115168"/>
+              <rect id="Rectangle_107" data-name="Rectangle 107" width="3.297" height="0.04" transform="translate(0 2.392)" fill="#115268"/>
+              <rect id="Rectangle_108" data-name="Rectangle 108" width="3.297" height="0.04" transform="translate(0 2.352)" fill="#115369"/>
+              <rect id="Rectangle_109" data-name="Rectangle 109" width="3.297" height="0.04" transform="translate(0 2.312)" fill="#115469"/>
+              <rect id="Rectangle_110" data-name="Rectangle 110" width="3.297" height="0.04" transform="translate(0 2.272)" fill="#115569"/>
+              <rect id="Rectangle_111" data-name="Rectangle 111" width="3.297" height="0.04" transform="translate(0 2.232)" fill="#105669"/>
+              <rect id="Rectangle_112" data-name="Rectangle 112" width="3.297" height="0.04" transform="translate(0 2.192)" fill="#105769"/>
+              <rect id="Rectangle_113" data-name="Rectangle 113" width="3.297" height="0.04" transform="translate(0 2.153)" fill="#10586a"/>
+              <rect id="Rectangle_114" data-name="Rectangle 114" width="3.297" height="0.04" transform="translate(0 2.113)" fill="#10596a"/>
+              <rect id="Rectangle_115" data-name="Rectangle 115" width="3.297" height="0.04" transform="translate(0 2.073)" fill="#105a6a"/>
+              <rect id="Rectangle_116" data-name="Rectangle 116" width="3.297" height="0.04" transform="translate(0 2.033)" fill="#105b6a"/>
+              <rect id="Rectangle_117" data-name="Rectangle 117" width="3.297" height="0.04" transform="translate(0 1.993)" fill="#105c6b"/>
+              <rect id="Rectangle_118" data-name="Rectangle 118" width="3.297" height="0.04" transform="translate(0 1.953)" fill="#105d6b"/>
+              <rect id="Rectangle_119" data-name="Rectangle 119" width="3.297" height="0.04" transform="translate(0 1.913)" fill="#105e6b"/>
+              <rect id="Rectangle_120" data-name="Rectangle 120" width="3.297" height="0.04" transform="translate(0 1.873)" fill="#105f6b"/>
+              <rect id="Rectangle_121" data-name="Rectangle 121" width="3.297" height="0.04" transform="translate(0 1.833)" fill="#10606b"/>
+              <rect id="Rectangle_122" data-name="Rectangle 122" width="3.297" height="0.04" transform="translate(0 1.793)" fill="#10616c"/>
+              <rect id="Rectangle_123" data-name="Rectangle 123" width="3.297" height="0.04" transform="translate(0 1.753)" fill="#10626c"/>
+              <rect id="Rectangle_124" data-name="Rectangle 124" width="3.297" height="0.04" transform="translate(0 1.713)" fill="#10636c"/>
+              <rect id="Rectangle_125" data-name="Rectangle 125" width="3.297" height="0.04" transform="translate(0 1.673)" fill="#10646c"/>
+              <rect id="Rectangle_126" data-name="Rectangle 126" width="3.297" height="0.04" transform="translate(0 1.633)" fill="#10656c"/>
+              <rect id="Rectangle_127" data-name="Rectangle 127" width="3.297" height="0.04" transform="translate(0 1.593)" fill="#0f676d"/>
+              <rect id="Rectangle_128" data-name="Rectangle 128" width="3.297" height="0.04" transform="translate(0 1.553)" fill="#0f686d"/>
+              <rect id="Rectangle_129" data-name="Rectangle 129" width="3.297" height="0.04" transform="translate(0 1.513)" fill="#0f696d"/>
+              <rect id="Rectangle_130" data-name="Rectangle 130" width="3.297" height="0.04" transform="translate(0 1.473)" fill="#0f6a6d"/>
+              <rect id="Rectangle_131" data-name="Rectangle 131" width="3.297" height="0.04" transform="translate(0 1.433)" fill="#0f6b6d"/>
+              <rect id="Rectangle_132" data-name="Rectangle 132" width="3.297" height="0.04" transform="translate(0 1.393)" fill="#0f6c6e"/>
+              <rect id="Rectangle_133" data-name="Rectangle 133" width="3.297" height="0.04" transform="translate(0 1.353)" fill="#0f6d6e"/>
+              <rect id="Rectangle_134" data-name="Rectangle 134" width="3.297" height="0.04" transform="translate(0 1.313)" fill="#0f6e6e"/>
+              <rect id="Rectangle_135" data-name="Rectangle 135" width="3.297" height="0.04" transform="translate(0 1.274)" fill="#0f6f6e"/>
+              <rect id="Rectangle_136" data-name="Rectangle 136" width="3.297" height="0.04" transform="translate(0 1.234)" fill="#0f706e"/>
+              <rect id="Rectangle_137" data-name="Rectangle 137" width="3.297" height="0.04" transform="translate(0 1.194)" fill="#0f716f"/>
+              <rect id="Rectangle_138" data-name="Rectangle 138" width="3.297" height="0.04" transform="translate(0 1.154)" fill="#0f726f"/>
+              <rect id="Rectangle_139" data-name="Rectangle 139" width="3.297" height="0.04" transform="translate(0 1.114)" fill="#0f736f"/>
+              <rect id="Rectangle_140" data-name="Rectangle 140" width="3.297" height="0.04" transform="translate(0 1.074)" fill="#0f746f"/>
+              <rect id="Rectangle_141" data-name="Rectangle 141" width="3.297" height="0.04" transform="translate(0 1.034)" fill="#0f7570"/>
+              <rect id="Rectangle_142" data-name="Rectangle 142" width="3.297" height="0.04" transform="translate(0 0.994)" fill="#0f7670"/>
+              <rect id="Rectangle_143" data-name="Rectangle 143" width="3.297" height="0.04" transform="translate(0 0.954)" fill="#0e7770"/>
+              <rect id="Rectangle_144" data-name="Rectangle 144" width="3.297" height="0.04" transform="translate(0 0.914)" fill="#0e7870"/>
+              <rect id="Rectangle_145" data-name="Rectangle 145" width="3.297" height="0.04" transform="translate(0 0.874)" fill="#0e7970"/>
+              <rect id="Rectangle_146" data-name="Rectangle 146" width="3.297" height="0.04" transform="translate(0 0.834)" fill="#0e7a71"/>
+              <rect id="Rectangle_147" data-name="Rectangle 147" width="3.297" height="0.04" transform="translate(0 0.794)" fill="#0e7b71"/>
+              <rect id="Rectangle_148" data-name="Rectangle 148" width="3.297" height="0.04" transform="translate(0 0.754)" fill="#0e7c71"/>
+              <rect id="Rectangle_149" data-name="Rectangle 149" width="3.297" height="0.04" transform="translate(0 0.714)" fill="#0e7d71"/>
+              <rect id="Rectangle_150" data-name="Rectangle 150" width="3.297" height="0.04" transform="translate(0 0.674)" fill="#0e7e71"/>
+              <rect id="Rectangle_151" data-name="Rectangle 151" width="3.297" height="0.04" transform="translate(0 0.634)" fill="#0e7f72"/>
+              <rect id="Rectangle_152" data-name="Rectangle 152" width="3.297" height="0.04" transform="translate(0 0.594)" fill="#0e8072"/>
+              <rect id="Rectangle_153" data-name="Rectangle 153" width="3.297" height="0.04" transform="translate(0 0.554)" fill="#0e8172"/>
+              <rect id="Rectangle_154" data-name="Rectangle 154" width="3.297" height="0.04" transform="translate(0 0.514)" fill="#0e8272"/>
+              <rect id="Rectangle_155" data-name="Rectangle 155" width="3.297" height="0.04" transform="translate(0 0.474)" fill="#0e8372"/>
+              <rect id="Rectangle_156" data-name="Rectangle 156" width="3.297" height="0.04" transform="translate(0 0.435)" fill="#0e8473"/>
+              <rect id="Rectangle_157" data-name="Rectangle 157" width="3.297" height="0.04" transform="translate(0 0.395)" fill="#0e8573"/>
+              <rect id="Rectangle_158" data-name="Rectangle 158" width="3.297" height="0.04" transform="translate(0 0.355)" fill="#0e8673"/>
+              <rect id="Rectangle_159" data-name="Rectangle 159" width="3.297" height="0.04" transform="translate(0 0.315)" fill="#0d8773"/>
+              <rect id="Rectangle_160" data-name="Rectangle 160" width="3.297" height="0.04" transform="translate(0 0.275)" fill="#0d8874"/>
+              <rect id="Rectangle_161" data-name="Rectangle 161" width="3.297" height="0.04" transform="translate(0 0.235)" fill="#0d8974"/>
+              <rect id="Rectangle_162" data-name="Rectangle 162" width="3.297" height="0.04" transform="translate(0 0.195)" fill="#0d8a74"/>
+              <rect id="Rectangle_163" data-name="Rectangle 163" width="3.297" height="0.04" transform="translate(0 0.155)" fill="#0d8b74"/>
+              <rect id="Rectangle_164" data-name="Rectangle 164" width="3.297" height="0.04" transform="translate(0 0.115)" fill="#0d8c74"/>
+              <rect id="Rectangle_165" data-name="Rectangle 165" width="3.297" height="0.04" transform="translate(0 0.075)" fill="#0d8d75"/>
+              <rect id="Rectangle_166" data-name="Rectangle 166" width="3.297" height="0.04" transform="translate(0 0.035)" fill="#0d8e75"/>
+              <rect id="Rectangle_167" data-name="Rectangle 167" width="3.297" height="0.035" transform="translate(0 0)" fill="#0d8f75"/>
+            </g>
+          </g>
+        </g>
+        <g id="Group_11" data-name="Group 11" transform="translate(3.91 3.894)">
+          <g id="Group_10" data-name="Group 10">
+            <g id="Group_9" data-name="Group 9" clip-path="url(#clip-path-3)">
+              <rect id="Rectangle_168" data-name="Rectangle 168" width="3.297" height="0.009" transform="translate(0 3.271)" fill="#123d64"/>
+              <rect id="Rectangle_169" data-name="Rectangle 169" width="3.297" height="0.04" transform="translate(0 3.231)" fill="#123d64"/>
+              <rect id="Rectangle_170" data-name="Rectangle 170" width="3.297" height="0.04" transform="translate(0 3.191)" fill="#123e64"/>
+              <rect id="Rectangle_171" data-name="Rectangle 171" width="3.297" height="0.04" transform="translate(0 3.151)" fill="#123f64"/>
+              <rect id="Rectangle_172" data-name="Rectangle 172" width="3.297" height="0.04" transform="translate(0 3.111)" fill="#124065"/>
+              <rect id="Rectangle_173" data-name="Rectangle 173" width="3.297" height="0.04" transform="translate(0 3.071)" fill="#124165"/>
+              <rect id="Rectangle_174" data-name="Rectangle 174" width="3.297" height="0.04" transform="translate(0 3.032)" fill="#124265"/>
+              <rect id="Rectangle_175" data-name="Rectangle 175" width="3.297" height="0.04" transform="translate(0 2.992)" fill="#124365"/>
+              <rect id="Rectangle_176" data-name="Rectangle 176" width="3.297" height="0.04" transform="translate(0 2.952)" fill="#124465"/>
+              <rect id="Rectangle_177" data-name="Rectangle 177" width="3.297" height="0.04" transform="translate(0 2.912)" fill="#124566"/>
+              <rect id="Rectangle_178" data-name="Rectangle 178" width="3.297" height="0.04" transform="translate(0 2.872)" fill="#114666"/>
+              <rect id="Rectangle_179" data-name="Rectangle 179" width="3.297" height="0.04" transform="translate(0 2.832)" fill="#114766"/>
+              <rect id="Rectangle_180" data-name="Rectangle 180" width="3.297" height="0.04" transform="translate(0 2.792)" fill="#114866"/>
+              <rect id="Rectangle_181" data-name="Rectangle 181" width="3.297" height="0.04" transform="translate(0 2.752)" fill="#114967"/>
+              <rect id="Rectangle_182" data-name="Rectangle 182" width="3.297" height="0.04" transform="translate(0 2.712)" fill="#114a67"/>
+              <rect id="Rectangle_183" data-name="Rectangle 183" width="3.297" height="0.04" transform="translate(0 2.672)" fill="#114b67"/>
+              <rect id="Rectangle_184" data-name="Rectangle 184" width="3.297" height="0.04" transform="translate(0 2.632)" fill="#114c67"/>
+              <rect id="Rectangle_185" data-name="Rectangle 185" width="3.297" height="0.04" transform="translate(0 2.592)" fill="#114d67"/>
+              <rect id="Rectangle_186" data-name="Rectangle 186" width="3.297" height="0.04" transform="translate(0 2.552)" fill="#114e68"/>
+              <rect id="Rectangle_187" data-name="Rectangle 187" width="3.297" height="0.04" transform="translate(0 2.512)" fill="#114f68"/>
+              <rect id="Rectangle_188" data-name="Rectangle 188" width="3.297" height="0.04" transform="translate(0 2.472)" fill="#115068"/>
+              <rect id="Rectangle_189" data-name="Rectangle 189" width="3.297" height="0.04" transform="translate(0 2.432)" fill="#115168"/>
+              <rect id="Rectangle_190" data-name="Rectangle 190" width="3.297" height="0.04" transform="translate(0 2.392)" fill="#115268"/>
+              <rect id="Rectangle_191" data-name="Rectangle 191" width="3.297" height="0.04" transform="translate(0 2.352)" fill="#115369"/>
+              <rect id="Rectangle_192" data-name="Rectangle 192" width="3.297" height="0.04" transform="translate(0 2.312)" fill="#115469"/>
+              <rect id="Rectangle_193" data-name="Rectangle 193" width="3.297" height="0.04" transform="translate(0 2.272)" fill="#115569"/>
+              <rect id="Rectangle_194" data-name="Rectangle 194" width="3.297" height="0.04" transform="translate(0 2.232)" fill="#105669"/>
+              <rect id="Rectangle_195" data-name="Rectangle 195" width="3.297" height="0.04" transform="translate(0 2.192)" fill="#105769"/>
+              <rect id="Rectangle_196" data-name="Rectangle 196" width="3.297" height="0.04" transform="translate(0 2.153)" fill="#10586a"/>
+              <rect id="Rectangle_197" data-name="Rectangle 197" width="3.297" height="0.04" transform="translate(0 2.113)" fill="#10596a"/>
+              <rect id="Rectangle_198" data-name="Rectangle 198" width="3.297" height="0.04" transform="translate(0 2.073)" fill="#105a6a"/>
+              <rect id="Rectangle_199" data-name="Rectangle 199" width="3.297" height="0.04" transform="translate(0 2.033)" fill="#105b6a"/>
+              <rect id="Rectangle_200" data-name="Rectangle 200" width="3.297" height="0.04" transform="translate(0 1.993)" fill="#105c6b"/>
+              <rect id="Rectangle_201" data-name="Rectangle 201" width="3.297" height="0.04" transform="translate(0 1.953)" fill="#105d6b"/>
+              <rect id="Rectangle_202" data-name="Rectangle 202" width="3.297" height="0.04" transform="translate(0 1.913)" fill="#105e6b"/>
+              <rect id="Rectangle_203" data-name="Rectangle 203" width="3.297" height="0.04" transform="translate(0 1.873)" fill="#105f6b"/>
+              <rect id="Rectangle_204" data-name="Rectangle 204" width="3.297" height="0.04" transform="translate(0 1.833)" fill="#10606b"/>
+              <rect id="Rectangle_205" data-name="Rectangle 205" width="3.297" height="0.04" transform="translate(0 1.793)" fill="#10616c"/>
+              <rect id="Rectangle_206" data-name="Rectangle 206" width="3.297" height="0.04" transform="translate(0 1.753)" fill="#10626c"/>
+              <rect id="Rectangle_207" data-name="Rectangle 207" width="3.297" height="0.04" transform="translate(0 1.713)" fill="#10636c"/>
+              <rect id="Rectangle_208" data-name="Rectangle 208" width="3.297" height="0.04" transform="translate(0 1.673)" fill="#10646c"/>
+              <rect id="Rectangle_209" data-name="Rectangle 209" width="3.297" height="0.04" transform="translate(0 1.633)" fill="#10656c"/>
+              <rect id="Rectangle_210" data-name="Rectangle 210" width="3.297" height="0.04" transform="translate(0 1.593)" fill="#0f676d"/>
+              <rect id="Rectangle_211" data-name="Rectangle 211" width="3.297" height="0.04" transform="translate(0 1.553)" fill="#0f686d"/>
+              <rect id="Rectangle_212" data-name="Rectangle 212" width="3.297" height="0.04" transform="translate(0 1.513)" fill="#0f696d"/>
+              <rect id="Rectangle_213" data-name="Rectangle 213" width="3.297" height="0.04" transform="translate(0 1.473)" fill="#0f6a6d"/>
+              <rect id="Rectangle_214" data-name="Rectangle 214" width="3.297" height="0.04" transform="translate(0 1.433)" fill="#0f6b6d"/>
+              <rect id="Rectangle_215" data-name="Rectangle 215" width="3.297" height="0.04" transform="translate(0 1.393)" fill="#0f6c6e"/>
+              <rect id="Rectangle_216" data-name="Rectangle 216" width="3.297" height="0.04" transform="translate(0 1.353)" fill="#0f6d6e"/>
+              <rect id="Rectangle_217" data-name="Rectangle 217" width="3.297" height="0.04" transform="translate(0 1.313)" fill="#0f6e6e"/>
+              <rect id="Rectangle_218" data-name="Rectangle 218" width="3.297" height="0.04" transform="translate(0 1.274)" fill="#0f6f6e"/>
+              <rect id="Rectangle_219" data-name="Rectangle 219" width="3.297" height="0.04" transform="translate(0 1.234)" fill="#0f706e"/>
+              <rect id="Rectangle_220" data-name="Rectangle 220" width="3.297" height="0.04" transform="translate(0 1.194)" fill="#0f716f"/>
+              <rect id="Rectangle_221" data-name="Rectangle 221" width="3.297" height="0.04" transform="translate(0 1.154)" fill="#0f726f"/>
+              <rect id="Rectangle_222" data-name="Rectangle 222" width="3.297" height="0.04" transform="translate(0 1.114)" fill="#0f736f"/>
+              <rect id="Rectangle_223" data-name="Rectangle 223" width="3.297" height="0.04" transform="translate(0 1.074)" fill="#0f746f"/>
+              <rect id="Rectangle_224" data-name="Rectangle 224" width="3.297" height="0.04" transform="translate(0 1.034)" fill="#0f7570"/>
+              <rect id="Rectangle_225" data-name="Rectangle 225" width="3.297" height="0.04" transform="translate(0 0.994)" fill="#0f7670"/>
+              <rect id="Rectangle_226" data-name="Rectangle 226" width="3.297" height="0.04" transform="translate(0 0.954)" fill="#0e7770"/>
+              <rect id="Rectangle_227" data-name="Rectangle 227" width="3.297" height="0.04" transform="translate(0 0.914)" fill="#0e7870"/>
+              <rect id="Rectangle_228" data-name="Rectangle 228" width="3.297" height="0.04" transform="translate(0 0.874)" fill="#0e7970"/>
+              <rect id="Rectangle_229" data-name="Rectangle 229" width="3.297" height="0.04" transform="translate(0 0.834)" fill="#0e7a71"/>
+              <rect id="Rectangle_230" data-name="Rectangle 230" width="3.297" height="0.04" transform="translate(0 0.794)" fill="#0e7b71"/>
+              <rect id="Rectangle_231" data-name="Rectangle 231" width="3.297" height="0.04" transform="translate(0 0.754)" fill="#0e7c71"/>
+              <rect id="Rectangle_232" data-name="Rectangle 232" width="3.297" height="0.04" transform="translate(0 0.714)" fill="#0e7d71"/>
+              <rect id="Rectangle_233" data-name="Rectangle 233" width="3.297" height="0.04" transform="translate(0 0.674)" fill="#0e7e71"/>
+              <rect id="Rectangle_234" data-name="Rectangle 234" width="3.297" height="0.04" transform="translate(0 0.634)" fill="#0e7f72"/>
+              <rect id="Rectangle_235" data-name="Rectangle 235" width="3.297" height="0.04" transform="translate(0 0.594)" fill="#0e8072"/>
+              <rect id="Rectangle_236" data-name="Rectangle 236" width="3.297" height="0.04" transform="translate(0 0.554)" fill="#0e8172"/>
+              <rect id="Rectangle_237" data-name="Rectangle 237" width="3.297" height="0.04" transform="translate(0 0.514)" fill="#0e8272"/>
+              <rect id="Rectangle_238" data-name="Rectangle 238" width="3.297" height="0.04" transform="translate(0 0.474)" fill="#0e8372"/>
+              <rect id="Rectangle_239" data-name="Rectangle 239" width="3.297" height="0.04" transform="translate(0 0.435)" fill="#0e8473"/>
+              <rect id="Rectangle_240" data-name="Rectangle 240" width="3.297" height="0.04" transform="translate(0 0.395)" fill="#0e8573"/>
+              <rect id="Rectangle_241" data-name="Rectangle 241" width="3.297" height="0.04" transform="translate(0 0.355)" fill="#0e8673"/>
+              <rect id="Rectangle_242" data-name="Rectangle 242" width="3.297" height="0.04" transform="translate(0 0.315)" fill="#0d8773"/>
+              <rect id="Rectangle_243" data-name="Rectangle 243" width="3.297" height="0.04" transform="translate(0 0.275)" fill="#0d8874"/>
+              <rect id="Rectangle_244" data-name="Rectangle 244" width="3.297" height="0.04" transform="translate(0 0.235)" fill="#0d8974"/>
+              <rect id="Rectangle_245" data-name="Rectangle 245" width="3.297" height="0.04" transform="translate(0 0.195)" fill="#0d8a74"/>
+              <rect id="Rectangle_246" data-name="Rectangle 246" width="3.297" height="0.04" transform="translate(0 0.155)" fill="#0d8b74"/>
+              <rect id="Rectangle_247" data-name="Rectangle 247" width="3.297" height="0.04" transform="translate(0 0.115)" fill="#0d8c74"/>
+              <rect id="Rectangle_248" data-name="Rectangle 248" width="3.297" height="0.04" transform="translate(0 0.075)" fill="#0d8d75"/>
+              <rect id="Rectangle_249" data-name="Rectangle 249" width="3.297" height="0.04" transform="translate(0 0.035)" fill="#0d8e75"/>
+              <rect id="Rectangle_250" data-name="Rectangle 250" width="3.297" height="0.035" transform="translate(0 0)" fill="#0d8f75"/>
+            </g>
+          </g>
+        </g>
+      </g>
+      <g id="Group_19" data-name="Group 19" transform="translate(0 3.854)">
+        <g id="Group_15" data-name="Group 15">
+          <g id="Group_14" data-name="Group 14">
+            <g id="Group_13" data-name="Group 13" clip-path="url(#clip-path-4)">
+              <rect id="Rectangle_251" data-name="Rectangle 251" width="3.297" height="0.009" transform="translate(0 3.271)" fill="#123d64"/>
+              <rect id="Rectangle_252" data-name="Rectangle 252" width="3.297" height="0.04" transform="translate(0 3.231)" fill="#123d64"/>
+              <rect id="Rectangle_253" data-name="Rectangle 253" width="3.297" height="0.04" transform="translate(0 3.191)" fill="#123e64"/>
+              <rect id="Rectangle_254" data-name="Rectangle 254" width="3.297" height="0.04" transform="translate(0 3.151)" fill="#123f64"/>
+              <rect id="Rectangle_255" data-name="Rectangle 255" width="3.297" height="0.04" transform="translate(0 3.111)" fill="#124065"/>
+              <rect id="Rectangle_256" data-name="Rectangle 256" width="3.297" height="0.04" transform="translate(0 3.071)" fill="#124165"/>
+              <rect id="Rectangle_257" data-name="Rectangle 257" width="3.297" height="0.04" transform="translate(0 3.032)" fill="#124265"/>
+              <rect id="Rectangle_258" data-name="Rectangle 258" width="3.297" height="0.04" transform="translate(0 2.992)" fill="#124365"/>
+              <rect id="Rectangle_259" data-name="Rectangle 259" width="3.297" height="0.04" transform="translate(0 2.952)" fill="#124465"/>
+              <rect id="Rectangle_260" data-name="Rectangle 260" width="3.297" height="0.04" transform="translate(0 2.912)" fill="#124566"/>
+              <rect id="Rectangle_261" data-name="Rectangle 261" width="3.297" height="0.04" transform="translate(0 2.872)" fill="#114666"/>
+              <rect id="Rectangle_262" data-name="Rectangle 262" width="3.297" height="0.04" transform="translate(0 2.832)" fill="#114766"/>
+              <rect id="Rectangle_263" data-name="Rectangle 263" width="3.297" height="0.04" transform="translate(0 2.792)" fill="#114866"/>
+              <rect id="Rectangle_264" data-name="Rectangle 264" width="3.297" height="0.04" transform="translate(0 2.752)" fill="#114967"/>
+              <rect id="Rectangle_265" data-name="Rectangle 265" width="3.297" height="0.04" transform="translate(0 2.712)" fill="#114a67"/>
+              <rect id="Rectangle_266" data-name="Rectangle 266" width="3.297" height="0.04" transform="translate(0 2.672)" fill="#114b67"/>
+              <rect id="Rectangle_267" data-name="Rectangle 267" width="3.297" height="0.04" transform="translate(0 2.632)" fill="#114c67"/>
+              <rect id="Rectangle_268" data-name="Rectangle 268" width="3.297" height="0.04" transform="translate(0 2.592)" fill="#114d67"/>
+              <rect id="Rectangle_269" data-name="Rectangle 269" width="3.297" height="0.04" transform="translate(0 2.552)" fill="#114e68"/>
+              <rect id="Rectangle_270" data-name="Rectangle 270" width="3.297" height="0.04" transform="translate(0 2.512)" fill="#114f68"/>
+              <rect id="Rectangle_271" data-name="Rectangle 271" width="3.297" height="0.04" transform="translate(0 2.472)" fill="#115068"/>
+              <rect id="Rectangle_272" data-name="Rectangle 272" width="3.297" height="0.04" transform="translate(0 2.432)" fill="#115168"/>
+              <rect id="Rectangle_273" data-name="Rectangle 273" width="3.297" height="0.04" transform="translate(0 2.392)" fill="#115268"/>
+              <rect id="Rectangle_274" data-name="Rectangle 274" width="3.297" height="0.04" transform="translate(0 2.352)" fill="#115369"/>
+              <rect id="Rectangle_275" data-name="Rectangle 275" width="3.297" height="0.04" transform="translate(0 2.312)" fill="#115469"/>
+              <rect id="Rectangle_276" data-name="Rectangle 276" width="3.297" height="0.04" transform="translate(0 2.272)" fill="#115569"/>
+              <rect id="Rectangle_277" data-name="Rectangle 277" width="3.297" height="0.04" transform="translate(0 2.232)" fill="#105669"/>
+              <rect id="Rectangle_278" data-name="Rectangle 278" width="3.297" height="0.04" transform="translate(0 2.192)" fill="#105769"/>
+              <rect id="Rectangle_279" data-name="Rectangle 279" width="3.297" height="0.04" transform="translate(0 2.153)" fill="#10586a"/>
+              <rect id="Rectangle_280" data-name="Rectangle 280" width="3.297" height="0.04" transform="translate(0 2.113)" fill="#10596a"/>
+              <rect id="Rectangle_281" data-name="Rectangle 281" width="3.297" height="0.04" transform="translate(0 2.073)" fill="#105a6a"/>
+              <rect id="Rectangle_282" data-name="Rectangle 282" width="3.297" height="0.04" transform="translate(0 2.033)" fill="#105b6a"/>
+              <rect id="Rectangle_283" data-name="Rectangle 283" width="3.297" height="0.04" transform="translate(0 1.993)" fill="#105c6b"/>
+              <rect id="Rectangle_284" data-name="Rectangle 284" width="3.297" height="0.04" transform="translate(0 1.953)" fill="#105d6b"/>
+              <rect id="Rectangle_285" data-name="Rectangle 285" width="3.297" height="0.04" transform="translate(0 1.913)" fill="#105e6b"/>
+              <rect id="Rectangle_286" data-name="Rectangle 286" width="3.297" height="0.04" transform="translate(0 1.873)" fill="#105f6b"/>
+              <rect id="Rectangle_287" data-name="Rectangle 287" width="3.297" height="0.04" transform="translate(0 1.833)" fill="#10606b"/>
+              <rect id="Rectangle_288" data-name="Rectangle 288" width="3.297" height="0.04" transform="translate(0 1.793)" fill="#10616c"/>
+              <rect id="Rectangle_289" data-name="Rectangle 289" width="3.297" height="0.04" transform="translate(0 1.753)" fill="#10626c"/>
+              <rect id="Rectangle_290" data-name="Rectangle 290" width="3.297" height="0.04" transform="translate(0 1.713)" fill="#10636c"/>
+              <rect id="Rectangle_291" data-name="Rectangle 291" width="3.297" height="0.04" transform="translate(0 1.673)" fill="#10646c"/>
+              <rect id="Rectangle_292" data-name="Rectangle 292" width="3.297" height="0.04" transform="translate(0 1.633)" fill="#10656c"/>
+              <rect id="Rectangle_293" data-name="Rectangle 293" width="3.297" height="0.04" transform="translate(0 1.593)" fill="#0f676d"/>
+              <rect id="Rectangle_294" data-name="Rectangle 294" width="3.297" height="0.04" transform="translate(0 1.553)" fill="#0f686d"/>
+              <rect id="Rectangle_295" data-name="Rectangle 295" width="3.297" height="0.04" transform="translate(0 1.513)" fill="#0f696d"/>
+              <rect id="Rectangle_296" data-name="Rectangle 296" width="3.297" height="0.04" transform="translate(0 1.473)" fill="#0f6a6d"/>
+              <rect id="Rectangle_297" data-name="Rectangle 297" width="3.297" height="0.04" transform="translate(0 1.433)" fill="#0f6b6d"/>
+              <rect id="Rectangle_298" data-name="Rectangle 298" width="3.297" height="0.04" transform="translate(0 1.393)" fill="#0f6c6e"/>
+              <rect id="Rectangle_299" data-name="Rectangle 299" width="3.297" height="0.04" transform="translate(0 1.353)" fill="#0f6d6e"/>
+              <rect id="Rectangle_300" data-name="Rectangle 300" width="3.297" height="0.04" transform="translate(0 1.313)" fill="#0f6e6e"/>
+              <rect id="Rectangle_301" data-name="Rectangle 301" width="3.297" height="0.04" transform="translate(0 1.274)" fill="#0f6f6e"/>
+              <rect id="Rectangle_302" data-name="Rectangle 302" width="3.297" height="0.04" transform="translate(0 1.234)" fill="#0f706e"/>
+              <rect id="Rectangle_303" data-name="Rectangle 303" width="3.297" height="0.04" transform="translate(0 1.194)" fill="#0f716f"/>
+              <rect id="Rectangle_304" data-name="Rectangle 304" width="3.297" height="0.04" transform="translate(0 1.154)" fill="#0f726f"/>
+              <rect id="Rectangle_305" data-name="Rectangle 305" width="3.297" height="0.04" transform="translate(0 1.114)" fill="#0f736f"/>
+              <rect id="Rectangle_306" data-name="Rectangle 306" width="3.297" height="0.04" transform="translate(0 1.074)" fill="#0f746f"/>
+              <rect id="Rectangle_307" data-name="Rectangle 307" width="3.297" height="0.04" transform="translate(0 1.034)" fill="#0f7570"/>
+              <rect id="Rectangle_308" data-name="Rectangle 308" width="3.297" height="0.04" transform="translate(0 0.994)" fill="#0f7670"/>
+              <rect id="Rectangle_309" data-name="Rectangle 309" width="3.297" height="0.04" transform="translate(0 0.954)" fill="#0e7770"/>
+              <rect id="Rectangle_310" data-name="Rectangle 310" width="3.297" height="0.04" transform="translate(0 0.914)" fill="#0e7870"/>
+              <rect id="Rectangle_311" data-name="Rectangle 311" width="3.297" height="0.04" transform="translate(0 0.874)" fill="#0e7970"/>
+              <rect id="Rectangle_312" data-name="Rectangle 312" width="3.297" height="0.04" transform="translate(0 0.834)" fill="#0e7a71"/>
+              <rect id="Rectangle_313" data-name="Rectangle 313" width="3.297" height="0.04" transform="translate(0 0.794)" fill="#0e7b71"/>
+              <rect id="Rectangle_314" data-name="Rectangle 314" width="3.297" height="0.04" transform="translate(0 0.754)" fill="#0e7c71"/>
+              <rect id="Rectangle_315" data-name="Rectangle 315" width="3.297" height="0.04" transform="translate(0 0.714)" fill="#0e7d71"/>
+              <rect id="Rectangle_316" data-name="Rectangle 316" width="3.297" height="0.04" transform="translate(0 0.674)" fill="#0e7e71"/>
+              <rect id="Rectangle_317" data-name="Rectangle 317" width="3.297" height="0.04" transform="translate(0 0.634)" fill="#0e7f72"/>
+              <rect id="Rectangle_318" data-name="Rectangle 318" width="3.297" height="0.04" transform="translate(0 0.594)" fill="#0e8072"/>
+              <rect id="Rectangle_319" data-name="Rectangle 319" width="3.297" height="0.04" transform="translate(0 0.554)" fill="#0e8172"/>
+              <rect id="Rectangle_320" data-name="Rectangle 320" width="3.297" height="0.04" transform="translate(0 0.514)" fill="#0e8272"/>
+              <rect id="Rectangle_321" data-name="Rectangle 321" width="3.297" height="0.04" transform="translate(0 0.474)" fill="#0e8372"/>
+              <rect id="Rectangle_322" data-name="Rectangle 322" width="3.297" height="0.04" transform="translate(0 0.434)" fill="#0e8473"/>
+              <rect id="Rectangle_323" data-name="Rectangle 323" width="3.297" height="0.04" transform="translate(0 0.395)" fill="#0e8573"/>
+              <rect id="Rectangle_324" data-name="Rectangle 324" width="3.297" height="0.04" transform="translate(0 0.355)" fill="#0e8673"/>
+              <rect id="Rectangle_325" data-name="Rectangle 325" width="3.297" height="0.04" transform="translate(0 0.315)" fill="#0d8773"/>
+              <rect id="Rectangle_326" data-name="Rectangle 326" width="3.297" height="0.04" transform="translate(0 0.275)" fill="#0d8874"/>
+              <rect id="Rectangle_327" data-name="Rectangle 327" width="3.297" height="0.04" transform="translate(0 0.235)" fill="#0d8974"/>
+              <rect id="Rectangle_328" data-name="Rectangle 328" width="3.297" height="0.04" transform="translate(0 0.195)" fill="#0d8a74"/>
+              <rect id="Rectangle_329" data-name="Rectangle 329" width="3.297" height="0.04" transform="translate(0 0.155)" fill="#0d8b74"/>
+              <rect id="Rectangle_330" data-name="Rectangle 330" width="3.297" height="0.04" transform="translate(0 0.115)" fill="#0d8c74"/>
+              <rect id="Rectangle_331" data-name="Rectangle 331" width="3.297" height="0.04" transform="translate(0 0.075)" fill="#0d8d75"/>
+              <rect id="Rectangle_332" data-name="Rectangle 332" width="3.297" height="0.04" transform="translate(0 0.035)" fill="#0d8e75"/>
+              <rect id="Rectangle_333" data-name="Rectangle 333" width="3.297" height="0.035" transform="translate(0 0)" fill="#0d8f75"/>
+            </g>
+          </g>
+        </g>
+        <g id="Group_18" data-name="Group 18" transform="translate(10.264)">
+          <g id="Group_17" data-name="Group 17">
+            <g id="Group_16" data-name="Group 16" clip-path="url(#clip-path-5)">
+              <rect id="Rectangle_334" data-name="Rectangle 334" width="3.297" height="0.009" transform="translate(0 3.271)" fill="#123d64"/>
+              <rect id="Rectangle_335" data-name="Rectangle 335" width="3.297" height="0.04" transform="translate(0 3.231)" fill="#123d64"/>
+              <rect id="Rectangle_336" data-name="Rectangle 336" width="3.297" height="0.04" transform="translate(0 3.191)" fill="#123e64"/>
+              <rect id="Rectangle_337" data-name="Rectangle 337" width="3.297" height="0.04" transform="translate(0 3.151)" fill="#123f64"/>
+              <rect id="Rectangle_338" data-name="Rectangle 338" width="3.297" height="0.04" transform="translate(0 3.111)" fill="#124065"/>
+              <rect id="Rectangle_339" data-name="Rectangle 339" width="3.297" height="0.04" transform="translate(0 3.071)" fill="#124165"/>
+              <rect id="Rectangle_340" data-name="Rectangle 340" width="3.297" height="0.04" transform="translate(0 3.032)" fill="#124265"/>
+              <rect id="Rectangle_341" data-name="Rectangle 341" width="3.297" height="0.04" transform="translate(0 2.992)" fill="#124365"/>
+              <rect id="Rectangle_342" data-name="Rectangle 342" width="3.297" height="0.04" transform="translate(0 2.952)" fill="#124465"/>
+              <rect id="Rectangle_343" data-name="Rectangle 343" width="3.297" height="0.04" transform="translate(0 2.912)" fill="#124566"/>
+              <rect id="Rectangle_344" data-name="Rectangle 344" width="3.297" height="0.04" transform="translate(0 2.872)" fill="#114666"/>
+              <rect id="Rectangle_345" data-name="Rectangle 345" width="3.297" height="0.04" transform="translate(0 2.832)" fill="#114766"/>
+              <rect id="Rectangle_346" data-name="Rectangle 346" width="3.297" height="0.04" transform="translate(0 2.792)" fill="#114866"/>
+              <rect id="Rectangle_347" data-name="Rectangle 347" width="3.297" height="0.04" transform="translate(0 2.752)" fill="#114967"/>
+              <rect id="Rectangle_348" data-name="Rectangle 348" width="3.297" height="0.04" transform="translate(0 2.712)" fill="#114a67"/>
+              <rect id="Rectangle_349" data-name="Rectangle 349" width="3.297" height="0.04" transform="translate(0 2.672)" fill="#114b67"/>
+              <rect id="Rectangle_350" data-name="Rectangle 350" width="3.297" height="0.04" transform="translate(0 2.632)" fill="#114c67"/>
+              <rect id="Rectangle_351" data-name="Rectangle 351" width="3.297" height="0.04" transform="translate(0 2.592)" fill="#114d67"/>
+              <rect id="Rectangle_352" data-name="Rectangle 352" width="3.297" height="0.04" transform="translate(0 2.552)" fill="#114e68"/>
+              <rect id="Rectangle_353" data-name="Rectangle 353" width="3.297" height="0.04" transform="translate(0 2.512)" fill="#114f68"/>
+              <rect id="Rectangle_354" data-name="Rectangle 354" width="3.297" height="0.04" transform="translate(0 2.472)" fill="#115068"/>
+              <rect id="Rectangle_355" data-name="Rectangle 355" width="3.297" height="0.04" transform="translate(0 2.432)" fill="#115168"/>
+              <rect id="Rectangle_356" data-name="Rectangle 356" width="3.297" height="0.04" transform="translate(0 2.392)" fill="#115268"/>
+              <rect id="Rectangle_357" data-name="Rectangle 357" width="3.297" height="0.04" transform="translate(0 2.352)" fill="#115369"/>
+              <rect id="Rectangle_358" data-name="Rectangle 358" width="3.297" height="0.04" transform="translate(0 2.312)" fill="#115469"/>
+              <rect id="Rectangle_359" data-name="Rectangle 359" width="3.297" height="0.04" transform="translate(0 2.272)" fill="#115569"/>
+              <rect id="Rectangle_360" data-name="Rectangle 360" width="3.297" height="0.04" transform="translate(0 2.232)" fill="#105669"/>
+              <rect id="Rectangle_361" data-name="Rectangle 361" width="3.297" height="0.04" transform="translate(0 2.192)" fill="#105769"/>
+              <rect id="Rectangle_362" data-name="Rectangle 362" width="3.297" height="0.04" transform="translate(0 2.153)" fill="#10586a"/>
+              <rect id="Rectangle_363" data-name="Rectangle 363" width="3.297" height="0.04" transform="translate(0 2.113)" fill="#10596a"/>
+              <rect id="Rectangle_364" data-name="Rectangle 364" width="3.297" height="0.04" transform="translate(0 2.073)" fill="#105a6a"/>
+              <rect id="Rectangle_365" data-name="Rectangle 365" width="3.297" height="0.04" transform="translate(0 2.033)" fill="#105b6a"/>
+              <rect id="Rectangle_366" data-name="Rectangle 366" width="3.297" height="0.04" transform="translate(0 1.993)" fill="#105c6b"/>
+              <rect id="Rectangle_367" data-name="Rectangle 367" width="3.297" height="0.04" transform="translate(0 1.953)" fill="#105d6b"/>
+              <rect id="Rectangle_368" data-name="Rectangle 368" width="3.297" height="0.04" transform="translate(0 1.913)" fill="#105e6b"/>
+              <rect id="Rectangle_369" data-name="Rectangle 369" width="3.297" height="0.04" transform="translate(0 1.873)" fill="#105f6b"/>
+              <rect id="Rectangle_370" data-name="Rectangle 370" width="3.297" height="0.04" transform="translate(0 1.833)" fill="#10606b"/>
+              <rect id="Rectangle_371" data-name="Rectangle 371" width="3.297" height="0.04" transform="translate(0 1.793)" fill="#10616c"/>
+              <rect id="Rectangle_372" data-name="Rectangle 372" width="3.297" height="0.04" transform="translate(0 1.753)" fill="#10626c"/>
+              <rect id="Rectangle_373" data-name="Rectangle 373" width="3.297" height="0.04" transform="translate(0 1.713)" fill="#10636c"/>
+              <rect id="Rectangle_374" data-name="Rectangle 374" width="3.297" height="0.04" transform="translate(0 1.673)" fill="#10646c"/>
+              <rect id="Rectangle_375" data-name="Rectangle 375" width="3.297" height="0.04" transform="translate(0 1.633)" fill="#10656c"/>
+              <rect id="Rectangle_376" data-name="Rectangle 376" width="3.297" height="0.04" transform="translate(0 1.593)" fill="#0f676d"/>
+              <rect id="Rectangle_377" data-name="Rectangle 377" width="3.297" height="0.04" transform="translate(0 1.553)" fill="#0f686d"/>
+              <rect id="Rectangle_378" data-name="Rectangle 378" width="3.297" height="0.04" transform="translate(0 1.513)" fill="#0f696d"/>
+              <rect id="Rectangle_379" data-name="Rectangle 379" width="3.297" height="0.04" transform="translate(0 1.473)" fill="#0f6a6d"/>
+              <rect id="Rectangle_380" data-name="Rectangle 380" width="3.297" height="0.04" transform="translate(0 1.433)" fill="#0f6b6d"/>
+              <rect id="Rectangle_381" data-name="Rectangle 381" width="3.297" height="0.04" transform="translate(0 1.393)" fill="#0f6c6e"/>
+              <rect id="Rectangle_382" data-name="Rectangle 382" width="3.297" height="0.04" transform="translate(0 1.353)" fill="#0f6d6e"/>
+              <rect id="Rectangle_383" data-name="Rectangle 383" width="3.297" height="0.04" transform="translate(0 1.313)" fill="#0f6e6e"/>
+              <rect id="Rectangle_384" data-name="Rectangle 384" width="3.297" height="0.04" transform="translate(0 1.274)" fill="#0f6f6e"/>
+              <rect id="Rectangle_385" data-name="Rectangle 385" width="3.297" height="0.04" transform="translate(0 1.234)" fill="#0f706e"/>
+              <rect id="Rectangle_386" data-name="Rectangle 386" width="3.297" height="0.04" transform="translate(0 1.194)" fill="#0f716f"/>
+              <rect id="Rectangle_387" data-name="Rectangle 387" width="3.297" height="0.04" transform="translate(0 1.154)" fill="#0f726f"/>
+              <rect id="Rectangle_388" data-name="Rectangle 388" width="3.297" height="0.04" transform="translate(0 1.114)" fill="#0f736f"/>
+              <rect id="Rectangle_389" data-name="Rectangle 389" width="3.297" height="0.04" transform="translate(0 1.074)" fill="#0f746f"/>
+              <rect id="Rectangle_390" data-name="Rectangle 390" width="3.297" height="0.04" transform="translate(0 1.034)" fill="#0f7570"/>
+              <rect id="Rectangle_391" data-name="Rectangle 391" width="3.297" height="0.04" transform="translate(0 0.994)" fill="#0f7670"/>
+              <rect id="Rectangle_392" data-name="Rectangle 392" width="3.297" height="0.04" transform="translate(0 0.954)" fill="#0e7770"/>
+              <rect id="Rectangle_393" data-name="Rectangle 393" width="3.297" height="0.04" transform="translate(0 0.914)" fill="#0e7870"/>
+              <rect id="Rectangle_394" data-name="Rectangle 394" width="3.297" height="0.04" transform="translate(0 0.874)" fill="#0e7970"/>
+              <rect id="Rectangle_395" data-name="Rectangle 395" width="3.297" height="0.04" transform="translate(0 0.834)" fill="#0e7a71"/>
+              <rect id="Rectangle_396" data-name="Rectangle 396" width="3.297" height="0.04" transform="translate(0 0.794)" fill="#0e7b71"/>
+              <rect id="Rectangle_397" data-name="Rectangle 397" width="3.297" height="0.04" transform="translate(0 0.754)" fill="#0e7c71"/>
+              <rect id="Rectangle_398" data-name="Rectangle 398" width="3.297" height="0.04" transform="translate(0 0.714)" fill="#0e7d71"/>
+              <rect id="Rectangle_399" data-name="Rectangle 399" width="3.297" height="0.04" transform="translate(0 0.674)" fill="#0e7e71"/>
+              <rect id="Rectangle_400" data-name="Rectangle 400" width="3.297" height="0.04" transform="translate(0 0.634)" fill="#0e7f72"/>
+              <rect id="Rectangle_401" data-name="Rectangle 401" width="3.297" height="0.04" transform="translate(0 0.594)" fill="#0e8072"/>
+              <rect id="Rectangle_402" data-name="Rectangle 402" width="3.297" height="0.04" transform="translate(0 0.554)" fill="#0e8172"/>
+              <rect id="Rectangle_403" data-name="Rectangle 403" width="3.297" height="0.04" transform="translate(0 0.514)" fill="#0e8272"/>
+              <rect id="Rectangle_404" data-name="Rectangle 404" width="3.297" height="0.04" transform="translate(0 0.474)" fill="#0e8372"/>
+              <rect id="Rectangle_405" data-name="Rectangle 405" width="3.297" height="0.04" transform="translate(0 0.434)" fill="#0e8473"/>
+              <rect id="Rectangle_406" data-name="Rectangle 406" width="3.297" height="0.04" transform="translate(0 0.395)" fill="#0e8573"/>
+              <rect id="Rectangle_407" data-name="Rectangle 407" width="3.297" height="0.04" transform="translate(0 0.355)" fill="#0e8673"/>
+              <rect id="Rectangle_408" data-name="Rectangle 408" width="3.297" height="0.04" transform="translate(0 0.315)" fill="#0d8773"/>
+              <rect id="Rectangle_409" data-name="Rectangle 409" width="3.297" height="0.04" transform="translate(0 0.275)" fill="#0d8874"/>
+              <rect id="Rectangle_410" data-name="Rectangle 410" width="3.297" height="0.04" transform="translate(0 0.235)" fill="#0d8974"/>
+              <rect id="Rectangle_411" data-name="Rectangle 411" width="3.297" height="0.04" transform="translate(0 0.195)" fill="#0d8a74"/>
+              <rect id="Rectangle_412" data-name="Rectangle 412" width="3.297" height="0.04" transform="translate(0 0.155)" fill="#0d8b74"/>
+              <rect id="Rectangle_413" data-name="Rectangle 413" width="3.297" height="0.04" transform="translate(0 0.115)" fill="#0d8c74"/>
+              <rect id="Rectangle_414" data-name="Rectangle 414" width="3.297" height="0.04" transform="translate(0 0.075)" fill="#0d8d75"/>
+              <rect id="Rectangle_415" data-name="Rectangle 415" width="3.297" height="0.04" transform="translate(0 0.035)" fill="#0d8e75"/>
+              <rect id="Rectangle_416" data-name="Rectangle 416" width="3.297" height="0.035" transform="translate(0 0)" fill="#0d8f75"/>
+            </g>
+          </g>
+        </g>
+      </g>
+    </g>
+  </g>
+</svg></svg>

@@ -14,6 +14,7 @@ const PRIVATE = (id: string) => `compass.resume.private.v1.${id}`;
 // Run the real resume module with isolated storage and a chosen private-profile scope.
 function harness(privateProfileId: string | null) {
   const data = new Map<string, string>();
+  let failingKey: string | null = null;
   const mocks: Record<string, unknown> = {
     "./cw-profile": { privateCwProfileId: () => privateProfileId },
   };
@@ -30,11 +31,20 @@ function harness(privateProfileId: string | null) {
     module.exports,
     {
       getItem: (k: string) => data.get(k) ?? null,
-      setItem: (k: string, v: string) => data.set(k, v),
+      setItem: (k: string, v: string) => {
+        if (k === failingKey) throw new Error("Fixture storage unavailable");
+        data.set(k, v);
+      },
       removeItem: (k: string) => data.delete(k),
     },
   );
-  return { api: module.exports as typeof import("../src/lib/resume"), data };
+  return {
+    api: module.exports as typeof import("../src/lib/resume"),
+    data,
+    failWritesTo: (key: string) => {
+      failingKey = key;
+    },
+  };
 }
 
 const keysIn = (data: Map<string, string>, key: string) =>
@@ -93,4 +103,27 @@ test("lastPlayedEpisode finds nothing when the write skipped the private scope",
   const { api } = harness("alice");
   api.saveResumeMs("tt1", 20_000, 1, 2);
   assert.equal(api.lastPlayedEpisode("tt1"), null);
+});
+
+test("an acknowledged context action clears only the active private resume scope", () => {
+  const { api, data } = harness("alice");
+  api.saveResumeMs("tt1", 90_000, 1, 4, undefined, undefined, undefined, "alice");
+  api.saveResumeMs("tt1", 60_000, 1, 4, undefined, undefined, undefined, "bob");
+  api.clearResume("tt1", 1, 4, { acknowledged: true });
+  assert.deepEqual(keysIn(data, PRIVATE("alice")), []);
+  assert.deepEqual(keysIn(data, PRIVATE("bob")), ["tt1|s1e4"]);
+  assert.deepEqual(keysIn(data, SHARED), ["tt1|s1e4"]);
+});
+
+test("failed acknowledged private removal reports failure and invalidates the mutated cache", () => {
+  const h = harness("alice");
+  h.api.saveResumeMs("tt1", 90_000, 1, 4, undefined, undefined, undefined, "alice");
+  assert.equal(h.api.readResumeMs("tt1", 1, 4), 90_000);
+  h.failWritesTo(PRIVATE("alice"));
+  assert.throws(
+    () => h.api.clearResume("tt1", 1, 4, { acknowledged: true }),
+    /Fixture storage unavailable/,
+  );
+  assert.equal(h.api.readResumeMs("tt1", 1, 4), 90_000);
+  assert.deepEqual(keysIn(h.data, SHARED), ["tt1|s1e4"]);
 });

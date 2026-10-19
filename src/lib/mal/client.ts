@@ -1,4 +1,3 @@
-import { safeFetch } from "@/lib/safe-fetch";
 import { MAL_API_BASE } from "./config";
 import { getSession } from "./session";
 import { resolveMalRequestUrl } from "./url";
@@ -17,7 +16,7 @@ async function tauriFetch(input: string, init?: RequestInit): Promise<Response> 
     const { fetch: tauriFetchFn } = await import("@tauri-apps/plugin-http");
     return tauriFetchFn(input, init as Record<string, unknown>) as unknown as Response;
   }
-  return safeFetch(input, init);
+  return fetch(input, init);
 }
 
 export async function malRequest<T>(

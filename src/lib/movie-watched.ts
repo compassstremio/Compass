@@ -1,3 +1,4 @@
+import { useSyncExternalStore } from "react";
 import { persistCritical } from "./storage-recovery";
 
 const KEY_PREFIX = "compass.moviewatched.v1.";
@@ -91,6 +92,12 @@ export function movieWatchedIds(): Set<string> {
   return load();
 }
 
+const EMPTY_MOVIE_WATCHED_IDS: Set<string> = new Set();
+
+export function useMovieWatchedIds(): Set<string> {
+  return useSyncExternalStore(subscribeMovieWatched, load, () => EMPTY_MOVIE_WATCHED_IDS);
+}
+
 export function setMovieWatchedLocal(metaId: string, watched: boolean): void {
   const cur = load();
   if (cur.has(metaId) === watched) return;
@@ -98,6 +105,16 @@ export function setMovieWatchedLocal(metaId: string, watched: boolean): void {
   if (watched) next.add(metaId);
   else next.delete(metaId);
   persist(next);
+}
+
+export function setMovieWatchedLocalAcknowledged(metaId: string, watched: boolean): void {
+  const next = new Set(load());
+  if (watched) next.add(metaId);
+  else next.delete(metaId);
+  localStorage.setItem(storeKey(), JSON.stringify([...next]));
+  cache = next;
+  version += 1;
+  for (const fn of subs) fn();
 }
 
 export function subscribeMovieWatched(fn: () => void): () => void {

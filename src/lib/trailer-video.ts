@@ -52,7 +52,8 @@ export function claimTrailerVideo(token: object, mount: HTMLElement): HTMLVideoE
   cancelRelease();
   owner = token;
   const video = node();
-  video.style.opacity = "0";
+  video.pause();
+  video.style.opacity = "";
   if (video.parentElement !== mount) mount.appendChild(video);
   return video;
 }

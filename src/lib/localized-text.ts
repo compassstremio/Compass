@@ -1,8 +1,8 @@
 import {
   isGenericEpisodeName,
-  isTextInLanguage,
-  isUsableLocalizedText,
 } from "@/lib/providers/anime-episode-build";
+import { episodeLanguageBase, episodeTextRank, isTextInLanguage, isUsableLocalizedText, type EpisodeTextInput } from "@/lib/episode-text-language";
+import { isPlaceholderEpisodeText } from "@/lib/episode-text-placeholder";
 
 /**
  * Rank how well a candidate localized text matches the user's selected language.
@@ -53,12 +53,12 @@ export function rankLocalizedText(text: string, lang: string): 0 | 1 | 2 {
  * current "longer wins" behavior for English users.
  */
 export function pickLocalizedText(
-  candidates: Array<{ text: string; rank?: 0 | 1 | 2; score?: number }>,
+  candidates: Array<{ text: string; rank?: 0 | 1 | 2 | 3; score?: number }>,
   options?: { forName?: boolean; lang?: string },
 ): string | undefined {
   const lang = options?.lang ?? "";
   const forName = options?.forName ?? false;
-  let best: { text: string; rank: 0 | 1 | 2; score: number } | undefined;
+  let best: { text: string; rank: 0 | 1 | 2 | 3; score: number } | undefined;
   for (const candidate of candidates) {
     const text = candidate.text.trim();
     if (!text) continue;
@@ -74,4 +74,45 @@ export function pickLocalizedText(
     }
   }
   return best?.text;
+}
+
+function pickPreferredEpisodeText(
+  preferred: EpisodeTextInput[],
+  fallback: EpisodeTextInput[],
+  lang?: string,
+  forName = false,
+): string | undefined {
+  const candidates = (inputs: EpisodeTextInput[], prefer: boolean) => inputs.map((input, i) => {
+    const candidate = typeof input === "object" && input ? input : { text: input };
+    const text = candidate.text ?? "";
+    const rank = episodeTextRank(text, candidate.language, lang);
+    const uncertain = rank === 2 && episodeLanguageBase(lang) !== "en";
+    return {
+      text,
+      rank,
+      score: candidate.score ?? (prefer ? (uncertain ? -1 : 300 - i) : Math.min(text.length, forName ? 60 : 200)),
+    };
+  });
+  const all = [...candidates(preferred, true), ...candidates(fallback, false)];
+  const real = all.filter((candidate) => candidate.text.trim() && !isPlaceholderEpisodeText(candidate.text) && (!forName || !isGenericEpisodeName(candidate.text)));
+  return pickLocalizedText(
+    real.length ? real : all,
+    { forName, lang },
+  );
+}
+
+export function pickPreferredEpisodeTitle(
+  preferred: EpisodeTextInput[],
+  fallback: EpisodeTextInput[],
+  lang?: string,
+): string | undefined {
+  return pickPreferredEpisodeText(preferred, fallback, lang, true);
+}
+
+export function pickPreferredEpisodeOverview(
+  preferred: EpisodeTextInput[],
+  fallback: EpisodeTextInput[],
+  lang?: string,
+): string | undefined {
+  return pickPreferredEpisodeText(preferred, fallback, lang);
 }

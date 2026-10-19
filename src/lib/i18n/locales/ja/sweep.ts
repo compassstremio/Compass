@@ -727,7 +727,7 @@ const sweep: Record<string, string> = {
   "Compass's own bar": "Compass独自のバー",
   "Compass's own community server": "Compass独自のコミュニティサーバー",
   "Compass's public relay": "Compassの公開リレー",
-  "Compasses on your network": "ネットワーク上のCompass",
+  "Compasss on your network": "ネットワーク上のCompass",
   "Hard outline": "くっきりした輪郭",
   "Hardware acceleration (hwdec)": "ハードウェアアクセラレーション (hwdec)",
   Head: "頭部",
@@ -884,7 +884,7 @@ const sweep: Record<string, string> = {
   "Link a title": "作品を関連付ける",
   "Linked as {username}": "{username}として連携済み",
   "Linked to your Compass account.": "Compassアカウントに連携済みです。",
-  "Listening for Compasses": "Compassデバイスを検索中",
+  "Listening for Compasss": "Compassデバイスを検索中",
   Lists: "リスト",
   "Live TV source": "ライブTVのソース",
   "Live TV sources": "ライブTVのソース",
@@ -1292,9 +1292,9 @@ const sweep: Record<string, string> = {
   "Remember your place on show pages": "作品ページの位置を記憶",
   "Remote control is off on that Compass, so it cannot be driven from here.":
     "そのCompassではリモート操作がオフのため、ここから操作できません。",
-  "Remote control is off, so other Compasses can see this one but cannot drive it.":
+  "Remote control is off, so other Compasss can see this one but cannot drive it.":
     "リモート操作がオフのため、ほかのCompassからこのCompassは見えますが、操作はできません。",
-  "Remote control is on, so other Compasses on this network can drive this one.":
+  "Remote control is on, so other Compasss on this network can drive this one.":
     "リモート操作がオンのため、このネットワーク上のほかのCompassからこのCompassを操作できます。",
   "Remote off": "リモートオフ",
   Remotes: "リモコン",
@@ -1983,7 +1983,7 @@ const sweep: Record<string, string> = {
   "{n} of {total} chosen": "{total}件中{n}件を選択",
   "{n} of {total} connected": "{total}件中{n}件に接続",
   "{n} on": "{n}件オン",
-  "{n} other Compasses": "ほかのCompass {n}件",
+  "{n} other Compasss": "ほかのCompass {n}件",
   "{n} picks, refreshed daily": "おすすめ{n}件、毎日更新",
   "{n} recorded winners": "記録済みの受賞者{n}名",
   "{n} seeders": "シーダー{n}人",

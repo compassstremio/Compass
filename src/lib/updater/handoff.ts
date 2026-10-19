@@ -112,3 +112,51 @@ export function stageHandoff(
 export function launchHandoff(): Promise<void> {
   return invoke<void>("handoff_launch");
 }
+
+export type ModifyProbe = {
+  found: boolean;
+  version: string;
+  path: string;
+};
+
+export async function probeModify(): Promise<ModifyProbe | null> {
+  try {
+    return await invoke<ModifyProbe>("modify_probe");
+  } catch {
+    return null;
+  }
+}
+
+/** Opens the staged copy of Compass Setup; the app closes first with the same flush an update
+ * uses, so nothing is lost while the installer works. */
+export function openModify(path?: string): Promise<void> {
+  return invoke<void>("modify_open", { path: path ?? null });
+}
+
+/** The setup entry for changing features. Unlike an update, the version already installed is
+ * acceptable: one setup per release serves both, and an unsigned entry is never offered. */
+export async function readModifyPlan(init?: RequestInit): Promise<HandoffPlan | null> {
+  const probe = await probeHandoff();
+  if (!probe?.supported || !probe.managed) return null;
+  const res = await safeFetch(`${COMPASS_API_BASE}/updates/latest.json`, {
+    cache: "no-store",
+    ...init,
+  });
+  if (!res.ok) return null;
+  const manifest = (await res.json()) as Manifest;
+  const entry = manifest.installer?.[probe.platformKey];
+  if (!entry?.url) return null;
+  const signature = typeof entry.signature === "string" ? entry.signature.trim() : "";
+  if (!signature) return null;
+  const payloadVersion = Number(entry.payloadVersion ?? 0);
+  if (!Number.isFinite(payloadVersion) || payloadVersion < probe.payloadVersion) return null;
+  return {
+    version: manifest.version ?? "",
+    notes: manifest.notes ?? null,
+    url: entry.url,
+    signature,
+    size: typeof entry.size === "number" && entry.size > 0 ? entry.size : null,
+    payloadVersion,
+    verifiable: true,
+  };
+}

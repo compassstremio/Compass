@@ -119,19 +119,74 @@ export function BpIntro({ pool, leaving }: { pool: Meta[]; leaving: boolean }) {
   );
 }
 
-// The Compass mark, drawn once. It fades in through the intro CSS animation until
-// the boot splash has already played the arrival, then it just sits still.
+// The logo animation is 161 frames. Stopping a little short lets it settle
+// rather than snapping at the very end.
+const LOTTIE_LAST_FRAME = 146;
+
+// Static twin of the animation's resting pose, and the same art index-tv.html
+// inlines. Used whenever the boot splash already played the arrival, so the
+// viewer is not shown the logo assembling itself a second time.
+function BpIntroStaticMark() {
+  return (
+    <svg viewBox="0 0 864 864" fill="currentColor" aria-hidden className="h-full w-full text-ink">
+      <path fillRule="evenodd" d="M432 5a431 426.5 0 1 0 0 853a431 426.5 0 1 0 0-853Zm0 41a390 385.5 0 1 1 0 771a390 385.5 0 1 1 0-771Z" />
+      <path d="M412 30h44v106h-44ZM412 725h44v110h-44ZM26 415h95v40H26ZM744 415h95v40h-95Z" />
+      <path fillRule="evenodd" d="M674 206 485 487 202 651 381 382ZM432 400a37 37 0 1 0 0 74a37 37 0 1 0 0-74Z" />
+    </svg>
+  );
+}
+
 function BpIntroMark({ settled }: { settled: boolean }) {
+  const host = useRef<HTMLDivElement | null>(null);
+
+  // lottie-web and its 200KB of animation data are imported here rather than at
+  // the top of the file so they stay out of the shell's eager graph. On a
+  // television that graph is about sixty chunks parsed before the first paint,
+  // and this pair was half a megabyte of it for one logo.
+  useEffect(() => {
+    const el = host.current;
+    if (!el || settled) return;
+    let anim: import("lottie-web").AnimationItem | null = null;
+    let dead = false;
+    void (async () => {
+      try {
+        const [{ default: lottie }, { default: data }] = await Promise.all([
+          import("lottie-web"),
+          import("@/assets/compass-lottie.json"),
+        ]);
+        if (dead) return;
+        const reduce = window.matchMedia?.("(prefers-reduced-motion: reduce)").matches;
+        anim = lottie.loadAnimation({
+          container: el,
+          renderer: "svg",
+          loop: false,
+          autoplay: false,
+          animationData: data as object,
+        });
+        if (reduce) anim.goToAndStop(LOTTIE_LAST_FRAME, true);
+        else anim.playSegments([0, LOTTIE_LAST_FRAME], true);
+      } catch {
+      }
+    })();
+    return () => {
+      dead = true;
+      anim?.destroy();
+    };
+  }, [settled]);
+
+  if (settled) {
+    return (
+      <div className="h-[min(22vh,200px)] w-[min(24vw,200px)]">
+        <BpIntroStaticMark />
+      </div>
+    );
+  }
+
   return (
     <div
-      className={
-        settled
-          ? "h-[min(22vh,200px)] w-[min(24vw,200px)]"
-          : "h-[min(22vh,200px)] w-[min(24vw,200px)] [animation:bp-intro-mark_1200ms_var(--bp-ease)_both] motion-reduce:[animation:none]"
-      }
-    >
-      <img src="/compass-mark.png" alt="" aria-hidden draggable={false} className="h-full w-full object-contain" />
-    </div>
+      ref={host}
+      className="w-[min(58vw,780px)] [animation:bp-intro-mark_1200ms_var(--bp-ease)_both] motion-reduce:[animation:none]"
+    />
   );
 }
 

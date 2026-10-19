@@ -192,6 +192,7 @@ export type Settings = {
   controllerRepeatMs: number;
   controllerInitialDelayMs: number;
   trailerQuality: "auto" | "360p" | "720p" | "1080p" | "best";
+  autoplayTrailerQuality: Settings["trailerQuality"];
   detailTrailerAutoplay: boolean;
   heroBackdropCarousel: boolean;
   detailTrailerAudio: boolean;
@@ -249,6 +250,8 @@ export type Settings = {
   compassColor: string;
   anilistAutoSync: boolean;
   malAutoSync: boolean;
+  anilistCountRewatches: boolean;
+  malCountRewatches: boolean;
   anilistBlurComments: boolean;
   showAnilistComments: boolean;
   useAnilistAvatar: boolean;
@@ -508,6 +511,7 @@ export type Settings = {
   stillWatchingAfter: number;
   keyboardPauseShowsControls: boolean;
   hideWatchedInCatalogs: boolean;
+  hideWatchedInHero: boolean;
   hideUnreleased: boolean;
   localEpisodeSortDesc: boolean;
   /** Review count when the banner was last dismissed; it returns only if more turn up. */
@@ -516,7 +520,13 @@ export type Settings = {
   showSimklCard: boolean;
   showLetterboxdCard: boolean;
   externalContinueWatching: boolean;
-  cwSources: { library: boolean; trakt: boolean; simkl: boolean; local: boolean };
+  cwSources: {
+    library: boolean;
+    trakt: boolean;
+    simkl: boolean;
+    local: boolean;
+    publicmetadb: boolean;
+  };
   showPlaylistsTab: boolean;
   skipProfileScreen: boolean;
   profilePromptInterval: "launch" | "15m" | "30m" | "never";
@@ -591,6 +601,7 @@ export type Settings = {
   cwSnapshotFullQuality: boolean;
   cwPreferEpisodeStill: boolean;
   streamFilterLevel: "strict" | "balanced" | "off";
+  animePreferImdbStreams: boolean;
   blockTrackers: boolean;
   homeRows: {
     order: string[];
@@ -680,7 +691,9 @@ export type Settings = {
   simklUpNextRailEnabled: boolean;
   simklTrendingRailEnabled: boolean;
   simklScrobbleEnabled: boolean;
-  simklAnimeTitleLanguage: "english" | "romaji" | "native";
+  /** Preferred language for anime titles across the app (cards, picker, presence). */
+  animeTitleLanguage: "english" | "romaji" | "native";
+  publicmetadbScrobbleEnabled: boolean;
   weekStartsMonday: boolean;
   calendarPosterSize: CalendarPosterSize;
   customCalendar: {

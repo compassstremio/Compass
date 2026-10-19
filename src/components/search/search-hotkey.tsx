@@ -1,10 +1,10 @@
 import { useEffect } from "react";
 import { effectiveBinding, eventToBinding, shouldHandleGlobalKeyboardEvent } from "@/lib/hotkeys";
-import { useSearch } from "@/lib/search-context";
+import { useSearchActions } from "@/lib/search-context";
 import { useSettings } from "@/lib/settings";
 
 export function SearchHotkey() {
-  const { setOpen } = useSearch();
+  const { setOpen } = useSearchActions();
   const { settings } = useSettings();
   const binding = effectiveBinding("globalSearchFocus", settings.hotkeys ?? {});
   useEffect(() => {

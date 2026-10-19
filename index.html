@@ -1,8 +1,7 @@
 <!doctype html>
-<html lang="en" dir="ltr" translate="no">
+<html lang="en" dir="ltr">
   <head>
     <meta charset="UTF-8" />
-    <meta name="google" content="notranslate" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
     <meta name="theme-color" content="#111214" />
     <meta name="robots" content="noindex, nofollow, noarchive, nosnippet, noimageindex" />
@@ -78,11 +77,12 @@
       #compass-boot.gone {
         opacity: 0;
       }
-      #compass-boot > img {
+      #compass-boot > svg {
         width: 96px;
         height: auto;
-        filter: drop-shadow(0 10px 30px rgba(232, 170, 108, 0.22));
-        transform-origin: center 65%;
+        color: #f5f5f5;
+        filter: drop-shadow(0 10px 30px rgba(255, 255, 255, 0.16));
+        transform-origin: center;
         animation:
           compassBootBob 2400ms ease-in-out infinite,
           compassBootGlow 2400ms ease-in-out infinite;
@@ -155,7 +155,11 @@
   </head>
   <body>
     <div id="compass-boot">
-      <img src="/compass-mark.png" alt="" aria-hidden="true" draggable="false" />
+      <svg viewBox="0 0 864 864" fill="currentColor" aria-hidden="true">
+        <path fill-rule="evenodd" d="M432 5a431 426.5 0 1 0 0 853a431 426.5 0 1 0 0-853Zm0 41a390 385.5 0 1 1 0 771a390 385.5 0 1 1 0-771Z" />
+        <path d="M412 30h44v106h-44ZM412 725h44v110h-44ZM26 415h95v40H26ZM744 415h95v40h-95Z" />
+        <path fill-rule="evenodd" d="M674 206 485 487 202 651 381 382ZM432 400a37 37 0 1 0 0 74a37 37 0 1 0 0-74Z" />
+      </svg>
     </div>
     <div id="root" inert data-startup-hidden></div>
     <script>
@@ -163,7 +167,7 @@
       try {
         var art = JSON.parse(localStorage.getItem('compass.custom-artwork.v1') || '{}').launch;
         if (art && /^[\w-]{1,80}$/.test(art.id) && typeof art.poster === 'string' && art.poster.length < 200000 && /^data:image\/png;base64,[A-Za-z0-9+/=]+$/.test(art.poster)) {
-          var mark = document.querySelector('#compass-boot > img');
+          var mark = document.querySelector('#compass-boot > svg');
           var custom = document.createElement('div');
           custom.id = 'compass-custom-boot-art';
           custom.style.cssText = 'position:relative;width:128px;height:128px';

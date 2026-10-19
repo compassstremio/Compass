@@ -1,6 +1,6 @@
 [package]
 name = "compass-setup"
-version = "0.9.135"
+version = "0.9.136"
 edition = "2021"
 rust-version = "1.77"
 default-run = "compass-setup"
@@ -20,6 +20,7 @@ path = "src/uninstall_main.rs"
 
 [build-dependencies]
 tauri-build = { version = "2", features = [] }
+serde_json = "1"
 
 [dependencies]
 tauri = { version = "2", features = [] }

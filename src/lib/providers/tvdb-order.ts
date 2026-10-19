@@ -1,8 +1,15 @@
 import type { Episode, Season } from "@/lib/providers/tmdb";
 import { tvdbEpisodesByType, tvdbSeasonNames, tvdbSeriesByRemote, type TvdbEpisode } from "./tvdb";
-import { readOrderCache, writeOrderCache } from "./tvdb-order-cache";
+import { isStaleTvdbOrder, readOrderCache, writeOrderCache } from "./tvdb-order-cache";
+import { firstRealEpisodeText } from "./episode-placeholder";
+import { episodeTextLanguage } from "@/lib/episode-text-language";
 
-export type OrderedEpisode = Episode & { nameEn?: string; overviewEn?: string };
+export type OrderedEpisode = Episode & {
+  nameEn?: string;
+  overviewEn?: string;
+  nameEnLanguage?: string;
+  overviewEnLanguage?: string;
+};
 
 export type TvdbOrder = {
   seasons: Season[];
@@ -22,7 +29,11 @@ export function seasonDateRange(eps: Episode[]): { from?: string; to?: string } 
   return { from, to };
 }
 
-const orderCache = new Map<string, TvdbOrder | null>();
+const orderCache = new Map<string, { t: number; order: TvdbOrder }>();
+// A session can outlive a provider's data correction (e.g. a "TBA" placeholder
+// becomes the real name right after an episode airs), so the in-memory order
+// must expire instead of pinning stale titles until the next restart.
+const ORDER_CACHE_TTL_MS = 10 * 60 * 1000;
 
 export async function fetchTvdbOrder(
   apiKey: string,
@@ -45,15 +56,23 @@ export async function fetchTvdbOrderBySeriesId(
   if (!seriesId) return null;
   const typeKey = lang ? `${seasonType}:${lang}` : seasonType;
   const cacheKey = `${seriesId}:${typeKey}`;
-  if (orderCache.has(cacheKey)) return orderCache.get(cacheKey) ?? null;
+  const cached = orderCache.get(cacheKey);
+  if (
+    cached &&
+    Date.now() - cached.t < ORDER_CACHE_TTL_MS &&
+    !isStaleTvdbOrder(cached.order.bySeason)
+  ) {
+    return cached.order;
+  }
+  if (cached) orderCache.delete(cacheKey);
   const persisted = readOrderCache(seriesId, typeKey);
   if (persisted) {
-    orderCache.set(cacheKey, persisted);
+    orderCache.set(cacheKey, { t: Date.now(), order: persisted });
     return persisted;
   }
   const result = await build(apiKey, seriesId, seasonType, lang).catch(() => null);
   if (result) {
-    orderCache.set(cacheKey, result);
+    orderCache.set(cacheKey, { t: Date.now(), order: result });
     writeOrderCache(seriesId, typeKey, result);
   }
   return result;
@@ -110,14 +129,34 @@ async function build(
     altBySeason.set(bucketKey, altBucket);
     const tr = transById.get(e.id);
     const trEn = transEnById.get(e.id);
+    const name = firstRealEpisodeText([tr?.name, trEn?.name, e.name]) ?? "";
+    const overview = firstRealEpisodeText([tr?.overview, trEn?.overview, e.overview]) ?? "";
+    const nameEn = firstRealEpisodeText([trEn?.name, e.name]);
+    const overviewEn = firstRealEpisodeText([trEn?.overview, e.overview]);
+    const fieldLanguage = (value: string | undefined, field: "name" | "overview") => {
+      const languageField = field === "name" ? "nameLanguage" : "overviewLanguage";
+      if (value && value === tr?.[field]) {
+        return episodeTextLanguage(value, lang, trEn?.[languageField] === "und" ? undefined : trEn?.[field], tr?.[languageField] ? [tr[languageField]] : undefined);
+      }
+      if (value && value === trEn?.[field]) return trEn?.[languageField] ?? episodeTextLanguage(value, "en");
+      return e[languageField] ?? "und";
+    };
+    // A localized "TBA" must not shadow a real name in another list: an aired
+    // episode often has its English title while the requested-language or
+    // original-language row still carries the placeholder. Keep the placeholder
+    // only when no list has a real name yet (unaired episodes).
     bucket.push({
       id: e.id,
       seasonNumber: c.season,
       episodeNumber: c.episode,
-      name: (tr?.name || trEn?.name || e.name) ?? "",
-      overview: (tr?.overview || trEn?.overview || e.overview) ?? "",
-      nameEn: trEn?.name,
-      overviewEn: trEn?.overview,
+      name,
+      overview,
+      nameEn,
+      overviewEn,
+      nameLanguage: fieldLanguage(name, "name"),
+      overviewLanguage: fieldLanguage(overview, "overview"),
+      nameEnLanguage: nameEn === trEn?.name ? trEn?.nameLanguage ?? episodeTextLanguage(nameEn, "en") : e.nameLanguage ?? "und",
+      overviewEnLanguage: overviewEn === trEn?.overview ? trEn?.overviewLanguage ?? episodeTextLanguage(overviewEn, "en") : e.overviewLanguage ?? "und",
       stillPath: null,
       stillUrl: e.image ?? undefined,
       airDate: e.aired ?? null,

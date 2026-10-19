@@ -18,6 +18,7 @@ import {
 } from "@/lib/sports/usage-notice";
 import espnLogo from "@/assets/service-logos/espn.png";
 import sportsDbLogo from "@/assets/service-logos/thesportsdb.png";
+import elfHostedLogo from "@/assets/elfhosted.svg";
 import youtubeLogo from "@/assets/service-logos/youtube.ico";
 import "./access-gate.css";
 
@@ -25,6 +26,7 @@ const POLICY_LOGOS = {
   espn: espnLogo,
   sportsdb: sportsDbLogo,
   youtube: youtubeLogo,
+  elfhosted: elfHostedLogo,
 };
 
 export function useSportsConsent() {

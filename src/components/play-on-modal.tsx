@@ -319,10 +319,10 @@ function PlayOnPanel({ request, themeId }: { request: PlayOnRequest; themeId: st
           <span className="flex items-center gap-2 text-[11.5px] text-ink-subtle">
             <ListeningPulse active={scanning} />
             {scanning
-              ? t("Listening for Compasses")
+              ? t("Listening for Compasss")
               : peers.length === 1
                 ? t("1 other Compass")
-                : t("{n} other Compasses", { n: peers.length })}
+                : t("{n} other Compasss", { n: peers.length })}
           </span>
           <button
             type="button"

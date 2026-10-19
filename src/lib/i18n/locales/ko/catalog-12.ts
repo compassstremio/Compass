@@ -847,7 +847,7 @@ const catalog12: Record<string, string> = {
   "{n} options active": "옵션 {n}개 활성",
   "{n} options#few": "옵션 {n}개#few",
   "{n} options#one": "옵션 {n}개#one",
-  "{n} other Compasses": "다른 Compass {n}개",
+  "{n} other Compasss": "다른 Compass {n}개",
   "{n} pages": "{n}페이지",
   "{n} pages#few": "{n}페이지#few",
   "{n} pages#one": "{n}페이지#one",

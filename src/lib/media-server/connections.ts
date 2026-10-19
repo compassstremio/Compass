@@ -1,6 +1,6 @@
 import { activeProfileId } from "@/lib/active-profile-id";
 import { getSecret, setSecret } from "@/lib/secret-store";
-import type { MediaServerConnection } from "./types";
+import type { MediaServerConnection, RefreshUnit } from "./types";
 import { normalizeServerOrigin } from "./transport";
 import { connectionQuality } from "./quality";
 
@@ -14,6 +14,10 @@ function all(): MediaServerConnection[] {
     if (!Array.isArray(value)) return [];
     return value.map((connection) => {
       const migrated = { refreshInterval: "launch", ...connection } as MediaServerConnection;
+      if (migrated.refreshEveryValue == null && migrated.refreshEveryDays != null) {
+        migrated.refreshEveryValue = migrated.refreshEveryDays;
+        migrated.refreshEveryUnit = "days";
+      }
       return { ...migrated, preferredQuality: connectionQuality(migrated) };
     });
   } catch {
@@ -66,12 +70,29 @@ const REFRESH_MS: Record<MediaServerConnection["refreshInterval"], number> = {
   manual: Number.POSITIVE_INFINITY,
 };
 
+const REFRESH_UNIT_MS: Record<RefreshUnit, number> = {
+  minutes: 60_000,
+  hours: 3_600_000,
+  days: 86_400_000,
+  weeks: 604_800_000,
+};
+
+export function mediaServerRefreshIntervalMs(
+  connection: MediaServerConnection,
+): number | null {
+  if (!connection.enabled) return null;
+  if (connection.refreshInterval === "manual" || connection.refreshInterval === "launch")
+    return null;
+  return connection.refreshInterval === "custom"
+    ? Math.max(1, connection.refreshEveryValue ?? connection.refreshEveryDays ?? 1) *
+        REFRESH_UNIT_MS[connection.refreshEveryUnit ?? "days"]
+    : REFRESH_MS[connection.refreshInterval];
+}
+
 export function mediaServerSyncDue(connection: MediaServerConnection, now = Date.now()): boolean {
   if (!connection.enabled || connection.refreshInterval === "manual") return false;
   if (connection.refreshInterval === "launch") return true;
-  const interval =
-    connection.refreshInterval === "custom"
-      ? Math.max(1, connection.refreshEveryDays ?? 1) * 86_400_000
-      : REFRESH_MS[connection.refreshInterval];
+  const interval = mediaServerRefreshIntervalMs(connection);
+  if (interval == null) return false;
   return connection.lastSyncAt == null || now - connection.lastSyncAt >= interval;
 }

@@ -1,6 +1,7 @@
 import { useSyncExternalStore } from "react";
 import en from "./locales/en";
 import { getUiLanguage, getUiRegion, useUiLanguage, useUiRegion } from "./store";
+import { noteNotify } from "@/lib/render-cause";
 import { isRtl, LANGUAGES, type UiLanguage } from "./languages";
 import { associationFootballEnglishLabel } from "./regional-labels";
 
@@ -20,6 +21,7 @@ export function registerUiCatalog(lang: UiLanguage, table: Record<string, string
   catalogs[lang] = table;
   reverseCache.delete(lang);
   version += 1;
+  noteNotify("store:i18n");
   for (const fn of listeners) fn();
 }
 

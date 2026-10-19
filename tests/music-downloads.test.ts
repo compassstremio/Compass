@@ -29,6 +29,10 @@ function fixture() {
       readMusicPreference: (k: string) => storage.get(k) ?? null,
       writeMusicPreference: (k: string, v: string) => storage.set(k, v),
     },
+    "./source-consent": {
+      musicSourceAllowed: () => true,
+      musicPlaybackSourceAllowed: () => true,
+    },
     "@tauri-apps/api/core": {
       invoke: async (cmd: string, args: any) => {
         calls.push({ cmd, args });

@@ -76,6 +76,7 @@ export function MoreMenu({
           lang: selectedSub?.lang,
           format: selectedSub?.format,
           downloadAuth: selectedSub?.downloadAuth,
+          localTrusted: selectedSub?.localTrusted === true,
           label: t("Subtitle"),
         }).then((r) => r === "ok"),
     });

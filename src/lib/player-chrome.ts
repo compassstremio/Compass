@@ -36,6 +36,7 @@ export type PlayerControlId =
   | "aspect-menu"
   | "anime4k-menu"
   | "shader-menu"
+  | "chapter-menu"
   | "hdr-toggle"
   | "rtx-hdr-toggle"
   | "rtx-vsr-toggle"
@@ -194,6 +195,7 @@ export const DEFAULT_DEFAULT_CONFIG: PlayerChromeConfig = {
     { id: "home-server-quality", slot: "bottom-right", order: 5 },
     { id: "audio-menu", slot: "bottom-right", order: 10 },
     { id: "subtitle-menu", slot: "bottom-right", order: 20 },
+    { id: "chapter-menu", slot: "bottom-right", order: 22 },
     { id: "aspect-menu", slot: "bottom-right", order: 25, hidden: true },
     { id: "anime4k-menu", slot: "bottom-right", order: 27 },
     { id: "hdr-toggle", slot: "bottom-right", order: 28, hidden: true },
@@ -234,6 +236,7 @@ export const DEFAULT_STREMIO_CONFIG: PlayerChromeConfig = {
     { id: "home-server-quality", slot: "bottom-right", order: 5 },
     { id: "audio-menu", slot: "bottom-right", order: 10 },
     { id: "subtitle-menu", slot: "bottom-right", order: 20 },
+    { id: "chapter-menu", slot: "bottom-right", order: 22 },
     { id: "aspect-menu", slot: "bottom-right", order: 25, hidden: true },
     { id: "anime4k-menu", slot: "bottom-right", order: 27 },
     { id: "hdr-toggle", slot: "bottom-right", order: 28, hidden: true },
@@ -282,6 +285,7 @@ export const CONTROL_META: Record<
   },
   "audio-menu": { label: "Audio tracks", group: "menus", defaultSlot: "bottom-right" },
   "subtitle-menu": { label: "Subtitles", group: "menus", defaultSlot: "bottom-right" },
+  "chapter-menu": { label: "Chapters", group: "menus", defaultSlot: "bottom-right" },
   "speed-menu": { label: "Playback speed", group: "menus", defaultSlot: "bottom-right" },
   "aspect-menu": {
     label: "Picture (adjustments & aspect)",

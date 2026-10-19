@@ -1,4 +1,4 @@
-import { lazy, Suspense, useCallback, useEffect, useState } from "react";
+import { lazy, memo, Suspense, useCallback, useEffect, useMemo, useState } from "react";
 import { Home } from "@/views/home";
 import { isSpooktoberSeason, nextSpooktoberDateCheck } from "@/lib/spooktober-season";
 import { useView } from "@/lib/view";
@@ -8,6 +8,10 @@ import { SpooktoberLoadingScene } from "./spooktober-loading";
 import { useOnboarding } from "@/lib/onboarding";
 
 const Festival = lazy(() => import("./spooktober-view").then(module => ({ default: module.SpooktoberView })));
+
+// Memoized so this wrapper's own re-renders — it consumes the view context for `setView` — do not
+// drag the whole home feed with them. Every navigation re-rendered it, and the feed costs ~110ms.
+const MemoHome = memo(Home);
 
 export function SpooktoberHome({ active = true, onReady }: { active?: boolean; onReady?: () => void }) {
   const { setView } = useView();
@@ -22,8 +26,25 @@ export function SpooktoberHome({ active = true, onReady }: { active?: boolean; o
     setPlaylistRequest(null);
     requestAnimationFrame(() => document.querySelector<HTMLButtonElement>("[data-spooktober-invitation]")?.focus({ preventScroll: true }));
   }, []);
-  const prepareFestival = () => setFestivalOpened(true);
-  const openFestival = () => { prepareFestival(); setEntryToken(value => value + 1); setScreen("festival"); };
+  const prepareFestival = useCallback(() => setFestivalOpened(true), []);
+  const openFestival = useCallback(() => {
+    prepareFestival();
+    setEntryToken(value => value + 1);
+    setScreen("festival");
+  }, [prepareFestival]);
+  // Stable element identity, so MemoHome's props do not change on an unrelated re-render.
+  const seasonalInvitation = useMemo(
+    () =>
+      available ? (
+        <SpooktoberInvitation
+          collapsed={isDismissed("spooktober")}
+          onDismiss={() => dismiss("spooktober")}
+          onOpen={openFestival}
+          onPrepare={prepareFestival}
+        />
+      ) : undefined,
+    [available, isDismissed, dismiss, openFestival, prepareFestival],
+  );
   useEffect(() => {
     const receive = () => {
       const request = takeSpooktoberPlaylistRequest();
@@ -53,7 +74,7 @@ export function SpooktoberHome({ active = true, onReady }: { active?: boolean; o
   return (
     <div className="spooktober-home">
       <div className="spooktober-home-base" inert={screen !== "home"} style={{ visibility: screen === "home" ? "visible" : "hidden" }}>
-        <Home active={active && screen === "home"} onReady={onReady} seasonalInvitation={available ? <SpooktoberInvitation collapsed={isDismissed("spooktober")} onDismiss={() => dismiss("spooktober")} onOpen={openFestival} onPrepare={prepareFestival} /> : undefined} />
+        <MemoHome active={active && screen === "home"} onReady={onReady} seasonalInvitation={seasonalInvitation} />
       </div>
       {festivalOpened && <div className="spooktober-surface" data-spooktober-surface hidden={screen !== "festival"} inert={screen !== "festival"}>
         <Suspense fallback={<SpooktoberLoadingScene onBack={active && screen === "festival" ? close : undefined} />}><Festival active={active && screen === "festival"} onBack={close} playlistRequest={playlistRequest} entryToken={entryToken} /></Suspense>

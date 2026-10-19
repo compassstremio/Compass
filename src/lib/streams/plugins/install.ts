@@ -3,7 +3,7 @@ import { assertSafeUrl } from "@/lib/manga/plugins/host-http";
 import { PluginWorker } from "@/lib/manga/plugins/worker-host";
 import { setSecret } from "@/lib/secret-store";
 import { pluginIdFor } from "./manifest";
-import { installNativeArchive, uninstallNativeExtension } from "./native";
+import { installNativeArchive, requireAndroidExtensions, uninstallNativeExtension } from "./native";
 import { disposeStreamPlugin } from "./runtime";
 import { SECRET_PREFIX, workerPluginFor } from "./source";
 import { deleteStreamPlugin, saveStreamPlugin, streamPluginById } from "./store";
@@ -183,6 +183,7 @@ async function installArchiveEntry(
   repo: StreamRepoRecord,
   entry: StreamRepoEntry,
 ): Promise<InstalledStreamPlugin> {
+  await requireAndroidExtensions();
   const { bytes, etag } = await fetchArchive(entry);
   const hash = await sha256Bytes(bytes);
   if (entry.sha256 && entry.sha256 !== hash) throw new PluginError("checksum");

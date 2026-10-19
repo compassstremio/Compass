@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from "react";
-import { pickLocalizedText } from "@/lib/localized-text";
+import { pickPreferredEpisodeOverview, pickPreferredEpisodeTitle } from "@/lib/localized-text";
 import {
   PREFERRED_TEXT_SCORE,
   preferredMeta,
@@ -8,11 +8,15 @@ import {
   preferredVideoOverview,
   type PreferredVideo,
 } from "@/lib/meta-resource";
-import { compassImdbEpisodes } from "@/lib/providers/compass-imdb";
-import { omdbSeasonRatings } from "@/lib/providers/omdb";
+import { useEpisodeImdbRatings } from "../use-episode-imdb-ratings";
 import type { Episode } from "@/lib/providers/tmdb";
 import { tmdbLanguageIso } from "@/lib/providers/tmdb/tmdb-client";
-import { tvdbEpisodes, tvdbLangFromIso1, tvdbSeriesByImdb, type TvdbEpisode } from "@/lib/providers/tvdb";
+import {
+  tvdbEpisodes,
+  tvdbLangFromIso1,
+  tvdbSeriesByImdb,
+  type TvdbEpisode,
+} from "@/lib/providers/tvdb";
 
 export function useEpisodeEnrich({
   episodes,
@@ -22,6 +26,7 @@ export function useEpisodeEnrich({
   omdbKey,
   metaId,
   preferCustomMeta,
+  ratings = true,
 }: {
   episodes: Episode[];
   active: number;
@@ -30,14 +35,22 @@ export function useEpisodeEnrich({
   omdbKey: string;
   metaId: string;
   preferCustomMeta: boolean;
+  ratings?: boolean;
 }): {
   episodes: Episode[];
   imdbRatings: Map<string, number>;
   preferredVideos: Map<string, PreferredVideo>;
 } {
-  const [tvdbBySeason, setTvdbBySeason] = useState<Map<number, Map<number, TvdbEpisode>>>(new Map());
-  const [omdbBySeason, setOmdbBySeason] = useState<Map<number, Map<number, number>>>(new Map());
-  const [compassImdb, setCompassImdb] = useState<Map<string, number>>(new Map());
+  const language = tmdbLanguageIso();
+  const seasonKey = `${imdbId || metaId || ""}:${language}:${active}`;
+  const [tvdbBySeason, setTvdbBySeason] = useState<Map<string, Map<number, TvdbEpisode>>>(
+    new Map(),
+  );
+  const imdbRatings = useEpisodeImdbRatings(
+    ratings ? imdbId : null,
+    active,
+    ratings ? omdbKey : "",
+  );
   const [preferredVideos, setPreferredVideos] = useState<Map<string, PreferredVideo>>(new Map());
 
   useEffect(() => {
@@ -56,92 +69,72 @@ export function useEpisodeEnrich({
 
   useEffect(() => {
     if (!tvdbKey || !imdbId) return;
-    if (tvdbBySeason.has(active)) return;
+    if (tvdbBySeason.has(seasonKey)) return;
     let cancelled = false;
     void (async () => {
       const seriesId = await tvdbSeriesByImdb(tvdbKey, imdbId);
       if (!seriesId || cancelled) return;
-      const eps = await tvdbEpisodes(tvdbKey, seriesId, active, tvdbLangFromIso1(tmdbLanguageIso()));
+      const eps = await tvdbEpisodes(tvdbKey, seriesId, active, tvdbLangFromIso1(language));
       if (cancelled) return;
       const map = new Map<number, TvdbEpisode>();
       for (const e of eps) map.set(e.number, e);
-      setTvdbBySeason((prev) => new Map(prev).set(active, map));
+      setTvdbBySeason((prev) => new Map(prev).set(seasonKey, map));
     })();
     return () => {
       cancelled = true;
     };
-  }, [imdbId, active, tvdbKey, tvdbBySeason]);
+  }, [imdbId, active, tvdbKey, tvdbBySeason, seasonKey, language]);
 
-  useEffect(() => {
-    if (!omdbKey || !imdbId) return;
-    if (omdbBySeason.has(active)) return;
-    let cancelled = false;
-    void (async () => {
-      const map = await omdbSeasonRatings(omdbKey, imdbId, active);
-      if (cancelled || map.size === 0) return;
-      setOmdbBySeason((prev) => new Map(prev).set(active, map));
-    })();
-    return () => {
-      cancelled = true;
-    };
-  }, [imdbId, active, omdbKey, omdbBySeason]);
-
-  useEffect(() => {
-    if (!imdbId) return;
-    let cancelled = false;
-    void compassImdbEpisodes(imdbId).then((map) => {
-      if (!cancelled && map.size > 0) setCompassImdb(map);
-    });
-    return () => {
-      cancelled = true;
-    };
-  }, [imdbId]);
-
-  const tvdbForSeason = tvdbBySeason.get(active);
-  const omdbForSeason = omdbBySeason.get(active);
+  const tvdbForSeason = tvdbBySeason.get(seasonKey);
   const enriched = useMemo<Episode[]>(() => {
-    if (!tvdbForSeason && !omdbForSeason && compassImdb.size === 0 && preferredVideos.size === 0)
-      return episodes;
+    if (!tvdbForSeason && imdbRatings.size === 0 && preferredVideos.size === 0) return episodes;
     return episodes.map((ep): Episode => {
       let next: Episode = ep;
       const tv = tvdbForSeason?.get(ep.episodeNumber);
       const pref = preferredVideos.get(`${ep.seasonNumber}:${ep.episodeNumber}`);
       if (tv || pref) {
         // pickLocalizedText keys script tests by ISO-1 ("ko"), not TVDB codes ("kor").
-        const lang = tmdbLanguageIso();
+        const lang = language;
         const name =
-          pickLocalizedText(
+          pickPreferredEpisodeTitle(
             [
               { text: preferredVideoName(pref), score: PREFERRED_TEXT_SCORE },
-              { text: tv?.name ?? "" },
-              { text: next.name },
+              { text: tv?.name, language: tv?.nameLanguage },
             ],
-            { forName: true, lang },
+            [{ text: next.name, language: next.nameLanguage }],
+            lang,
           ) ?? next.name;
         const overview =
-          pickLocalizedText(
+          pickPreferredEpisodeOverview(
             [
               { text: preferredVideoOverview(pref), score: PREFERRED_TEXT_SCORE },
-              { text: tv?.overview ?? "" },
-              { text: next.overview },
+              { text: tv?.overview, language: tv?.overviewLanguage },
             ],
-            { lang },
+            [{ text: next.overview, language: next.overviewLanguage }],
+            lang,
           ) ?? next.overview;
         next = {
           ...next,
           name,
           overview,
+          nameLanguage:
+            name === next.name ? next.nameLanguage : name === tv?.name ? tv.nameLanguage : "und",
+          overviewLanguage:
+            overview === next.overview
+              ? next.overviewLanguage
+              : overview === tv?.overview
+                ? tv.overviewLanguage
+                : "und",
           runtime: next.runtime ?? tv?.runtime ?? null,
           airDate: next.airDate ?? tv?.aired ?? null,
         };
       }
-      const imdbRating =
-        compassImdb.get(`${active}:${ep.episodeNumber}`) ?? omdbForSeason?.get(ep.episodeNumber);
+      const imdbRating = imdbRatings.get(`${ep.seasonNumber}:${ep.episodeNumber}`);
       if (imdbRating != null && imdbRating > 0) {
         next = { ...next, imdbRating };
       }
       return next;
     });
-  }, [episodes, tvdbForSeason, omdbForSeason, compassImdb, active, preferredVideos]);
-  return { episodes: enriched, imdbRatings: compassImdb, preferredVideos };
+  }, [episodes, tvdbForSeason, imdbRatings, active, preferredVideos, language]);
+  return { episodes: enriched, imdbRatings, preferredVideos };
 }

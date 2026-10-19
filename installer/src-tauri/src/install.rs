@@ -80,6 +80,46 @@ fn safe_rel(name: &str) -> Option<PathBuf> {
     }
 }
 
+/// The one list of optional features. Everything else in the payload is core. Keys are stored
+/// in the install marker and, for the tabs, read back by the app itself.
+#[cfg(feature = "payload")]
+pub(crate) const FEATURES: [&str; 5] = ["plugins", "games", "music", "ebook", "manga"];
+
+/// Keeps only the known feature keys, in FEATURES order, so a marker written by a newer or
+/// modified setup cannot smuggle unknown keys into the install.
+#[cfg(feature = "payload")]
+pub(crate) fn normalize_disabled(input: &[String]) -> Vec<String> {
+    FEATURES
+        .iter()
+        .filter(|key| input.iter().any(|given| given.eq_ignore_ascii_case(key)))
+        .map(|key| key.to_string())
+        .collect()
+}
+
+/// Which optional component a payload entry belongs to, if any. Everything not named here is
+/// core and always installs.
+#[cfg(feature = "payload")]
+fn component_of(rel: &Path) -> Option<&'static str> {
+    let mut parts = rel.iter();
+    let first = parts.next().and_then(|s| s.to_str()).unwrap_or("");
+    let second = parts.next().and_then(|s| s.to_str()).unwrap_or("");
+    if first.eq_ignore_ascii_case("capstan") {
+        Some("plugins")
+    } else if first.eq_ignore_ascii_case("resources") && second.eq_ignore_ascii_case("pokemon-engine") {
+        Some("games")
+    } else {
+        None
+    }
+}
+
+#[cfg(feature = "payload")]
+fn entry_allowed(rel: &Path, disabled: &[String]) -> bool {
+    match component_of(rel) {
+        Some(key) => !disabled.iter().any(|d| d == key),
+        None => true,
+    }
+}
+
 #[cfg(feature = "payload")]
 #[tauri::command]
 pub fn payload_entries() -> Result<Vec<String>, String> {
@@ -126,6 +166,10 @@ fn bucket_for(name: &str) -> &'static str {
         "ffmpeg"
     } else if n.contains("yt-dlp") {
         "ytdlp"
+    } else if n.contains("capstan") {
+        "plugins"
+    } else if n.contains("pokemon") {
+        "games"
     } else if n.contains("fonts") || n.contains("notices") {
         "support"
     } else {
@@ -669,16 +713,28 @@ fn prune_empty_dirs(dir: &Path, base: &Path) {
 
 #[cfg(feature = "payload")]
 #[tauri::command]
-pub async fn run_install(app: AppHandle, dest: String, desktop_shortcut: bool) -> Result<(), String> {
-    tauri::async_runtime::spawn_blocking(move || install_blocking(app, dest, desktop_shortcut))
+pub async fn run_install(
+    app: AppHandle,
+    dest: String,
+    desktop_shortcut: bool,
+    disabled_features: Option<Vec<String>>,
+) -> Result<(), String> {
+    tauri::async_runtime::spawn_blocking(move || install_blocking(app, dest, desktop_shortcut, disabled_features))
         .await
         .map_err(|e| e.to_string())?
 }
 
 #[cfg(feature = "payload")]
-fn install_blocking(app: AppHandle, dest: String, desktop_shortcut: bool) -> Result<(), String> {
+fn install_blocking(app: AppHandle, dest: String, desktop_shortcut: bool, disabled_features: Option<Vec<String>>) -> Result<(), String> {
     let dest = PathBuf::from(dest);
-    install_core(&dest, desktop_shortcut, &mut |pct, step| emit(&app, pct, step))
+    install_core(&dest, desktop_shortcut, disabled_features, &mut |pct, step| emit(&app, pct, step))
+}
+
+/// The selection currently recorded on disk, for the setup UI to seed its toggles from.
+#[cfg(feature = "payload")]
+#[tauri::command]
+pub fn installed_features(dest: String) -> Vec<String> {
+    read_marker_disabled(&PathBuf::from(dest))
 }
 
 #[cfg(feature = "payload")]
@@ -699,8 +755,23 @@ pub(crate) fn read_marker_version(dest: &Path) -> u64 {
         .unwrap_or(0)
 }
 
+/// The features this install was told to leave out. A missing marker, a missing key or an
+/// older setup's marker all read as "nothing disabled", which is exactly the old behavior.
 #[cfg(feature = "payload")]
-fn write_install_marker(dest: &Path, version: &str) -> Result<(), String> {
+pub(crate) fn read_marker_disabled(dest: &Path) -> Vec<String> {
+    fs::read_to_string(dest.join(MARKER))
+        .ok()
+        .and_then(|text| serde_json::from_str::<serde_json::Value>(&text).ok())
+        .and_then(|v| {
+            v.get("disabledFeatures")
+                .and_then(|n| n.as_array().map(|list| list.iter().filter_map(|x| x.as_str().map(str::to_string)).collect::<Vec<String>>()))
+        })
+        .map(|list| normalize_disabled(&list))
+        .unwrap_or_default()
+}
+
+#[cfg(feature = "payload")]
+fn write_install_marker(dest: &Path, version: &str, disabled: &[String]) -> Result<(), String> {
     let installed_at = std::time::SystemTime::now()
         .duration_since(std::time::UNIX_EPOCH)
         .map(|d| d.as_secs())
@@ -710,18 +781,31 @@ fn write_install_marker(dest: &Path, version: &str) -> Result<(), String> {
         "version": version,
         "installedAt": installed_at,
         "installer": "compass-setup",
+        "disabledFeatures": disabled,
     });
     let text = serde_json::to_string_pretty(&body).map_err(|e| e.to_string())?;
     fs::write(dest.join(MARKER), text).map_err(|e| e.to_string())
+}
+
+/// The selection a setup run asked for, or the one already recorded, for automatic flows
+/// (updates, repair without a choice) that must not silently change it.
+#[cfg(feature = "payload")]
+pub(crate) fn resolve_disabled(dest: &Path, requested: Option<Vec<String>>) -> Vec<String> {
+    match requested {
+        Some(list) => normalize_disabled(&list),
+        None => read_marker_disabled(dest),
+    }
 }
 
 #[cfg(feature = "payload")]
 pub(crate) fn install_core(
     dest: &Path,
     desktop_shortcut: bool,
+    requested: Option<Vec<String>>,
     progress: &mut dyn FnMut(f64, &str),
 ) -> Result<(), String> {
     let dest = dest.to_path_buf();
+    let disabled = resolve_disabled(&dest, requested);
     progress(1.0, "Preparing");
 
     let replacing = dest.join(MAIN_EXE).exists();
@@ -730,17 +814,18 @@ pub(crate) fn install_core(
 
     fs::create_dir_all(&dest).map_err(|e| format!("cannot create {}: {e}", dest.display()))?;
 
-    let (total, shipped) = extract_payload(&dest, progress)?;
+    let (total, shipped) = extract_payload(&dest, &disabled, progress)?;
     if replacing {
         progress(86.0, "Clearing files from the old version");
         prune_stale(&dest, &shipped);
     }
-    finish_install(&dest, desktop_shortcut, total, progress)
+    finish_install(&dest, desktop_shortcut, total, &disabled, progress)
 }
 
 #[cfg(feature = "payload")]
 fn extract_payload(
     dest: &Path,
+    disabled: &[String],
     progress: &mut dyn FnMut(f64, &str),
 ) -> Result<(u64, std::collections::BTreeSet<PathBuf>), String> {
 
@@ -762,6 +847,9 @@ fn extract_payload(
             Some(p) => p,
             None => continue,
         };
+        if !entry_allowed(&rel, disabled) {
+            continue;
+        }
         let out = dest.join(&rel);
         if entry.is_dir() || raw.ends_with('/') || raw.ends_with('\\') {
             fs::create_dir_all(&out).map_err(|e| e.to_string())?;
@@ -786,7 +874,7 @@ fn extract_payload(
 }
 
 #[cfg(feature = "payload")]
-fn finish_install(dest: &Path, desktop_shortcut: bool, total: u64, progress: &mut dyn FnMut(f64, &str)) -> Result<(), String> {
+fn finish_install(dest: &Path, desktop_shortcut: bool, total: u64, disabled: &[String], progress: &mut dyn FnMut(f64, &str)) -> Result<(), String> {
     progress(88.0, "Registering shortcuts");
     let exe = dest.join(MAIN_EXE);
     let mut lnks: Vec<PathBuf> = Vec::new();
@@ -810,18 +898,18 @@ fn finish_install(dest: &Path, desktop_shortcut: bool, total: u64, progress: &mu
     write_uninstall_entry(&dest, &shipped_version(), (total / 1024) as u32)?;
 
     progress(98.0, "Recording the install");
-    write_install_marker(&dest, &shipped_version())?;
+    write_install_marker(&dest, &shipped_version(), disabled)?;
 
     progress(100.0, "Finished");
     Ok(())
 }
 
 #[cfg(feature = "payload")]
-pub(crate) fn prepare_recoverable(tx: &compass_install_recovery::Transaction) -> Result<u64, String> {
+pub(crate) fn prepare_recoverable(tx: &compass_install_recovery::Transaction, disabled: &[String]) -> Result<u64, String> {
     let dest = tx.stage();
-    let (total, _) = extract_payload(&dest, &mut |_, _| {})?;
+    let (total, _) = extract_payload(&dest, disabled, &mut |_, _| {})?;
     if !dest.join(MAIN_EXE).is_file() { return Err("payload is missing compass.exe".into()); }
-    write_install_marker(&dest, &shipped_version())?;
+    write_install_marker(&dest, &shipped_version(), disabled)?;
     // Keep a standalone recovery tool outside the application tree. It can
     // restore an interrupted swap even when the normal shortcut cannot launch.
     let setup = std::env::current_exe().map_err(|e| e.to_string())?;
@@ -830,8 +918,8 @@ pub(crate) fn prepare_recoverable(tx: &compass_install_recovery::Transaction) ->
 }
 
 #[cfg(feature = "payload")]
-pub(crate) fn finish_recoverable(dest: &Path, desktop: bool, total: u64) -> Result<(), String> {
-    finish_install(dest, desktop, total, &mut |_, _| {})
+pub(crate) fn finish_recoverable(dest: &Path, desktop: bool, total: u64, disabled: &[String]) -> Result<(), String> {
+    finish_install(dest, desktop, total, disabled, &mut |_, _| {})
 }
 
 #[cfg(feature = "payload")]
@@ -896,18 +984,43 @@ fn file_state(path: &Path, size: u64, crc: u32) -> FileState {
 
 #[cfg(feature = "payload")]
 #[tauri::command]
-pub async fn run_repair(app: AppHandle, dest: String) -> Result<RepairReport, String> {
-    tauri::async_runtime::spawn_blocking(move || repair_blocking(app, dest))
+pub async fn run_repair(
+    app: AppHandle,
+    dest: String,
+    disabled_features: Option<Vec<String>>,
+) -> Result<RepairReport, String> {
+    tauri::async_runtime::spawn_blocking(move || repair_blocking(app, dest, disabled_features))
         .await
         .map_err(|e| e.to_string())?
 }
 
+/// Removes every file a deselected component owns, so repair can also serve as "change which
+/// features are installed" without leaving the old files behind.
 #[cfg(feature = "payload")]
-fn repair_blocking(app: AppHandle, dest: String) -> Result<RepairReport, String> {
+fn prune_disabled(dest: &Path, disabled: &[String]) {
+    let me = std::env::current_exe().ok();
+    let mut found = Vec::new();
+    collect_files(dest, dest, &mut found);
+    for rel in found {
+        if entry_allowed(&rel, disabled) {
+            continue;
+        }
+        let full = dest.join(&rel);
+        if me.as_deref() == Some(full.as_path()) {
+            continue;
+        }
+        let _ = fs::remove_file(&full);
+    }
+    prune_empty_dirs(dest, dest);
+}
+
+#[cfg(feature = "payload")]
+fn repair_blocking(app: AppHandle, dest: String, disabled_features: Option<Vec<String>>) -> Result<RepairReport, String> {
     let dest = PathBuf::from(dest);
     if !dest.join(MAIN_EXE).exists() {
         return Err(format!("No Compass install found in {}.", dest.display()));
     }
+    let disabled = resolve_disabled(&dest, disabled_features);
 
     let mut report = RepairReport {
         checked: 0,
@@ -937,8 +1050,8 @@ fn repair_blocking(app: AppHandle, dest: String) -> Result<RepairReport, String>
                 continue;
             }
             match safe_rel(&raw) {
-                Some(p) => (p, entry.size(), entry.crc32()),
-                None => continue,
+                Some(p) if entry_allowed(&p, &disabled) => (p, entry.size(), entry.crc32()),
+                _ => continue,
             }
         };
 
@@ -975,6 +1088,11 @@ fn repair_blocking(app: AppHandle, dest: String) -> Result<RepairReport, String>
         emit(&app, 2.0 + (done as f64 / total as f64) * 84.0, &format!("Restoring {name}"));
     }
 
+    if !disabled.is_empty() {
+        emit(&app, 86.0, "Removing deselected components");
+        prune_disabled(&dest, &disabled);
+    }
+
     emit(&app, 88.0, "Checking shortcuts");
     if let Some(lnk) = start_menu_lnk() {
         if !lnk.exists() && make_shortcuts(&[lnk], &dest.join(MAIN_EXE), &dest).is_ok() {
@@ -986,7 +1104,7 @@ fn repair_blocking(app: AppHandle, dest: String) -> Result<RepairReport, String>
     let version = shipped_version();
     report.registry_restored = !uninstall_entry_intact(&dest, &version);
     write_uninstall_entry(&dest, &version, (total / 1024) as u32)?;
-    write_install_marker(&dest, &version)?;
+    write_install_marker(&dest, &version, &disabled)?;
 
     emit(&app, 100.0, "Finished");
     Ok(report)
@@ -1098,19 +1216,37 @@ p{{margin:0 0 1em}}\
 #[cfg(feature = "payload")]
 const CHANGELOG_URL: &str = "https://compass.sarl/updates/versions-beta.json";
 
+/// Patch notes shipped inside the installer. build.rs bundles installer/changelog/*-changelog.json
+/// into OUT_DIR/changelog.json; the live feed wins when it answers, and this copy keeps the
+/// Welcome screen useful while the feed is unavailable or not deployed yet.
+#[cfg(feature = "payload")]
+const EMBEDDED_CHANGELOG: &str = include_str!(concat!(env!("OUT_DIR"), "/changelog.json"));
+
+#[cfg(feature = "payload")]
+fn remote_changelog() -> Option<String> {
+    let body = ureq::get(CHANGELOG_URL)
+        .timeout(std::time::Duration::from_secs(8))
+        .call()
+        .ok()?
+        .into_string()
+        .ok()?;
+    // A feed with at least one release is usable; error pages and empty indexes are not.
+    let parsed: serde_json::Value = serde_json::from_str(&body).ok()?;
+    let versions = parsed.get("versions")?.as_array()?;
+    if versions.is_empty() {
+        return None;
+    }
+    Some(body)
+}
+
 #[cfg(feature = "payload")]
 #[tauri::command]
 pub async fn fetch_changelog() -> Result<String, String> {
     tauri::async_runtime::spawn_blocking(|| {
-        ureq::get(CHANGELOG_URL)
-            .timeout(std::time::Duration::from_secs(8))
-            .call()
-            .map_err(|e| e.to_string())?
-            .into_string()
-            .map_err(|e| e.to_string())
+        remote_changelog().unwrap_or_else(|| EMBEDDED_CHANGELOG.to_string())
     })
     .await
-    .map_err(|e| e.to_string())?
+    .map_err(|e| e.to_string())
 }
 
 #[cfg(windows)]
@@ -1216,4 +1352,52 @@ fn schedule_self_delete(dest: &Path) {
 #[tauri::command]
 pub fn run_uninstall(_dest: String, _remove_data: bool) -> Result<(), String> {
     Ok(())
+}
+
+/*
+ * Feature selection is a pure filter over payload entry names plus a small marker
+ * normalization; extraction, repair and both update paths route through these, so they are the
+ * part worth pinning down.
+ */
+#[cfg(all(test, feature = "payload"))]
+mod feature_selection_tests {
+    use super::*;
+
+    fn keys(list: &[&str]) -> Vec<String> {
+        list.iter().map(|k| k.to_string()).collect()
+    }
+
+    #[test]
+    fn selection_normalizes_to_known_keys_in_order() {
+        assert_eq!(
+            normalize_disabled(&keys(&["music", "not-a-feature", "PLUGINS"])),
+            keys(&["plugins", "music"])
+        );
+        assert!(normalize_disabled(&keys(&["nonsense"])).is_empty());
+        assert!(normalize_disabled(&[]).is_empty());
+    }
+
+    #[test]
+    fn core_entries_are_never_filtered() {
+        let disabled = keys(&["plugins", "games"]);
+        assert!(entry_allowed(Path::new("compass.exe"), &disabled));
+        assert!(entry_allowed(Path::new("libmpv-2.dll"), &disabled));
+        assert!(entry_allowed(Path::new("uninstall.exe"), &disabled));
+        assert!(entry_allowed(Path::new("resources/pokemon-notes.txt"), &disabled));
+    }
+
+    #[test]
+    fn optional_components_follow_their_keys() {
+        assert!(!entry_allowed(Path::new("capstan/capstan.jar"), &keys(&["plugins"])));
+        assert!(entry_allowed(Path::new("capstan/capstan.jar"), &keys(&["games"])));
+        assert!(entry_allowed(Path::new("capstan/capstan.jar"), &[]));
+        assert!(!entry_allowed(
+            Path::new("resources/pokemon-engine/Compass.PokemonEngine.exe"),
+            &keys(&["games"])
+        ));
+        assert!(entry_allowed(
+            Path::new("resources/pokemon-engine/Compass.PokemonEngine.exe"),
+            &keys(&["plugins"])
+        ));
+    }
 }

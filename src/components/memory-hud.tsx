@@ -2,7 +2,9 @@ import { ChevronDown, ChevronUp, X } from "lucide-react";
 import { useEffect, useState } from "react";
 import {
   getCacheReports,
+  getFrameStats,
   getSamples,
+  getViewportInfo,
   startProfiler,
   stopProfiler,
   subscribeProfiler,
@@ -128,6 +130,7 @@ export function MemoryHud() {
       </div>
 
       <NativeLine />
+      <FrameLine />
       {!collapsed && (
         <>
           <DomLine />
@@ -158,6 +161,27 @@ function NativeLine() {
         <span className="text-ink-subtle">
           {" "}
           · hb {m.compassRss.toFixed(0)} · wv {m.webviewRss.toFixed(0)} · {tier}
+        </span>
+      </span>
+    </div>
+  );
+}
+
+function FrameLine() {
+  const f = getFrameStats();
+  const vp = getViewportInfo();
+  const missPct = f.samples > 0 ? Math.round((f.missed / f.samples) * 100) : 0;
+  const worstP95 = f.worstSeconds[0]?.p95 ?? 0;
+  const color = missPct > 20 ? "#ff7676" : missPct > 5 ? "#ffb866" : "#7eea9f";
+  return (
+    <div className="flex items-center justify-between gap-2 border-t border-edge-soft pt-1.5">
+      <span className="font-bold text-ink">FRAMES</span>
+      <span>
+        <span style={{ color }}>{f.fps.toFixed(0)} fps</span>
+        <span className="text-ink-subtle">
+          {" "}
+          · 1% low {f.low1Fps.toFixed(0)} · miss {missPct}% · worst {worstP95.toFixed(0)}ms ·{" "}
+          {f.refreshHz}Hz · {vp.width}x{vp.height}@{vp.dpr}
         </span>
       </span>
     </div>

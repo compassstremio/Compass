@@ -103,6 +103,8 @@ export function createHtml5Bridge(): PlayerBridge {
     snap.subDelaySec = subDelaySec;
     snap.videoWidth = video.videoWidth || 0;
     snap.videoHeight = video.videoHeight || 0;
+    snap.videoSourceWidth = snap.videoWidth;
+    snap.videoSourceHeight = snap.videoHeight;
     if (video.readyState >= HTMLMediaElement.HAVE_CURRENT_DATA && snap.videoWidth > 0) {
       snap.firstFrameReady = true;
     }
@@ -163,6 +165,7 @@ export function createHtml5Bridge(): PlayerBridge {
       release: t.metadata?.release,
       provider: t.metadata?.provider,
       providerDerived: t.metadata?.providerDerived,
+      localTrusted: t.metadata?.localTrusted,
       fps: t.metadata?.fps,
       downloads: t.metadata?.downloads,
       author: t.metadata?.author,
@@ -277,6 +280,7 @@ export function createHtml5Bridge(): PlayerBridge {
             language: track.lang,
             release: track.metadata?.release,
             filename: track.metadata?.rawFilename,
+            allowLocalNetwork: track.metadata?.localTrusted === true,
             requestHeaders: subtitleTrackDownloadHeaders(
               track.metadata?.downloadAuth,
               track.url,
@@ -520,7 +524,7 @@ export function createHtml5Bridge(): PlayerBridge {
       }
       activeTraceId = src.traceId ?? null;
       markPlaybackTrace(activeTraceId, "bridge-load");
-      isLiveSrc = src.notWebReady === true;
+      isLiveSrc = src.isLive === true;
       pendingStart = src.startAtSec ?? null;
       if (hls) {
         try {
@@ -545,11 +549,10 @@ export function createHtml5Bridge(): PlayerBridge {
       const isHls =
         bare.endsWith(".m3u8") || lowerUrl.includes("m3u8") || lowerUrl.includes("/playlist/");
       const isTs =
-        bare.endsWith(".ts") ||
-        (src.notWebReady === true && !isHls && !/\.(mp4|webm|mov|mkv|mpd)$/.test(bare));
+        bare.endsWith(".ts") || (isLiveSrc && !isHls && !/\.(mp4|webm|mov|mkv|mpd)$/.test(bare));
       if (isHls && Hls.isSupported()) {
         hls = new Hls(
-          src.notWebReady === true || src.isLive === true
+          isLiveSrc
             ? {
                 enableWorker: true,
                 lowLatencyMode: false,
@@ -564,8 +567,8 @@ export function createHtml5Bridge(): PlayerBridge {
         hls.on(Hls.Events.AUDIO_TRACK_SWITCHED, refreshSnapshot);
       } else if (isTs && mpegts.isSupported()) {
         tsPlayer = mpegts.createPlayer(
-          { type: "mpegts", url: src.url, isLive: true, cors: true },
-          { enableWorker: true, liveBufferLatencyChasing: true, lazyLoadMaxDuration: 4 },
+          { type: "mpegts", url: src.url, isLive: isLiveSrc, cors: true },
+          { enableWorker: true, liveBufferLatencyChasing: isLiveSrc, lazyLoadMaxDuration: 4 },
         );
         tsPlayer.attachMediaElement(video);
         tsPlayer.on(mpegts.Events.ERROR, refreshSnapshot);
@@ -601,6 +604,7 @@ export function createHtml5Bridge(): PlayerBridge {
             metadata: {
               originalUrl: s.url,
               providerDerived: s.trustedSource !== true,
+              localTrusted: s.trustedSource === true,
               autoSelectionEligible: false,
             },
           };

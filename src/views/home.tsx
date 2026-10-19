@@ -75,12 +75,23 @@ import { useTrakt } from "@/lib/trakt/provider";
 import { buildTraktHomeRows } from "@/lib/trakt/home-rails";
 import { fetchWatchedKeySet } from "@/lib/trakt/history";
 import { peekTraktWatched } from "@/lib/trakt/watched-keys";
+import { usePublicMetaDb } from "@/lib/publicmetadb/provider";
+import {
+  loadPmdbTitleWatchedKeys,
+  peekPmdbWatched,
+  rememberPmdbWatched,
+} from "@/lib/publicmetadb/watched-keys";
 import { recentlyPlayed, subscribePlayback, type WatchedSet } from "@/lib/playback-history";
+import { collapseWatchedKeys, isTitleWatched } from "@/lib/watched-title";
+import { useWatchedFlagIds } from "@/lib/watched-flag";
+import { useMovieWatchedIds } from "@/lib/movie-watched";
 import { detectAnimeForCw, useDetectedAnimeVersion } from "@/lib/anime-detect";
 import { buildSimklHomeRows } from "@/lib/simkl/home-rails";
 import {
   loadSimklWatchedMap,
   loadSimklStatusMap,
+  simklWatchedForId,
+  statusForId,
   peekSimklWatchedMap,
   type WatchlistStatus,
 } from "@/lib/simkl/list-status";
@@ -92,7 +103,8 @@ import { useLetterboxd } from "@/lib/stremboxd/provider";
 import { buildLetterboxdHomeRows } from "@/lib/stremboxd/home-rails";
 import { useMediaFavorites, type MediaEntry } from "@/lib/media-favorites";
 import { useLocalWatchlist } from "@/lib/local-watchlist";
-import { useScrollMemory, useView } from "@/lib/view";
+import { useScrollMemory, useHomeResetTick } from "@/lib/view";
+import { recordRenderCause } from "@/lib/render-cause";
 import { CustomizableRows } from "./home/customizable-rows";
 import { CustomizeBar } from "./home/customize-bar";
 import { CWSection } from "./home/cw-section";
@@ -123,6 +135,7 @@ export function Home({
   onReady?: () => void;
   seasonalInvitation?: ReactNode;
 }) {
+  recordRenderCause("view.home");
   const { authKey, user } = useAuth();
   const { activeProfile, profiles } = useProfiles();
   const { settings, update } = useSettings();
@@ -142,9 +155,11 @@ export function Home({
   const [simklRows, setSimklRows] = useState<HomeRow[]>([]);
   const [letterboxdRows, setLetterboxdRows] = useState<HomeRow[]>([]);
   const externalCw = useExternalCw(
-    !hideSharedCw && (settings.cwSources.trakt || settings.cwSources.simkl),
+    !hideSharedCw &&
+      (settings.cwSources.trakt || settings.cwSources.simkl || settings.cwSources.publicmetadb),
   );
   const [traktWatched, setTraktWatched] = useState<Set<string>>(() => peekTraktWatched());
+  const [pmdbWatched, setPmdbWatched] = useState<Set<string>>(() => peekPmdbWatched());
   const [simklWatchedMap, setSimklWatchedMap] = useState<Map<string, Set<string>>>(() =>
     peekSimklWatchedMap(),
   );
@@ -157,6 +172,7 @@ export function Home({
   const [localWatched, setLocalWatched] = useState<WatchedSet>(() => recentlyPlayed());
   useEffect(() => subscribePlayback(() => setLocalWatched(recentlyPlayed())), []);
   const [heroPool, setHeroPool] = useState<Meta[]>([]);
+  const [heroRows, setHeroRows] = useState<string[]>([]);
   const [heroReady, setHeroReady] = useState(false);
   useEffect(() => {
     if (!active || !heroReady) return;
@@ -169,6 +185,7 @@ export function Home({
   const [addonsTick, setAddonsTick] = useState(0);
   const [buildTick, setBuildTick] = useState(0);
   const { isConnected: traktConnected, session: traktSession } = useTrakt();
+  const { isConnected: pmdbConnected } = usePublicMetaDb();
   const { isConnected: simklConnected } = useSimkl();
   const { isConnected: anilistConnected } = useAnilist();
   const letterboxd = useLetterboxd();
@@ -227,7 +244,10 @@ export function Home({
     (async () => {
       const isClassic = settings.homeMode === "classic";
 
-      let built: { rows: HomeRow[]; hero: Meta[]; failed?: number } = { rows: [], hero: [] };
+      let built: { rows: HomeRow[]; hero: Meta[]; heroRows?: string[]; failed?: number } = {
+        rows: [],
+        hero: [],
+      };
       if (!isClassic) {
         built = settings.tmdbKey
           ? await buildTmdbRows(settings).catch(() => ({
@@ -255,11 +275,17 @@ export function Home({
           degraded && next.length === 0 && prev.length > 0 ? prev : mergeLoadedHomeRows(prev, next),
         );
       commitRows(mergeRows(built.rows, []));
-      if (!degraded || built.hero.length > 0) setHeroPool(built.hero);
+      if (!degraded || built.hero.length > 0) {
+        setHeroPool(built.hero);
+        setHeroRows(built.heroRows ?? []);
+      }
       setHeroReady(true);
       if (settings.heroFeed && settings.heroFeed !== "classic") {
         const feed = await fetchHeroFeed(settings.heroFeed).catch(() => [] as Meta[]);
-        if (!cancelled && feed.length >= 4) setHeroPool(feed);
+        if (!cancelled && feed.length >= 4) {
+          setHeroPool(feed);
+          setHeroRows([]);
+        }
       }
 
       const dedupRows = isClassic ? false : !settings.homeShowAllAddonRows;
@@ -376,6 +402,32 @@ export function Home({
       cancelled = true;
     };
   }, [uiLang, settings.homeMode, settings.tmdbKey, settings.tmdbLanguage]);
+
+  // PMDB keys arrive Trakt-shaped (see watched-keys.ts), so one merged set
+  // serves both the catalog truncation and the CW full-key check.
+  const watchedSetCombined = useMemo(
+    () => new Set([...traktWatched, ...pmdbWatched]),
+    [traktWatched, pmdbWatched],
+  );
+
+  useEffect(() => {
+    if (!pmdbConnected) {
+      setPmdbWatched(new Set());
+      return;
+    }
+    let cancelled = false;
+    loadPmdbTitleWatchedKeys()
+      .then((set) => {
+        if (!cancelled) {
+          setPmdbWatched(set);
+          rememberPmdbWatched(set);
+        }
+      })
+      .catch(() => {});
+    return () => {
+      cancelled = true;
+    };
+  }, [pmdbConnected, activeProfile?.id]);
 
   useEffect(() => {
     if (!traktConnected) {
@@ -754,15 +806,14 @@ export function Home({
   const onDismissCw = useCallback(
     (item: LibraryItem) => {
       if (item.manualWatched) {
-        dismissManualWatched(item._id);
+        dismissManualWatched(item._id, { acknowledged: true });
         return;
       }
       if (item.local) {
-        clearLocalCw(item._id);
-        dismissCw(item, authKey);
-        return;
+        clearLocalCw(item._id, { acknowledged: true });
+        return dismissCw(item, authKey, { acknowledged: true });
       }
-      dismissCw(item, authKey);
+      return dismissCw(item, authKey, { acknowledged: true });
     },
     [authKey],
   );
@@ -830,19 +881,37 @@ export function Home({
     animeRows,
   ]);
 
+  const watchedFlags = useWatchedFlagIds();
+  const movieWatchedIds = useMovieWatchedIds();
+  const heroWatched = useMemo(() => {
+    const traktKeys = collapseWatchedKeys(traktWatched);
+    return (m: Meta) =>
+      isTitleWatched(m, {
+        traktKeys,
+        localWatched,
+        stremioWatched: stremioWatchedIds,
+        watchedFlags,
+        movieWatched: movieWatchedIds,
+      }) ||
+      simklWatchedForId(simklWatchedMap, m.id).size > 0 ||
+      (m.type === "movie" && statusForId(simklStatusMap, m.id) === "completed");
+  }, [
+    traktWatched,
+    localWatched,
+    stremioWatchedIds,
+    simklWatchedMap,
+    simklStatusMap,
+    watchedFlags,
+    movieWatchedIds,
+  ]);
+
   const heroSlides = useMemo<Slide[]>(() => {
-    const pool = (
-      heroSourceRow
-        ? [
-            ...heroSourceRow.metas.filter((m) => m.background),
-            ...heroSourceRow.metas.filter((m) => !m.background && m.poster),
-          ]
-        : heroPool
-    ).filter((m) => typeof m.id === "string");
+    const skipWatched = settings.hideWatchedInHero;
+    const watched = (m: Meta) => skipWatched && heroWatched(m);
     const seen = new Set<string>();
     const out: Slide[] = [];
-    for (const m of pool) {
-      if (seen.has(m.id)) continue;
+    const push = (m: Meta) => {
+      if (typeof m.id !== "string" || seen.has(m.id)) return;
       seen.add(m.id);
       const fm = m as typeof m & {
         rank?: number;
@@ -857,10 +926,48 @@ export function Home({
           sources: fm.sources,
         },
       });
-      if (out.length >= 4) break;
+    };
+    const ordered = (metas: Meta[]) => [
+      ...metas.filter((m) => m.background),
+      ...metas.filter((m) => !m.background && m.poster),
+    ];
+    if (heroSourceRow) {
+      for (const m of ordered(heroSourceRow.metas)) {
+        if (watched(m)) continue;
+        push(m);
+        if (out.length >= 4) break;
+      }
+    } else if (skipWatched && heroRows.length > 0) {
+      for (const key of heroRows) {
+        const row = rows.find((r) => r.key === key);
+        const next = row?.metas.find(
+          (m) =>
+            typeof m.id === "string" &&
+            (m.background || m.poster) &&
+            !seen.has(m.id) &&
+            !watched(m),
+        );
+        if (next) push(next);
+        if (out.length >= 4) break;
+      }
+      // A degraded rebuild can drop the remembered source rows while the pool is
+      // still valid; fall back to it so the hero never disappears this way.
+      if (out.length < 4) {
+        for (const m of heroPool) {
+          if (watched(m)) continue;
+          push(m);
+          if (out.length >= 4) break;
+        }
+      }
+    } else {
+      for (const m of heroPool) {
+        if (watched(m)) continue;
+        push(m);
+        if (out.length >= 4) break;
+      }
     }
     return out;
-  }, [heroPool, heroSourceRow]);
+  }, [heroPool, heroSourceRow, heroRows, rows, settings.hideWatchedInHero, heroWatched]);
 
   const scrollRef = useRef<HTMLElement>(null);
   const [scrollEl, setScrollEl] = useState<HTMLElement | null>(null);
@@ -870,7 +977,7 @@ export function Home({
   }, []);
   useScrollMemory("home", scrollRef, active);
 
-  const { homeResetTick } = useView();
+  const homeResetTick = useHomeResetTick();
   useEffect(() => {
     scrollRef.current?.scrollTo({ top: 0, behavior: "auto" });
   }, [homeResetTick]);
@@ -1160,7 +1267,7 @@ export function Home({
           <CWSection
             signedIn={!!authKey}
             items={cwItems}
-            watchedSet={traktWatched}
+            watchedSet={watchedSetCombined}
             onDismiss={onDismissCw}
           />
         )}
@@ -1180,7 +1287,11 @@ export function Home({
       className="flex-1 overflow-y-auto overflow-x-hidden px-5 pt-24 pb-14 sm:px-8 lg:px-12 lg:pt-28"
     >
       <ScrollRootContext.Provider value={scrollEl}>
-        <div {...contentDrag} className="relative flex flex-col gap-12">
+        <div
+          {...contentDrag}
+          data-context-page-background
+          className="relative flex flex-col gap-12"
+        >
           <div className={tmdbNudgePosition}>
             <div className="pointer-events-auto">
               <TmdbNudge suppress={tmdbProvidedByAddon || settings.homeMode === "classic"} />
@@ -1360,7 +1471,7 @@ export function Home({
               onDeleteCustomSource={handleDeleteCustomSource}
               onEditFolderImages={handleEditFolderImages}
               hideWatched={settings.hideWatchedInCatalogs}
-              watchedSet={traktWatched}
+              watchedSet={watchedSetCombined}
               localWatched={localWatched}
               stremioWatched={stremioWatchedIds}
               homeLanguages={settings.homeLanguages}

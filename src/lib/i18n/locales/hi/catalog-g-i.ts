@@ -415,7 +415,7 @@ const catalogGI: Record<string, string> = {
     "Compass का स्ट्रीमिंग सर्वर केवल डेस्कटॉप ऐप में चलता है।",
   "Compass's temporary viewer requires HTTPS.": "Compass के अस्थायी व्यूअर के लिए HTTPS आवश्यक है।",
   "Compass, from a public domain frame": "Compass, सार्वजनिक डोमेन के एक फ़्रेम से",
-  "Compasses on your network": "आपके नेटवर्क पर मौजूद Compass इंस्टेंस",
+  "Compasss on your network": "आपके नेटवर्क पर मौजूद Compass इंस्टेंस",
   "Hard Boiled": "सख़्तमिज़ाज",
   "Hard outline": "ठोस आउटलाइन",
   "Hard stroke around each letter. High contrast.": "हर अक्षर के चारों ओर मोटी रेखा। अधिक कंट्रास्ट।",

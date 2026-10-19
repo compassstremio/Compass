@@ -1,25 +1,24 @@
-use serde::Serialize;
+use serde::{Deserialize, Serialize};
 use std::path::{Path, PathBuf};
 use std::time::{Duration, SystemTime};
 use tauri_plugin_shell::process::{Command, CommandChild, CommandEvent};
 use tauri_plugin_shell::ShellExt;
 
-const METADATA_TIMEOUT: Duration = Duration::from_secs(15);
+const MERGED_DOWNLOAD_TIMEOUT: Duration = Duration::from_secs(240);
 const DOWNLOAD_TIMEOUT: Duration = Duration::from_secs(120);
 const CACHE_MAX_BYTES: u64 = 1_500_000_000;
 const CACHE_MAX_AGE: Duration = Duration::from_secs(14 * 24 * 60 * 60);
 
-const FORMAT_LOW: &str =
-    "18/best[height<=360][ext=mp4][vcodec!=none][acodec!=none]/worst[ext=mp4][vcodec!=none][acodec!=none]";
-const FORMAT_HIGH: &str = "22/18/best[height<=720][ext=mp4][vcodec!=none][acodec!=none]";
+const FORMAT_LOW: &str = "best[height<=360][ext=mp4][vcodec!=none][acodec!=none]";
+const FORMAT_HIGH: &str = "best[height<=720][ext=mp4][vcodec!=none][acodec!=none]";
 const FORMAT_1080: &str =
     "bestvideo[height<=1080][ext=mp4][vcodec^=avc1]+bestaudio[ext=m4a]/bestvideo[height<=1080][ext=mp4]+bestaudio[ext=m4a]/best[height<=1080][ext=mp4]/bestvideo[height<=1080]+bestaudio/best[height<=1080]";
 const FORMAT_BEST: &str =
     "bestvideo[ext=mp4][vcodec^=avc1]+bestaudio[ext=m4a]/bestvideo[ext=mp4]+bestaudio[ext=m4a]/best[ext=mp4]/bestvideo+bestaudio/best";
 const FORMAT_LOW_MERGED: &str =
-    "bestvideo[height<=360][ext=mp4][vcodec^=avc1]+bestaudio[ext=m4a]/bestvideo[height<=360][ext=mp4]+bestaudio[ext=m4a]/bestvideo[height<=360]+bestaudio";
+    "bestvideo[height<=360][ext=mp4][vcodec^=avc1]+bestaudio[ext=m4a]/bestvideo[height<=360][ext=mp4]+bestaudio[ext=m4a]/bestvideo[height<=360]+bestaudio/best[height<=360][ext=mp4][vcodec!=none][acodec!=none]";
 const FORMAT_HIGH_MERGED: &str =
-    "bestvideo[height<=720][ext=mp4][vcodec^=avc1]+bestaudio[ext=m4a]/bestvideo[height<=720][ext=mp4]+bestaudio[ext=m4a]/bestvideo[height<=720]+bestaudio";
+    "bestvideo[height<=720][ext=mp4][vcodec^=avc1]+bestaudio[ext=m4a]/bestvideo[height<=720][ext=mp4]+bestaudio[ext=m4a]/bestvideo[height<=720]+bestaudio/best[height<=720][ext=mp4][vcodec!=none][acodec!=none]";
 
 fn cache_dir() -> PathBuf {
     std::env::temp_dir().join("compass-trailers")
@@ -46,20 +45,18 @@ fn normalize_quality(q: Option<String>) -> &'static str {
 }
 
 fn quality_path(id: &str, quality: &str) -> PathBuf {
-    cache_dir().join(format!("{}-{}.mp4", id, quality))
+    cache_dir().join(format!("v2-{}-{}.mp4", id, quality))
 }
 
 fn format_for(quality: &str, can_merge: bool) -> &'static str {
     match (quality, can_merge) {
         ("1080p", true) => FORMAT_1080,
         ("best", true) => FORMAT_BEST,
-        ("360p", _) => FORMAT_LOW,
+        ("360p", true) => FORMAT_LOW_MERGED,
+        ("720p", true) => FORMAT_HIGH_MERGED,
+        ("360p", false) => FORMAT_LOW,
         _ => FORMAT_HIGH,
     }
-}
-
-fn should_merge(quality: &str, ffmpeg_available: bool) -> bool {
-    ffmpeg_available && matches!(quality, "1080p" | "best")
 }
 
 fn fallback_format(
@@ -68,7 +65,14 @@ fn fallback_format(
     ffmpeg_available: bool,
 ) -> Option<(&'static str, bool)> {
     if primary_merged {
-        return Some((FORMAT_HIGH, false));
+        return Some((
+            if quality == "360p" {
+                FORMAT_LOW
+            } else {
+                FORMAT_HIGH
+            },
+            false,
+        ));
     }
     if !ffmpeg_available {
         return None;
@@ -80,15 +84,54 @@ fn fallback_format(
     }
 }
 
-fn cached_info(path: &Path, quality: &str, size: u64, stream_url: Option<String>) -> TrailerInfo {
+#[derive(Default, Deserialize, Serialize)]
+struct DownloadMetadata {
+    #[serde(default)]
+    title: String,
+    duration: Option<f64>,
+    height: Option<u64>,
+}
+
+fn cached_info(
+    path: &Path,
+    size: u64,
+    stream_url: Option<String>,
+    meta: &DownloadMetadata,
+) -> TrailerInfo {
     TrailerInfo {
         file_path: path.to_string_lossy().to_string(),
         stream_url,
-        quality: quality.to_string(),
-        duration_seconds: 0,
-        title: String::new(),
+        quality: meta
+            .height
+            .map(|height| format!("{height}p"))
+            .unwrap_or_else(|| "unknown".into()),
+        duration_seconds: meta.duration.unwrap_or(0.0) as u64,
+        title: meta.title.clone(),
         size_bytes: size,
     }
+}
+
+// A command name can execute through PATH, but yt-dlp's --ffmpeg-location
+// requires a filesystem path. Resolve it before passing it to the sidecar.
+fn resolve_ffmpeg_path(candidate: &Path, search_path: &std::ffi::OsStr) -> Option<PathBuf> {
+    std::iter::once(candidate.to_path_buf())
+        .chain(std::env::split_paths(search_path).map(|dir| dir.join(candidate)))
+        .filter(|path| path.is_file())
+        .find_map(|path| path.canonicalize().ok())
+}
+
+fn download_metadata(output: &YtDlpOutput) -> Result<DownloadMetadata, String> {
+    let stdout = String::from_utf8_lossy(&output.stdout);
+    let json = stdout
+        .lines()
+        .find_map(|line| line.strip_prefix("COMPASS_TRAILER:"))
+        .ok_or_else(|| "yt-dlp did not report completed trailer metadata".to_string())?;
+    let metadata: DownloadMetadata =
+        serde_json::from_str(json).map_err(|error| format!("trailer metadata: {error}"))?;
+    if metadata.height.unwrap_or(0) == 0 {
+        return Err("downloaded trailer has no video resolution".into());
+    }
+    Ok(metadata)
 }
 
 pub(crate) struct YtDlpOutput {
@@ -168,7 +211,11 @@ fn purge_extractions(dir: &Path, min_age: Duration, attribute: bool, now: System
     };
     let mut removed = 0;
     for entry in entries.flatten() {
-        if !entry.file_name().to_str().is_some_and(|n| n.starts_with("_MEI")) {
+        if !entry
+            .file_name()
+            .to_str()
+            .is_some_and(|n| n.starts_with("_MEI"))
+        {
             continue;
         }
         let Ok(meta) = entry.metadata() else {
@@ -352,6 +399,9 @@ fn download_args(format: &str, output: &str, url: &str, ffmpeg: Option<&Path>) -
         "--quiet".into(),
         "--force-overwrites".into(),
         "--no-mtime".into(),
+        "--no-simulate".into(),
+        "--print".into(),
+        "after_move:COMPASS_TRAILER:{\"title\":%(title)j,\"duration\":%(duration)j,\"height\":%(height)j}".into(),
     ];
     if let Some(path) = ffmpeg {
         args.push("--ffmpeg-location".into());
@@ -363,9 +413,12 @@ fn download_args(format: &str, output: &str, url: &str, ffmpeg: Option<&Path>) -
     args
 }
 
-fn completed_download(output: Result<YtDlpOutput, String>, label: &str) -> Result<(), String> {
+fn completed_download(
+    output: Result<YtDlpOutput, String>,
+    label: &str,
+) -> Result<YtDlpOutput, String> {
     match output {
-        Ok(output) if output.success => Ok(()),
+        Ok(output) if output.success => Ok(output),
         Ok(output) => Err(yt_dlp_failure("bundled", label, &output)),
         Err(error) => Err(error),
     }
@@ -435,47 +488,27 @@ pub async fn fetch_trailer(
 
     if let Ok(meta) = std::fs::metadata(&file_path) {
         if meta.len() > 1024 {
-            let stream_url = trailer_stream_url(&proxy_state, &file_path).await?;
-            return Ok(cached_info(&file_path, quality, meta.len(), stream_url));
+            if let Ok(json) = std::fs::read(file_path.with_extension("json")) {
+                if let Ok(metadata) = serde_json::from_slice::<DownloadMetadata>(&json) {
+                    let stream_url = trailer_stream_url(&proxy_state, &file_path).await?;
+                    return Ok(cached_info(&file_path, meta.len(), stream_url, &metadata));
+                }
+            }
         }
     }
 
     std::fs::create_dir_all(&dir).map_err(|e| format!("cache dir: {}", e))?;
     let url = format!("https://www.youtube.com/watch?v={}", video_id);
 
-    let meta_output = run_yt_dlp(
-        &app,
-        vec![
-            "-j".into(),
-            "--no-playlist".into(),
-            "--no-warnings".into(),
-            "--skip-download".into(),
-            url.clone(),
-        ],
-        METADATA_TIMEOUT,
-        "metadata",
-    )
-    .await?;
-
-    if !meta_output.success {
-        let stderr = String::from_utf8_lossy(&meta_output.stderr);
-        return Err(format!("yt-dlp failed: {}", stderr));
-    }
-
-    let meta: serde_json::Value = serde_json::from_slice(&meta_output.stdout)
-        .map_err(|e| format!("metadata parse: {}", e))?;
-
-    let title = meta["title"].as_str().unwrap_or("").to_string();
-    let duration_seconds = meta["duration"].as_f64().unwrap_or(0.0) as u64;
-
     let file_path_str = file_path.to_string_lossy().to_string();
-    let ffmpeg = crate::transcode::locate_ffmpeg();
-    let wants_merge = should_merge(quality, ffmpeg.is_some());
+    let ffmpeg = crate::transcode::locate_ffmpeg()
+        .and_then(|path| resolve_ffmpeg_path(&path, &std::env::var_os("PATH").unwrap_or_default()));
+    let wants_merge = ffmpeg.is_some();
     let effective_format = format_for(quality, wants_merge);
     let merge_ffmpeg = if wants_merge { ffmpeg.as_deref() } else { None };
     let dl_args = download_args(effective_format, &file_path_str, &url, merge_ffmpeg);
     let dl_timeout = if wants_merge {
-        Duration::from_secs(240)
+        MERGED_DOWNLOAD_TIMEOUT
     } else {
         DOWNLOAD_TIMEOUT
     };
@@ -484,34 +517,37 @@ pub async fn fetch_trailer(
         "download",
     );
 
-    if let Err(primary_error) = primary {
-        let Some((fallback_format, fallback_merges)) =
-            fallback_format(quality, wants_merge, ffmpeg.is_some())
-        else {
-            eprintln!("[compass::trailer] download failed quality={quality}: {primary_error}");
-            return Err(primary_error);
-        };
-        let fallback_label = if fallback_merges {
-            "adaptive fallback"
-        } else {
-            "progressive fallback"
-        };
-        eprintln!(
+    let output = match primary {
+        Ok(output) => output,
+        Err(primary_error) => {
+            let Some((fallback_format, fallback_merges)) =
+                fallback_format(quality, wants_merge, ffmpeg.is_some())
+            else {
+                eprintln!("[compass::trailer] download failed quality={quality}: {primary_error}");
+                return Err(primary_error);
+            };
+            let fallback_label = if fallback_merges {
+                "adaptive fallback"
+            } else {
+                "progressive fallback"
+            };
+            eprintln!(
             "[compass::trailer] primary download failed quality={quality}: {primary_error}; retrying {fallback_label}"
         );
-        let _ = std::fs::remove_file(&file_path);
-        let fallback_ffmpeg = if fallback_merges {
-            ffmpeg.as_deref()
-        } else {
-            None
-        };
-        let fallback_args = download_args(fallback_format, &file_path_str, &url, fallback_ffmpeg);
-        let fallback_timeout = if fallback_merges {
-            Duration::from_secs(240)
-        } else {
-            DOWNLOAD_TIMEOUT
-        };
-        completed_download(
+            let _ = std::fs::remove_file(&file_path);
+            let fallback_ffmpeg = if fallback_merges {
+                ffmpeg.as_deref()
+            } else {
+                None
+            };
+            let fallback_args =
+                download_args(fallback_format, &file_path_str, &url, fallback_ffmpeg);
+            let fallback_timeout = if fallback_merges {
+                MERGED_DOWNLOAD_TIMEOUT
+            } else {
+                DOWNLOAD_TIMEOUT
+            };
+            let output = completed_download(
             run_yt_dlp(&app, fallback_args, fallback_timeout, fallback_label).await,
             fallback_label,
         )
@@ -523,8 +559,10 @@ pub async fn fetch_trailer(
                 "primary trailer download failed: {primary_error}; {fallback_label} failed: {fallback_error}"
             )
         })?;
-        eprintln!("[compass::trailer] {fallback_label} completed quality={quality}");
-    }
+            eprintln!("[compass::trailer] {fallback_label} completed quality={quality}");
+            output
+        }
+    };
 
     let file_meta = std::fs::metadata(&file_path).map_err(|e| format!("file check: {}", e))?;
     let size_bytes = file_meta.len();
@@ -536,17 +574,16 @@ pub async fn fetch_trailer(
 
     eprintln!("[compass::trailer] verified download bytes={size_bytes} quality={quality}");
 
+    let metadata = download_metadata(&output)?;
+    if let Ok(json) = serde_json::to_vec(&metadata) {
+        if let Err(error) = std::fs::write(file_path.with_extension("json"), json) {
+            eprintln!("[compass::trailer] could not cache metadata: {error}");
+        }
+    }
     sweep_cache();
     let stream_url = trailer_stream_url(&proxy_state, &file_path).await?;
 
-    Ok(TrailerInfo {
-        file_path: file_path_str,
-        stream_url,
-        quality: quality.to_string(),
-        duration_seconds,
-        title,
-        size_bytes,
-    })
+    Ok(cached_info(&file_path, size_bytes, stream_url, &metadata))
 }
 
 #[cfg(target_os = "linux")]

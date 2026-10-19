@@ -424,8 +424,8 @@ const settings: Record<string, string> = {
     "Usado para disponibilidade de streaming e a janela de lançamento do Em Reprodução. Escolha um país e o Compass pode ajustar a interface, os metadados e os idiomas de legenda de acordo.",
   "A free TMDB key is highly recommended. It unlocks the full Compass experience. The rest are optional, and Cinemeta works out of the box without any.":
     "Uma chave gratuita do TMDB é altamente recomendada. Ela desbloqueia toda a experiência do Compass. As demais são opcionais, e o Cinemeta funciona de imediato sem nenhuma delas.",
-  "TMDB asks for an app URL when you create the key. Put any URL at all, like https://compass.app. The only thing you need back is the API key.":
-    "O TMDB pede uma URL de app ao criar a chave. Coloque qualquer URL, como https://compass.app. A única coisa que você precisa de volta é a chave de API.",
+  "TMDB asks for an app URL when you create the key. Put any URL at all, like https://compass.sarl. The only thing you need back is the API key.":
+    "O TMDB pede uma URL de app ao criar a chave. Coloque qualquer URL, como https://compass.sarl. A única coisa que você precisa de volta é a chave de API.",
   "RPDB already paints scores onto the poster. Toggle to override.":
     "O RPDB já pinta as notas no pôster. Ative para sobrescrever.",
   "MyAnimeList scores for anime titles. RPDB doesn't cover anime, so this stays optional.":

@@ -43,8 +43,8 @@ const system: Record<string, string> = {
   "That pack's file isn't valid JSON": "该包的文件不是有效的 JSON",
   "The window and taskbar icon updates right away. The installed shortcut refreshes on the next update.":
     "窗口和任务栏图标会立即更新。已安装的快捷方式将在下次更新时刷新。",
-  "TMDB asks for an app URL when you create the key. Put any URL at all, like https://compass.app. The only thing you need back is the API key.":
-    "TMDB 会在创建密钥时要求填写应用 URL。填写任意 URL 即可，例如 https://compass.app。你只需获取 API 密钥。",
+  "TMDB asks for an app URL when you create the key. Put any URL at all, like https://compass.sarl. The only thing you need back is the API key.":
+    "TMDB 会在创建密钥时要求填写应用 URL。填写任意 URL 即可，例如 https://compass.sarl。你只需获取 API 密钥。",
   "v3 API key": "v3 API 密钥",
   "subscriber API key": "订阅者 API 密钥",
   "mdblist api key": "MDBList API 密钥",
@@ -359,7 +359,7 @@ const system: Record<string, string> = {
     "Compass 无法启动其 Web 服务器。请重试，或在电视上进行设置。",
   "Compass needs to be serving on your network before a phone can reach it.":
     "Compass 必须先在你的网络上启动服务，手机才能访问。",
-  "Compasses on your network": "网络上的 Compass",
+  "Compasss on your network": "网络上的 Compass",
   "Join the same network your TV is on, not the guest one.":
     "连接到电视所在的同一网络，而不是访客网络。",
   "Leave setup": "退出设置流程",

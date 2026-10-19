@@ -1,4 +1,6 @@
 const settingsRefinements: Record<string, string> = {
+  "Prefer IMDb IDs for anime": "Anime için IMDb kimliklerini tercih et",
+  "Use IMDb IDs for anime stream searches when a verified mapping is available. Otherwise, use the usual anime IDs.": "Doğrulanmış bir eşleme mevcutsa anime yayın aramalarında IMDb kimliklerini kullan. Aksi takdirde normal anime kimliklerini kullan.",
   "Playback cache folder": "Oynatma önbelleği klasörü",
   "Temporary video buffering, including debrid streams. Applies when playback restarts; existing files stay in their current folder.": "Debrid akışları dahil geçici video arabelleği. Oynatma yeniden başlatıldığında uygulanır; mevcut dosyalar bulundukları klasörde kalır.",
   "1 option formatted correctly": "1 seçenek doğru biçimlendirildi",

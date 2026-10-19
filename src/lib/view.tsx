@@ -18,7 +18,7 @@ import {
   type ReactNode,
   type RefObject,
 } from "react";
-import { subscribeOpenProfile } from "@/lib/social/open-profile";
+import { registerProfileDestination, subscribeOpenProfile } from "@/lib/social/open-profile";
 import { subscribeOpenGroup } from "@/lib/social/open-group";
 import { useBigPicture } from "@/lib/big-picture";
 import type { Meta } from "./cinemeta";
@@ -32,6 +32,7 @@ import { beginMarathonAdvance } from "./fullscreen-state";
 import { consumeBack } from "./back-intercept";
 import { useSectionBackActive } from "./section-back";
 import type { SubtitleLoadMetadata } from "./subtitles/types";
+import { pickerExitStack, samePickerRequest } from "./picker-return";
 
 export type View =
   | "home"
@@ -87,6 +88,7 @@ export type PlayerSrc = {
   pipDocked?: boolean;
   /** Official provider iframe; handled separately from native/media stream playback. */
   officialBroadcast?: import("./sports/esports-streams").EsportsStream;
+  continuation?: import("./playback-history").PlaybackContinuation;
   meta: Meta;
   playbackTraceId?: string;
   proxySessionId?: string;
@@ -119,6 +121,8 @@ export type PlayerSrc = {
   attempt?: number;
   autoFired?: boolean;
   resume?: boolean;
+  /** Play without creating or updating a Stremio cloud-library entry. */
+  suppressCloudSync?: boolean;
   startFromZero?: boolean;
   streamRef?: PlayerStreamRef;
   liveProgram?: string;
@@ -150,6 +154,17 @@ export type PlayerStreamRef = {
   size?: number | null;
   bingeGroup?: string | null;
   cachedSlugs?: string[];
+};
+
+export type PickerOptions = {
+  autoPlay?: boolean;
+  attempt?: number;
+  intent?: "play" | "download";
+  seasonEpisodes?: PlayEpisode[];
+  resume?: boolean;
+  returnTo?: "previous";
+  contextRequestId?: string;
+  continuation?: import("./playback-history").PlaybackContinuation;
 };
 
 export type GridSpec = {
@@ -236,6 +251,9 @@ export type Frame =
       intent?: "play" | "download";
       seasonEpisodes?: PlayEpisode[];
       resume?: boolean;
+      returnTo?: "previous";
+      contextRequestId?: string;
+      continuation?: import("./playback-history").PlaybackContinuation;
     }
   | { kind: "player"; src: PlayerSrc }
   | { kind: "match-detail"; game: SportsGame; eventGames?: SportsGame[] };
@@ -340,7 +358,6 @@ type ViewValue = {
   openAnimeAward: (s: import("./anime-awards").AwardSourceId) => void;
   curatedListId: string | null;
   openCuratedList: (id: string) => void;
-  homeResetTick: number;
   picker: {
     meta: Meta;
     episode?: PlayEpisode;
@@ -349,18 +366,11 @@ type ViewValue = {
     intent?: "play" | "download";
     seasonEpisodes?: PlayEpisode[];
     resume?: boolean;
+    returnTo?: "previous";
+    contextRequestId?: string;
+    continuation?: import("./playback-history").PlaybackContinuation;
   } | null;
-  openPicker: (
-    meta: Meta,
-    episode?: PlayEpisode,
-    opts?: {
-      autoPlay?: boolean;
-      attempt?: number;
-      intent?: "play" | "download";
-      seasonEpisodes?: PlayEpisode[];
-      resume?: boolean;
-    },
-  ) => void;
+  openPicker: (meta: Meta, episode?: PlayEpisode, opts?: PickerOptions) => void;
   player: PlayerSrc | null;
   openPlayer: (src: PlayerSrc) => void;
   replacePlayerSrc: (src: PlayerSrc) => void;
@@ -388,6 +398,27 @@ type ViewValue = {
 };
 
 const Ctx = createContext<ViewValue | null>(null);
+
+// Home reads only the reset counter. Taking it from `Ctx` meant every navigation re-rendered the
+// whole home feed — measured at ~110ms per click, which was most of the click block.
+const HomeResetContext = createContext(0);
+
+export function useHomeResetTick(): number {
+  return useContext(HomeResetContext);
+}
+
+// Stable navigation actions for repeated children. A card reads these instead of the whole view
+// context: taking `openMeta` from `Ctx` made every mounted card re-render on any navigation, and
+// that cascaded into every poster (the profiler attributed ~4,800 poster renders to it).
+type ViewActions = Pick<ViewValue, "openMeta" | "openPicker" | "openManga">;
+
+const ViewActionsContext = createContext<ViewActions | null>(null);
+
+export function useViewActions(): ViewActions {
+  const actions = useContext(ViewActionsContext);
+  if (!actions) throw new Error("useViewActions outside ViewProvider");
+  return actions;
+}
 
 const STACK_MAX = 30;
 const SCROLL_MEM_MAX = 200;
@@ -690,6 +721,9 @@ export function ViewProvider({ children }: { children: ReactNode }) {
           intent: top.intent,
           seasonEpisodes: top.seasonEpisodes,
           resume: top.resume,
+          returnTo: top.returnTo,
+          contextRequestId: top.contextRequestId,
+          continuation: top.continuation,
         }
       : null;
   const player = playbackTop.kind === "player" ? playbackTop.src : null;
@@ -766,14 +800,7 @@ export function ViewProvider({ children }: { children: ReactNode }) {
 
   const exitPickerToDetail = useCallback(
     (m: Meta) => {
-      setNavStack((s) => {
-        let i = s.length - 1;
-        while (i > 0 && (s[i].kind === "player" || s[i].kind === "picker")) i--;
-        const base = s.slice(0, i + 1);
-        const top = base[base.length - 1];
-        if (top && top.kind === "meta") return base;
-        return [...base, { kind: "meta", meta: m }];
-      });
+      setNavStack((s) => pickerExitStack(s, m));
     },
     [setNavStack],
   );
@@ -1053,6 +1080,10 @@ export function ViewProvider({ children }: { children: ReactNode }) {
     [setNavStack],
   );
   useEffect(() => subscribeOpenProfile(openProfile), [openProfile]);
+  useLayoutEffect(
+    () => registerProfileDestination(() => (top.kind === "profile" ? top.handle : null)),
+    [top],
+  );
 
   const openFeed = useCallback(() => {
     setNavStack((cur) => {
@@ -1160,18 +1191,30 @@ export function ViewProvider({ children }: { children: ReactNode }) {
   );
 
   const openGames = useCallback(() => {
-    setNavStack(cur => cur.at(-1)?.kind === "games" ? cur : pushFrame(cur, { kind: "games" }));
+    setNavStack((cur) => (cur.at(-1)?.kind === "games" ? cur : pushFrame(cur, { kind: "games" })));
   }, [setNavStack]);
 
-  const openSportsEvent = useCallback((event?: EsportsMatch) => {
-    setNavStack(cur => pushFrame(cur, { kind: "sports", ...(event ? { esportsEvent: event } : {}) }));
-  }, [setNavStack]);
+  const openSportsEvent = useCallback(
+    (event?: EsportsMatch) => {
+      setNavStack((cur) =>
+        pushFrame(cur, { kind: "sports", ...(event ? { esportsEvent: event } : {}) }),
+      );
+    },
+    [setNavStack],
+  );
 
   const openMatchDetail = useCallback(
     (game: SportsGame, eventGames?: SportsGame[]) => {
       setNavStack((cur) => {
         const t = cur[cur.length - 1];
-        if (t.kind === "match-detail" && t.game.id === game.id && t.game.league === game.league && t.game.source === game.source && !!t.eventGames === !!eventGames) return cur;
+        if (
+          t.kind === "match-detail" &&
+          t.game.id === game.id &&
+          t.game.league === game.league &&
+          t.game.source === game.source &&
+          !!t.eventGames === !!eventGames
+        )
+          return cur;
         return pushFrame(cur, { kind: "match-detail", game, eventGames });
       });
     },
@@ -1297,17 +1340,7 @@ export function ViewProvider({ children }: { children: ReactNode }) {
   }, [setNavStack]);
 
   const openPicker = useCallback(
-    (
-      m: Meta,
-      ep?: PlayEpisode,
-      opts?: {
-        autoPlay?: boolean;
-        attempt?: number;
-        intent?: "play" | "download";
-        seasonEpisodes?: PlayEpisode[];
-        resume?: boolean;
-      },
-    ) => {
+    (m: Meta, ep?: PlayEpisode, opts?: PickerOptions) => {
       if (m.id?.startsWith("magnet:")) {
         setNavStack((s) => {
           let i = s.length - 1;
@@ -1319,13 +1352,7 @@ export function ViewProvider({ children }: { children: ReactNode }) {
       if (opts?.autoPlay) beginMarathonAdvance();
       setNavStack((cur) => {
         const t = cur[cur.length - 1];
-        if (
-          t.kind === "picker" &&
-          t.meta.id === m.id &&
-          (t.attempt ?? 0) === (opts?.attempt ?? 0) &&
-          (t.intent ?? "play") === (opts?.intent ?? "play") &&
-          Boolean(t.seasonEpisodes?.length) === Boolean(opts?.seasonEpisodes?.length)
-        ) {
+        if (samePickerRequest(t, m, ep, opts)) {
           return cur;
         }
         return pushFrame(cur, {
@@ -1337,6 +1364,9 @@ export function ViewProvider({ children }: { children: ReactNode }) {
           intent: opts?.intent,
           seasonEpisodes: opts?.seasonEpisodes,
           resume: opts?.resume,
+          returnTo: opts?.returnTo,
+          contextRequestId: opts?.contextRequestId,
+          continuation: opts?.continuation,
         });
       });
     },
@@ -1470,7 +1500,6 @@ export function ViewProvider({ children }: { children: ReactNode }) {
       openAnimeAward,
       curatedListId: top.kind === "curated-list" ? top.listId : null,
       openCuratedList,
-      homeResetTick,
       picker,
       openPicker,
       player,
@@ -1541,7 +1570,6 @@ export function ViewProvider({ children }: { children: ReactNode }) {
       openSportsEvent,
       stackKinds,
       awardType,
-      homeResetTick,
       picker,
       player,
       canGoBack,
@@ -1582,7 +1610,18 @@ export function ViewProvider({ children }: { children: ReactNode }) {
     ],
   );
 
-  return <Ctx.Provider value={value}>{children}</Ctx.Provider>;
+  const actions = useMemo<ViewActions>(
+    () => ({ openMeta, openPicker, openManga }),
+    [openMeta, openPicker, openManga],
+  );
+
+  return (
+    <Ctx.Provider value={value}>
+      <HomeResetContext.Provider value={homeResetTick}>
+        <ViewActionsContext.Provider value={actions}>{children}</ViewActionsContext.Provider>
+      </HomeResetContext.Provider>
+    </Ctx.Provider>
+  );
 }
 
 export type PlayerNavigation = Pick<

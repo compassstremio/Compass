@@ -19,6 +19,7 @@ export const SPORTS_USAGE_SECTIONS = [
 export const SPORTS_USAGE_DETAILS = [
   "Official links and videos remain subject to the originating service's availability, regional restrictions and terms. Names and logos identify third parties and do not imply endorsement or affiliation.",
   "Market data is optional and off by default. It is informational and does not enable trading in Compass. Reminders send event details to Discord or Telegram only when you configure a destination and request a reminder.",
+  "ElfHosted provides separately hosted services. Its policies apply to those services; they do not grant rights to third-party broadcasts, metadata or artwork.",
 ] as const;
 
 export const SPORTS_POLICY_LINKS = [
@@ -29,4 +30,14 @@ export const SPORTS_POLICY_LINKS = [
     url: "https://www.thesportsdb.com/docs_terms_of_use.php",
   },
   { service: "youtube", label: "YouTube terms", url: "https://www.youtube.com/t/terms" },
+  {
+    service: "elfhosted",
+    label: "ElfHosted service terms",
+    url: "https://docs.elfhosted.com/legal/terms-of-service/",
+  },
+  {
+    service: "elfhosted",
+    label: "ElfHosted privacy policy",
+    url: "https://docs.elfhosted.com/legal/privacy-policy/",
+  },
 ] as const;

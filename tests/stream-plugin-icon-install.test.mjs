@@ -12,12 +12,16 @@ const compiled = ts.transpileModule(source, {
   compilerOptions: { module: ts.ModuleKind.CommonJS, target: ts.ScriptTarget.ES2022 },
 }).outputText;
 
-function installer({ fetched, prior, fails = false } = {}) {
+function installer({ fetched, prior, fails = false, disabled = false } = {}) {
   const saved = [];
+  let archiveFetches = 0;
   const dependencies = {
     "@/lib/safe-fetch": {
       safeFetch: async () => new Response("export const streams = () => []"),
-      safeFetchBytes: async () => new Response(new Uint8Array([0x50, 0x4b, 0x80, 0xff])),
+      safeFetchBytes: async () => {
+        archiveFetches++;
+        return new Response(new Uint8Array([0x50, 0x4b, 0x80, 0xff]));
+      },
       safeFetchBase64: async () => {
         if (fails) throw new Error("download unavailable");
         return fetched;
@@ -39,7 +43,12 @@ function installer({ fetched, prior, fails = false } = {}) {
     },
     "@/lib/secret-store": { setSecret() {} },
     "./manifest": { pluginIdFor: () => "fixture" },
-    "./native": { installNativeArchive: async () => ({ extensionId: "fixture" }) },
+    "./native": {
+      requireAndroidExtensions: async () => {
+        if (disabled) throw new Error("installation-disabled");
+      },
+      installNativeArchive: async () => ({ extensionId: "fixture" }),
+    },
     "./runtime": { disposeStreamPlugin() {} },
     "./source": { workerPluginFor: (p) => p },
     "./store": { streamPluginById: () => prior, saveStreamPlugin: async (p) => saved.push(p) },
@@ -55,8 +64,23 @@ function installer({ fetched, prior, fails = false } = {}) {
     module.exports,
     webcrypto,
   );
-  return { install: module.exports.installEntry, saved };
+  return { install: module.exports.installEntry, saved, archiveFetches: () => archiveFetches };
 }
+
+test("disabled Android extensions reject installation before downloading or replacing saved plugins", async () => {
+  const prior = { id: "fixture", settingsValues: { language: "en" }, enabled: true };
+  const h = installer({ disabled: true, prior });
+  await assert.rejects(
+    h.install(
+      { url: "https://public.example/repo", name: "Fixture" },
+      { id: "fixture", entry: "https://public.example/code", format: "android-extension" },
+    ),
+    /installation-disabled/,
+  );
+  assert.equal(h.archiveFetches(), 0);
+  assert.deepEqual(h.saved, []);
+  assert.deepEqual(prior, { id: "fixture", settingsValues: { language: "en" }, enabled: true });
+});
 
 for (const format of ["javascript", "android-extension"]) {
   const repo = { url: "https://public.example/repo", name: "Fixture" };

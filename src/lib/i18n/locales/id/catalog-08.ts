@@ -75,9 +75,9 @@ const catalog: Record<string, string> = {
   Remote: "Remote",
   "Remote control is off on that Compass, so it cannot be driven from here.":
     "Kendali jarak jauh dinonaktifkan di Compass tersebut, jadi Compass itu tidak dapat dikendalikan dari sini.",
-  "Remote control is off, so other Compasses can see this one but cannot drive it.":
+  "Remote control is off, so other Compasss can see this one but cannot drive it.":
     "Kendali jarak jauh dinonaktifkan, jadi Compass lain dapat melihat Compass ini, tetapi tidak dapat mengendalikannya.",
-  "Remote control is on, so other Compasses on this network can drive this one.":
+  "Remote control is on, so other Compasss on this network can drive this one.":
     "Kendali jarak jauh diaktifkan, jadi Compass lain di jaringan ini dapat mengendalikan Compass ini.",
   "Remote off": "Remote nonaktif",
   "Remote server": "Server jarak jauh",

@@ -42,8 +42,11 @@ export function useTranslationAutoSelect({
       for (const job of expiredTranslationJobs()) completeTranslationJob(job.url);
       for (const job of jobsRef.current) {
         if (cancelled) return;
+        // A finished translation is deferred automatic work, never a user pick:
+        // it may upgrade an automatic selection, but it must not claim manual
+        // ownership and re-select subtitles the viewer just turned off or replaced.
         const ok = await bridge
-          .addSubtitle(job.url, job.lang, job.title, true, job.metadata)
+          .addSubtitle(job.url, job.lang, job.title, true, job.metadata, "automatic")
           .catch(() => false);
         if (ok === true) {
           markAddedSub(job.url);

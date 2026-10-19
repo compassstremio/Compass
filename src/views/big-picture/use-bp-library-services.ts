@@ -19,6 +19,12 @@ import type { BpLibEntry, BpLibFeed, BpLibGroup, BpLibStatus } from "./bp-librar
 
 const EMPTY: BpLibFeed = { entries: [], status: "ready", groups: [] };
 
+/** A title in a custom list also sits in its status list, so the feed must not double it. */
+function uniqueAnilistEntries(entries: AnilistMediaEntry[]): AnilistMediaEntry[] {
+  const seen = new Set<number>();
+  return entries.filter((entry) => (seen.has(entry.id) ? false : (seen.add(entry.id), true)));
+}
+
 const ANILIST_GROUPS: Array<BpLibGroup & { statuses: string[] }> = [
   { id: "watching", label: "Watching", statuses: ["CURRENT", "REPEATING"] },
   { id: "planning", label: "Plan to Watch", statuses: ["PLANNING"] },
@@ -54,7 +60,7 @@ function useAnilistFeed(enabled: boolean, reload: number): BpLibFeed {
     let alive = true;
     const cached = readCachedCollection(userId);
     if (cached) {
-      setRaw(cached.flatMap((g) => g.entries));
+      setRaw(uniqueAnilistEntries(cached.flatMap((g) => g.entries)));
       setStatus("ready");
     } else {
       setStatus("loading");
@@ -62,7 +68,7 @@ function useAnilistFeed(enabled: boolean, reload: number): BpLibFeed {
     fetchMediaListCollection(userId)
       .then((groups) => {
         if (!alive) return;
-        setRaw(groups.flatMap((g) => g.entries));
+        setRaw(uniqueAnilistEntries(groups.flatMap((g) => g.entries)));
         setStatus("ready");
       })
       .catch(() => {

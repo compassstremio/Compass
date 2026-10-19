@@ -192,6 +192,29 @@ impl MpvState {
         let guard = self.inner.lock().await;
         guard.as_ref().map(|session| session.mpv.ctx.as_ptr() as usize)
     }
+
+    pub(crate) async fn active_file_path(&self) -> Result<Option<String>, String> {
+        let session = self.inner.lock().await;
+        let Some(session) = session.as_ref() else {
+            return Ok(None);
+        };
+        let path = session
+            .mpv
+            .get_property::<String>("path")
+            .map_err(|_| "Could not verify the file currently in playback.".to_string())?;
+        if let Ok(url) = url::Url::parse(&path) {
+            if url.scheme() == "file" {
+                return Ok(url
+                    .to_file_path()
+                    .ok()
+                    .map(|path| path.to_string_lossy().into_owned()));
+            }
+            if !std::path::Path::new(&path).is_absolute() {
+                return Ok(None);
+            }
+        }
+        Ok(Some(path))
+    }
 }
 
 #[cfg(target_os = "macos")]
@@ -224,6 +247,10 @@ const OBSERVED_PROPS: &[(&str, u64, PropertyKind)] = &[
     ("secondary-sub-text", 19, PropertyKind::String),
     ("path", 20, PropertyKind::String),
     ("audio-device-list", 21, PropertyKind::Node),
+    // Native decoded size. `dwidth`/`dheight` are the post-scale display size,
+    // so upscaler presets need these to know how much headroom the window has.
+    ("width", 22, PropertyKind::Int64),
+    ("height", 23, PropertyKind::Int64),
 ];
 
 #[derive(Clone, Copy)]
@@ -366,7 +393,7 @@ fn apply_pre_init(
     // PROPERTY_NOT_FOUND as non-fatal so the player still initializes.
     let set = |k: &str, v: &str| {
         if let Err(e) = init.set_property(k, v) {
-            eprintln!("[compass::mpv] pre-init skip {}={}: {}", k, v, e);
+            eprintln!("[compass::mpv] pre-init skip {}: {}", k, e);
         }
     };
     // Scripts and script options must be applied before mpv initializes; they
@@ -381,6 +408,7 @@ fn apply_pre_init(
     set("title", "Compass");
     set("audio-client-name", "Compass");
     set("terminal", "no");
+    set("log-file", "");
     set("msg-level", "all=warn,vo=v,d3d11=v,gpu=v,win32=v");
     let is_live = args.is_live.unwrap_or(false);
     set("ytdl", if is_live { "yes" } else { "no" });
@@ -484,8 +512,13 @@ fn apply_pre_init(
         }
     }
 
+    // A silently dropped option looks identical to a working one from the
+    // outside, so shader failures in particular need to reach the log rather
+    // than vanish into a discarded Result.
     let opt = |k: &str, v: &str| {
-        let _ = init.set_property(k, v);
+        if let Err(e) = init.set_property(k, v) {
+            eprintln!("[compass::mpv] pre-init option {k} rejected: {e}");
+        }
     };
     if rtx {
         opt("gpu-api", "d3d11");
@@ -560,7 +593,10 @@ fn parse_extra_option_lines(raw: &str) -> Vec<(String, String)> {
             (line, "yes")
         };
         let key = key.trim_start_matches("--").trim();
-        if key.is_empty() {
+        if key.is_empty()
+            || key.eq_ignore_ascii_case("log-file")
+            || key.eq_ignore_ascii_case("terminal")
+        {
             continue;
         }
         options.push((key.to_string(), value.to_string()));
@@ -645,18 +681,12 @@ fn join_init_only_pairs(pairs: &[(String, String)]) -> Vec<(String, String)> {
 fn apply_extra_mpv_options(mpv: &Mpv, raw: &str) {
     for (key, value) in parse_extra_option_lines(raw) {
         if is_init_only_key(&key) {
-            eprintln!(
-                "[compass::mpv] extra option {}={} skipped (init-only)",
-                key, value
-            );
+            eprintln!("[compass::mpv] extra option {} skipped (init-only)", key);
             continue;
         }
         match mpv.set_property(&key, value.as_str()) {
-            Ok(()) => eprintln!("[compass::mpv] extra option set {}={}", key, value),
-            Err(e) => eprintln!(
-                "[compass::mpv] extra option {}={} rejected: {:?}",
-                key, value, e
-            ),
+            Ok(()) => eprintln!("[compass::mpv] extra option set {}", key),
+            Err(e) => eprintln!("[compass::mpv] extra option {} rejected: {:?}", key, e),
         }
     }
 }
@@ -895,16 +925,8 @@ pub async fn mpv_start(
     }
 
     unsafe {
-        let level = std::ffi::CString::new("warn").unwrap();
+        let level = std::ffi::CString::new("v").unwrap();
         libmpv2_sys::mpv_request_log_messages(mpv.ctx.as_ptr(), level.as_ptr());
-    }
-    {
-        use tauri::Manager;
-        if let Ok(dir) = app.path().app_data_dir() {
-            let _ = std::fs::create_dir_all(&dir);
-            let logp = dir.join("compass-mpv.log");
-            let _ = mpv.set_property("log-file", logp.to_string_lossy().as_ref());
-        }
     }
     let use_render_api = (cfg!(target_os = "macos") || cfg!(target_os = "linux")) && want_embed;
     if !use_render_api {
@@ -1181,7 +1203,11 @@ pub async fn mpv_start(
         for subtitle in subs {
             let url = subtitle.url.replace('\\', "/");
             if let Err(error) = mpv_argv_command(&mpv_arc, &["sub-add", &url, "auto"]) {
-                eprintln!("[compass::mpv] sub-add failed for {}: {}", url, error);
+                eprintln!(
+                    "[compass::mpv] sub-add failed for {}: {}",
+                    crate::log_privacy::scrub(&url),
+                    error
+                );
             }
         }
     }
@@ -1312,6 +1338,10 @@ fn spawn_event_loop(
     #[cfg(windows)] hdr_monitor: Option<isize>,
 ) {
     std::thread::spawn(move || {
+        let log = app.path().app_data_dir().ok().and_then(|dir| {
+            std::fs::create_dir_all(&dir).ok()?;
+            crate::log_privacy::start_log(&dir.join("compass-mpv.log")).ok()
+        });
         let mut last_timepos: Option<std::time::Instant> = None;
         #[cfg(windows)]
         let reassert_gen = Arc::new(std::sync::atomic::AtomicU64::new(0));
@@ -1343,6 +1373,17 @@ fn spawn_event_loop(
             match res {
                 Some(Ok(event)) => {
                     record_event_poll_success(&mut error_backoff);
+                    if let Event::LogMessage {
+                        prefix,
+                        level,
+                        text,
+                        ..
+                    } = &event
+                    {
+                        if let Some(log) = &log {
+                            let _ = log.try_send(format!("[{prefix}] {level}: {text}"));
+                        }
+                    }
                     let mut shutdown = false;
                     if matches!(event, Event::Shutdown) {
                         shutdown = true;
@@ -1498,7 +1539,9 @@ fn event_to_payload(event: Event) -> Option<Value> {
             level,
             text,
             ..
-        } => Some(json!({ "event": "log", "prefix": prefix, "level": level, "text": text })),
+        } if matches!(level, "fatal" | "error" | "warn") => Some(
+            json!({ "event": "log", "prefix": crate::log_privacy::scrub(prefix), "level": level, "text": crate::log_privacy::scrub(text) }),
+        ),
         _ => None,
     }
 }
@@ -1585,6 +1628,10 @@ const MPV_ALLOWED_COMMANDS: &[&str] = &[
 
 fn mpv_property_blocked(name: &str) -> bool {
     let n = name.to_ascii_lowercase();
+    let n = n
+        .strip_prefix("options/")
+        .or_else(|| n.strip_prefix("file-local-options/"))
+        .unwrap_or(&n);
     const BLOCKED: &[&str] = &[
         "script",
         "input-",
@@ -1593,6 +1640,8 @@ fn mpv_property_blocked(name: &str) -> bool {
         "screenshot-directory",
         "screenshot-template",
         "sub-add",
+        "log-file",
+        "terminal",
     ];
     BLOCKED.iter().any(|b| n.starts_with(b))
 }
@@ -1648,6 +1697,50 @@ pub async fn mpv_get_property(state: State<'_, MpvState>, name: String) -> Resul
         Ok(n) if n.is_finite() => serde_json::json!(n),
         _ => Value::String(s),
     })
+}
+
+/// Descriptions of the passes mpv's video output is currently running, taken
+/// from `vo-passes`. `glsl-shaders` only echoes back what was requested, so a
+/// chain that failed to compile still reads as active there. This is what the
+/// video output actually resolved, which is the only way to tell them apart.
+///
+/// `vo-passes` is a node map with `fresh` and `redraw` arrays of
+/// `{desc, last, avg, peak, count, samples}`.
+#[tauri::command]
+pub async fn mpv_vo_passes(state: State<'_, MpvState>) -> Result<Vec<String>, String> {
+    let mpv = {
+        let g = state.inner.lock().await;
+        g.as_ref()
+            .map(|s| s.mpv.clone())
+            .ok_or_else(|| "mpv not started".to_string())?
+    };
+    let node: MpvNode = mpv
+        .get_property("vo-passes")
+        .map_err(|e| format!("get vo-passes: {}", e))?;
+    let mut descs = Vec::new();
+    if let Some(top) = node.map() {
+        for (key, value) in top {
+            if key != "fresh" && key != "redraw" {
+                continue;
+            }
+            let Some(entries) = value.array() else {
+                continue;
+            };
+            for entry in entries {
+                let Some(entry) = entry.map() else { continue };
+                for (field, value) in entry {
+                    if field == "desc" {
+                        if let Some(text) = value.str() {
+                            descs.push(text.to_string());
+                        }
+                    }
+                }
+            }
+        }
+    }
+    descs.sort();
+    descs.dedup();
+    Ok(descs)
 }
 
 #[tauri::command]
@@ -1748,7 +1841,9 @@ pub fn mpv_export_log(app: AppHandle) -> Result<String, String> {
     }
     let dl = app.path().download_dir().map_err(|e| e.to_string())?;
     let dst = dl.join("compass-mpv-log.txt");
-    std::fs::copy(&src, &dst).map_err(|e| format!("copy: {}", e))?;
+    let raw = std::fs::read(&src).map_err(|e| format!("read: {}", e))?;
+    let scrubbed = crate::log_privacy::scrub(&String::from_utf8_lossy(&raw));
+    std::fs::write(&dst, scrubbed).map_err(|e| format!("write: {}", e))?;
     Ok(dst.to_string_lossy().into_owned())
 }
 
@@ -3184,7 +3279,7 @@ fn set_embedded_mpv_children_visible(app: &AppHandle, visible: bool) -> Result<(
         let title = String::from_utf16_lossy(&title_buf[..title_len as usize]);
         let is_mpv = class_name == "mpv"
             || class_name.starts_with("mpv ")
-            || (class_name.is_empty() && (title.starts_with("Compass") || title.starts_with("Compass")));
+            || (class_name.is_empty() && title.starts_with("Compass"));
         if is_mpv {
             (*(lparam.0 as *mut Vec<isize>)).push(hwnd.0 as isize);
         }
@@ -3272,7 +3367,7 @@ fn position_embedded_mpv_child(app: &AppHandle, css: MpvGeometry) -> Result<(), 
             .push((hwnd.0 as isize, class_name.clone(), title.clone()));
         let is_mpv = class_name == "mpv"
             || class_name.starts_with("mpv ")
-            || (class_name.is_empty() && (title.starts_with("Compass") || title.starts_with("Compass")));
+            || (class_name.is_empty() && title.starts_with("Compass"));
         if is_mpv {
             (*s).mpv_hwnds.push(hwnd.0 as isize);
         }

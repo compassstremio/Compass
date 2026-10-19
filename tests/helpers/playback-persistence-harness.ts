@@ -43,6 +43,7 @@ export function playbackPersistenceHarness(kind: "local" | "cloud" = "local") {
     markAnimeWatching: noop, syncAnimeProgress: noop, markMalWatching: noop, syncMalProgress: noop,
     animeTrackerTarget, activeProfileId: () => profileId, getSession: () => trackerSession,
     animeIdentityEligible: () => false, resolveAnimeIdentity: async () => null,
+    resolveTrackerAnimeEntry: async () => null,
     isForeignSplitSeason: () => false, splitFranchiseDisplaySeason: () => undefined,
     isSplitFranchiseKitsu: () => false, parseKitsuId: () => null,
     profileFromMeta: () => ({}), trackEvent: noop, isExternalPlaylistId: () => false,
@@ -97,7 +98,14 @@ export function playbackPersistenceHarness(kind: "local" | "cloud" = "local") {
     skipIdentityResolution() { dependencies.animeIdentityEligible = () => false; },
     switchTrackerSession() { trackerSession = {}; },
     enableAnimeSync() {
-      dependencies.useSettings = () => ({ settings: { anilistAutoSync: true, malAutoSync: true } });
+      dependencies.useSettings = () => ({
+        settings: {
+          anilistAutoSync: true,
+          malAutoSync: true,
+          anilistCountRewatches: true,
+          malCountRewatches: true,
+        },
+      });
       dependencies.animeIdentityEligible = () => true;
       dependencies.resolveAnimeIdentity = async (...args: any[]) => { identityRequests.push(args); return { kitsuId: 99, number: args[2].episode }; };
       dependencies.syncAnimeProgress = (...args: any[]) => trackerProgress.push(["anilist", ...args]);

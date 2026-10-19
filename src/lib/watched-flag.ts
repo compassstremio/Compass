@@ -93,6 +93,12 @@ export function watchedFlagIds(): Set<string> {
   return load();
 }
 
+const EMPTY_FLAG_IDS: Set<string> = new Set();
+
+export function useWatchedFlagIds(): Set<string> {
+  return useSyncExternalStore(subscribe, load, () => EMPTY_FLAG_IDS);
+}
+
 export function setWatchedFlag(metaId: string, watched: boolean): void {
   const cur = load();
   if (cur.has(metaId) === watched) return;
@@ -100,6 +106,16 @@ export function setWatchedFlag(metaId: string, watched: boolean): void {
   if (watched) next.add(metaId);
   else next.delete(metaId);
   persist(next);
+}
+
+export function setWatchedFlagAcknowledged(metaId: string, watched: boolean): void {
+  const next = new Set(load());
+  if (watched) next.add(metaId);
+  else next.delete(metaId);
+  localStorage.setItem(storeKey(), JSON.stringify([...next]));
+  cache = next;
+  version += 1;
+  for (const fn of subs) fn();
 }
 
 function subscribe(fn: () => void): () => void {

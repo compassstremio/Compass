@@ -1563,8 +1563,8 @@ const catalogSU: Record<string, string> = {
   "TMDB API key (v3)": "TMDB API कुंजी (v3)",
   "TMDB API key, v3 auth": "TMDB API कुंजी, v3 प्रमाणीकरण",
   "TMDB Rating": "TMDB रेटिंग",
-  "TMDB asks for an app URL when you create the key. Put any URL at all, like https://compass.app. The only thing you need back is the API key.":
-    "कुंजी बनाते समय TMDB आपसे ऐप का URL माँगता है। कोई भी URL डालें, जैसे https://compass.app। आपको केवल API कुंजी चाहिए।",
+  "TMDB asks for an app URL when you create the key. Put any URL at all, like https://compass.sarl. The only thing you need back is the API key.":
+    "कुंजी बनाते समय TMDB आपसे ऐप का URL माँगता है। कोई भी URL डालें, जैसे https://compass.sarl। आपको केवल API कुंजी चाहिए।",
   "TMDB asks what the key is for. Choose Yes, this is for my own personal use only.":
     'TMDB पूछता है कि कुंजी किस लिए है। "हाँ, यह केवल मेरे निजी उपयोग के लिए है" चुनें।',
   "TMDB confirms the key is created. Follow the link it gives you to see your API key details.":

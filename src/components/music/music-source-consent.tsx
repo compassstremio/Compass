@@ -19,6 +19,7 @@ import "./music-source-consent.css";
 const TERMS: Record<GatedMusicSource, { name: string; url: string }> = {
   youtube: { name: "YouTube", url: "https://www.youtube.com/t/terms" },
   soundcloud: { name: "SoundCloud", url: "https://soundcloud.com/terms-of-use" },
+  spotify: { name: "Spotify", url: "https://www.spotify.com/legal/end-user-agreement/" },
 };
 
 export function MusicSourceConsent() {

@@ -3,6 +3,7 @@ import type { Meta } from "@/lib/cinemeta";
 import { registerEvictable } from "@/lib/maintenance";
 import { safeFetch } from "@/lib/safe-fetch";
 import { adultContentHidden } from "@/lib/addons-store/adult-filter";
+import { episodeTextLanguage } from "@/lib/episode-text-language";
 
 const KITSU = "https://kitsu.io/api/edge";
 
@@ -82,6 +83,8 @@ export type KitsuEpisode = {
   seasonNumber: number;
   title: string;
   synopsis: string;
+  titleLanguage?: string;
+  synopsisLanguage?: string;
   thumbnail: string | null;
   thumbnailFallback?: string | null;
   airdate: string | null;
@@ -346,6 +349,8 @@ export async function kitsuEpisodes(id: number, limit = 60): Promise<KitsuEpisod
         seasonNumber: a.seasonNumber ?? 1,
         title: a.canonicalTitle || `Episode ${a.number ?? "?"}`,
         synopsis: a.synopsis || a.description || "",
+        titleLanguage: episodeTextLanguage(a.canonicalTitle, "en"),
+        synopsisLanguage: episodeTextLanguage(a.synopsis || a.description, "en"),
         thumbnail: pickImg(a.thumbnail) ?? null,
         airdate: a.airdate ?? null,
         length: a.length ?? null,
@@ -488,4 +493,36 @@ export async function kitsuMainTvSeries(id: number): Promise<number | null> {
   }
   mainTvCache.set(id, best);
   return best;
+}
+
+export type KitsuSearchHit = {
+  id: number;
+  title: string;
+  year: number | null;
+  subtype: string | null;
+};
+
+/**
+ * Kitsu's own text search. ARM and AniZip do not link every brand-new cours, so
+ * a MAL/AniList row whose entry they cannot map can still be reached by the
+ * Kitsu entry that carries episodes (and therefore streams).
+ */
+export async function kitsuSearchAnime(query: string, limit = 8): Promise<KitsuSearchHit[]> {
+  const q = query.trim();
+  if (q.length < 2) return [];
+  const j = await get<Doc<Resource<KitsuAnimeAttrs>[]>>(
+    `/anime?filter%5Btext%5D=${encodeURIComponent(q)}&page%5Blimit%5D=${limit}&sort=-userCount`,
+  );
+  const out: KitsuSearchHit[] = [];
+  for (const a of j?.data ?? []) {
+    const id = Number(a.id);
+    if (!Number.isFinite(id)) continue;
+    out.push({
+      id,
+      title: a.attributes.titles?.en?.trim() || a.attributes.canonicalTitle || "Untitled",
+      year: a.attributes.startDate ? Number(a.attributes.startDate.slice(0, 4)) : null,
+      subtype: a.attributes.subtype ?? null,
+    });
+  }
+  return out;
 }

@@ -9,9 +9,14 @@ mod ytmusic;
 mod binary_lookup;
 mod cast_hls;
 mod cast_subs;
+#[cfg(desktop)]
+mod context_review;
 mod crash_report;
 mod diagnostics;
+mod log_privacy;
 mod download;
+mod download_file_policy;
+mod download_files;
 mod ebook_tts;
 mod fonts;
 mod gamepad;
@@ -20,6 +25,10 @@ mod http_redirect;
 mod playback_redirect;
 mod local_lib;
 mod media_server;
+#[cfg(windows)]
+mod native_context_menu;
+#[cfg(windows)]
+mod native_context_policy;
 mod power;
 mod privacy;
 mod proc_guard;
@@ -86,6 +95,7 @@ mod compass_lan;
 mod hdr_overlay;
 #[cfg(desktop)]
 mod installer_handoff;
+mod install_features;
 #[cfg(desktop)]
 mod media_controls;
 #[cfg(target_os = "windows")]
@@ -151,6 +161,9 @@ mod p2p_android;
 
 #[cfg(desktop)]
 pub(crate) fn release_stremio_scheme(app: &tauri::AppHandle) {
+    if cfg!(feature = "context-review") {
+        return;
+    }
     use std::io::Write;
     use tauri_plugin_deep_link::DeepLinkExt;
     let msg = match app.deep_link().unregister("stremio") {
@@ -218,6 +231,9 @@ fn close_aux_windows(app: tauri::AppHandle) {
 #[cfg(desktop)]
 #[tauri::command]
 async fn deeplink_set_stremio(app: tauri::AppHandle, enabled: bool) -> Result<(), String> {
+    if cfg!(feature = "context-review") {
+        return Ok(());
+    }
     use tauri_plugin_deep_link::DeepLinkExt;
     if enabled {
         app.deep_link()
@@ -232,6 +248,9 @@ async fn deeplink_set_stremio(app: tauri::AppHandle, enabled: bool) -> Result<()
 #[cfg(desktop)]
 #[tauri::command]
 async fn deeplink_is_stremio_registered(app: tauri::AppHandle) -> Result<bool, String> {
+    if cfg!(feature = "context-review") {
+        return Ok(false);
+    }
     use tauri_plugin_deep_link::DeepLinkExt;
     app.deep_link()
         .is_registered("stremio")
@@ -554,6 +573,23 @@ fn compass_set_context_menu(app: tauri::AppHandle, enabled: bool) {
 }
 
 #[tauri::command]
+async fn compass_ack_frame_context(
+    app: tauri::AppHandle,
+    request_id: u64,
+    handled: bool,
+) -> Result<bool, String> {
+    #[cfg(windows)]
+    {
+        native_context_menu::acknowledge(app, request_id, handled).await
+    }
+    #[cfg(not(windows))]
+    {
+        let _ = (app, request_id, handled);
+        Ok(false)
+    }
+}
+
+#[tauri::command]
 fn compass_try_suspend_webview(app: tauri::AppHandle) {
     #[cfg(windows)]
     {
@@ -723,7 +759,10 @@ pub fn run() {
     if games::try_run_achievement_worker() { return; }
     if games::try_run_archive_worker() { return; }
     if games::try_run_hydra_import_worker() { return; }
-    {
+    let context = tauri::generate_context!();
+    context_review::prepare(context.config())
+        .expect("unsafe context review configuration");
+    if !cfg!(feature = "context-review") {
         let args: Vec<String> = std::env::args().skip(1).collect();
         if let Some(p) = media_file_from_args(&args) {
             if let Ok(mut g) = pending_open_file().lock() {
@@ -738,9 +777,11 @@ pub fn run() {
     #[cfg(windows)]
     win_graphics::configure_windows_graphics();
     let _ = rustls::crypto::ring::default_provider().install_default();
-    trailer::sweep_cache();
-    std::thread::spawn(trailer::sweep_ytdlp_extractions);
-    std::thread::spawn(temp_prune::sweep_temp);
+    if !cfg!(feature = "context-review") {
+        trailer::sweep_cache();
+        std::thread::spawn(trailer::sweep_ytdlp_extractions);
+        std::thread::spawn(temp_prune::sweep_temp);
+    }
 
     let proxy_state = tauri::async_runtime::block_on(stream_proxy::ProxyState::start())
         .unwrap_or_else(|e| {
@@ -769,6 +810,9 @@ pub fn run() {
                 app.exit(0);
                 return;
             }
+            if cfg!(feature = "context-review") {
+                return;
+            }
             if let Some(url) = args.iter().find(|a| a.starts_with("compass://")) {
                 let _ = app.emit("compass:stremio-deeplink", url.clone());
             }
@@ -786,7 +830,6 @@ pub fn run() {
         .plugin(tauri_plugin_fs::init())
         .plugin(tauri_plugin_deep_link::init())
         .plugin(tauri_plugin_notification::init())
-        .plugin(tauri_plugin_updater::Builder::new().build())
         .plugin(tauri_plugin_process::init())
         .plugin({
             let builder = tauri_plugin_window_state::Builder::default().with_denylist(&["compass-ytmusic-embed"]).with_state_flags(
@@ -813,6 +856,12 @@ pub fn run() {
         .manage(discord_rp::DiscordState::new())
         .manage(download::DownloadState::new());
 
+    let app_builder = if cfg!(feature = "context-review") {
+        app_builder.plugin(context_review::plugin())
+    } else {
+        app_builder.plugin(tauri_plugin_updater::Builder::new().build())
+    };
+
     #[cfg(target_os = "macos")]
     let app_builder = app_builder.register_uri_scheme_protocol("stremio", |ctx, request| {
         use tauri::Emitter;
@@ -835,15 +884,21 @@ pub fn run() {
             }
         })
         .setup(move |app| {
+            #[cfg(windows)]
+            if let Err(error) = native_context_menu::install(app.handle()) {
+                eprintln!("[compass::context-menu] install failed: {error}");
+            }
             if let Err(error) = crash_report::initialize(app.handle()) {
                 eprintln!("[compass::crash-report] initialization failed: {error}");
             }
             proc_guard::init();
-            proc_guard::reap_orphans();
+            if !cfg!(feature = "context-review") {
+                proc_guard::reap_orphans();
+            }
             games::initialize_download_preparation(app.handle());
             music::initialize(app.handle()).map_err(std::io::Error::other)?;
             #[cfg(windows)]
-            {
+            if !cfg!(feature = "context-review") {
                 use tauri_plugin_deep_link::DeepLinkExt;
                 if let Err(e) = app.deep_link().register_all() {
                     eprintln!("[compass::deep-link] register_all failed: {:?}", e);
@@ -851,7 +906,7 @@ pub fn run() {
             }
             #[cfg(target_os = "linux")]
             {
-                if std::env::var_os("FLATPAK_ID").is_none() {
+                if !cfg!(feature = "context-review") && std::env::var_os("FLATPAK_ID").is_none() {
                     use tauri_plugin_deep_link::DeepLinkExt;
                     if let Err(e) = app.deep_link().register_all() {
                         eprintln!("[compass::deep-link] register_all failed: {:?}", e);
@@ -1215,10 +1270,14 @@ pub fn run() {
             installer_handoff::handoff_launch,
             installer_handoff::handoff_confirm,
             installer_handoff::handoff_save_backup,
+    installer_handoff::modify_probe,
+    installer_handoff::modify_open,
+    install_features::install_features,
             power::power_inhibit,
             compass_set_webview_memory_low,
             compass_set_webview_visible,
             compass_set_context_menu,
+            compass_ack_frame_context,
             compass_try_suspend_webview,
             compass_resume_webview,
             save_text_file,
@@ -1369,6 +1428,9 @@ pub fn run() {
             temp_prune::temp_clear,
             download::download_start,
             download::download_cancel,
+            download_files::download_file_info,
+            download_files::download_delete_file,
+            download_files::compass_download_dir,
             stream_proxy::proxy_register,
             streams::resolve_playback_redirect,
             stream_proxy::proxy_unregister,
@@ -1382,6 +1444,7 @@ pub fn run() {
             mpv::mpv_command,
             mpv::mpv_set_property,
             mpv::mpv_get_property,
+            mpv::mpv_vo_passes,
             mpv::mpv_audio_devices,
             mpv::mpv_set_geometry,
             mpv::mpv_force_below,
@@ -1534,7 +1597,7 @@ pub fn run() {
             deeplink_is_stremio_registered,
             compass_take_pending_file,
         ])
-        .build(tauri::generate_context!())
+        .build(context)
         .expect("error while building tauri application")
         .run(|app_handle, event| {
             if matches!(event, tauri::RunEvent::Exit) {

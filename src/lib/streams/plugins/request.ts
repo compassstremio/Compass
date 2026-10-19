@@ -21,7 +21,8 @@ function loadMap(): Map<string, TmdbRef | null> {
   try {
     const raw = localStorage.getItem(MAP_KEY);
     if (raw) {
-      for (const [k, v] of Object.entries(JSON.parse(raw) as Record<string, TmdbRef | null>)) if (v) map.set(k, v);
+      for (const [k, v] of Object.entries(JSON.parse(raw) as Record<string, TmdbRef | null>))
+        if (v) map.set(k, v);
     }
   } catch {
     /* ignore */
@@ -126,7 +127,7 @@ function tmdbFromIds(ids: string[], kind: "movie" | "tv"): TmdbRef | null {
 }
 
 function episodeFromId(id: string): { season: number; episode: number } | null {
-  const m = /^(?:tt\d+|tmdb:(?:movie:|tv:)?\d+):(\d+):(\d+)$/.exec(id);
+  const m = /^(?:tt\d+|tmdb:(?:movie:|tv:)?\d+|capstan:[^:]+:[^:]+):(\d+):(\d+)$/.exec(id);
   if (!m) return null;
   return { season: Number(m[1]), episode: Number(m[2]) };
 }
@@ -140,7 +141,8 @@ export async function buildPluginRequest(
   const type: "movie" | "series" = req.type === "series" ? "series" : "movie";
   const kind = type === "series" ? "tv" : "movie";
   const ctx = req.context;
-  const imdbId = ctx?.imdbId ?? imdbFromIds(req.ids);
+  const prefersImdb = pickedId === req.preferredAnimeImdbId && /^tt\d+(?::\d+:\d+)?$/.test(pickedId);
+  const imdbId = prefersImdb ? pickedId.split(":")[0] : ctx?.imdbId ?? imdbFromIds(req.ids);
   // A catalogue row addresses itself with the page it came from, so the plugin is asked to open
   // that page rather than to find one by name.
   const listedAt = parseCapstanId(pickedId);
@@ -164,8 +166,8 @@ export async function buildPluginRequest(
     tmdb,
     title,
     year,
-    season: ctx?.season ?? fromId?.season ?? null,
-    episode: ctx?.episode ?? fromId?.episode ?? null,
+    season: prefersImdb ? fromId?.season ?? null : ctx?.season ?? fromId?.season ?? null,
+    episode: prefersImdb ? fromId?.episode ?? null : ctx?.episode ?? fromId?.episode ?? null,
     absoluteEpisode: ctx?.absoluteEpisode ?? null,
     url: listedAt?.url,
     providerId: listedAt?.providerId,

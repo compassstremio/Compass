@@ -24,6 +24,35 @@ export function isLocalNetworkUrl(url: string): boolean {
   return false;
 }
 
+/**
+ * Whether a hostname is unambiguously a machine on the user's local network:
+ * `localhost`, a loopback/link-local/unspecified literal, or a private-LAN IP
+ * literal (RFC 1918, IPv6 ULA). DNS names are deliberately excluded - their
+ * locality depends on name resolution, so a name-shaped guess must never grant
+ * the local-network exemption.
+ */
+export function isLocalNetworkHostName(rawHostname: string): boolean {
+  const host = rawHostname.replace(/^\[|\]$/g, "").toLowerCase();
+  if (host === "localhost" || host.endsWith(".localhost")) return true;
+  const v4 = parseIpv4(host);
+  if (v4) return isLocalIpv4(v4) || isPrivateIpv4(v4);
+  if (host.includes(":")) return isLocalIpv6(host) || isPrivateIpv6(host);
+  return false;
+}
+
+function isPrivateIpv4([a, b]: [number, number, number, number]): boolean {
+  if (a === 10) return true;
+  if (a === 172 && b >= 16 && b <= 31) return true;
+  if (a === 192 && b === 168) return true;
+  return false;
+}
+
+function isPrivateIpv6(host: string): boolean {
+  const groups = expandIpv6(host);
+  if (!groups) return false;
+  return (groups[0] & 0xfe00) === 0xfc00; // fc00::/7 unique local
+}
+
 function parseIpv4(host: string): [number, number, number, number] | null {
   const m = /^(\d{1,3})\.(\d{1,3})\.(\d{1,3})\.(\d{1,3})$/.exec(host);
   if (!m) return null;

@@ -1320,10 +1320,10 @@ const SETTINGS_OPTIONS: SettingsOption[] = [
     ],
   },
   {
-    label: "Compasses on your network",
+    label: "Compasss on your network",
     section: "tv",
     tab: "devices",
-    anchorTitle: "Compasses on your network",
+    anchorTitle: "Compasss on your network",
     keywords: [
       "devices",
       "instances",
@@ -2079,6 +2079,13 @@ const SETTINGS_OPTIONS: SettingsOption[] = [
     ],
   },
   {
+    label: "Autoplay trailer resolution",
+    section: "player",
+    tab: "trailers",
+    anchorTitle: "Trailer quality",
+    keywords: ["autoplay quality", "auto play resolution", "hero trailer resolution", "background trailer quality"],
+  },
+  {
     label: "Trailer quality",
     section: "player",
     tab: "trailers",
@@ -2668,6 +2675,13 @@ const SETTINGS_OPTIONS: SettingsOption[] = [
       "hdr on sdr display",
       "shader tonemap",
     ],
+  },
+  {
+    label: "Prefer IMDb IDs for anime",
+    section: "streaming",
+    tab: "filters",
+    anchorTitle: "Prefer IMDb IDs for anime",
+    keywords: ["imdb", "anime streams", "stream id", "kitsu", "mal", "anime mapping"],
   },
   {
     label: "Smooth motion (interpolation) & SVP",
@@ -7170,6 +7184,13 @@ const SETTINGS_OPTIONS: SettingsOption[] = [
     keywords: ["edge to edge hero", "taller hero", "stretch banner", "bigger featured"],
   },
   {
+    label: "Hide watched titles in the featured hero",
+    section: "library",
+    tab: "home",
+    anchorTitle: "Home hero",
+    keywords: ["hide watched hero", "skip watched featured", "hero watched titles"],
+  },
+  {
     label: "Full quality hero image",
     section: "library",
     tab: "home",
@@ -8591,9 +8612,9 @@ const SETTINGS_OPTIONS: SettingsOption[] = [
   },
   {
     label: "Anime Title Language",
-    section: "trackers",
-    tab: "simkl",
-    anchorTitle: "Connected",
+    section: "language",
+    tab: "app",
+    anchorTitle: "Titles and descriptions",
     keywords: [
       "anime title",
       "title language",

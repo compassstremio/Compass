@@ -8,6 +8,7 @@ import { pickTrailers, type Video } from "./tmdb-trailers";
 import type { PersonRef } from "./tmdb-people";
 import { isAnimeItem } from "./tmdb-meta-mappers";
 import { setItemWithRecovery } from "@/lib/storage-recovery";
+import { episodeTextLanguage } from "@/lib/episode-text-language";
 
 export type CastEntry = {
   id: number;
@@ -41,6 +42,8 @@ export type Episode = {
   seasonNumber: number;
   name: string;
   overview: string;
+  nameLanguage?: string;
+  overviewLanguage?: string;
   stillPath: string | null;
   stillUrl?: string;
   airDate: string | null;
@@ -74,6 +77,7 @@ export type TmdbDetail = {
   logo?: string;
   year?: string;
   rating?: string;
+  ratingSource?: "imdb" | "tmdb";
   voteCount: number;
   runtime?: string;
   status: string;
@@ -490,13 +494,15 @@ export async function tmdbSeasonEpisodes(
     language: requested,
   });
   if (!data?.episodes) return [];
-  const toEpisodes = (d: any): Episode[] =>
+  const toEpisodes = (d: any, language = requested): Episode[] =>
     d.episodes.map((e: any) => ({
       id: e.id,
       episodeNumber: e.episode_number,
       seasonNumber: e.season_number,
       name: e.name ?? "",
       overview: e.overview ?? "",
+      nameLanguage: episodeTextLanguage(e.name, language),
+      overviewLanguage: episodeTextLanguage(e.overview, language),
       stillPath: e.still_path ?? null,
       airDate: e.air_date ?? null,
       runtime: e.runtime ?? null,
@@ -510,7 +516,7 @@ export async function tmdbSeasonEpisodes(
     episodes.some((e) => japanese.test(e.name) || japanese.test(e.overview));
   if (fellBackToJapanese) {
     const en = await get<any>(key, `tv/${tvId}/season/${seasonNumber}`, { language: "en-US" });
-    if (en?.episodes) return toEpisodes(en);
+    if (en?.episodes) return toEpisodes(en, "en");
   }
   return episodes;
 }

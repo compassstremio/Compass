@@ -214,6 +214,7 @@ function ResultRow({
         lang: result.lang,
         format: result.format,
         downloadAuth: result.downloadAuth,
+        localTrusted: result.localTrusted === true,
         label: t("Subtitle"),
       });
       if (outcome === "ok") {

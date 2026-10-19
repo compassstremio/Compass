@@ -829,7 +829,7 @@ const catalog04: Record<string, string> = {
   "Compass's temporary viewer requires HTTPS.":
     "Compass의 임시 뷰어를 사용하려면 HTTPS가 필요합니다.",
   "Compass, from a public domain frame": "퍼블릭 도메인 프레임에서 가져온 Compass",
-  "Compasses on your network": "네트워크의 Compass",
+  "Compasss on your network": "네트워크의 Compass",
   "Hard Boiled": "하드보일드",
   "Hard outline": "선명한 외곽선",
   "Hard stroke around each letter. High contrast.":

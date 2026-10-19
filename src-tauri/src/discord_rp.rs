@@ -10,7 +10,10 @@ use serde::Deserialize;
 use tauri::{AppHandle, Manager};
 
 const APP_ID: &str = "1560272293773447320";
-const SMALL_IMAGE_KEY: &str = "compass_logo";
+/// The Compass mark is uploaded to the Discord application, so it renders even when no
+/// external artwork is available. It is the large image when nothing else fills that spot,
+/// and the small badge over a real poster otherwise.
+const LOGO_ASSET: &str = "compass_logo";
 /// Discord rate-limits activity updates; a short gap merges a burst of changes without
 /// making a normal change feel delayed.
 const MIN_SEND_GAP: Duration = Duration::from_millis(400);
@@ -234,16 +237,19 @@ pub fn run_loop(app: AppHandle) {
         let Some(c) = client.as_mut() else { continue };
 
         let result = if desired.active {
-            let mut assets = match desired.small_image.as_deref() {
-                Some(s) => Assets::new()
-                    .small_image(s)
-                    .small_text(desired.small_text.as_deref().unwrap_or("Compass")),
-                None => Assets::new()
-                    .small_image(SMALL_IMAGE_KEY)
-                    .small_text("Compass"),
-            };
-            if let Some(img) = desired.large_image.as_deref() {
-                assets = assets.large_image(img);
+            let mut assets =
+                Assets::new().large_image(desired.large_image.as_deref().unwrap_or(LOGO_ASSET));
+            match desired.small_image.as_deref() {
+                Some(s) => {
+                    assets = assets
+                        .small_image(s)
+                        .small_text(desired.small_text.as_deref().unwrap_or("Compass"));
+                }
+                // A badge over the logo itself would duplicate the mark.
+                None if desired.large_image.is_some() => {
+                    assets = assets.small_image(LOGO_ASSET).small_text("Compass");
+                }
+                None => {}
             }
             if let Some(t) = desired.large_text.as_deref() {
                 assets = assets.large_text(t);

@@ -33,7 +33,9 @@ export async function compassImdbEpisodes(seriesTt: string): Promise<Map<string,
   const p = (async () => {
     const map = new Map<string, number>();
     try {
-      const res = await fetch(`${BASE}/episodes/${seriesTt}`);
+      const res = await safeFetch(`${BASE}/episodes/${seriesTt}`, {
+        signal: AbortSignal.timeout(5000),
+      });
       if (res.ok) {
         const j = (await res.json()) as { ratings?: Record<string, number> };
         for (const [k, raw] of Object.entries(j.ratings ?? {})) {
@@ -46,10 +48,16 @@ export async function compassImdbEpisodes(seriesTt: string): Promise<Map<string,
     } finally {
       episodeInflight.delete(seriesTt);
     }
-    lruSet(episodeCache, seriesTt, {
-      ratings: map,
-      expiresAt: Date.now() + (map.size > 0 ? EPISODE_RATINGS_TTL_MS : EMPTY_EPISODE_RATINGS_TTL_MS),
-    }, 200);
+    lruSet(
+      episodeCache,
+      seriesTt,
+      {
+        ratings: map,
+        expiresAt:
+          Date.now() + (map.size > 0 ? EPISODE_RATINGS_TTL_MS : EMPTY_EPISODE_RATINGS_TTL_MS),
+      },
+      200,
+    );
     return map;
   })();
   episodeInflight.set(seriesTt, p);

@@ -1647,7 +1647,7 @@ const miscA: Record<string, string> = {
     "Compass'ın kendi menüleri ve etiketleri. Altyazı dillerini daha sonra seçebilirsiniz; ikisini de Ayarlar'dan değiştirebilirsiniz.",
   "Compass's public relay": "Compass'ın herkese açık aktarıcısı",
   "Compass, from a public domain frame": "Kamu malı bir kareden alınan Compass",
-  "Compasses on your network": "Ağınızdaki Compass'lar",
+  "Compasss on your network": "Ağınızdaki Compass'lar",
   "Hard outline": "Keskin kontur",
   "Hardware acceleration (hwdec)": "Donanım hızlandırma (hwdec)",
   "Harvey Award Winners": "Harvey Ödülü Kazananlar",

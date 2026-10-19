@@ -282,7 +282,7 @@ const catalog04: Record<string, string> = {
   "Compass's public relay updates automatically; nothing to do.":
     "Il relay pubblico di Compass si aggiorna automaticamente; non devi fare nulla.",
   "Compass, from a public domain frame": "Compass, da un fotogramma di pubblico dominio",
-  "Compasses on your network": "Installazioni di Compass sulla tua rete",
+  "Compasss on your network": "Installazioni di Compass sulla tua rete",
   "Hard Boiled": "Hard Boiled",
   "Hard outline": "Contorno netto",
   "Hard stroke around each letter. High contrast.":
@@ -1201,7 +1201,7 @@ const catalog04: Record<string, string> = {
   "Listed collections will appear in community browse when that rolls out.":
     "Le raccolte elencate appariranno nella sezione Esplora della community quando sarà disponibile.",
   Listen: "Ascolta",
-  "Listening for Compasses": "Ricerca di istanze Compass in corso",
+  "Listening for Compasss": "Ricerca di istanze Compass in corso",
   Lists: "Liste",
   Literary: "Letterario",
   Live: "In diretta",

@@ -60,9 +60,6 @@ function countCrossing(kind: BridgeKind, url: string): void {
 // VPS /api-proxy: it's required for addons that send no CORS header at all (OpenSubtitles)
 // and for the CORS-less debrid REST APIs, and it's fine for the rest (Cinemeta, Comet).
 const DIRECT_HOSTS = new Set(["torrentio.strem.fun"]);
-// The rest of strem.fun (anime-kitsu, ...) answers 403 to datacenter IPs too, and sends CORS, so the
-// browser must reach it directly. Checked from the VPS: anime-kitsu.strem.fun -> 403 via proxy, 200 direct.
-const DIRECT_SUFFIXES = [".strem.fun"];
 
 const PROXY_HOSTS = new Set([
   "jikanfortheweebs.midnightignite.me",
@@ -79,7 +76,6 @@ const PROXY_HOSTS = new Set([
   "openlibrary.org",
   "covers.openlibrary.org",
   "graphql.anilist.co",
-  "api.myanimelist.net",
   "www.googleapis.com",
   "www.wikidata.org",
   "api.deepseek.com",
@@ -165,8 +161,7 @@ function rewriteForWeb(url: string, init?: RequestInit): { url: string; init?: R
   } catch {
     return { url, init };
   }
-  if (DIRECT_HOSTS.has(parsed.hostname) || DIRECT_SUFFIXES.some((s) => parsed.hostname.endsWith(s)))
-    return { url, init };
+  if (DIRECT_HOSTS.has(parsed.hostname)) return { url, init };
   const proxiable =
     PROXY_HOSTS.has(parsed.hostname) || PROXY_SUFFIXES.some((s) => parsed.hostname.endsWith(s));
   if (!proxiable) return { url, init };
@@ -587,6 +582,7 @@ export function safeFetchBytes(
   init?: RequestInit,
   timeoutMs = 30000,
   maxResponseBytes?: number,
+  allowLocalNetwork = false,
 ): Promise<Response> {
   const target = typeof input === "string" ? input : input instanceof URL ? input.href : null;
   const policyHeaders = new Headers(init?.headers as HeadersInit | undefined);
@@ -616,7 +612,7 @@ export function safeFetchBytes(
     return Promise.reject(new TrackerBlockedError(new URL(target).hostname));
   }
   return withDeadline(
-    tauriCompassFetch(target, init, "base64", timeoutMs, maxResponseBytes),
+    tauriCompassFetch(target, init, "base64", timeoutMs, maxResponseBytes, allowLocalNetwork),
     init?.signal,
     timeoutMs + 5_000,
   );

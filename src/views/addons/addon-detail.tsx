@@ -31,6 +31,7 @@ import { openUrl } from "@/lib/window";
 import { useT } from "@/lib/i18n";
 import { AddonDescription } from "./addon-description";
 import { AddonDocumentation } from "./addon-documentation";
+import { ElfHostedAction } from "./elfhosted-nudge";
 import { categoryLabel } from "./addons-types";
 import { idOf, nameOf, resourceLabels } from "./addons-utils";
 import { DetailRail } from "./detail-rail";
@@ -332,6 +333,11 @@ export function AddonDetail({
               )}
               {copied === "stremio" ? t("Copied") : t("stremio:// link")}
             </button>
+            <ElfHostedAction
+              addonId={m?.id}
+              addonName={nameOf(resolved)}
+              transportUrl={resolved.transportUrl}
+            />
             {community && (
               <div className="flex basis-full items-center gap-2.5">
                 <button

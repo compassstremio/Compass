@@ -22,6 +22,10 @@ export function hookHarness(file: string, exportName: string, mocks: Record<stri
       const i = ei++;
       if (!effects[i] || !same(effects[i].deps, deps)) pending.push({ i, run, deps });
     },
+    useLayoutEffect(run: () => any, deps: any[]) {
+      const i = ei++;
+      if (!effects[i] || !same(effects[i].deps, deps)) pending.push({ i, run, deps, layout: true });
+    },
     useSyncExternalStore(_subscribe: any, snapshot: () => any) { return snapshot(); },
   };
   const output = ts.transpileModule(readFileSync(file, "utf8"), {
@@ -37,11 +41,16 @@ export function hookHarness(file: string, exportName: string, mocks: Record<stri
     render(args?: any) {
       ri = si = mi = ei = 0; pending = [];
       const result = api[exportName](args);
+      pending.sort((a, b) => Number(!!b.layout) - Number(!!a.layout));
       for (const { i } of pending) effects[i]?.cleanup?.();
-      for (const { i, run, deps } of pending) effects[i] = { deps, cleanup: run() };
+      for (const { i, run, deps, layout } of pending) effects[i] = { deps, cleanup: run(), layout };
       return result;
     },
-    unmount() { for (const effect of effects) effect?.cleanup?.(); },
+    unmount() {
+      for (const layout of [true, false]) {
+        for (const effect of effects) if (!!effect?.layout === layout) effect?.cleanup?.();
+      }
+    },
   };
 }
 

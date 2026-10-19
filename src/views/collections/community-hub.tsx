@@ -1,5 +1,16 @@
-import { ArrowLeft, BookmarkPlus, Check, GalleryVerticalEnd, Plus, RefreshCw, Users } from "lucide-react";
+import {
+  ArrowLeft,
+  BookmarkPlus,
+  Check,
+  GalleryVerticalEnd,
+  Plus,
+  RefreshCw,
+  Users,
+  Link2,
+  UserRound,
+} from "lucide-react";
 import { useEffect, useRef, useState } from "react";
+import { UiIcon } from "@/components/ui-icon";
 import { useT } from "@/lib/i18n";
 import { useScrollMemory, useView } from "@/lib/view";
 import { BackToTop } from "@/components/back-to-top";
@@ -7,28 +18,29 @@ import { posterPlate } from "@/components/poster";
 import { ResultPoster } from "@/components/search/result-poster";
 import { Avatar } from "@/components/together-modal/avatar";
 import { UserHoverCard } from "@/views/profile/user-hover-card";
-import { requestOpenProfile } from "@/lib/social/open-profile";
+import { canOpenProfile, requestOpenProfile } from "@/lib/social/open-profile";
+import { collectionAuthorHandle } from "@/lib/collection-author";
 import type { MetaType } from "@/lib/cinemeta";
 import {
   MAX_COLLECTIONS,
   createCollection,
-  deleteCollection,
   readCollections,
-  saveCommunityCollection,
+  saveCommunityCollectionWithResult,
   useCollections,
   type CollectionItem,
 } from "@/lib/collections";
 import { useCurrentHandle } from "./community-share-button";
-import {
-  notifyCommunityChanged,
-  publishCollections,
-  type CommunityCollection,
-} from "@/lib/social/collections-sync";
-import { purgeCollectionFromPages } from "@/lib/page-collection-rows";
+import { collectionShareUrl, type CommunityCollection } from "@/lib/social/collections-sync";
+import { deleteCollectionAcknowledged } from "@/lib/collection-publication";
 import { CommunityCollectionCard } from "./community-collection-card";
 import { CommunityCollectionEditor } from "./community-editor";
 import { CommunityCollectionPage } from "./community-collection-page";
 import { useCommunityCollections } from "./use-community-collections";
+import { MetaContextButton } from "@/components/context-menu/meta-context-button";
+import { useContextTarget } from "@/lib/context-menu";
+import { captureMembershipProfile, isMembershipProfileCurrent } from "@/lib/membership-operations";
+import { copyText } from "@/components/player/copy-link-button";
+import { membershipFailureMessage } from "@/lib/membership-actions";
 
 type Screen =
   | { kind: "grid" }
@@ -40,7 +52,9 @@ export function CommunityCollectionsView({ active }: { active: boolean }) {
   const [screen, setScreen] = useState<Screen>({ kind: "grid" });
   const returnFocus = useRef<HTMLElement | null>(null);
   const open = (next: Screen) => {
-    if (screen.kind === "grid") returnFocus.current = document.activeElement instanceof HTMLElement ? document.activeElement : null;
+    if (screen.kind === "grid")
+      returnFocus.current =
+        document.activeElement instanceof HTMLElement ? document.activeElement : null;
     setScreen(next);
   };
   const back = () => setScreen({ kind: "grid" });
@@ -76,10 +90,7 @@ export function CommunityCollectionsView({ active }: { active: boolean }) {
         />
       )}
       {screen.kind === "community" && (
-        <CommunityDetail
-          collection={screen.collection}
-          onBack={back}
-        />
+        <CommunityDetail collection={screen.collection} onBack={back} />
       )}
     </>
   );
@@ -100,13 +111,25 @@ function HubGrid({
   const collections = useCollections();
   const scrollRef = useRef<HTMLElement>(null);
   useScrollMemory("collections-hub", scrollRef, active);
-  const { collections: community, loading, failed, loaded, hasMore, loadMore, refresh, retry } = useCommunityCollections(active);
+  const {
+    collections: community,
+    loading,
+    failed,
+    loaded,
+    hasMore,
+    loadMore,
+    refresh,
+    retry,
+  } = useCommunityCollections(active);
   const sentinel = useRef<HTMLDivElement>(null);
   useEffect(() => {
     if (!active || !hasMore || loading || failed || !sentinel.current) return;
-    const observer = new IntersectionObserver(entries => {
-      if (entries.some(entry => entry.isIntersecting)) void loadMore();
-    }, { root: scrollRef.current, rootMargin: "0px 0px 600px 0px" });
+    const observer = new IntersectionObserver(
+      (entries) => {
+        if (entries.some((entry) => entry.isIntersecting)) void loadMore();
+      },
+      { root: scrollRef.current, rootMargin: "0px 0px 600px 0px" },
+    );
     observer.observe(sentinel.current);
     return () => observer.disconnect();
   }, [active, hasMore, loading, failed, loadMore, community.length]);
@@ -119,13 +142,12 @@ function HubGrid({
     if (id) onEdit(id);
   };
 
-  const remove = (id: string) => {
-    deleteCollection(id);
-    purgeCollectionFromPages(id);
-    void publishCollections(readCollections())
-      .then(() => notifyCommunityChanged())
-      .catch(() => {});
-  };
+  const remove: React.ComponentProps<typeof CommunityCollectionCard>["onDelete"] = (
+    id,
+    profile,
+    token,
+    localOnly,
+  ) => deleteCollectionAcknowledged({ collectionId: id, profile, token, localOnly });
 
   return (
     <main
@@ -133,7 +155,10 @@ function HubGrid({
       style={active ? undefined : { display: "none" }}
       className="flex-1 overflow-y-auto px-5 pt-24 pb-20 sm:px-8 lg:px-12 lg:pt-28"
     >
-      <div className="mx-auto flex w-full max-w-[1500px] flex-col gap-10">
+      <div
+        data-context-page-background
+        className="mx-auto flex w-full max-w-[1500px] flex-col gap-10"
+      >
         <header className="flex flex-wrap items-end justify-between gap-5">
           <div className="flex flex-col gap-1.5">
             <span className="text-[11px] font-bold uppercase tracking-[0.28em] text-ink-subtle">
@@ -159,7 +184,7 @@ function HubGrid({
           </button>
         </header>
 
-        <section className="flex flex-col gap-5">
+        <section data-context-page-background className="flex flex-col gap-5">
           <div className="flex items-baseline justify-between gap-4">
             <h2 className="text-[16px] font-semibold text-ink">{t("My collections")}</h2>
             {collections.length > 0 && (
@@ -189,7 +214,7 @@ function HubGrid({
           )}
         </section>
 
-        <section className="flex flex-col gap-5">
+        <section data-context-page-background className="flex flex-col gap-5">
           <div className="flex items-center justify-between gap-4">
             <h2 className="text-[16px] font-semibold text-ink">{t("From the community")}</h2>
             <button
@@ -226,21 +251,40 @@ function HubGrid({
             </div>
           ) : null}
           {failed && (
-            <div role="status" className="flex flex-wrap items-center justify-center gap-3 py-5 text-[14px] text-ink-muted">
+            <div
+              role="status"
+              className="flex flex-wrap items-center justify-center gap-3 py-5 text-[14px] text-ink-muted"
+            >
               <p>{t("collections.feed.error")}</p>
-              <button type="button" onClick={() => void retry()} className="min-h-11 rounded-lg bg-elevated px-5 font-semibold text-ink hover:bg-elevated-hover focus-visible:outline-2 focus-visible:outline-ink">
+              <button
+                type="button"
+                onClick={() => void retry()}
+                className="min-h-11 rounded-lg bg-elevated px-5 font-semibold text-ink hover:bg-elevated-hover focus-visible:outline-2 focus-visible:outline-ink"
+              >
                 {t("Retry")}
               </button>
             </div>
           )}
           {loaded && (hasMore || loading) && !failed && (
-            <div ref={sentinel} className="flex min-h-14 items-center justify-center" aria-live="polite">
+            <div
+              ref={sentinel}
+              className="flex min-h-14 items-center justify-center"
+              aria-live="polite"
+            >
               {loading ? (
-                <span role="status" className="inline-flex items-center gap-2 text-[13px] text-ink-muted">
-                  <RefreshCw size={14} className="animate-spin motion-reduce:animate-none" />{t("Loading...")}
+                <span
+                  role="status"
+                  className="inline-flex items-center gap-2 text-[13px] text-ink-muted"
+                >
+                  <RefreshCw size={14} className="animate-spin motion-reduce:animate-none" />
+                  {t("Loading...")}
                 </span>
               ) : (
-                <button type="button" onClick={() => void loadMore()} className="min-h-11 rounded-lg px-5 text-[13px] text-ink-muted hover:text-ink focus-visible:outline-2 focus-visible:outline-ink">
+                <button
+                  type="button"
+                  onClick={() => void loadMore()}
+                  className="min-h-11 rounded-lg px-5 text-[13px] text-ink-muted hover:text-ink focus-visible:outline-2 focus-visible:outline-ink"
+                >
                   {t("collections.feed.more")}
                 </button>
               )}
@@ -261,9 +305,13 @@ function EmptyCollections({ onCreate }: { onCreate: () => void }) {
         <GalleryVerticalEnd size={24} strokeWidth={1.6} />
       </span>
       <div className="flex flex-col gap-1.5">
-        <h3 className="font-display text-[20px] font-medium text-ink">{t("Make your first collection")}</h3>
+        <h3 className="font-display text-[20px] font-medium text-ink">
+          {t("Make your first collection")}
+        </h3>
         <p className="max-w-sm text-[13px] leading-relaxed text-ink-muted">
-          {t("Give it a cover, a background, and the titles you want to show off. Then share the link.")}
+          {t(
+            "Give it a cover, a background, and the titles you want to show off. Then share the link.",
+          )}
         </p>
       </div>
       <button
@@ -301,7 +349,9 @@ function CommunityEmpty() {
       <span className="flex h-14 w-14 items-center justify-center rounded-full bg-elevated/60 text-ink-subtle ring-1 ring-edge-soft/60">
         <Users size={24} strokeWidth={1.6} />
       </span>
-      <p className="font-display text-[19px] font-medium text-ink">{t("No shared collections yet")}</p>
+      <p className="font-display text-[19px] font-medium text-ink">
+        {t("No shared collections yet")}
+      </p>
       <p className="max-w-md text-[13.5px] leading-relaxed text-ink-muted">
         {t(
           "When people share a collection it shows up here. Build one you love and share it, that is how it starts.",
@@ -321,10 +371,12 @@ function CommunityCard({
   const t = useT();
   const cover = collection.coverImage || collection.items.find((it) => it.poster)?.poster;
   const count = collection.items.length;
+  const contextRef = useCommunityCollectionContext(collection, () => onOpen(collection));
 
   return (
     <div className="flex flex-col gap-2.5">
       <button
+        ref={contextRef}
         type="button"
         onClick={() => onOpen(collection)}
         className="relative block aspect-[16/9] w-full overflow-hidden rounded-2xl border border-edge-soft text-start shadow-[0_6px_22px_-14px_rgba(0,0,0,0.6)] transition-[border-color,transform] duration-300 hover:-translate-y-0.5 hover:border-edge"
@@ -339,7 +391,10 @@ function CommunityCard({
             className="absolute inset-0 h-full w-full object-cover"
           />
         )}
-        <div aria-hidden className="absolute inset-0 bg-gradient-to-t from-black/85 via-black/25 to-transparent" />
+        <div
+          aria-hidden
+          className="absolute inset-0 bg-gradient-to-t from-black/85 via-black/25 to-transparent"
+        />
         <span className="absolute start-3.5 top-3 inline-flex items-center rounded-full bg-black/45 px-2.5 py-1 text-[10.5px] font-semibold uppercase tracking-[0.16em] text-white/85 backdrop-blur-md">
           {count === 1 ? t("{n} title", { n: count }) : t("{n} titles", { n: count })}
         </span>
@@ -357,36 +412,126 @@ function CommunityCard({
   );
 }
 
+function useCommunityCollectionContext(collection: CommunityCollection, onOpen?: () => void) {
+  const t = useT();
+  const handle = useCurrentHandle();
+  return useContextTarget<HTMLElement>(() => {
+    const profile = captureMembershipProfile();
+    const authorHandle = collectionAuthorHandle(collection);
+    return {
+      kind: "actions",
+      id: `community-collection:${collection.handle}:${collection.id}`,
+      label: collection.name,
+      isValid: () => isMembershipProfileCurrent(profile),
+      actions: () => {
+        const stored = readCollections();
+        const saved = stored.some(
+          (entry) => entry.sourceHandle === collection.handle && entry.sourceId === collection.id,
+        );
+        const own = handle?.toLowerCase() === collection.handle.toLowerCase();
+        return [
+          ...(onOpen
+            ? [
+                {
+                  id: `community-collection:open:${collection.id}`,
+                  icon: <UiIcon name="open-collection" className="size-4" />,
+                  label: t("Open collection"),
+                  run: onOpen,
+                },
+              ]
+            : []),
+          ...(!own
+            ? [
+                {
+                  id: `community-collection:save:${collection.id}`,
+                  icon: saved ? (
+                    <Check size={16} />
+                  ) : (
+                    <UiIcon name="save-to-my-collections" className="size-4" />
+                  ),
+                  active: saved,
+                  label: saved ? t("Saved to your collections") : t("Save to my collections"),
+                  disabled: saved || stored.length >= MAX_COLLECTIONS,
+                  run: () => {
+                    if (!profile)
+                      throw new Error(t("The active profile changed. Open the menu again."));
+                    const saved = saveCommunityCollectionWithResult(collection, profile);
+                    if (!saved.id) throw new Error(t(membershipFailureMessage(saved.result)));
+                  },
+                },
+              ]
+            : []),
+          {
+            id: `community-collection:copy:${collection.id}`,
+            icon: <Link2 size={16} />,
+            label: t("Copy share link"),
+            run: async () => {
+              if (!(await copyText(collectionShareUrl(collection.handle, collection.id))))
+                throw new Error(t("Could not copy the link."));
+            },
+          },
+          ...(authorHandle && canOpenProfile(authorHandle)
+            ? [
+                {
+                  id: `community-collection:author:${collection.id}`,
+                  icon: <UserRound size={16} />,
+                  label: t("Open author profile"),
+                  run: () => requestOpenProfile(authorHandle),
+                  restoreFocus: false,
+                },
+              ]
+            : []),
+        ];
+      },
+    };
+  });
+}
+
 function SaveCollectionButton({ collection }: { collection: CommunityCollection }) {
   const t = useT();
+  const [error, setError] = useState("");
   const collections = useCollections();
   const currentHandle = useCurrentHandle();
   const saved = collections.some(
     (c) => c.sourceHandle === collection.handle && c.sourceId === collection.id,
   );
-  const isOwn =
-    !!currentHandle && currentHandle.toLowerCase() === collection.handle.toLowerCase();
+  const isOwn = !!currentHandle && currentHandle.toLowerCase() === collection.handle.toLowerCase();
   if (isOwn) return null;
   return (
-    <button
-      type="button"
-      onClick={() => {
-        if (!saved) saveCommunityCollection(collection);
-      }}
-      disabled={saved}
-      className={`inline-flex h-11 items-center gap-2 rounded-full px-5 text-[13px] font-semibold transition-opacity duration-200 ease-out ${
-        saved
-          ? "cursor-default border border-edge-soft bg-elevated/60 text-ink-muted"
-          : "bg-ink text-canvas hover:opacity-90"
-      }`}
-    >
-      {saved ? (
-        <Check size={17} strokeWidth={2.4} />
-      ) : (
-        <BookmarkPlus size={17} strokeWidth={2.2} />
+    <div className="flex flex-col items-end gap-1">
+      <button
+        type="button"
+        onClick={() => {
+          const profile = captureMembershipProfile();
+          if (!profile) {
+            setError(t("The active profile changed. Open the menu again."));
+            return;
+          }
+          const result = saveCommunityCollectionWithResult(collection, profile);
+          setError(
+            result.result.status === "error" ? t(membershipFailureMessage(result.result)) : "",
+          );
+        }}
+        disabled={saved}
+        className={`inline-flex h-11 items-center gap-2 rounded-full px-5 text-[13px] font-semibold transition-opacity duration-200 ease-out ${
+          saved
+            ? "cursor-default border border-edge-soft bg-elevated/60 text-ink-muted"
+            : "bg-ink text-canvas hover:opacity-90"
+        }`}
+      >
+        {saved ? (
+          <Check size={17} strokeWidth={2.4} />
+        ) : (
+          <BookmarkPlus size={17} strokeWidth={2.2} />
+        )}
+        {saved ? t("Saved to your collections") : t("Save to my collections")}
+      </button>
+      {error && (
+        <p role="alert" className="max-w-xs text-xs text-danger">
+          {error}
+        </p>
       )}
-      {saved ? t("Saved to your collections") : t("Save to my collections")}
-    </button>
+    </div>
   );
 }
 
@@ -406,6 +551,7 @@ function CommunityDetail({
   const backdrop = collection.bgImage || poster;
   const backdropSharp = !!collection.bgImage;
   const count = items.length;
+  const contextRef = useCommunityCollectionContext(collection);
 
   const open = (item: CollectionItem) => {
     if (item.type === "manga") {
@@ -413,7 +559,7 @@ function CommunityDetail({
       return;
     }
     const type: MetaType = item.type === "series" ? "series" : "movie";
-    openMeta({ id: item.id, type, name: item.name, poster: item.poster });
+    openMeta({ ...item, type });
   };
 
   return (
@@ -445,7 +591,7 @@ function CommunityDetail({
           <SaveCollectionButton collection={collection} />
         </div>
 
-        <header className="flex min-w-0 max-w-4xl flex-col gap-4">
+        <header ref={contextRef} className="flex min-w-0 max-w-4xl flex-col gap-4">
           <span className="text-[11px] font-bold uppercase tracking-[0.28em] text-ink-subtle">
             {t("Collection")}
           </span>
@@ -488,8 +634,9 @@ function CommunityDetail({
             style={{ gridTemplateColumns: "repeat(auto-fill, minmax(128px, 1fr))" }}
           >
             {items.map((item) => (
-              <button
+              <MetaContextButton
                 key={item.id}
+                meta={item}
                 type="button"
                 onClick={() => open(item)}
                 title={item.name}
@@ -505,7 +652,7 @@ function CommunityDetail({
                 <span className="line-clamp-2 text-[12.5px] leading-tight text-ink-muted">
                   {item.name}
                 </span>
-              </button>
+              </MetaContextButton>
             ))}
           </div>
         )}

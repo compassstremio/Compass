@@ -19,7 +19,7 @@ const musicCast: Record<string, string> = {
     "Die Lautsprechersuche ist fehlgeschlagen. Prüfe dein Netzwerk und versuche es erneut.",
   "music.cast.controlFailed":
     "Der Lautsprecher hat den Befehl nicht bestätigt. Prüfe ihn und versuche es erneut.",
-  "music.cast.desktop": "Nutze Compasses Desktop-App, um Netzwerklautsprecher zu finden.",
+  "music.cast.desktop": "Nutze Compasss Desktop-App, um Netzwerklautsprecher zu finden.",
   "music.cast.spotify":
     "Geschütztes Spotify-Audio kann so nicht gesendet werden. Nutze Spotify Connect in Spotify.",
   "music.cast.local":
@@ -32,7 +32,7 @@ const musicCast: Record<string, string> = {
   "music.cast.stop": "Übertragung beenden",
   "music.cast.selected": "Ausgewählt",
   "music.cast.eqHelp":
-    "Compasses EQ und Verstärkung wirken nur auf diesem Computer. Stelle die Lautstärke am Lautsprecher ein.",
+    "Compasss EQ und Verstärkung wirken nur auf diesem Computer. Stelle die Lautstärke am Lautsprecher ein.",
   "music.cast.loading": "Verbindung zum Lautsprecher wird hergestellt…",
   "music.cast.playing": "Wiedergabe auf dem Lautsprecher",
   "music.cast.paused": "Auf dem Lautsprecher pausiert",

@@ -213,7 +213,7 @@ const catalog06: Record<string, string> = {
   "Compass's temporary viewer requires HTTPS.":
     "Tymczasowa przeglądarka Compass wymaga protokołu HTTPS.",
   "Compass, from a public domain frame": "Compass, z kadru należącego do domeny publicznej",
-  "Compasses on your network": "Instancje Compass w twojej sieci",
+  "Compasss on your network": "Instancje Compass w twojej sieci",
   "Hard Boiled": "Kryminały w stylu hard-boiled",
   "Hard outline": "Wyraźny kontur",
   "Hard stroke around each letter. High contrast.": "Wyraźny obrys każdej litery. Wysoki kontrast.",

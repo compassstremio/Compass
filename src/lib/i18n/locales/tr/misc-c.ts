@@ -1603,7 +1603,7 @@ const miscC: Record<string, string> = {
   "{n} on": "{n} açık",
   "{n} option": "{n} seçenek",
   "{n} options": "{n} seçenek",
-  "{n} other Compasses": "{n} diğer Compass",
+  "{n} other Compasss": "{n} diğer Compass",
   "{n} picks, refreshed daily": "Her gün yenilenen {n} öneri",
   "{n} px/s": "{n} px/sn",
   "{n} ratings were saved before you stopped.": "Siz durdurmadan önce {n} puan kaydedildi.",

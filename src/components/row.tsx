@@ -10,8 +10,7 @@ import {
   useState,
   type ReactNode,
 } from "react";
-import { flushSync } from "react-dom";
-import { observeWithin } from "@/lib/visibility";
+import { observeResize, observeWithin } from "@/lib/visibility";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import { ThreeLiquidGlassSurface } from "@/components/ThreeLiquidGlassSurface";
 import { NavChevron } from "./nav-arrow";
@@ -179,9 +178,10 @@ function batchWrite(fn: () => void): void {
   queueMicrotask(() => {
     const fns = pendingWrites;
     pendingWrites = [];
-    flushSync(() => {
-      for (const f of fns) f();
-    });
+    // No flushSync here. This runs from every row's ResizeObserver rAF, and forcing a synchronous
+    // commit there turned a no-op measurement into a full render pass per row — the layout storm
+    // the long-frame profiler kept attributing to this file. React batches these on its own.
+    for (const f of fns) f();
   });
 }
 
@@ -292,11 +292,21 @@ export function Row({
     if (!el) return;
     return observeWithin(el, "600px", (e) => setNear(e.isIntersecting));
   }, []);
+  const measuredRef = useRef({ width: 0, effMin: 0 });
+  // Width reported by the ResizeObserver for this row's container, so the measurement below does
+  // not need a forced layout read.
+  const observedWidthRef = useRef(0);
   const measure = () => {
     const container = containerRef.current;
     if (!container) return;
-    const available = container.getBoundingClientRect().width;
+    const available = observedWidthRef.current || container.getBoundingClientRect().width;
     if (available <= 0) return;
+    // The ResizeObserver also fires when the track's height changes, which is posters loading, not
+    // a width change. Re-deriving the cell width then wrote the same value and re-laid-out the
+    // whole track for nothing.
+    const previous = measuredRef.current;
+    if (Math.abs(available - previous.width) < 0.5 && effMin === previous.effMin) return;
+    measuredRef.current = { width: available, effMin };
     const fits = Math.max(1, Math.floor((available + GAP) / (effMin + GAP)));
     const raw = (available - (fits - 1) * GAP) / fits;
     const next = (Math.ceil(raw * 64) + 1) / 64;
@@ -431,17 +441,26 @@ export function Row({
     const track = trackRef.current;
     if (!container || !track) return;
     let roRaf: number | null = null;
-    const ro = new ResizeObserver(() => {
-      if (container.offsetParent === null) return;
+    const scheduleMeasure = () => {
       if (roRaf != null) return;
       roRaf = requestAnimationFrame(() => {
         roRaf = null;
         measureRef.current();
         measureScroll();
       });
+    };
+    // One shared ResizeObserver rather than one per row. A view mounts dozens of rows at once, so
+    // each private observer was another object created during the click that switched to it — and
+    // the entry already carries the width, so the measurement needs no layout read either.
+    const stopContainerResize = observeResize(container, (rect) => {
+      if (container.offsetParent === null) return;
+      if (rect.width > 0) observedWidthRef.current = rect.width;
+      scheduleMeasure();
     });
-    ro.observe(container);
-    ro.observe(track);
+    const stopTrackResize = observeResize(track, () => {
+      if (container.offsetParent === null) return;
+      scheduleMeasure();
+    });
     let saveTimer: number | null = null;
     let scrollRaf: number | null = null;
     const onScroll = () => {
@@ -489,24 +508,35 @@ export function Row({
     track.addEventListener("wheel", onWheel, { passive: true });
     track.addEventListener("pointerdown", markInteracted);
     track.addEventListener("keydown", markInteracted);
+    let resetRaf: number | null = null;
     const onReset = (e: Event) => {
       const detail = (e as CustomEvent<{ prefix?: string }>).detail;
       if (!scrollKey) return;
       if (!detail?.prefix || !scrollKey.startsWith(detail.prefix)) return;
-      if (saveTimer != null) {
-        window.clearTimeout(saveTimer);
-        saveTimer = null;
-      }
-      writePos(track, 0);
-      rememberRowScroll(scrollKey, 0);
-      userInteractedRef.current = false;
-      measureScroll();
+      // Deferred by one frame. This fires from the click handler that switches views, and every
+      // matching row used to write scrollLeft and then read scrollWidth right there — a forced
+      // layout per row, synchronously inside the click. Coalescing the writes into a single frame
+      // lets the browser lay out once, after the click has already been handled. The write below
+      // still fires the track's own scroll handler, which is what updates the arrows.
+      if (resetRaf != null) return;
+      resetRaf = requestAnimationFrame(() => {
+        resetRaf = null;
+        if (saveTimer != null) {
+          window.clearTimeout(saveTimer);
+          saveTimer = null;
+        }
+        writePos(track, 0);
+        rememberRowScroll(scrollKey, 0);
+        userInteractedRef.current = false;
+      });
     };
     window.addEventListener("compass:reset-row-scrolls", onReset);
     return () => {
-      ro.disconnect();
+      stopContainerResize();
+      stopTrackResize();
       if (roRaf != null) cancelAnimationFrame(roRaf);
       if (scrollRaf != null) cancelAnimationFrame(scrollRaf);
+      if (resetRaf != null) cancelAnimationFrame(resetRaf);
       track.removeEventListener("scroll", onScroll);
       track.removeEventListener("wheel", onWheel);
       track.removeEventListener("pointerdown", markInteracted);

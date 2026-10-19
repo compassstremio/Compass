@@ -1,4 +1,5 @@
 import type { LibraryItem } from "@/lib/stremio";
+import { noteNotify } from "@/lib/render-cause";
 import { persistCritical } from "@/lib/storage-recovery";
 
 const PROFILES_KEY = "compass.profiles.v1";
@@ -157,22 +158,33 @@ function undismiss(metaId: string): void {
     return;
   }
   version += 1;
-  for (const fn of subs) fn();
+  notifySubs();
 }
 
-export function dismissManualWatched(metaId: string): void {
+export function isManualWatchedDismissed(metaId: string): boolean {
+  return dismissedSet().has(metaId);
+}
+
+export function dismissManualWatched(
+  metaId: string,
+  options: { acknowledged?: boolean } = {},
+): void {
   const set = dismissedSet();
   if (set.has(metaId)) return;
   const next = new Set(set);
   next.add(metaId);
-  dismissedCache = next;
   try {
     localStorage.setItem(storeKey("dismissed"), JSON.stringify([...next]));
-  } catch {
+  } catch (error) {
+    if (options.acknowledged)
+      throw new Error("Could not save the change. Check available storage and try again.", {
+        cause: error,
+      });
     return;
   }
+  dismissedCache = next;
   version += 1;
-  for (const fn of subs) fn();
+  notifySubs();
 }
 
 function loadSet(storageKey: string): Set<string> {
@@ -206,7 +218,7 @@ function persist(on: Set<string>, off: Set<string>): void {
   persistCritical(storeKey("watched"), JSON.stringify([...on]));
   persistCritical(storeKey("unwatched"), JSON.stringify([...off]));
   version += 1;
-  for (const fn of subs) fn();
+  notifySubs();
 }
 
 function key(metaId: string, season: number, episode: number): string {
@@ -337,6 +349,54 @@ export function unwatchedAt(metaId: string, season: number, episode: number): nu
   return unwatchedAtMap()[key(metaId, season, episode)];
 }
 
+/** Each accepted storage write survives a later failure; reload the actual partial state. */
+export function setManualWatchedManyAcknowledged(
+  metaId: string,
+  episodes: Array<{ season: number; episode: number }>,
+  watched: boolean,
+): void {
+  const on = new Set(watchedSet());
+  const off = new Set(unwatchedSet());
+  const at = { ...unwatchedAtMap() };
+  const remote = new Set(remoteSet());
+  for (const { season, episode } of episodes) {
+    const k = key(metaId, season, episode);
+    if (watched) {
+      on.add(k);
+      off.delete(k);
+      delete at[k];
+    } else {
+      on.delete(k);
+      off.add(k);
+      at[k] = Date.now();
+    }
+    remote.delete(k);
+  }
+  try {
+    localStorage.setItem(storeKey("unwatchedAt"), JSON.stringify(at));
+    localStorage.setItem(storeKey("remote"), JSON.stringify([...remote]));
+    // Clear the opposing override before setting the requested state.
+    const pairs = watched
+      ? ([
+          ["unwatched", off],
+          ["watched", on],
+        ] as const)
+      : ([
+          ["watched", on],
+          ["unwatched", off],
+        ] as const);
+    for (const [name, values] of pairs)
+      localStorage.setItem(storeKey(name), JSON.stringify([...values]));
+  } finally {
+    watchedCache = null;
+    unwatchedCache = null;
+    unwatchedAtCache = null;
+    remoteCache = null;
+    version += 1;
+    notifySubs();
+  }
+}
+
 export function remoteWatchedKeys(metaId: string): Set<string> {
   const prefix = `${metaId}|`;
   const out = new Set<string>();
@@ -398,7 +458,7 @@ export function recordManualWatchedMeta(metaId: string, meta: ManualWatchedMeta)
     return;
   }
   version += 1;
-  for (const fn of subs) fn();
+  notifySubs();
 }
 
 export function manualWatchedLibraryItems(): LibraryItem[] {
@@ -448,6 +508,11 @@ export function manualWatchedLibraryItems(): LibraryItem[] {
   return out;
 }
 
+function notifySubs(): void {
+  noteNotify("store:manual-watched");
+  for (const fn of subs) fn();
+}
+
 export function subscribeManualWatched(fn: () => void): () => void {
   subs.add(fn);
   return () => {
@@ -472,7 +537,7 @@ if (typeof window !== "undefined") {
     unwatchedAtCache = null;
     remoteCache = null;
     version += 1;
-    for (const fn of subs) fn();
+    notifySubs();
   };
   window.addEventListener("compass:active-profile-changed", onProfileChange);
   window.addEventListener("compass:profiles-updated", onProfileChange);

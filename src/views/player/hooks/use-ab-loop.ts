@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useRef, useState, type RefObject } from "react";
+import { useCallback, useEffect, useState, type RefObject } from "react";
 import type { PlayerBridge } from "@/lib/player/bridge";
 import { getPlaybackPosition, subscribePlaybackClock } from "@/lib/player/playback-clock";
 
@@ -20,14 +20,6 @@ export function useAbLoop(params: {
   const { bridgeRef, durationSec, enabled, resetKey } = params;
   const [a, setAState] = useState<number | null>(null);
   const [b, setBState] = useState<number | null>(null);
-  const positionRef = useRef(getPlaybackPosition());
-
-  useEffect(
-    () => subscribePlaybackClock(() => {
-      positionRef.current = getPlaybackPosition();
-    }),
-    [],
-  );
 
   useEffect(() => {
     setAState(null);
@@ -47,13 +39,15 @@ export function useAbLoop(params: {
   }, [a, b, bridgeRef]);
 
   const setA = useCallback(() => {
-    const t = Math.max(0, positionRef.current);
+    // Read the live position: it is exact, because setPlaybackClock writes it before it notifies,
+    // while a ref refreshed by those notifications can lag by the batching window.
+    const t = Math.max(0, getPlaybackPosition());
     setAState(t);
     setBState((cur) => (cur != null && cur <= t ? null : cur));
   }, []);
 
   const setB = useCallback(() => {
-    const t = Math.max(0, positionRef.current);
+    const t = Math.max(0, getPlaybackPosition());
     setBState((cur) => {
       if (a == null) return cur;
       if (t <= a) return cur;

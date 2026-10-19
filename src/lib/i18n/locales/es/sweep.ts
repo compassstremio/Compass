@@ -22,7 +22,7 @@ const sweep: Record<string, string> = {
   "{n} of {total} chosen": "{n} de {total} seleccionados",
   "{n} of {total} connected": "{n} de {total} conectados",
   "{n} on": "{n} activados",
-  "{n} other Compasses": "{n} Compass más",
+  "{n} other Compasss": "{n} Compass más",
   "{n} picks, refreshed daily": "{n} recomendaciones, actualizadas a diario",
   "{n} recorded winners": "{n} ganadores registrados",
   "{n} seeders": "{n} seeders",
@@ -783,7 +783,7 @@ const sweep: Record<string, string> = {
   "Compass's own bar": "Barra propia de Compass",
   "Compass's own community server": "Servidor comunitario de Compass",
   "Compass's public relay": "Retransmisor público de Compass",
-  "Compasses on your network": "Instancias de Compass en tu red",
+  "Compasss on your network": "Instancias de Compass en tu red",
   "Hard outline": "Contorno marcado",
   "Hardware acceleration (hwdec)": "Aceleración por hardware (hwdec)",
   "HDR to SDR toggle": "Selector de HDR a SDR",
@@ -951,7 +951,7 @@ const sweep: Record<string, string> = {
   "Link Discord": "Vincular Discord",
   "Linked as {username}": "Vinculado como {username}",
   "Linked to your Compass account.": "Vinculado a tu cuenta de Compass.",
-  "Listening for Compasses": "Buscando instancias de Compass",
+  "Listening for Compasss": "Buscando instancias de Compass",
   Lists: "Listas",
   "Live action": "Acción real",
   "Live state of Compass's own P2P engine on this machine.":
@@ -1377,9 +1377,9 @@ const sweep: Record<string, string> = {
   "Remember your place on show pages": "Recordar tu posición en las páginas de las series",
   "Remote control is off on that Compass, so it cannot be driven from here.":
     "El control remoto está desactivado en ese Compass, por lo que no se puede controlar desde aquí.",
-  "Remote control is off, so other Compasses can see this one but cannot drive it.":
+  "Remote control is off, so other Compasss can see this one but cannot drive it.":
     "El control remoto está desactivado, por lo que otras instancias de Compass pueden ver esta, pero no controlarla.",
-  "Remote control is on, so other Compasses on this network can drive this one.":
+  "Remote control is on, so other Compasss on this network can drive this one.":
     "El control remoto está activado, por lo que otras instancias de Compass en esta red pueden controlar esta.",
   "Remote off": "Remoto desactivado",
   Remotes: "Controles remotos",

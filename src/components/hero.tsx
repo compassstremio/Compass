@@ -1,5 +1,14 @@
 import { memo, useEffect, useRef, useState, useSyncExternalStore } from "react";
-import { Check, ChevronRight, Info, Plus, RotateCcw, TrendingUp, Volume2, VolumeX } from "lucide-react";
+import {
+  Check,
+  ChevronRight,
+  Info,
+  Plus,
+  RotateCcw,
+  TrendingUp,
+  Volume2,
+  VolumeX,
+} from "lucide-react";
 import { Play } from "@/components/icons/play-filled";
 import { ImdbIcon } from "@/components/icons/imdb-icon";
 import tmdbIcon from "@/assets/addon-logos/tmdb.png";
@@ -26,7 +35,13 @@ import { peekCachedLogo, resolveLogo } from "@/lib/logo";
 import { useSettings } from "@/lib/settings";
 import { useTitleLogo } from "@/lib/title-logo";
 import { useLocalizedOverview } from "@/lib/use-localized-overview";
-import { fetchTrailer, prefetchTrailer, trailerSrc, type TrailerInfo } from "@/lib/trailer";
+import {
+  fetchFirstTrailer,
+  resolveTrailerQuality,
+  trailerSrc,
+  type Quality,
+  type TrailerInfo,
+} from "@/lib/trailer";
 import { useView } from "@/lib/view";
 import { useProfiles } from "@/lib/profiles";
 import {
@@ -39,6 +54,7 @@ import { getHeroEnded, setHeroEnded } from "@/lib/hero-ended";
 import { usePageVisible } from "@/lib/visibility";
 import { useTrailerVideo } from "@/lib/use-trailer-video";
 import { toggleWatchlist, useInWatchlist } from "@/lib/watchlist";
+import { useHeroContext } from "@/lib/context-menu";
 
 const HERO_VIDEO_CLASS =
   "absolute left-1/2 top-1/2 h-[110%] w-[110%] -translate-x-1/2 -translate-y-1/2 object-cover";
@@ -74,12 +90,18 @@ export const Hero = memo(function Hero({
   const resolvedImdb = useTmdbImdbId(meta.id);
   const inWatchlist = useInWatchlist(meta.id, [resolvedImdb]);
   const [bgUrl, setBgUrl] = useState<string | undefined>(meta.background);
+  const onContextMenu = useHeroContext(meta, bgUrl);
   const [bgResolved, setBgResolved] = useState<boolean>(!!meta.background);
   const bg = bgUrl
     ? upsizeTmdb(bgUrl, fullQuality)
     : (meta.background ?? (bgResolved ? meta.poster : undefined));
   const [trailerCandidates, setTrailerCandidates] = useState<string[]>([]);
-  const [trailerInfo, setTrailerInfo] = useState<TrailerInfo | null>(null);
+  const trailerQuality = resolveTrailerQuality(settings.autoplayTrailerQuality);
+  const [trailerResult, setTrailerResult] = useState<{
+    quality: Quality;
+    info: TrailerInfo;
+  } | null>(null);
+  const trailerInfo = trailerResult?.quality === trailerQuality ? trailerResult.info : null;
   const [overControls, setOverControls] = useState(false);
   const audioHero = settings.heroTrailerAudio && playTrailer;
   const muted = useSyncExternalStore(subscribeHeroMuted, getHeroMuted);
@@ -99,9 +121,17 @@ export const Hero = memo(function Hero({
   const onScreen = pageVisible && !overlayed && visibleRatio > 0.12;
   const wantsPlayback =
     !!playTrailer && !!trailerInfo && !overControls && onScreen && lingered && !ended;
-  const { slot, video: videoRef, ready: videoReady } = useTrailerVideo({
+  const {
+    slot,
+    video: videoRef,
+    ready: videoReady,
+  } = useTrailerVideo({
     src: trailerInfo ? trailerSrc(trailerInfo) : null,
     active: !!playTrailer && !!trailerInfo && onScreen,
+    playing: wantsPlayback,
+    muted: muted || !audioHero,
+    volume: audioHero && !muted ? Math.max(0, Math.min(1, (visibleRatio - 0.2) / 0.7)) : 0,
+    onAutoplayMuted: () => setHeroMuted(true),
     className: HERO_VIDEO_CLASS,
     loop: !audioHero,
     onEnded: () => {
@@ -113,7 +143,7 @@ export const Hero = memo(function Hero({
 
   useEffect(() => {
     setTrailerCandidates([]);
-    setTrailerInfo(null);
+    setTrailerResult(null);
     setEnded(getHeroEnded(meta.id));
   }, [meta.id]);
 
@@ -135,7 +165,6 @@ export const Hero = memo(function Hero({
       .then((ids) => {
         if (cancelled) return;
         setTrailerCandidates(ids);
-        if (ids[0]) prefetchTrailer(ids[0], "360p");
       })
       .catch(() => {});
     return () => {
@@ -206,24 +235,17 @@ export const Hero = memo(function Hero({
   useEffect(() => {
     if (!playTrailer || trailerCandidates.length === 0 || trailerInfo) return;
     let cancelled = false;
-    fetchTrailer(trailerCandidates[0], "360p").then((info) => {
-      if (!cancelled && info) setTrailerInfo(info);
+    fetchFirstTrailer(trailerCandidates, trailerQuality, () => !cancelled).then((info) => {
+      if (!cancelled && info) setTrailerResult({ quality: trailerQuality, info });
     });
     return () => {
       cancelled = true;
     };
-  }, [playTrailer, trailerCandidates, trailerInfo]);
+  }, [playTrailer, trailerCandidates, trailerInfo, trailerQuality]);
 
   useEffect(() => {
     syncHeroMutedFromSetting(settings.heroTrailerAudio);
   }, [settings.heroTrailerAudio]);
-
-  useEffect(() => {
-    const v = videoRef.current;
-    if (!v) return;
-    v.muted = muted || !audioHero;
-    v.volume = audioHero && !muted ? Math.max(0, Math.min(1, (visibleRatio - 0.2) / 0.7)) : 0;
-  }, [muted, audioHero, visibleRatio, trailerInfo]);
 
   useEffect(() => {
     const el = sectionRef.current;
@@ -257,32 +279,11 @@ export const Hero = memo(function Hero({
     return () => window.clearTimeout(id);
   }, [onScreen]);
 
-  useEffect(() => {
-    const v = videoRef.current;
-    if (!v) return;
-    let cancelled = false;
-    if (wantsPlayback) {
-      v.muted = muted || !audioHero;
-      v.play().catch(() => {
-        if (cancelled) return;
-        if (!v.muted) {
-          v.muted = true;
-          setHeroMuted(true);
-          v.play().catch(() => {});
-        }
-      });
-    } else {
-      v.pause();
-    }
-    return () => {
-      cancelled = true;
-    };
-  }, [wantsPlayback, muted, audioHero]);
-
   const actionRadius = playSquare ? "rounded-md" : "rounded-full";
 
   return (
     <section
+      onContextMenu={onContextMenu}
       ref={sectionRef}
       onClick={() => openMeta({ ...meta, logo: logo ?? meta.logo })}
       className={`compass-hero-stage group relative cursor-pointer overflow-hidden bg-canvas ${full ? "h-[78vh] min-h-[640px] rounded-none" : "h-[560px] rounded-2xl"}`}
@@ -317,7 +318,6 @@ export const Hero = memo(function Hero({
                 v.currentTime = 0;
                 setEnded(false);
                 setHeroEnded(meta.id, false);
-                v.play().catch(() => {});
               }
             } else {
               setHeroMuted(!muted);
@@ -359,10 +359,7 @@ export const Hero = memo(function Hero({
                   </div>
                   <div className="flex flex-col gap-0.5">
                     {rank.sources.map((s) => (
-                      <div
-                        key={s.label}
-                        className="flex items-center justify-between gap-4 py-1.5"
-                      >
+                      <div key={s.label} className="flex items-center justify-between gap-4 py-1.5">
                         <span className="inline-flex items-center gap-2 text-[12.5px] font-medium text-ink">
                           {SOURCE_ICON[s.label] && (
                             <img

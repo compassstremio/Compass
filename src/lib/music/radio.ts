@@ -7,6 +7,7 @@ import { getMusicState, setMusicQueue, subscribeMusic } from "./player";
 import { loadRecordingProfile } from "./recording-profile";
 import { artistCreditParts } from "./search-artists";
 import { normalizeName, normalizeTitle } from "./search-normalize";
+import { musicSourceAllowed } from "./source-consent";
 import { musicTrackIdentity } from "./track-identity";
 import { searchMusic } from "./sources";
 import type { MusicSourceCandidate, MusicTrack } from "./types";
@@ -178,6 +179,7 @@ function youtubeId(track: MusicTrack): string | null {
 }
 
 async function youtubeLane(seed: Seed): Promise<[MusicTrack, number][]> {
+  if (!musicSourceAllowed("youtube")) return [];
   let id = youtubeId(seed);
   if (!id) {
     const candidates = await bounded(

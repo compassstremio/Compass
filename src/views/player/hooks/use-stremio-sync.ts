@@ -7,7 +7,7 @@ import type { PlayerSnapshot } from "@/lib/player/bridge";
 import { getPlaybackPosition, subscribePlaybackClock } from "@/lib/player/playback-clock";
 import { useProfiles } from "@/lib/profiles";
 import { recordWatchedBy } from "@/lib/watched-by";
-import { recordAnimeCwId } from "@/lib/anime-cw-ids";
+import { recordAnimePlayId } from "@/lib/anime-cw-ids";
 import type { PlayerSrc } from "@/lib/view";
 import { resumeLibraryGetOne } from "@/lib/player/resume-start";
 import { playerLoadIdentity } from "@/lib/player/load-identity";
@@ -23,14 +23,10 @@ export function isFinaleEpisode(
   videos: { season?: number | null; episode?: number | null }[] | null | undefined,
   cur: { season: number; episode: number },
 ): boolean {
-  const vids = (videos ?? []).filter(
-    (v) => typeof v.episode === "number" && (v.season ?? 0) >= 1,
-  );
+  const vids = (videos ?? []).filter((v) => typeof v.episode === "number" && (v.season ?? 0) >= 1);
   if (vids.length === 0) return false;
   const key = (s: number, e: number) => s * 100000 + e;
-  const covered = vids.some(
-    (v) => (v.season ?? 1) === cur.season && v.episode === cur.episode,
-  );
+  const covered = vids.some((v) => (v.season ?? 1) === cur.season && v.episode === cur.episode);
   if (!covered) return false;
   const maxKey = vids.reduce((m, v) => Math.max(m, key(v.season ?? 1, v.episode ?? 0)), 0);
   return key(cur.season, cur.episode) >= maxKey;
@@ -62,20 +58,22 @@ export function useStremioSync(params: {
     resolutionSettled,
     castActiveRef,
   } = params;
-  const canonicalId = cloudWriteId(src.meta.id, resolvedImdbId, resolvedImdbVerified);
+  const canonicalId = src.suppressCloudSync
+    ? null
+    : cloudWriteId(src.meta.id, resolvedImdbId, resolvedImdbVerified);
   const watcherProfileId = useProfiles().activeProfile?.id ?? null;
   useEffect(() => {
     if (!resolutionSettled) return;
-    const watchedId = canonicalId ?? src.meta.id;
+    const watchedId = src.suppressCloudSync ? null : (canonicalId ?? src.meta.id);
     if (watchedId) recordWatchedBy(watchedId, watcherProfileId);
-  }, [resolutionSettled, canonicalId, src.meta.id, watcherProfileId]);
+  }, [resolutionSettled, canonicalId, src.meta.id, src.suppressCloudSync, watcherProfileId]);
   useEffect(() => {
     if (
       ANIME_SCHEME.test(src.meta.id) &&
       resolvedImdbVerified &&
       resolvedImdbId?.startsWith("tt")
     ) {
-      recordAnimeCwId(resolvedImdbId, src.meta.id);
+      recordAnimePlayId(resolvedImdbId, src.meta.id);
     }
   }, [resolvedImdbId, resolvedImdbVerified, src.meta.id]);
   const sessionStartRef = useRef<number>(Date.now());
@@ -92,7 +90,12 @@ export function useStremioSync(params: {
   const ourVideoId = videoIdFor(src, canonicalId);
   // Preserve the outgoing playback's data through effect cleanup. latestRef
   // already describes the incoming episode by the time that cleanup runs.
-  const sourceIdentity = playerLoadIdentity(src, src.url, src.episode?.season, src.episode?.episode);
+  const sourceIdentity = playerLoadIdentity(
+    src,
+    src.url,
+    src.episode?.season,
+    src.episode?.episode,
+  );
   const progress = useMemo(
     () => ({ latest: null as typeof latestRef.current | null, position: 0 }),
     [sourceIdentity],
@@ -469,12 +472,21 @@ async function writeLibraryItem(
   const basePoster =
     typeof base?.poster === "string" && base.poster.length > 0 ? base.poster : null;
   const baseType = base?.type === "series" || base?.type === "movie" ? base.type : null;
-  let removed = base ? base.removed === true : true;
-  let temp = base ? base.temp === true : true;
-  if (temp && state.timesWatched === 0) removed = true;
-  if (removed) temp = true;
 
   return withItemLock(canonicalId, async () => {
+    // Progress saves must not undo a bookmark removal made during playback. If the server cannot
+    // be read, keep the snapshot we have: the write must still reach cloudLibraryPut so the queue
+    // can replay it, and the queue re-reads the live item when it flushes.
+    let membership: LibraryItem | null = base;
+    try {
+      membership = await libraryGetOneStrict(authKey, canonicalId);
+    } catch {
+      /* keep the membership from the session */
+    }
+    let removed = membership ? membership.removed === true : true;
+    let temp = membership ? membership.temp === true : true;
+    if (temp && state.timesWatched === 0) removed = true;
+    if (removed) temp = true;
     if (isSeries && !isAnimeWrite) {
       const baseMtimeRaw = (baseRecord as { _mtime?: unknown } | null)?._mtime;
       const baseMtime =
@@ -488,7 +500,7 @@ async function writeLibraryItem(
         bestWatched = cached.watched;
         bestMtime = cached.mtime;
       }
-      const queued = queuedWatched(canonicalId);
+      const queued = queuedWatched(canonicalId, authKey);
       if (queued && queued.watched != null && queued.mtime >= bestMtime) {
         bestWatched = queued.watched;
         bestMtime = queued.mtime;

@@ -1,3 +1,4 @@
+import { getViewedSeason, setViewedSeason } from "@/lib/season-view-pref";
 import { Check, ChevronDown } from "lucide-react";
 import { Play } from "@/components/icons/play-filled";
 import { useEffect, useMemo, useRef, useState, useSyncExternalStore } from "react";
@@ -22,6 +23,8 @@ import { EpisodeGridCard } from "./episode-grid-card";
 import type { GridEpisode, Progress } from "./episode-grid-types";
 import { EpisodeLayoutToggle } from "./episode-layout-toggle";
 import { isUpcomingDate } from "./helpers";
+import { EpisodeRatingBadge } from "./episode-rating-badge";
+import { useEpisodeImdbRatings } from "./use-episode-imdb-ratings";
 import {
   episodeNumber,
   episodeSeason,
@@ -37,11 +40,13 @@ export function CinemetaEpisodes({
   videos,
   stremioWatched,
   resumeSeason,
+  imdbId,
 }: {
   meta: Meta;
   videos: NonNullable<Meta["videos"]>;
   stremioWatched?: Set<string>;
   resumeSeason?: number;
+  imdbId?: string | null;
 }) {
   const t = useT();
   const { settings, update } = useSettings();
@@ -55,7 +60,14 @@ export function CinemetaEpisodes({
     watched: boolean,
   ) => {
     e.preventDefault();
-    setWatchedMenu({ x: e.clientX, y: e.clientY, season, episode, watched });
+    setWatchedMenu({
+      x: e.clientX,
+      y: e.clientY,
+      season,
+      episode,
+      watched,
+      origin: e.currentTarget instanceof HTMLElement ? e.currentTarget : null,
+    });
   };
   const grouped = useMemo(() => groupEpisodes(videos), [videos]);
   const combinedWatched = useMemo(() => {
@@ -88,8 +100,10 @@ export function CinemetaEpisodes({
     [grouped],
   );
 
-  const [active, setActive] = useState<number>(() =>
-    resumeDefaultSeason(meta.id, seasonStats, combinedWatched, resumeSeason),
+  const [active, setActive] = useState<number>(
+    () =>
+      getViewedSeason(meta.id, seasonStats) ??
+      resumeDefaultSeason(meta.id, seasonStats, combinedWatched, resumeSeason),
   );
   const userPickedRef = useRef(false);
 
@@ -99,14 +113,25 @@ export function CinemetaEpisodes({
 
   useEffect(() => {
     if (userPickedRef.current) return;
-    setActive(resumeDefaultSeason(meta.id, seasonStats, combinedWatched, resumeSeason));
+    setActive(
+      getViewedSeason(meta.id, seasonStats) ??
+        resumeDefaultSeason(meta.id, seasonStats, combinedWatched, resumeSeason),
+    );
   }, [meta.id, seasonStats, combinedWatched, resumeSeason]);
+
+  const imdbRatings = useEpisodeImdbRatings(
+    settings.showEpisodeRating ? (imdbId ?? (/^tt\d+$/.test(meta.id) ? meta.id : null)) : null,
+    active,
+    settings.omdbKey,
+  );
 
   const activeEps = grouped.find((g) => g.seasonNumber === active)?.episodes ?? [];
 
   const watchedAt = (season: number, number: number): boolean => {
     const st = manualWatchedState(meta.id, season, number);
-    return st === true || (st === undefined && (stremioWatched?.has(`${season}:${number}`) ?? false));
+    return (
+      st === true || (st === undefined && (stremioWatched?.has(`${season}:${number}`) ?? false))
+    );
   };
 
   const progressFor = (g: GridEpisode): Progress => ({
@@ -136,6 +161,8 @@ export function CinemetaEpisodes({
           airDate,
           overview,
           upcoming: isUpcomingDate(airDate),
+          rating: imdbRatings.get(`${season}:${number}`),
+          ratingIsImdb: true,
           play: (opts) =>
             playLocalAware({
               meta,
@@ -157,6 +184,7 @@ export function CinemetaEpisodes({
       }),
     [
       activeEps,
+      imdbRatings,
       meta,
       t,
       playLocalAware,
@@ -178,6 +206,7 @@ export function CinemetaEpisodes({
               active={active}
               onChange={(n) => {
                 userPickedRef.current = true;
+                setViewedSeason(meta.id, n);
                 setActive(n);
               }}
             />
@@ -228,6 +257,7 @@ export function CinemetaEpisodes({
                   key={ep.id ?? `${ep.season ?? "x"}-${ep.episode ?? i}`}
                   meta={meta}
                   ep={ep}
+                  imdbRating={imdbRatings.get(`${season}:${epNumber}`)}
                   flatIndex={ep.season == null ? i + 1 : undefined}
                   watched={watchedAt(season, epNumber)}
                   onContextMenu={openWatchedMenu}
@@ -259,12 +289,14 @@ export function CinemetaEpisodeRow({
   meta,
   ep,
   flatIndex,
+  imdbRating,
   watched = false,
   onContextMenu,
 }: {
   meta: Meta;
   ep: CinemetaVideo;
   flatIndex?: number;
+  imdbRating?: number;
   watched?: boolean;
   onContextMenu?: (e: React.MouseEvent, season: number, episode: number, watched: boolean) => void;
 }) {
@@ -315,6 +347,11 @@ export function CinemetaEpisodeRow({
           {ep.season != null && (
             <span className="absolute start-2 top-2 rounded-md bg-canvas/95 px-1.5 py-0.5 text-[11px] font-semibold text-ink">
               {epNumber}
+            </span>
+          )}
+          {settings.showEpisodeRating && imdbRating != null && imdbRating > 0 && (
+            <span className="absolute bottom-2 start-2 flex items-center gap-1.5 rounded-md bg-black/80 px-2 py-1">
+              <EpisodeRatingBadge value={imdbRating} isImdb />
             </span>
           )}
           {watched && (

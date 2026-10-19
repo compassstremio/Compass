@@ -310,7 +310,7 @@ const catalogJL: Record<string, string> = {
     "सामुदायिक ब्राउज़ सुविधा जारी होने पर सूचीबद्ध संग्रह उसमें दिखाई देंगे।",
   Listen: "सुनें",
   Listening: "सुन रहा है",
-  "Listening for Compasses": "Compass की तलाश जारी है",
+  "Listening for Compasss": "Compass की तलाश जारी है",
   "Listening…": "सुन रहा है…",
   Lists: "सूचियाँ",
   Literary: "साहित्यिक",

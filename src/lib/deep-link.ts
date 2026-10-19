@@ -1,5 +1,7 @@
 import { makeSafeTauriUnlisten } from "@/lib/tauri-unlisten";
 import { focusWindow } from "@/lib/window";
+import { emitTogetherInvite, parseTogetherDeepLink } from "@/lib/together/invite";
+import { isMalCallback, receiveMalCallback } from "@/lib/mal/callback";
 import {
   isMusicDeepLink,
   parseMusicDeepLink,
@@ -10,7 +12,6 @@ import {
 const EVENT = "compass:deeplink-install";
 const OPEN_EVENT = "compass:deeplink-open";
 const OPEN_LIST_EVENT = "compass:deeplink-open-list";
-const OPEN_MUSIC_EVENT = "compass:deeplink-open-music";
 const PROFILE_EDIT_EVENT = "compass:deeplink-profile-edit";
 
 type DeepLinkDetail = { rawUrl: string };
@@ -18,9 +19,10 @@ type DeepLinkOpen = { type: string; id: string; videoId?: string };
 type DeepLinkOpenDetail = { open: DeepLinkOpen };
 export type DeepLinkList = { handle: string; listId: string };
 type DeepLinkListDetail = { list: DeepLinkList };
-type DeepLinkMusicDetail = { music: MusicDeepLink };
 
 let pendingUrl: string | null = null;
+let pendingMusic: MusicDeepLink | null = null;
+const musicListeners = new Set<(music: MusicDeepLink) => void>();
 
 export function emitDeepLinkInstall(rawUrl: string): void {
   pendingUrl = rawUrl;
@@ -77,24 +79,31 @@ export function onDeepLinkOpenList(handler: (list: DeepLinkList) => void): () =>
 }
 
 export function emitDeepLinkOpenMusic(music: MusicDeepLink): void {
-  window.dispatchEvent(
-    new CustomEvent<DeepLinkMusicDetail>(OPEN_MUSIC_EVENT, { detail: { music } }),
-  );
+  if (musicListeners.size === 0) pendingMusic = music;
+  else musicListeners.forEach((listener) => listener(music));
 }
 
 export function onDeepLinkOpenMusic(handler: (music: MusicDeepLink) => void): () => void {
-  const listener = (e: Event) => {
-    const ev = e as CustomEvent<DeepLinkMusicDetail>;
-    if (ev.detail?.music) handler(ev.detail.music);
+  musicListeners.add(handler);
+  const music = pendingMusic;
+  pendingMusic = null;
+  if (music) handler(music);
+  return () => {
+    musicListeners.delete(handler);
   };
-  window.addEventListener(OPEN_MUSIC_EVENT, listener);
-  return () => window.removeEventListener(OPEN_MUSIC_EVENT, listener);
 }
 
 function routeMusic(url: string): boolean {
   const music = parseMusicDeepLink(url);
   if (!music) return false;
   emitDeepLinkOpenMusic(music);
+  return true;
+}
+
+function routeTogetherInvite(url: string): boolean {
+  const invite = parseTogetherDeepLink(url);
+  if (!invite) return false;
+  emitTogetherInvite(invite);
   return true;
 }
 
@@ -171,7 +180,9 @@ export function parseCompassList(url: string): DeepLinkList | null {
 }
 
 function shouldForward(url: string): boolean {
+  if (url.startsWith("compass://mal")) return false;
   if (isMusicDeepLink(url)) return false;
+  if (url.startsWith("compass://together")) return false;
   if (url.startsWith("compass://")) return true;
   if (url.startsWith("stremio://")) {
     if (window.__compassInstallerOpen) return true;
@@ -219,6 +230,8 @@ export async function startDeepLinkBridge(): Promise<() => void> {
     const handle = (urls: string[]) => {
       for (const u of urls) {
         if (typeof u !== "string" || u.length === 0) continue;
+        if (receiveMalCallback(u)) continue;
+        if (routeTogetherInvite(u)) continue;
         const open = parseStremioOpen(u) || parseCompassOpen(u);
         if (open) {
           emitDeepLinkOpen(open);
@@ -243,6 +256,8 @@ export async function startDeepLinkBridge(): Promise<() => void> {
       await listen<string>("compass:stremio-deeplink", (e) => {
         const u = e.payload;
         if (typeof u !== "string" || !u) return;
+        if (receiveMalCallback(u)) return;
+        if (routeTogetherInvite(u)) return;
         const open = parseStremioOpen(u) || parseCompassOpen(u);
         if (open) {
           emitDeepLinkOpen(open);
@@ -277,6 +292,8 @@ export async function startDeepLinkBridge(): Promise<() => void> {
     const forwardLinuxBrowserInstall = async (e: { payload: string }) => {
       const u = e.payload;
       if (typeof u !== "string" || !u) return;
+      if (receiveMalCallback(u)) return;
+      if (routeTogetherInvite(u)) return;
       const open = parseStremioOpen(u) || parseCompassOpen(u);
       if (open) {
         emitDeepLinkOpen(open);
@@ -321,7 +338,11 @@ export async function startDeepLinkBridge(): Promise<() => void> {
         const fresh: string[] = [];
         for (const u of initial) {
           if (typeof u !== "string" || !u) continue;
-          if (!seen[u]) fresh.push(u);
+          if (isMalCallback(u)) {
+            fresh.push(u);
+            continue;
+          }
+          if (parseTogetherDeepLink(u) || parseMusicDeepLink(u) || !seen[u]) fresh.push(u);
           seen[u] = now;
         }
         saveLaunchSeen(seen);

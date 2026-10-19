@@ -376,7 +376,7 @@ const miscB: Record<string, string> = {
   "Listed collections will appear in community browse when that rolls out.":
     "Toplulukta göz atma özelliği kullanıma sunulduğunda listelenen koleksiyonlar bu bölümde görünür.",
   Listen: "Dinle",
-  "Listening for Compasses": "Compass cihazları aranıyor",
+  "Listening for Compasss": "Compass cihazları aranıyor",
   "Live TV can't be synced in a watch party, so playing {name} will leave your party. Everyone else can keep watching together.":
     "Canlı TV, Birlikte İzle oturumunda senkronize edilemez. Bu nedenle {name} yayınını oynatırsan oturumdan ayrılacaksın. Diğer herkes birlikte izlemeye devam edebilir.",
   "Live TV source": "Canlı TV kaynağı",
@@ -1344,9 +1344,9 @@ const miscB: Record<string, string> = {
   Remote: "Kumanda",
   "Remote control is off on that Compass, so it cannot be driven from here.":
     "O Compass'da uzaktan kumanda kapalı olduğundan buradan kontrol edilemez.",
-  "Remote control is off, so other Compasses can see this one but cannot drive it.":
+  "Remote control is off, so other Compasss can see this one but cannot drive it.":
     "Uzaktan kumanda kapalı olduğundan diğer Compass cihazları bunu görebilir ancak kontrol edemez.",
-  "Remote control is on, so other Compasses on this network can drive this one.":
+  "Remote control is on, so other Compasss on this network can drive this one.":
     "Uzaktan kumanda açık olduğundan bu ağdaki diğer Compass cihazları bunu kontrol edebilir.",
   "Remote off": "Uzaktan kumanda kapalı",
   "Remote style": "Kumanda stili",

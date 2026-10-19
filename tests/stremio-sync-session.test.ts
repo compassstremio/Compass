@@ -80,3 +80,39 @@ test("a delayed periodic cloud read cannot overwrite progress after playback swi
   finishRead({ _id: "tt100", name: "Test series", state: {} }); await settle();
   assert.equal(h.cloudWrites.length, 0);
 });
+
+test("TorBox-style playback suppresses periodic and exit cloud writes", async () => {
+  const h = playbackPersistenceHarness("cloud");
+  const p = params();
+  const privatePlayback = { ...p, src: { ...p.src, suppressCloudSync: true } };
+  h.render(privatePlayback);
+  await settle();
+  h.render({
+    ...privatePlayback,
+    snap: { ...p.snap, status: "playing", positionSec: 300, durationSec: 3600 },
+  });
+  h.clock(300);
+  h.tick();
+  await settle();
+  h.pagehide();
+  await settle();
+  assert.equal(h.cloudWrites.length, 0);
+});
+
+test("normal cloud tracking resumes after a suppressed playback session", async () => {
+  const h = playbackPersistenceHarness("cloud");
+  const p = params();
+  h.render({ ...p, src: { ...p.src, suppressCloudSync: true } });
+  await settle();
+  const next = params(1, 2);
+  h.render(next);
+  await settle();
+  h.render({
+    ...next,
+    snap: { ...next.snap, status: "playing", positionSec: 300, durationSec: 3600 },
+  });
+  h.clock(300);
+  h.tick();
+  await settle();
+  assert.ok(h.cloudWrites.some((write) => write[1].episode.episode === 2 && write[5] === 300));
+});

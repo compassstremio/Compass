@@ -106,7 +106,7 @@
         transition: opacity 620ms cubic-bezier(0.22, 1, 0.36, 1);
       }
       #boot[data-leaving="true"] { opacity: 0; }
-      #boot svg, #boot img { display: block; }
+      #boot svg { display: block; }
       .boot-mark {
         width: min(24vw, 200px);
         color: #f3f3f3;
@@ -149,7 +149,11 @@
   </head>
   <body>
     <div id="boot" aria-hidden="true">
-      <img class="boot-mark" src="/compass-mark.png" alt="" draggable="false" />
+      <svg class="boot-mark" viewBox="0 0 864 864" fill="currentColor">
+        <path fill-rule="evenodd" d="M432 5a431 426.5 0 1 0 0 853a431 426.5 0 1 0 0-853Zm0 41a390 385.5 0 1 1 0 771a390 385.5 0 1 1 0-771Z" />
+        <path d="M412 30h44v106h-44ZM412 725h44v110h-44ZM26 415h95v40H26ZM744 415h95v40h-95Z" />
+        <path fill-rule="evenodd" d="M674 206 485 487 202 651 381 382ZM432 400a37 37 0 1 0 0 74a37 37 0 1 0 0-74Z" />
+      </svg>
       <span class="boot-spin">
         <svg viewBox="0 0 50 50" fill="none">
           <circle cx="25" cy="25" r="20" stroke="#f3f3f3" stroke-opacity="0.12" stroke-width="3" />

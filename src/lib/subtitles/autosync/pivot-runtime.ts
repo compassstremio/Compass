@@ -4,7 +4,7 @@ import { analyzeArabicSubtitleQuality } from "@/lib/subtitles/arabic-quality";
 import { rankSubtitleCandidates, streamMatchDetail } from "@/lib/subtitles/candidate-ranking";
 import { normalizeLang } from "@/lib/subtitles/language";
 import { releaseOf, subtitleStreamDescriptor } from "@/lib/subtitles/provider-label";
-import { providerSubtitleDownloadHeaders } from "@/lib/subtitles/provider-auth";
+import { subtitleTrackDownloadHeaders } from "@/lib/subtitles/provider-auth";
 import type { StreamHints } from "@/lib/subtitles/stream-hints";
 import type { ProviderCtx } from "@/lib/subtitles/autosync/sub-sources";
 import type { SubResult, SubSearchQuery } from "@/lib/subtitles/types";
@@ -606,7 +606,12 @@ export async function runExperimentalPivotAutoSync(
             release: releaseOf(result) ?? hints.release ?? undefined,
             filename: result.rawFilename ?? query.filename,
             durationSec: ctx.durationSec,
-            requestHeaders: providerSubtitleDownloadHeaders(result.downloadAuth, result.url),
+            allowLocalNetwork: result.localTrusted === true,
+            requestHeaders: subtitleTrackDownloadHeaders(
+              result.downloadAuth,
+              result.url,
+              result.localTrusted !== true,
+            ),
           });
           cleanups.push(prepared.cleanup);
           const health = cueHealth(

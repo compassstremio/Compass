@@ -415,8 +415,8 @@ const settings: Record<string, string> = {
     "配信状況と「上映中」の公開期間に使用します。国を選ぶと、Compassのインターフェース、メタデータ、字幕の言語をその国に合わせられます。",
   "A free TMDB key is highly recommended. It unlocks the full Compass experience. The rest are optional, and Cinemeta works out of the box without any.":
     "無料のTMDBキーを強くおすすめします。Compassの全機能を利用できるようになります。その他は任意で、Cinemetaはキーなしですぐに使えます。",
-  "TMDB asks for an app URL when you create the key. Put any URL at all, like https://compass.app. The only thing you need back is the API key.":
-    "キーの作成時にTMDBからアプリのURLを求められます。https://compass.app など、任意のURLを入力してください。必要なのは発行されるAPIキーだけです。",
+  "TMDB asks for an app URL when you create the key. Put any URL at all, like https://compass.sarl. The only thing you need back is the API key.":
+    "キーの作成時にTMDBからアプリのURLを求められます。https://compass.sarl など、任意のURLを入力してください。必要なのは発行されるAPIキーだけです。",
   "RPDB already paints scores onto the poster. Toggle to override.":
     "RPDBではすでにポスターに評価が表示されます。上書きするにはオンにしてください。",
   "MyAnimeList scores for anime titles. RPDB doesn't cover anime, so this stays optional.":

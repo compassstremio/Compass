@@ -28,7 +28,7 @@ mod win {
         let title = String::from_utf16_lossy(&title_buf[..title_len as usize]);
         let is_mpv = class_name == "mpv"
             || class_name.starts_with("mpv ")
-            || (class_name.is_empty() && (title.starts_with("Compass") || title.starts_with("Compass")));
+            || (class_name.is_empty() && title.starts_with("Compass"));
         if is_mpv {
             (*(lparam.0 as *mut Vec<isize>)).push(hwnd.0 as isize);
         }

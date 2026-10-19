@@ -290,7 +290,7 @@ const catalog07: Record<string, string> = {
     "Publiczne kolekcje pojawią się w sekcji społeczności po udostępnieniu tej funkcji.",
   Listen: "Posłuchaj",
   Listening: "Słucham",
-  "Listening for Compasses": "Wyszukiwanie instancji Compass",
+  "Listening for Compasss": "Wyszukiwanie instancji Compass",
   "Listening…": "Nasłuchiwanie…",
   Lists: "Listy",
   Literary: "Literacki",

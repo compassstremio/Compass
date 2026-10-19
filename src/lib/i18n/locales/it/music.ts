@@ -340,11 +340,11 @@ const music: Record<string, string> = {
   "music.source.preferred": "Preferita",
   "music.source.loading": "Ricerca delle sorgenti musicali",
   "music.source.none": "Al momento non è disponibile alcuna sorgente corrispondente.",
-  "music.consent.title": "Prima di attivare YouTube o SoundCloud",
+  "music.consent.title": "Prima di attivare YouTube, SoundCloud o Spotify",
   "music.consent.hosting":
     "Compass non ospita musica. È codice open source, scritto da collaboratori di tutto il mondo, che apre pagine pubbliche dei servizi che scegli di attivare. Né Compass né chi lo sviluppa archivia, carica o distribuisce contenuti.",
   "music.consent.terms":
-    "YouTube e SoundCloud sono servizi indipendenti con proprie condizioni di servizio. Attivarne uno qui significa accettare di rispettarne le condizioni e di smettere di usarlo se non le accetti più. Compass non è affiliato, approvato o collegato a nessuno dei due servizi.",
+    "YouTube, SoundCloud e Spotify sono servizi indipendenti con proprie condizioni di servizio. Attivarne uno qui significa accettare di rispettarne le condizioni e di smettere di usarlo se non le accetti più. Compass non è affiliato, approvato o collegato a nessuno di questi servizi.",
   "music.consent.responsibility":
     "Sei responsabile dell'uso che fai di queste fonti e del rispetto delle leggi del tuo paese. I collaboratori di Compass non si assumono alcuna responsabilità per ciò che scegli di riprodurre, scaricare o condividere.",
   "music.consent.rights":

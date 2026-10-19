@@ -28,6 +28,13 @@ function buildStatusRails(groups: AnilistListGroup[]): AnilistRail[] {
     const metas = entries.map(anilistEntryToMeta).filter((m): m is Meta => m != null);
     if (metas.length >= MIN_PER_RAIL) out.push({ key: rail.key, title: rail.title, metas });
   }
+  // Custom lists follow the status lists, titled by the list's own name.
+  for (const group of groups) {
+    if (!group.isCustomList || !group.name) continue;
+    const metas = group.entries.map(anilistEntryToMeta).filter((m): m is Meta => m != null);
+    if (metas.length >= MIN_PER_RAIL)
+      out.push({ key: `custom:${group.name}`, title: group.name, metas });
+  }
   return out;
 }
 

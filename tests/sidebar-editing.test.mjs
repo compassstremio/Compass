@@ -21,14 +21,54 @@ function load(file, mocks = {}, globals = {}) {
   return exports;
 }
 const nav = load("src/chrome/nav-items.tsx", {
+  "@/lib/features/install": {
+    useInstallFeatures: () => ({
+      plugins: true,
+      games: true,
+      music: true,
+      ebook: true,
+      manga: true,
+    }),
+  },
   "@/lib/sports/enabled": { useSportsEnabled: () => false },
+  "./navigation-policy": load("src/chrome/navigation-policy.ts"),
   "@/lib/streams/plugins/available": { usePluginCataloguesAvailable: () => false },
 });
 const navWithPlugins = load("src/chrome/nav-items.tsx", {
+  "@/lib/features/install": {
+    useInstallFeatures: () => ({
+      plugins: true,
+      games: true,
+      music: true,
+      ebook: true,
+      manga: true,
+    }),
+  },
+  "./navigation-policy": load("src/chrome/navigation-policy.ts"),
   "@/lib/sports/enabled": { useSportsEnabled: () => false },
   "@/lib/streams/plugins/available": { usePluginCataloguesAvailable: () => true },
 });
 const cfg = () => ({ order: [], hidden: [], renamed: {} });
+
+test("navigation destinations respect the current installation's available features", () => {
+  const limited = load("src/chrome/nav-items.tsx", {
+    "@/lib/features/install": {
+      useInstallFeatures: () => ({
+        plugins: false,
+        games: false,
+        music: false,
+        ebook: false,
+        manga: false,
+      }),
+    },
+    "@/lib/sports/enabled": { useSportsEnabled: () => false },
+    "@/lib/streams/plugins/available": { usePluginCataloguesAvailable: () => true },
+  });
+  const available = limited.useAvailableNavItems().map((item) => item.id);
+  for (const id of ["plugins", "games", "music", "ebook", "manga"])
+    assert.ok(!available.includes(id));
+  assert.ok(available.includes("home"));
+});
 
 test("customization retains Music and the Sports availability gate", () => {
   assert.ok(nav.NAV_ITEMS.some((item) => item.id === "music"));
@@ -106,7 +146,12 @@ const layouts = [
 for (const name of layouts) {
   test(`${name} retains available navigation, keyboard menus, and checked activation`, () => {
     const source = read(`src/chrome/${name}.tsx`);
-    assert.match(source, /useAvailableNavItems\(\)/);
+    if (name === "sidebar") {
+      assert.match(source, /useSidebarNavigation\(\)/);
+      const shared = read("src/chrome/context-page-navigation.tsx");
+      assert.match(shared, /const items = useAvailableNavItems\(\)/);
+      assert.match(shared, /resolveSidebarNavigation\(items, customization, policy\)/);
+    } else assert.match(source, /useAvailableNavItems\(\)/);
     assert.match(source, /onKeyDown=\{drag.onKeyDown\}/);
     assert.match(source, /onOpen: (?:onClick|\(\) => navigate\(item\))/);
     const ast = ts.createSourceFile(name, source, ts.ScriptTarget.Latest, true, ts.ScriptKind.TSX);
@@ -130,11 +175,11 @@ test("nav menu invokes the supplied checked action rather than navigating direct
   const block = source.slice(begin, source.indexOf('key="nav-hide"', begin));
   assert.match(block, /target.onOpen\?\.\(\)/);
   assert.doesNotMatch(block, /setView\(/);
-  assert.match(source, /data-tv-focus-scope=\{state.target.kind === "nav"/);
-  assert.match(source, /<TvModalClose onClose=\{close\}/);
-  assert.match(source, /cancelAnimationFrame\(focusFrame\)/);
-  assert.match(source, /new ResizeObserver\(measure\)/);
-  assert.match(source, /anchorTop \+ el.offsetHeight/);
+  assert.match(source, /<MenuSurface[\s\S]*?onClose=\{close\}/);
+  const surface = read("src/components/context-menu/menu-surface.tsx");
+  assert.match(surface, /useMenuFocus\(ref, reveal != null\)/);
+  assert.match(surface, /new ResizeObserver\(measure\)/);
+  assert.match(surface, /fitMenu\(point, bounds/);
 });
 test("drag cleanup, reduced motion, and RTL handling are present", () => {
   const source = read("src/chrome/nav-edit.tsx");

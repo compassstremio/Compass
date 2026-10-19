@@ -210,9 +210,9 @@ const catalog08: Record<string, string> = {
   Remote: "리모컨",
   "Remote control is off on that Compass, so it cannot be driven from here.":
     "해당 Compass에서 원격 제어가 꺼져 있어 여기서 조작할 수 없습니다.",
-  "Remote control is off, so other Compasses can see this one but cannot drive it.":
+  "Remote control is off, so other Compasss can see this one but cannot drive it.":
     "원격 제어가 꺼져 있어 다른 Compass에서 이 기기를 볼 수는 있지만 조작할 수는 없습니다.",
-  "Remote control is on, so other Compasses on this network can drive this one.":
+  "Remote control is on, so other Compasss on this network can drive this one.":
     "원격 제어가 켜져 있어 이 네트워크의 다른 Compass에서 이 기기를 조작할 수 있습니다.",
   "Remote off": "원격 제어 꺼짐",
   "Remote server": "원격 서버",

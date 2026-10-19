@@ -1,4 +1,13 @@
-import { memo, useCallback, useEffect, useMemo, useReducer, useRef, useState } from "react";
+import {
+  memo,
+  useCallback,
+  useEffect,
+  useLayoutEffect,
+  useMemo,
+  useReducer,
+  useRef,
+  useState,
+} from "react";
 import { needsImdbForPoster, needsTmdbForPoster, rpdbPoster } from "@/lib/providers/rpdb";
 import { useTitlePoster } from "@/lib/title-poster";
 import {
@@ -14,8 +23,21 @@ import { sizeImageUrl, qualityMultiplier } from "@/lib/img-size";
 import { shouldLocalizePosters } from "@/lib/providers/tmdb/tmdb-image-lang";
 import { useProxiedImageSrc } from "@/lib/remote-image-proxy";
 import { observeResize, observeWithin } from "@/lib/visibility";
+import { noteProbe, recordRenderCause } from "@/lib/render-cause";
 
 type Ratio = "portrait" | "landscape" | "wide" | "square";
+
+// URLs whose image has already decoded at least once this session. A virtualized
+// grid remounts cards while scrolling (and when leaving/returning from another
+// view), which would otherwise re-flash the shimmer while the image decodes
+// again. The bytes are already in the HTTP cache, so reveal those posters on the
+// first paint instead.
+const decodedPosters = new Set<string>();
+const DECODED_POSTER_CAP = 20000;
+function rememberDecoded(url: string) {
+  if (decodedPosters.size >= DECODED_POSTER_CAP) decodedPosters.clear();
+  decodedPosters.add(url);
+}
 
 export function useLocalizedPoster(metaId: string): {
   url: string | undefined;
@@ -227,33 +249,52 @@ function PosterBody({
   fallbacks?: Array<string | null | undefined>;
 }) {
   const { settings } = useSettings();
+  const renderCauseRef = useRef<{
+    key: string;
+    children: unknown;
+    onError: unknown;
+    fallbacks: unknown;
+  } | null>(null);
+  const propKey = `${src ?? ""}|${seed}|${ratio}|${className}|${String(lazy)}`;
+  const prevRender = renderCauseRef.current;
+  recordRenderCause(
+    "poster",
+    !prevRender
+      ? "mount"
+      : prevRender.key !== propKey
+        ? "props"
+        : prevRender.children !== children
+          ? "children"
+          : prevRender.onError !== onError
+            ? "onError"
+            : prevRender.fallbacks !== fallbacks
+              ? "fallbacks"
+              : "state",
+  );
+  renderCauseRef.current = { key: propKey, children, onError, fallbacks };
   const effect = settings.posterEffect;
   const rootRef = useRef<HTMLDivElement | null>(null);
-  const [inView, setInView] = useState(!lazy);
-  const [eager, setEager] = useState(!lazy);
   const [targetPx, setTargetPx] = useState(0);
   const qMult = qualityMultiplier(settings.posterQuality);
+  // Visibility is a DOM attribute, not React state. `inView`/`eager` used to be state, so every
+  // poster that crossed the viewport boundary re-rendered — scrolling up and down made that the
+  // largest render source in the profiler (~19 renders per poster). Because the `<img>` also stays
+  // mounted now, a poster that leaves and comes back no longer has to decode its image again.
   useEffect(() => {
-    if (inView) return;
     const el = rootRef.current;
     if (!el) return;
     return observeWithin(el, "1200px", (e) => {
-      if (!e.isIntersecting) return;
-      const r = e.boundingClientRect;
-      if (r.top < (window.innerHeight || 0) && r.bottom > 0) setEager(true);
-      setInView(true);
+      const near = e.isIntersecting;
+      el.toggleAttribute("data-near", near);
+      el.toggleAttribute("data-idle", !near);
+      const img = el.querySelector<HTMLImageElement>("img.compass-poster-img");
+      if (!img) return;
+      if (near) img.fetchPriority = "high";
+      else img.removeAttribute("fetchpriority");
     });
-  }, [inView]);
+  }, []);
   useEffect(() => {
-    if (!lazy || eager || !inView) return;
-    const el = rootRef.current;
-    if (!el) return;
-    return observeWithin(el, "150px", (e) => {
-      if (e.isIntersecting) setEager(true);
-    });
-  }, [lazy, eager, inView]);
-  useEffect(() => {
-    if (!inView || qMult === 0) return;
+    if (qMult === 0) return;
     const el = rootRef.current;
     if (!el) return;
     return observeResize(el, () => {
@@ -266,7 +307,7 @@ function PosterBody({
       const t = Math.ceil(need * Math.min(2, window.devicePixelRatio || 1) * qMult);
       setTargetPx((prev) => (t > prev ? t : prev));
     });
-  }, [inView, qMult, ratio]);
+  }, [qMult, ratio]);
   const rawCandidates = [src, ...(fallbacks ?? [])].filter((u): u is string => !!u);
   const candidates =
     qMult === 0 || targetPx <= 0
@@ -274,50 +315,43 @@ function PosterBody({
       : rawCandidates.map((u) => sizeImageUrl(u, targetPx));
   const sig = candidates.join("|");
   const [idx, setIdx] = useState(0);
-  const [loaded, setLoaded] = useState(false);
   const [displayed, setDisplayed] = useState<string | undefined>(undefined);
   const [retry, setRetry] = useState(0);
   const failedRef = useRef<Set<string>>(new Set());
   const firedRef = useRef(false);
   const failBurstRef = useRef<{ t: number; n: number }>({ t: 0, n: 0 });
+  const shownRef = useRef<string | undefined>(undefined);
   const onErrorRef = useRef(onError);
   onErrorRef.current = onError;
+
+  // The reveal is CSS-driven (`.compass-poster[data-loaded]` in index.css), so a poster that loads
+  // costs no React render — it did two per image before, and a grid of a few hundred was the
+  // single largest render source the profiler found. `displayed` survives only as the crossfade
+  // base shown underneath a fallback candidate.
+  const markLoaded = useCallback((url: string | undefined) => {
+    if (!url) return;
+    rememberDecoded(url);
+    shownRef.current = url;
+    rootRef.current?.setAttribute("data-loaded", "1");
+  }, []);
+
   useEffect(() => {
+    // `idx`/`retry` bail when already at rest, so a sizing change costs no render here.
+    noteProbe("poster:sig-effect");
     setIdx(0);
-    setLoaded(false);
     setRetry(0);
     failedRef.current = new Set();
     firedRef.current = false;
+    rootRef.current?.removeAttribute("data-loaded");
+    // A previous candidate is still on screen; keep it underneath until the new one lands.
+    if (shownRef.current) setDisplayed(shownRef.current);
   }, [sig]);
 
-  useEffect(() => {
-    if (lazy !== "release") return;
-    const el = rootRef.current;
-    if (!el) return;
-    let timer = 0;
-    const stop = observeWithin(el, "2400px", (e) => {
-      if (e.isIntersecting) {
-        if (timer) {
-          window.clearTimeout(timer);
-          timer = 0;
-        }
-        return;
-      }
-      if (timer) return;
-      timer = window.setTimeout(() => {
-        timer = 0;
-        if (el.closest("a,button,[tabindex]") === document.activeElement) return;
-        setInView(false);
-        setEager(false);
-        setLoaded(false);
-        setDisplayed(undefined);
-      }, 1500);
-    });
-    return () => {
-      stop();
-      if (timer) window.clearTimeout(timer);
-    };
-  }, [lazy]);
+  // `lazy="release"` used to unmount the `<img>` once a poster sat more than 2400px away for 1.5s.
+  // That freed the bitmap but made every return re-decode and re-render, which is what made
+  // scrolling up and down expensive. The `<img>` now stays mounted, the 1200px observer above owns
+  // the idle flag, and the far-card release in row.tsx (300px / 15s) is what unmounts a card — so
+  // the prop is kept only for call sites, not for eviction.
 
   let cursor = idx;
   while (cursor < candidates.length && failedRef.current.has(candidates[cursor])) cursor++;
@@ -340,6 +374,9 @@ function PosterBody({
     const retryNow = () => {
       failedRef.current = new Set();
       firedRef.current = false;
+      // A retry resets the candidate and bumps `retry`: two more state updates per step, up to
+      // four steps with backoff.
+      noteProbe("poster:retry");
       setIdx(0);
       setRetry((r) => r + 1);
     };
@@ -361,7 +398,13 @@ function PosterBody({
     if (++b.n > 24) return;
     if (failedRef.current.has(url)) return;
     failedRef.current.add(url);
-    setLoaded(false);
+    // Two state updates per failing URL (`setDisplayed` + `setIdx`), which is what the profiler
+    // sees as the `state` render cause.
+    noteProbe("poster:fail");
+    rootRef.current?.removeAttribute("data-loaded");
+    // An early-revealed candidate may now fail; drop it so the plate/shimmer and
+    // the next candidate take over instead of pinning a broken image.
+    setDisplayed((d) => (d === url ? undefined : d));
     setIdx((i) => i + 1);
   }, []);
   const currentRef = useRef(current);
@@ -372,52 +415,48 @@ function PosterBody({
       imgElRef.current = el;
       if (!el) return;
       if (el.complete) {
-        if (el.naturalWidth > 0) {
-          setLoaded(true);
-          setDisplayed(currentRef.current);
-        } else if (currentRef.current) fail(currentRef.current);
+        if (el.naturalWidth > 0) markLoaded(currentRef.current);
+        else if (currentRef.current) fail(currentRef.current);
         return;
       }
       const target = currentRef.current;
       el.decode().then(
         () => {
-          if (imgElRef.current === el && currentRef.current === target && target) {
-            setLoaded(true);
-            setDisplayed(target);
-          }
+          if (imgElRef.current === el && currentRef.current === target) markLoaded(target);
         },
         () => {},
       );
     },
-    [fail],
+    [fail, markLoaded],
   );
   useEffect(() => {
-    if (loaded || !current) return;
+    if (!current) return;
     const el = imgElRef.current;
-    if (el && el.complete && el.naturalWidth > 0) {
-      setLoaded(true);
-      setDisplayed(current);
+    if (el && el.complete && el.naturalWidth > 0) markLoaded(current);
+  }, [current, sig, markLoaded]);
+  // Poster already decoded earlier this session (remounted while scrolling or on
+  // returning from another view): reveal it now instead of waiting for decode,
+  // which would flash the shimmer even though the bytes are cached.
+  useLayoutEffect(() => {
+    if (exhausted) return;
+    if (current && decodedPosters.has(current)) {
+      shownRef.current = current;
+      rootRef.current?.setAttribute("data-loaded", "1");
     }
-  }, [loaded, current, sig]);
-  const showShimmer = !displayed && !loaded && !exhausted;
-  const showPlate = !displayed && exhausted;
-  const hasBase = !!displayed && displayed !== current;
+  }, [current, exhausted]);
+  const showShimmer = !exhausted;
+  const showPlate = exhausted;
   const hue = hash(seed) % 360;
 
   return (
     <div
       ref={rootRef}
+      data-poster-effect={effect}
       className={`compass-poster your-card relative w-full overflow-hidden rounded-[var(--poster-radius,12px)] ${className}`}
       style={showPlate ? { background: gradient(hue) } : undefined}
     >
       <div aria-hidden style={{ paddingTop: ASPECT_PAD[ratio] }} />
-      {showShimmer && (
-        <span
-          aria-hidden
-          className="compass-shimmer absolute inset-0"
-          data-idle={inView ? undefined : ""}
-        />
-      )}
+      {showShimmer && <span aria-hidden className="compass-shimmer absolute inset-0" />}
       {displayed && displayed !== current && displayedSrc && (
         <img
           src={displayedSrc}
@@ -428,7 +467,7 @@ function PosterBody({
           className="absolute inset-0 h-full w-full object-cover"
         />
       )}
-      {current && currentSrc && inView && (qMult === 0 || targetPx > 0) && (
+      {current && currentSrc && (qMult === 0 || targetPx > 0) && (
         <img
           key={current}
           ref={handleImgRef}
@@ -436,21 +475,9 @@ function PosterBody({
           alt=""
           draggable={false}
           decoding="async"
-          fetchPriority={eager ? "high" : undefined}
-          onLoad={() => {
-            setLoaded(true);
-            setDisplayed(current);
-          }}
+          onLoad={() => markLoaded(current)}
           onError={() => fail(current)}
-          className="absolute inset-0 h-full w-full object-cover"
-          style={
-            effect === "off"
-              ? { opacity: 1 }
-              : {
-                  opacity: loaded ? 1 : 0,
-                  transition: hasBase ? "opacity 300ms ease-out" : undefined,
-                }
-          }
+          className="compass-poster-img absolute inset-0 h-full w-full object-cover"
         />
       )}
       {children}

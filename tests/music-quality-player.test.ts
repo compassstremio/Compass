@@ -59,7 +59,14 @@ function player() {
       likedIdsFor: (t: any) => (t ? [t.id] : []),
       withoutLiked: (ids: readonly string[], t: any) => ids.filter((id: string) => id !== t.id),
     },
-    "./source-consent": { musicSourceAllowed: () => true, requestMusicSourceConsent: () => {} },
+    "./source-consent": {
+      musicSourceAllowed: () => true,
+      musicPlaybackSourceAllowed: () => true,
+      filterMusicSourceCandidates: (candidates: unknown[]) => candidates,
+      hydrateMusicSourceConsent: async () => {},
+      subscribeMusicSourceConsent: () => () => {},
+      requestMusicSourceConsent: () => {},
+    },
     "./queue-insert": {
       insertIntoQueue: (q: unknown[], t: unknown, at: number) => [
         ...q.slice(0, at),

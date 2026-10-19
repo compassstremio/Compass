@@ -672,7 +672,7 @@ const sweep: Record<string, string> = {
   "Compass's own bar": "شريط Compass الخاص",
   "Compass's own community server": "خادم مجتمع Compass الخاص",
   "Compass's public relay": "مُرحّل Compass العام",
-  "Compasses on your network": "أجهزة Compass على شبكتك",
+  "Compasss on your network": "أجهزة Compass على شبكتك",
   "Hard outline": "حدّ حاد",
   "Hardware acceleration (hwdec)": "تسريع عتادي (hwdec)",
   Head: "رأس",
@@ -821,7 +821,7 @@ const sweep: Record<string, string> = {
   "Link a title": "ربط عنوان",
   "Linked as {username}": "مرتبط باسم {username}",
   "Linked to your Compass account.": "مرتبط بحسابك في Compass.",
-  "Listening for Compasses": "البحث عن أجهزة Compass",
+  "Listening for Compasss": "البحث عن أجهزة Compass",
   Lists: "القوائم",
   "Live TV source": "مصدر البث المباشر",
   "Live TV sources": "مصادر البث المباشر",
@@ -1199,9 +1199,9 @@ const sweep: Record<string, string> = {
   "Remember your place on show pages": "تذكّر موضعك في صفحات المسلسلات",
   "Remote control is off on that Compass, so it cannot be driven from here.":
     "التحكم عن بُعد معطّل في نسخة Compass تلك، لذا لا يمكن التحكم بها من هنا.",
-  "Remote control is off, so other Compasses can see this one but cannot drive it.":
+  "Remote control is off, so other Compasss can see this one but cannot drive it.":
     "التحكم عن بُعد معطّل، لذا يمكن لنسخ Compass الأخرى رؤية هذه النسخة دون التحكم بها.",
-  "Remote control is on, so other Compasses on this network can drive this one.":
+  "Remote control is on, so other Compasss on this network can drive this one.":
     "التحكم عن بُعد مفعّل، لذا يمكن لنسخ Compass الأخرى على هذه الشبكة التحكم بهذه النسخة.",
   "Remote off": "التحكم عن بُعد معطّل",
   Remotes: "أجهزة التحكم",
@@ -1868,7 +1868,7 @@ const sweep: Record<string, string> = {
   "{n} of {total} chosen": "{n} من {total} محدد",
   "{n} of {total} connected": "{n} من {total} متصل",
   "{n} on": "{n} مفعّل",
-  "{n} other Compasses": "{n} أجهزة Compass أخرى",
+  "{n} other Compasss": "{n} أجهزة Compass أخرى",
   "{n} picks, refreshed daily": "{n} اختيارات، تُحدَّث يوميًا",
   "{n} recorded winners": "{n} فائزًا مسجلًا",
   "{n} seeders": "{n} موزّعًا",

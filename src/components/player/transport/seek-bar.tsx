@@ -12,6 +12,7 @@ import { ThumbPreview } from "@/components/player/thumb-preview";
 import { SeekBarVisual } from "./seek-bar-visual";
 import { useHoverExitGuard } from "./use-hover-exit-guard";
 import { fmtTime } from "./transport-utils";
+import type { Chapter } from "@/lib/player/bridge";
 
 const BUFFER_PAD_SEC = 4;
 const PENDING_MAX_MS = 2500;
@@ -25,10 +26,12 @@ export function SeekBar({
   durationSec,
   onSeek,
   active,
+  chapters = [],
 }: {
   durationSec: number;
   onSeek: (s: number) => void;
   active: boolean;
+  chapters?: Chapter[];
 }) {
   const ref = useRef<HTMLDivElement>(null);
   const [hover, setHover] = useState<number | null>(null);
@@ -184,7 +187,20 @@ export function SeekBar({
           hovered={hover != null}
           segments={segmentSpans}
         />
-        {hover != null && !(overDot && scrub == null) &&
+        {durationSec > 0 &&
+          chapters
+            .filter((chapter) => chapter.startSec > 0 && chapter.startSec < durationSec)
+            .map((chapter, index) => (
+              <span
+                key={`${chapter.startSec}-${index}`}
+                title={chapter.title || `Chapter ${index + 1}`}
+                aria-hidden
+                className="pointer-events-none absolute top-1/2 z-[2] h-3 -translate-x-1/2 -translate-y-1/2 border-l border-black/65 bg-white/90 shadow-[0_0_2px_rgba(0,0,0,0.8)]"
+                style={{ left: `${(chapter.startSec / durationSec) * 100}%`, width: 1 }}
+              />
+            ))}
+        {hover != null &&
+          !(overDot && scrub == null) &&
           (trickplayActive ? (
             <ThumbPreview
               time={hover}

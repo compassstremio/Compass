@@ -1,5 +1,5 @@
 import { activeProfileId, activeProfileIsPrimary } from "@/lib/active-profile-id";
-import { getSecret, setSecret } from "@/lib/secret-store";
+import { getSecret, setSecret, subscribeSecretsReady } from "@/lib/secret-store";
 import { clearPendingWatches } from "./pending-sync";
 import type { SimklSession } from "./types";
 
@@ -54,6 +54,12 @@ export function resetForProfile(): void {
   cached = null;
   for (const fn of subscribers) fn();
 }
+
+// A reader that mounted before the persisted store landed cached a null session, and
+// nothing cleared it: the account stayed signed out for the whole run while its calls
+// went out without a token, which Simkl answers with 401 user_token_failed. The store
+// announcing itself must re-arm this module.
+subscribeSecretsReady(resetForProfile);
 
 export function getSession(): SimklSession | null {
   ensureLoaded();

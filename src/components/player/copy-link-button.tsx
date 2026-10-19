@@ -1,9 +1,10 @@
 import { Check, Copy, Magnet } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import { useT } from "@/lib/i18n";
-import { writeText } from "@tauri-apps/plugin-clipboard-manager";
 import { parseMagnet, serializeMagnet } from "@/lib/torrent/magnet";
 import { trackersFromSources } from "@/lib/torrent/stremio-stream";
+import { copyText } from "@/lib/clipboard-text";
+export { copyText } from "@/lib/clipboard-text";
 
 export function resolveStreamLink(stream: {
   url?: string;
@@ -23,39 +24,6 @@ export function resolveStreamLink(stream: {
     });
   }
   return null;
-}
-
-export async function copyText(text: string): Promise<boolean> {
-  if (typeof window !== "undefined" && "__TAURI_INTERNALS__" in window) {
-    try {
-      await writeText(text);
-      return true;
-    } catch {
-      /* Fall through to browser clipboard support. */
-    }
-  }
-  try {
-    if (navigator.clipboard?.writeText) {
-      await navigator.clipboard.writeText(text);
-      return true;
-    }
-  } catch {
-    /* Older or insecure WebViews may only support the legacy path. */
-  }
-  let input: HTMLTextAreaElement | undefined;
-  try {
-    input = document.createElement("textarea");
-    input.value = text;
-    input.style.position = "fixed";
-    input.style.opacity = "0";
-    document.body.appendChild(input);
-    input.select();
-    return document.execCommand("copy");
-  } catch {
-    return false;
-  } finally {
-    input?.remove();
-  }
 }
 
 export function CopyLinkButton({

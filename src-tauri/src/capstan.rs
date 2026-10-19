@@ -226,6 +226,9 @@ fn unwrap_frame(frame: Value) -> Result<Value, String> {
 }
 
 async fn call(app: &AppHandle, method: &str, params: Value) -> Result<Value, String> {
+    // Check before even looking for a runtime: a leftover or development runtime must not
+    // bypass the installer's choice, including when a bridge is already running.
+    crate::install_features::require_plugins()?;
     let timeout_ms = params
         .get("timeoutMs")
         .and_then(|v| v.as_u64())

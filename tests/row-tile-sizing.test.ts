@@ -25,7 +25,7 @@ test("poster sizing sees css transforms so scaled art is not blurry", () => {
     /el\.getBoundingClientRect\(\)/,
     "clientWidth ignores transforms like scale()",
   );
-  assert.match(poster, /\}, \[inView, qMult, ratio\]\);/, "ratio must be a dependency");
+  assert.match(poster, /\}, \[qMult, ratio\]\);/, "ratio must be a dependency");
 });
 
 test("the declared aspect ratios match the aspect padding", () => {

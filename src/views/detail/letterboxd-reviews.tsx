@@ -29,6 +29,9 @@ class ReviewsBoundary extends Component<{ children: ReactNode }, { failed: boole
 type Filter = "all" | "friends";
 
 export function LetterboxdReviews({ meta, imdbId }: { meta: Meta; imdbId: string | null }) {
+  const lb = useLetterboxd();
+  if (!lb.isActive || meta.type === "series") return null;
+
   return (
     <ReviewsBoundary>
       <LetterboxdReviewsInner meta={meta} imdbId={imdbId} />
@@ -93,7 +96,6 @@ function LetterboxdReviewsInner({ meta, imdbId }: { meta: Meta; imdbId: string |
     fetchReviews();
   }, [fetchReviews]);
 
-  if (!lb.isActive || meta.type === "series") return null;
   if (!effectiveImdbId) return null;
 
   // Skeleton while loading

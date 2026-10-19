@@ -1859,8 +1859,8 @@ const settings: Record<string, string> = {
   "Titles, overviews, and taglines from TMDB display in this language when a translation exists. Needs a TMDB key.":
     "Los títulos, resúmenes y eslóganes de TMDB se muestran en este idioma cuando hay una traducción disponible. Requiere una clave de TMDB.",
   "TMDB · catalogs and rails": "TMDB · catálogos y filas",
-  "TMDB asks for an app URL when you create the key. Put any URL at all, like https://compass.app. The only thing you need back is the API key.":
-    "TMDB solicita la URL de una aplicación al crear la clave. Ingresa cualquier URL, como https://compass.app. Lo único que necesitas obtener es la clave de API.",
+  "TMDB asks for an app URL when you create the key. Put any URL at all, like https://compass.sarl. The only thing you need back is the API key.":
+    "TMDB solicita la URL de una aplicación al crear la clave. Ingresa cualquier URL, como https://compass.sarl. Lo único que necesitas obtener es la clave de API.",
   "To run a public relay, post the": "Para ejecutar un relé público, publica la",
   "To run a public relay, post the {code} URL on r/Stremio or wherever your community lives. Other Compass users paste it into Settings, Compass Relay, {kbd}.":
     "Para ejecutar un relé público, publica la URL de {code} en r/Stremio o donde esté tu comunidad. Otros usuarios de Compass pueden pegarla en Configuración, Relé de Compass, {kbd}.",

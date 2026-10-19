@@ -31,6 +31,7 @@ import simklLogo from "@/assets/simkl.png";
 import anilistLogo from "@/assets/anilist.png";
 import malLogo from "@/assets/mal.png";
 import letterboxdLogo from "@/assets/addon-logos/letterboxd.png";
+import publicmetadbLogo from "@/assets/publicmetadb.svg";
 import aniskipLogo from "@/assets/service-logos/aniskip.png";
 import theIntroDbLogo from "@/assets/service-logos/theintrodb.png";
 import introdbLogo from "@/assets/service-logos/introdb.png";
@@ -283,6 +284,7 @@ const TRACKERS: Credit[] = [
   { name: "AniList", blurb: "Anime and manga list management and progress synchronisation.", url: "https://anilist.co", logo: anilistLogo },
   { name: "MyAnimeList", blurb: "Anime and manga list management and progress synchronisation.", url: "https://myanimelist.net", logo: malLogo },
   { name: "Letterboxd", blurb: "Film diary and watchlist import.", url: "https://letterboxd.com", logo: letterboxdLogo },
+  { name: "PublicMetaDB", blurb: "Watch history, playback resume sync and watchlists.", url: "https://publicmetadb.com", logo: publicmetadbLogo },
 ];
 
 const SUBTITLES: Credit[] = [

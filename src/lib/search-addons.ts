@@ -4,6 +4,14 @@ import { safeFetch } from "./safe-fetch";
 
 const CAP_PER_CATALOG = 20;
 const MAX_CATALOGS = 24;
+// AIOMetadata caps its own search at 12-30 per catalog (TMDB and TVDB 25, Kitsu and Simkl 20, IMDb
+// suggestions and LumiereDB 12). A group merges every search catalog of the addon before the cap is
+// applied, so this is a ceiling for that aggregate rather than a size any single response reaches.
+const AIOMETADATA_SEARCH_CAP = 100;
+
+function isAioMetadataAddon(id: string | undefined): boolean {
+  return id != null && /^(?:com\.aio\.metadata|aio-metadata)$/i.test(id);
+}
 
 function addonOrigin(addon: Addon) {
   return {
@@ -74,7 +82,10 @@ export async function searchAddonCatalogs(
       return {
         type,
         collection,
-        metas: (json.metas ?? []).slice(0, CAP_PER_CATALOG),
+        metas: (json.metas ?? []).slice(
+          0,
+          isAioMetadataAddon(addon.manifest.id) ? AIOMETADATA_SEARCH_CAP : CAP_PER_CATALOG,
+        ),
         origin: addonOrigin(addon),
       };
     }),
@@ -100,7 +111,7 @@ export async function searchAddonCatalogs(
   return { movies, series };
 }
 
-export function mergeMetas(primary: Meta[], extra: Meta[], cap = 20): Meta[] {
+export function mergeMetas(primary: Meta[], extra: Meta[], cap?: number): Meta[] {
   const seen = new Set(primary.map((m) => m.id));
   const out = [...primary];
   for (const m of extra) {
@@ -108,7 +119,10 @@ export function mergeMetas(primary: Meta[], extra: Meta[], cap = 20): Meta[] {
     seen.add(m.id);
     out.push(m);
   }
-  return out.slice(0, cap);
+  // Preserve the larger AIOMetadata result set through both Movies/Series merges.
+  const limit =
+    cap ?? (out.some((m) => isAioMetadataAddon(m.addonOrigin?.id)) ? AIOMETADATA_SEARCH_CAP : 20);
+  return out.slice(0, limit);
 }
 
 export type AddonResultGroup = {
@@ -218,6 +232,7 @@ export async function searchAddonGroups(
   const remainingBudget = () => ALL_GROUPS_BUDGET_MS - (Date.now() - startedAt);
   const groups = await mapLimit(entries, GROUP_CONCURRENCY, async ({ addon, targets }): Promise<AddonResultGroup> => {
       const origin = addonOrigin(addon);
+      const cap = isAioMetadataAddon(origin.id) ? AIOMETADATA_SEARCH_CAP : CAP_PER_GROUP;
       const base = origin.base;
       const settled = await Promise.allSettled(
         targets.map(async ({ type, id, collection }) => {
@@ -240,7 +255,7 @@ export async function searchAddonGroups(
           );
           const json = await read;
           if (!json) return { collection, answered: false, metas: [] as Meta[] };
-          return { collection, answered: true, metas: (json.metas ?? []).slice(0, CAP_PER_GROUP) };
+          return { collection, answered: true, metas: (json.metas ?? []).slice(0, cap) };
         }),
       );
       const seen = new Set<string>();
@@ -249,6 +264,7 @@ export async function searchAddonGroups(
       for (const r of settled) {
         if (r.status !== "fulfilled") continue;
         if (r.value.answered) answered = true;
+        if (metas.length >= cap) continue;
         for (const m of r.value.metas) {
           if (!m?.id || seen.has(m.id)) continue;
           seen.add(m.id);
@@ -257,7 +273,7 @@ export async function searchAddonGroups(
             addonOrigin: origin,
             ...(r.value.collection ? { isCollection: true } : null),
           });
-          if (metas.length >= CAP_PER_GROUP) break;
+          if (metas.length >= cap) break;
         }
       }
       const group = { id: origin.id, name: origin.name, logo: origin.logo, metas };

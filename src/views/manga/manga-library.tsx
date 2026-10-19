@@ -9,7 +9,7 @@ import { useView } from "@/lib/view";
 import type { MangaSummary } from "@/lib/manga/types";
 import { MyListsTab } from "../library/my-lists-tab";
 import { VirtualGrid } from "@/components/virtual-grid";
-import { useContextMenu } from "@/lib/context-menu";
+import { useMangaContext } from "@/lib/use-manga-context";
 import { observeWithin } from "@/lib/visibility";
 import { useProxiedImageSrc } from "@/lib/remote-image-proxy";
 
@@ -18,7 +18,7 @@ function useOpenTitle() {
   const favorites = useMangaFavorites();
   const busyRef = useRef<Set<string>>(new Set());
   const [missing, setMissing] = useState<Set<string>>(() => new Set());
-  const open = async (id: string, title: string, altTitle?: string) => {
+  const open = async (id: string, title: string, altTitle?: string, sourceId?: string) => {
     if (busyRef.current.has(id)) return;
     const name = title.trim();
     if (!name || !hasAnyMangaSource()) {
@@ -33,7 +33,11 @@ function useOpenTitle() {
       return next;
     });
     try {
-      const resolved = await resolveMangaOpen({ id, title: name, altTitle });
+      const resolved = await resolveMangaOpen({
+        id: sourceId && !id.includes("::") ? `${sourceId}::${id}` : id,
+        title: name,
+        altTitle,
+      });
       if (!resolved) {
         setMissing((prev) => new Set(prev).add(id));
         return;
@@ -66,12 +70,15 @@ function FavCell({
   onOpen,
   missing = false,
 }: {
-  m: MangaSummary;
+  m: MangaSummary & { sourceId?: string };
   onOpen: (item: MangaSummary) => void;
   missing?: boolean;
 }) {
-  const { open: openContextMenu } = useContextMenu();
   const t = useT();
+  const context = useMangaContext(
+    { ...m, sourceId: m.sourceId ?? (m.id.includes("::") ? undefined : "") },
+    { open: () => onOpen(m) },
+  );
   const ref = useRef<HTMLDivElement | null>(null);
   const [near, setNear] = useState(false);
   const [loaded, setLoaded] = useState(false);
@@ -85,14 +92,15 @@ function FavCell({
   }, []);
   return (
     <button
+      ref={context.ref}
       type="button"
       onClick={() => onOpen(m)}
-      onContextMenu={(e) =>
-        openContextMenu(e, { kind: "manga", id: m.id, title: m.title, cover: m.cover })
-      }
       className="group flex w-full flex-col gap-2 text-start"
     >
-      <div ref={ref} className="relative aspect-[2/3] w-full overflow-hidden rounded-xl bg-elevated/60">
+      <div
+        ref={ref}
+        className="relative aspect-[2/3] w-full overflow-hidden rounded-xl bg-elevated/60"
+      >
         {!loaded && <span aria-hidden className="compass-shimmer absolute inset-0" />}
         {near && src && (
           <img
@@ -109,7 +117,9 @@ function FavCell({
       </div>
       <p className="line-clamp-2 text-[13px] font-medium leading-snug text-ink">{m.title}</p>
       {missing && (
-        <p className="text-[11.5px] leading-snug text-ink-subtle">{t("This title would not open")}</p>
+        <p className="text-[11.5px] leading-snug text-ink-subtle">
+          {t("This title would not open")}
+        </p>
       )}
     </button>
   );
@@ -121,11 +131,15 @@ export function MangaLibrary({ scrollRef }: { scrollRef: React.RefObject<HTMLEle
   const openRef = useRef(open);
   openRef.current = open;
   const openRailTitle = useCallback(
-    (m: MangaSummary) => void openRef.current(m.id, m.title, m.altTitle),
+    (m: MangaSummary & { sourceId?: string }) =>
+      void openRef.current(m.id, m.title, m.altTitle, m.sourceId),
     [],
   );
   const { items } = useMangaFavorites();
-  const favs = useMemo((): MangaSummary[] => [...items.values()].sort((a, b) => b.addedAt - a.addedAt), [items]);
+  const favs = useMemo(
+    (): MangaSummary[] => [...items.values()].sort((a, b) => b.addedAt - a.addedAt),
+    [items],
+  );
   const [active, setActive] = useState<LibrarySection>("favorites");
   const swapRef = useRef<HTMLDivElement | null>(null);
 
@@ -169,8 +183,7 @@ export function MangaLibrary({ scrollRef }: { scrollRef: React.RefObject<HTMLEle
       }
       const scroller = scrollerOf(lists);
       const maxed =
-        scroller != null &&
-        scroller.scrollHeight - scroller.scrollTop - scroller.clientHeight <= 8;
+        scroller != null && scroller.scrollHeight - scroller.scrollTop - scroller.clientHeight <= 8;
       if (maxed && rect.bottom > 160) {
         setActive("lists");
         return;

@@ -540,7 +540,7 @@ const catalog: Record<string, string> = {
     "Server streaming Compass hanya berjalan di aplikasi desktop.",
   "Compass's temporary viewer requires HTTPS.": "Penampil sementara Compass memerlukan HTTPS.",
   "Compass, from a public domain frame": "Compass, dari frame domain publik",
-  "Compasses on your network": "Compass di jaringan Anda",
+  "Compasss on your network": "Compass di jaringan Anda",
   "Hard Boiled": "Hard Boiled",
   "Hard outline": "Garis luar tegas",
   "Hard stroke around each letter. High contrast.":

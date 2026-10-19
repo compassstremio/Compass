@@ -9,7 +9,7 @@ import { PrivacyTab } from "./advanced-panel/privacy-tab";
 import { RepairTab } from "./advanced-panel/repair-tab";
 import { AboutTab } from "./advanced-panel/about-tab";
 
-export { BetaChannelRow, UpdatesRow } from "./advanced-panel/update-rows";
+export { BetaChannelRow, ModifyInstallationRow, UpdatesRow } from "./advanced-panel/update-rows";
 
 type Tab = "system" | "privacy" | "repair" | "code" | "about";
 

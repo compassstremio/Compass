@@ -15,12 +15,28 @@ const mpvRs = readFileSync(at("src-tauri/src/mpv.rs"), "utf8");
 // topology/default switch, which must trigger an ao-reload on Windows while an
 // active stream is playing.
 const schedule = mpv.slice(
-  mpv.indexOf("const scheduleAudioDeviceReload = () => {"),
+  mpv.indexOf("let lastAudioDeviceListSig"),
   mpv.indexOf("const handleEvent = (raw: MpvEvent) => {"),
 );
 
-test("audio-device-list property change is wired to schedule the reload", () => {
-  assert.match(mpv, /name === "audio-device-list"\) scheduleAudioDeviceReload\(\)/);
+test("audio-device-list churn only schedules a reload after the endpoint set settles", () => {
+  // Device state churn on unrelated endpoints (e.g. SteelSeries Sonar virtual
+  // devices) must not force a reload; only a lasting list change may.
+  assert.match(mpv, /const sig = audioDeviceListSig\(data\);/);
+  assert.match(mpv, /else if \(sig !== observedAudioDeviceListSig\)/);
+  assert.match(
+    mpv,
+    /else if \(sig !== lastAudioDeviceListSig\)\s*\{\s*scheduleAudioDeviceReload\(\);/,
+  );
+  // A change that reverts before the debounce elapses is dropped.
+  assert.match(
+    mpv,
+    /!mustReload && observedAudioDeviceListSig === lastAudioDeviceListSig\) return;/,
+  );
+  // An empty enumeration stays comparable instead of counting as unusable.
+  assert.match(mpv, /return names\.join\("\\n"\);/);
+  // An unusable payload falls back to the legacy always-reload behavior.
+  assert.match(mpv, /sig == null\)\s*\{\s*\/\/ No usable list payload[^]*?scheduleAudioDeviceReload\(true\);/);
 });
 
 test("the reload re-init guard is Windows-only while actively playing", () => {
@@ -30,10 +46,20 @@ test("the reload re-init guard is Windows-only while actively playing", () => {
 });
 
 test("the reload re-asserts the device then forces ao-reload on the current default", () => {
-  assert.match(schedule, /applyAudioDevice\(appliedAudioDevice \?\? "auto"\)/);
+  assert.match(schedule, /await applyAudioDevice\(/);
+  assert.match(schedule, /stillCurrent\(\) && canReload\(\)/);
   assert.match(schedule, /cmd: \["ao-reload"\]/);
   // ao-reload must appear after the Windows gate so it only fires on desktop.
   assert.ok(schedule.indexOf("isWindowsDesktop()") < schedule.indexOf("ao-reload"));
+});
+
+test("forced reloads re-anchor A/V when dynaudnorm is active", () => {
+  // dynaudnorm keeps ~15s buffered; a reload re-anchors to that buffer head,
+  // leaving mpv silent until video catches up. The same-position exact seek
+  // restores audio immediately. Live streams must not be re-seeked.
+  assert.match(schedule, /snap\.audioNormalize\s*&&\s*!currentIsLive/);
+  assert.match(schedule, /name: "time-pos"/);
+  assert.match(schedule, /cmd: \["seek", pos, "absolute\+exact"\]/);
 });
 
 test("Rust observes audio-device-list so the event reaches the frontend", () => {
@@ -47,9 +73,15 @@ test("Rust allows the ao-reload command", () => {
 test("refocus reload waits for a long absence and removes both listeners on disposal", () => {
   assert.match(mpv, /const FOCUS_RELOAD_MIN_ABSENT_MS = 60_000/);
   assert.match(mpv, /const onWindowBlur = \(\) => \{\s*lastWindowBlur = Date.now\(\)/);
+  // Wake-from-sleep triggers are unconditional: they must not be dropped by
+  // the list-settle guard even when no device-list event carried them.
   assert.match(
     mpv,
-    /Date.now\(\) - lastWindowBlur < FOCUS_RELOAD_MIN_ABSENT_MS\) return;\s*scheduleAudioDeviceReload\(\)/,
+    /if \(document\.visibilityState !== "visible"\) return;\s*scheduleAudioDeviceReload\(true\)/,
+  );
+  assert.match(
+    mpv,
+    /Date.now\(\) - lastWindowBlur < FOCUS_RELOAD_MIN_ABSENT_MS\) return;\s*scheduleAudioDeviceReload\(true\)/,
   );
   for (const [event, callback] of [
     ["blur", "onWindowBlur"],
@@ -58,4 +90,17 @@ test("refocus reload waits for a long absence and removes both listeners on disp
     assert.ok(mpv.includes(`window.addEventListener("${event}", ${callback})`));
     assert.ok(mpv.includes(`window.removeEventListener("${event}", ${callback})`));
   }
+});
+
+test("the reload continuation bails when the media moved on underneath it", () => {
+  assert.match(schedule, /const reloadLoadId = mediaLoadId;/);
+  assert.match(schedule, /const stillCurrent = \(\) =>/);
+  assert.match(schedule, /if \(!stillCurrent\(\) \|\| !canReload\(\)\)/);
+  // A user seek during the reload must suppress the resync re-seek.
+  assert.match(schedule, /lastUserSeekAt <= reloadBeganAt/);
+});
+
+test("an adopted retained session treats its first device list as a change", () => {
+  assert.match(mpv, /let adoptedRetainedSession = false;/);
+  assert.match(mpv, /if \(adoptedRetainedSession\) \{\s*scheduleAudioDeviceReload\(\);/);
 });

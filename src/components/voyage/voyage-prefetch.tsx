@@ -6,6 +6,7 @@ import { useDebridClients } from "@/lib/debrid/registry";
 import { buildPickerConfigHash, getPickerCache, setPickerCache } from "@/lib/picker-cache";
 import { useSettings } from "@/lib/settings";
 import { buildEpisodePipelineInput } from "@/lib/streams/episode-pipeline-input";
+import { hasAnimeStreamIds, preferredAnimeImdbStreamId } from "@/lib/streams/stream-ids";
 import { runPipeline } from "@/lib/streams/pipeline";
 import { isPluginAddon, pluginCacheTokens } from "@/lib/streams/plugins";
 import { useAddons } from "@/views/play-picker/use-addons";
@@ -32,6 +33,10 @@ export function VoyagePrefetch({ meta }: { meta: Meta }) {
   const strictMode = settings.streamFilterLevel === "strict";
   const filterDisabled = settings.streamFilterLevel === "off";
 
+  const animePreference = streamIds && hasAnimeStreamIds(streamIds)
+    ? settings.animePreferImdbStreams : undefined;
+  const preferredAnimeImdbId = animePreference && streamIds
+    ? preferredAnimeImdbStreamId(meta.id, undefined, imdb.id, imdb.verified, streamIds) : undefined;
   const configHash = useMemo(
     () =>
       buildPickerConfigHash({
@@ -39,8 +44,10 @@ export function VoyagePrefetch({ meta }: { meta: Meta }) {
         debridSlugs: debrids.map((d) => d.slug),
         scraperKeys: pluginCacheTokens(),
         filterMode: filterDisabled ? "off" : strictMode ? "strict" : "balanced",
+        animePreferImdbStreams: animePreference,
+        preferredAnimeImdbId,
       }),
-    [addons, debrids, filterDisabled, strictMode],
+    [addons, debrids, filterDisabled, strictMode, animePreference, preferredAnimeImdbId],
   );
 
   useEffect(() => {
@@ -57,6 +64,7 @@ export function VoyagePrefetch({ meta }: { meta: Meta }) {
         meta,
         episode: undefined,
         imdbId: imdb.id,
+        imdbIdVerified: imdb.verified,
         streamIds,
         addons,
         debrids,
@@ -67,14 +75,15 @@ export function VoyagePrefetch({ meta }: { meta: Meta }) {
       }),
       forever.signal,
       (partial) => {
-        if (partial.picker.all.length === 0) return;
+        if (forever.signal.aborted || partial.picker.all.length === 0) return;
         stampAddonOrder(partial.picker.all, partial.raw.addon);
-        setPickerCache(meta, undefined, partial, configHash, false);
+        setPickerCache(meta, undefined, partial, configHash, false, animePreference);
       },
     )
       .then((r) => {
+        if (forever.signal.aborted) return;
         stampAddonOrder(r.picker.all, r.raw.addon);
-        setPickerCache(meta, undefined, r, configHash);
+        setPickerCache(meta, undefined, r, configHash, true, animePreference);
         if (settings.instantPlaybackPreparation && r.picker.all.length > 0) {
           void prepareCachedDebridStreams(r.picker.all, debrids, undefined, forever.signal).catch(
             () => {},
@@ -82,8 +91,12 @@ export function VoyagePrefetch({ meta }: { meta: Meta }) {
         }
       })
       .catch(() => {
-        startedRef.current = null;
+        if (!forever.signal.aborted) startedRef.current = null;
       });
+    return () => {
+      forever.abort();
+      if (startedRef.current === stamp) startedRef.current = null;
+    };
   }, [
     meta,
     streamIds,
@@ -94,6 +107,7 @@ export function VoyagePrefetch({ meta }: { meta: Meta }) {
     filterDisabled,
     animeTitles,
     imdb.id,
+    imdb.verified,
     configHash,
   ]);
 

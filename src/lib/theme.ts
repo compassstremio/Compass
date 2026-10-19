@@ -979,6 +979,32 @@ html:not(:has(aside[data-compass-sidebar])) #ef-scrim {
 }
 
 /* ==========================================================================
+   GAMES WORKSPACE  (the Games column supplies its own navigation menu)
+   ========================================================================== */
+/* Games takes over the corner with its library menu; the drawer button must not
+   sit on top of it, or clicks open the app navigation instead of the Games menu. */
+html:has([data-games-library]) #ef-topleft {
+  display: none !important;
+}
+/* The Games menu reveals the shell navigation. Show the same drawer without
+   requiring ef-drawer-open, so no scrim is involved. */
+[data-games-library][data-games-navigation] [data-compass-native-backdrop] > aside[data-compass-sidebar] {
+  transform: translateX(0) !important;
+  translate: 0 !important;
+  opacity: 1 !important;
+  visibility: visible !important;
+  pointer-events: auto !important;
+  transition-delay: 0s !important;
+}
+/* The themed drawer (for example the profile fallback) still shows inside Games. */
+html.ef-drawer-open [data-games-library]:not([data-games-navigation]) [data-compass-native-backdrop] > aside[data-compass-sidebar] {
+  translate: 0 !important;
+  opacity: 1 !important;
+  visibility: visible !important;
+  pointer-events: auto !important;
+}
+
+/* ==========================================================================
    DETAIL HERO
    ========================================================================== */
 .compass-bleed-stremio {
@@ -1108,11 +1134,17 @@ function buildElegantFinJs(): string {
   var previousCollapsed = null;
   var originalInert = false;
   var observer = new MutationObserver(syncSidebar);
+  function gamesNavigationOpen() {
+    if (!sidebar) return false;
+    var shell = sidebar.closest("[data-compass-shell]");
+    return !!shell && shell.hasAttribute("data-games-navigation");
+  }
   function syncAccess() {
     var open = root.classList.contains("ef-drawer-open");
     var hidden = !sidebar || sidebar.getAttribute("aria-hidden") === "true";
     var collapsed = sidebar && sidebar.getAttribute("data-collapsed") === "true";
-    if (sidebar) sidebar.inert = hidden || (!collapsed && !open);
+    // Games reveals this same sidebar through the shell instead of the drawer.
+    if (sidebar) sidebar.inert = hidden || (!collapsed && !open && !gamesNavigationOpen());
     var menu = document.getElementById("ef-menu");
     if (menu) menu.setAttribute("aria-expanded", String(open && !hidden && !collapsed));
   }
@@ -1132,6 +1164,8 @@ function buildElegantFinJs(): string {
       if (sidebar) sidebarParent = sidebar.parentElement;
       if (sidebarParent) observer.observe(sidebarParent, { childList: true });
       if (sidebar) observer.observe(sidebar, { attributes: true, attributeFilter: ["data-collapsed", "aria-hidden"] });
+      var shell = sidebar && sidebar.closest("[data-compass-shell]");
+      if (shell) observer.observe(shell, { attributes: true, attributeFilter: ["data-games-navigation"] });
       setOpen(false);
     }
     if (!sidebar || sidebar.getAttribute("aria-hidden") === "true") {

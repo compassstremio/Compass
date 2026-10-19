@@ -1,9 +1,9 @@
+import { badgeLabel } from "@/lib/social/badge-label";
 import { createPortal } from "react-dom";
 import { Award, Check, X } from "lucide-react";
 import { useMemo, useState, type ReactNode } from "react";
 import { socialPost } from "@/lib/social/client";
 import { useT } from "@/lib/i18n";
-import { badgeLabel } from "@/lib/social/badge-label";
 import { useEscape } from "@/components/modal-shell";
 import { badgeKey, SHOWN_BADGE_KEY_RE } from "./badge-catalog";
 import type { Badge, ProfileSummary } from "./profile-types";

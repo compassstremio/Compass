@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useRef, useState, type RefObject } from "react";
 import type { PlayerBridge, PlayerSnapshot } from "@/lib/player/bridge";
 import { getPlaybackPosition, usePlaybackFlag } from "@/lib/player/playback-clock";
+import { isLivePlaybackSrc } from "@/lib/player/live-src";
 import { pinPickerCache, unpinPickerCache } from "@/lib/picker-cache";
 import { readResumeMs } from "@/lib/resume";
 import { SHORT_PLAYBACK_SEC } from "@/lib/dead-streams";
@@ -141,6 +142,9 @@ export function useStreamSwitcher(params: {
           url: playUrl,
           subtitles: r.data.subtitles,
           notWebReady: r.data.notWebReady,
+          // The bridge no longer infers liveness from notWebReady, so the swap has
+          // to classify the stream it is about to load the same way the picker does.
+          isLive: isLivePlaybackSrc({ meta: src.meta, streamRef: { addonId: stream.addonId } }),
           startAtSec: resumeAt > 5 ? resumeAt : undefined,
           startupProfile: playbackStartupProfile(stream),
         });

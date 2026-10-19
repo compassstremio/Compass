@@ -9,6 +9,7 @@ import { playbackStartupProfile } from "@/lib/player/startup-profile";
 import { isLivePlaybackSrc } from "@/lib/player/live-src";
 import { releaseStreamProxy, retainStreamProxy } from "@/lib/stream-proxy";
 import { playerLoadIdentity } from "@/lib/player/load-identity";
+import { isPlaybackActorCurrent } from "@/lib/playback-history";
 
 const RESUME_PROMPT_MIN_SEC = 30;
 const RESTART_THRESHOLD = 0.8;
@@ -83,6 +84,8 @@ export function useBridgeLoad(params: {
     const isAutoRetry = (src.attempt ?? 0) > 0;
     const isLive = isLivePlaybackSrc(src);
     let cancelled = false;
+    const isCurrent = () =>
+      !cancelled && (!src.continuation || isPlaybackActorCurrent(src.continuation.actor));
     (async () => {
       const openingVid = videoIdFor(
         src,
@@ -108,10 +111,10 @@ export function useBridgeLoad(params: {
       try {
         resolved = await resumePromise;
       } catch (e) {
-        if (!cancelled) console.warn("[player] resume lookup failed", e);
+        if (isCurrent()) console.warn("[player] resume lookup failed", e);
         return;
       }
-      if (cancelled) return;
+      if (!isCurrent()) return;
       const startMs = src.startPositionMs ?? resolved.ms;
       const runtimeMin = src.episode?.runtime ?? null;
       const durationMs = runtimeMin && runtimeMin > 0 ? runtimeMin * 60_000 : 0;
@@ -125,8 +128,11 @@ export function useBridgeLoad(params: {
       const startSec =
         isLive || src.startFromZero
           ? 0
-          : (hasExplicitStart ? startMs : !resumePlaybackRef.current || finishedNearEnd ? 0 : startMs) /
-            1000;
+          : (hasExplicitStart
+              ? startMs
+              : !resumePlaybackRef.current || finishedNearEnd
+                ? 0
+                : startMs) / 1000;
       const guestInRoom = inRoomRef.current && !isHostRef.current;
       const eligibleForPrompt =
         isFirstLoad &&
@@ -146,13 +152,16 @@ export function useBridgeLoad(params: {
           headers: src.headers,
           // Supply resume to the initial load so mpv/HTML5 never start at zero
           // while a later seek races automatic intro skipping.
-          startAtSec: !guestInRoom && !eligibleForPrompt && startSec > 5 ? startSec : undefined,
+          startAtSec:
+            !guestInRoom && !eligibleForPrompt && (hasExplicitStart ? startSec > 0 : startSec > 5)
+              ? startSec
+              : undefined,
         });
       } catch (e) {
-        if (!cancelled) console.warn("[player] load failed", e);
+        if (isCurrent()) console.warn("[player] load failed", e);
         return;
       }
-      if (cancelled) return;
+      if (!isCurrent()) return;
       lastLoadedUrlRef.current = loadKey;
       firstLoadRef.current = false;
       setReadyLoadKey(loadKey);
@@ -162,6 +171,7 @@ export function useBridgeLoad(params: {
         ackRef.current = (action) => {
           ackRef.current = null;
           setPendingResumeSec(null);
+          if (!isCurrent()) return;
           if (action === "resume") {
             setPendingSeekSec(startSec);
           } else {
@@ -170,7 +180,7 @@ export function useBridgeLoad(params: {
         };
         return;
       }
-      if (!guestInRoom && startSec > 5) {
+      if (!guestInRoom && (hasExplicitStart ? startSec > 0 : startSec > 5)) {
         setPendingSeekSec(startSec);
         return;
       }

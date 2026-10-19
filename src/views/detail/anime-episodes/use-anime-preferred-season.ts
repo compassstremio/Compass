@@ -5,7 +5,7 @@ import type { KitsuEpisode } from "@/lib/providers/kitsu";
 import { parseKitsuId } from "@/lib/providers/kitsu";
 import { splitFranchiseDisplaySeason } from "@/lib/streams/anime-identity-core";
 import { lastPlayedEpisode } from "@/lib/resume";
-import { animeSeasonKey } from "./anime-season-key";
+import { animeSeasonKey, matchPlayedEpisode, poolHasSeason } from "./anime-season-key";
 
 export function useAnimePreferredSeason({
   episodes,
@@ -14,6 +14,7 @@ export function useAnimePreferredSeason({
   traktWatched,
   anilistWatched,
   malWatched,
+  pmdbWatched,
   mwVersion,
 }: {
   episodes: KitsuEpisode[];
@@ -22,6 +23,7 @@ export function useAnimePreferredSeason({
   traktWatched: Set<string>;
   anilistWatched?: Set<string>;
   malWatched?: Set<string>;
+  pmdbWatched?: Set<string>;
   mwVersion: number;
 }): string | null {
   return useMemo(() => {
@@ -35,24 +37,21 @@ export function useAnimePreferredSeason({
     const playedId =
       playedFromMeta != null ? metaId : playedFromTrack != null ? (trackId ?? null) : null;
     // Merged franchise lists (e.g. Bleach 2004 + TYBW cours) collide on `number`,
-    // so prefer the episode from the entry the resume was saved under before
-    // falling back to the plain number match.
-    const playedEp =
-      played != null
-        ? ((playedId != null
-            ? episodes.find(
-                (e) => e.number === played.episode && (e.sourceMetaId ?? metaId) === playedId,
-              )
-            : undefined) ??
-          (partScoped && played.displaySeason != null
-            ? (episodes.find(
-                (e) =>
-                  e.number === played.episode &&
-                  splitFranchiseDisplaySeason(parseKitsuId(e.sourceMetaId ?? "")) ===
-                    played.displaySeason,
-              ) ?? episodes.find((e) => e.number === played.episode))
-            : episodes.find((e) => e.number === played.episode)))
-        : undefined;
+    // so prefer the episode from the entry the resume was saved under; the season
+    // must agree as well (see matchPlayedEpisode).
+    const playedEp = matchPlayedEpisode(episodes, played, playedId, metaId, partScoped);
+    // A resume can point at a season the loaded entry/pool does not contain at
+    // all (a franchise season the app cannot pool, e.g. JoJo's Steel Ball Run).
+    // The picker still offers that season from the provider order, so trust the
+    // resume's own season instead of walking back to an earlier one.
+    if (
+      played != null &&
+      playedEp == null &&
+      played.season >= 1 &&
+      !poolHasSeason(episodes, played.season)
+    ) {
+      return String(played.season);
+    }
     const playedSeason = partScoped
       ? (playedEp?.seasonNumber ?? playedEp?.imdbSeason ?? null)
       : (playedEp?.imdbSeason ?? playedEp?.seasonNumber ?? null);
@@ -96,6 +95,8 @@ export function useAnimePreferredSeason({
         isCurrent ? malWatched : undefined,
         ep.imdbSeason,
         ep.imdbEpisode,
+        pmdbWatched,
+        ep.absoluteNumber,
       );
       if (
         isCurrent &&
@@ -117,6 +118,8 @@ export function useAnimePreferredSeason({
           malWatched,
           ep.imdbSeason,
           ep.imdbEpisode,
+          pmdbWatched,
+          ep.absoluteNumber,
         );
         if (alt.watched) progress = alt;
       }
@@ -129,5 +132,5 @@ export function useAnimePreferredSeason({
     if (playedSeason != null) return String(playedSeason);
     return String(maxSeason);
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [episodes, metaId, trackId, traktWatched, anilistWatched, malWatched, mwVersion]);
+  }, [episodes, metaId, trackId, traktWatched, anilistWatched, malWatched, pmdbWatched, mwVersion]);
 }

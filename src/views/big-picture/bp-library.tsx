@@ -47,7 +47,7 @@ const SERVICE_NAMES: Partial<Record<BpLibTab, string>> = {
   letterboxd: "Letterboxd",
 };
 
-const TYPES: Array<{ id: TypeKey; label: string }> = [
+const TYPES: Array<{ id: "all" | "movie" | "series"; label: string }> = [
   { id: "all", label: "All" },
   { id: "movie", label: "Movies" },
   { id: "series", label: "Shows" },
@@ -174,7 +174,10 @@ export function BpLibrary({ onSelect }: { onSelect: (m: Meta) => void }) {
     );
     setGenres(new Set(saved.genres ?? []));
     setQuery("");
-    setType(saved.type ?? "all");
+    // The desktop library can persist filter values Big Picture cannot render
+    // (e.g. Collections); fall back to All instead of an empty grid.
+    const savedType = saved.type ?? "all";
+    setType(TYPES.some((option) => option.id === savedType) ? savedType : "all");
     setOwnedSort(saved.sort ?? "added");
     setSortDir(saved.sortDir ?? "desc");
     setFilterPrefsSection(section);

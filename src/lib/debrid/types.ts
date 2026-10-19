@@ -26,7 +26,7 @@ export type DirectLink = {
   filesize?: number;
   headers?: Record<string, string>;
   notWebReady?: boolean;
-  subtitles?: Array<{ url: string; lang?: string; id?: string }>;
+  subtitles?: Array<{ url: string; lang?: string; id?: string; trustedSource?: boolean }>;
 };
 
 export type DebridFile = {

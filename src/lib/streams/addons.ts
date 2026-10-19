@@ -45,6 +45,7 @@ function timeoutFor(addon: Addon, ceilingMs: number): number {
 export type StreamRequest = {
   type: string;
   ids: string[];
+  preferredAnimeImdbId?: string;
   animeIdUnverified?: boolean;
   context?: StreamRequestContext;
 };
@@ -104,8 +105,8 @@ export function pluginQueryId(
 ): string | undefined {
   if (forcedId) return forcedId;
   return (
-    pickIds(addon, req.type, req.ids, req.animeIdUnverified === true)[0] ??
-    pickIdByDeclaredTypes(addon, req.ids)?.id
+    pickIds(addon, req.type, req.ids, req.animeIdUnverified === true, req.preferredAnimeImdbId)[0] ??
+    pickIdByDeclaredTypes(addon, req.ids, req.preferredAnimeImdbId)?.id
   );
 }
 
@@ -173,7 +174,7 @@ export async function fetchAddonStreams(
     const ids =
       forcedId != null
         ? [forcedId]
-        : pickIds(addon, req.type, req.ids, req.animeIdUnverified === true);
+        : pickIds(addon, req.type, req.ids, req.animeIdUnverified === true, req.preferredAnimeImdbId);
     if (ids.length > 0) {
       for (const id of ids) {
         // Local lists only persist movie/series, which can drop the type an addon's
@@ -203,7 +204,7 @@ export async function fetchAddonStreams(
 
     // No (type, id) pair matched the request, but a non-standard id may still be
     // served under a type the catalog declared. Query those types directly.
-    const anyType = pickIdByDeclaredTypes(addon, req.ids);
+    const anyType = pickIdByDeclaredTypes(addon, req.ids, req.preferredAnimeImdbId);
     if (anyType == null) {
       skipped.push(`${addon.manifest.name}(no-matching-id)`);
       continue;
@@ -322,15 +323,30 @@ function hasStandardIdScheme(id: string): boolean {
   return STANDARD_ID_SCHEMES.some((p) => id.startsWith(p));
 }
 
-function pickIds(addon: Addon, type: string, ids: string[], animeIdUnverified = false): string[] {
-  const sorted = [...ids].sort((a, b) => idPriority(a) - idPriority(b));
+function sortedIds(ids: string[], preferredAnimeImdbId?: string): string[] {
+  const priority = (id: string) =>
+    id === preferredAnimeImdbId && /^tt\d+(?::\d+:\d+)?$/.test(id) ? -1 : idPriority(id);
+  return [...ids].sort((a, b) => priority(a) - priority(b));
+}
+
+function pickIds(
+  addon: Addon,
+  type: string,
+  ids: string[],
+  animeIdUnverified = false,
+  preferredAnimeImdbId?: string,
+): string[] {
+  const sorted = sortedIds(ids, preferredAnimeImdbId);
   const accepted = sorted.filter((id) => addonAcceptsId(addon, type, id));
   if (accepted.length === 0) return [];
   const animeId = accepted.find((id) => ANIME_SCHEMES.some((s) => id.startsWith(s)));
   const ttId = accepted.find((id) => id.startsWith("tt"));
   if (!animeId || !ttId) return [accepted[0]];
   // Specials have no reliable kitsu numbering, so both identities stay.
-  if (SPECIALS_SCOPED_TT_RX.test(ttId)) return [animeId, ttId];
+  if (SPECIALS_SCOPED_TT_RX.test(ttId)) {
+    return ttId === preferredAnimeImdbId ? [ttId, animeId] : [animeId, ttId];
+  }
+  if (ttId === preferredAnimeImdbId) return [ttId];
   if (animeIdUnverified) return [ttId];
   return [animeId];
 }
@@ -338,8 +354,9 @@ function pickIds(addon: Addon, type: string, ids: string[], animeIdUnverified = 
 function pickIdByDeclaredTypes(
   addon: Addon,
   ids: string[],
+  preferredAnimeImdbId?: string,
 ): { id: string; types: string[] } | null {
-  const sorted = [...ids].sort((a, b) => idPriority(a) - idPriority(b));
+  const sorted = sortedIds(ids, preferredAnimeImdbId);
   for (const id of sorted) {
     const types = streamTypesAcceptingId(addon, id);
     if (types.length > 0) return { id, types };

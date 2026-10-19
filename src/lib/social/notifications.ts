@@ -1,10 +1,10 @@
+import { badgeLabel } from "@/lib/social/badge-label";
 import {
   listNotifications,
   markNotificationsRead,
   type ThemeNotification,
 } from "@/lib/theme-store";
 import { t } from "@/lib/i18n";
-import { badgeLabel } from "@/lib/social/badge-label";
 import { badgeIconUrl } from "@/views/profile/badge-catalog";
 import { socialGet, socialPost } from "./client";
 

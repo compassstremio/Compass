@@ -29,7 +29,7 @@ export const COMPASS_SYNC_BASE = resolveBase(
 
 export const COMPASS_RELAY_BASE = resolveBase(
   import.meta.env.VITE_COMPASS_RELAY_BASE,
-  "https://app.compass.sarl",
+  COMPASS_API_BASE,
 );
 
 export const COMPASS_DISCORD_INVITE = resolveBase(

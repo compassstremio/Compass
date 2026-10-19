@@ -8,13 +8,22 @@ import {
 import { enrichEpisodes } from "@/lib/providers/anime-episode-enrich";
 import { animeKitsuMeta } from "@/lib/providers/anime-kitsu-addon";
 import { kitsuEpisodes, type KitsuEpisode } from "@/lib/providers/kitsu";
-import { kitsuToTvdb } from "@/lib/providers/anime-mapping";
+import { applyAnidbSeasonWindow, kitsuToTvdb, kitsuToMal } from "@/lib/providers/anime-mapping";
+import {
+  applyMalEpisodeTitles,
+  episodesMissingTitle,
+} from "@/lib/providers/episode-placeholder";
+import { malEpisodeTitles } from "@/lib/providers/mal-episodes";
 import { tvdbEpisodesByType, tvdbEpisodesAbsolute, tvdbLangFromIso1 } from "@/lib/providers/tvdb";
 import { tmdbSeasonEpisodes } from "@/lib/providers/tmdb/tmdb-details";
 import type { Episode as TmdbEpisode } from "@/lib/providers/tmdb/tmdb-details";
 import type { Settings } from "@/lib/settings";
 
-const cache = new Map<string, Promise<KitsuEpisode[]>>();
+// The pool a cour was fetched with can predate freshly published titles, so a
+// result is kept briefly instead of for the whole session; a failed fetch is
+// never kept at all.
+const ENTRY_CACHE_TTL_MS = 5 * 60 * 1000;
+const cache = new Map<string, { at: number; promise: Promise<KitsuEpisode[]> }>();
 
 function isPlayable(ep: KitsuEpisode): boolean {
   if (ep.streamId) return true;
@@ -25,9 +34,9 @@ export function fetchEntryEpisodes(kitsuId: number, settings: Settings): Promise
   const lang = tvdbLangFromIso1(settings.tmdbLanguage || settings.uiLanguage);
   const iso1 = settings.tmdbLanguage || settings.uiLanguage || "en";
   const localized = iso1.split("-")[0]?.toLowerCase() !== "en";
-  const cacheKey = `${kitsuId}:${lang}:${localized ? "loc" : "std"}`;
+  const cacheKey = `${kitsuId}:${iso1}:v2`;
   const cached = cache.get(cacheKey);
-  if (cached) return cached;
+  if (cached && Date.now() - cached.at < ENTRY_CACHE_TTL_MS) return cached.promise;
   const p = (async () => {
     const [addonMeta, raw, aniZip, tvdbRaw] = await Promise.all([
       animeKitsuMeta(`kitsu:${kitsuId}`).catch(() => null),
@@ -85,14 +94,32 @@ export function fetchEntryEpisodes(kitsuId: number, settings: Settings): Promise
       }
     }
     const eps = buildKitsuEpisodes(addonMeta, raw);
-    mergeAniZipEpisodes(eps, aniZip, { lang: localized ? iso1 : undefined });
-    mergeTvdbEpisodes(eps, tvdbRaw?.loc ?? null, { lang: localized ? iso1 : undefined });
-    mergeTmdbEpisodes(eps, tmdbEpsRaw, { lang: localized ? iso1 : undefined });
+    mergeAniZipEpisodes(eps, aniZip, { lang: localized ? iso1 : undefined, targetLang: iso1 });
+    // AniZip often carries a new season's ids before its episode records, and
+    // the addon labels the cour "season 1" — the window must land before the
+    // TVDB merge or the cour's identity-less rows match franchise season 1.
+    await applyAnidbSeasonWindow(eps, kitsuId);
+    mergeTvdbEpisodes(eps, tvdbRaw?.loc ?? null, {
+      lang: localized ? iso1 : undefined,
+      targetLang: iso1,
+      englishEpisodes: tvdbRaw?.en,
+    });
+    mergeTmdbEpisodes(eps, tmdbEpsRaw, { lang: localized ? iso1 : undefined, targetLang: iso1, englishEpisodes: tmdbEnRaw });
     // Fall back to English titles/overviews when the localized translation is missing (providers
-    // otherwise fall back to the original, e.g. Japanese for anime).
+    // otherwise fall back to the original, e.g. Japanese for anime). `targetLang` keeps this pass
+    // from overwriting a title the user already has in their own language.
     if (localized) {
-      if (tvdbRaw?.en) mergeTvdbEpisodes(eps, tvdbRaw.en);
-      if (tmdbEnRaw) mergeTmdbEpisodes(eps, tmdbEnRaw);
+      if (tvdbRaw?.en) mergeTvdbEpisodes(eps, tvdbRaw.en, { targetLang: iso1, fallbackOnly: true });
+      if (tmdbEnRaw) mergeTmdbEpisodes(eps, tmdbEnRaw, { targetLang: iso1 });
+    }
+    // Last resort: MAL names episodes the other providers leave unnamed (it
+    // carries English and romaji early). Only rows with no real title are filled.
+    if (episodesMissingTitle(eps)) {
+      const malId = aniZip?.mappings?.mal_id ?? (await kitsuToMal(kitsuId).catch(() => null));
+      if (malId != null) {
+        const malEps = await malEpisodeTitles(malId).catch(() => null);
+        applyMalEpisodeTitles(eps, malEps);
+      }
     }
     const imdbId = aniZip?.mappings?.imdb_id ?? eps.find((ep) => ep.imdbId)?.imdbId ?? null;
     await enrichEpisodes(eps, settings, kitsuId, imdbId).catch(() => {});
@@ -104,6 +131,10 @@ export function fetchEntryEpisodes(kitsuId: number, settings: Settings): Promise
     }
     return out;
   })();
-  cache.set(cacheKey, p);
+  const entry = { at: Date.now(), promise: p };
+  cache.set(cacheKey, entry);
+  void p.catch(() => {
+    if (cache.get(cacheKey) === entry) cache.delete(cacheKey);
+  });
   return p;
 }

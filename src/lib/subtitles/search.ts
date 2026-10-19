@@ -270,7 +270,7 @@ export function deduplicateAndRankSubtitleResults(
 ): SubResult[] {
   const groups = new Map<string, SubResult[]>();
   for (const r of results) {
-    if (!isSafeProviderSubtitleUrl(r.url)) continue;
+    if (!r.localTrusted && !isSafeProviderSubtitleUrl(r.url)) continue;
     const key = `${normalizeLang(r.lang)}|${r.url}|${r.title || ""}|${r.format || ""}`;
     const group = groups.get(key) ?? [];
     group.push(r);

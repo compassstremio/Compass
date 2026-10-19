@@ -36,6 +36,7 @@ export async function defaultInstallDir() {
 export async function install(options) {
   const dest = options.dest;
   const desktopShortcut = !!options.desktopShortcut;
+  const disabledFeatures = Array.isArray(options.disabledFeatures) ? options.disabledFeatures : [];
   const onProgress = options.onProgress || function () {};
   if (!isNative()) return Promise.reject(new Error("not native"));
   const unlisten = await T.event.listen("install://progress", function (e) {
@@ -46,7 +47,11 @@ export async function install(options) {
   });
   taskbarProgress(0);
   try {
-    await T.core.invoke("run_install", { dest: dest, desktopShortcut: desktopShortcut });
+    await T.core.invoke("run_install", {
+      dest: dest,
+      desktopShortcut: desktopShortcut,
+      disabledFeatures: disabledFeatures,
+    });
     taskbarProgress(null);
   } catch (e) {
     taskbarError();
@@ -58,6 +63,7 @@ export async function install(options) {
 
 export async function repair(options) {
   const dest = options.dest;
+  const disabledFeatures = Array.isArray(options.disabledFeatures) ? options.disabledFeatures : [];
   const onProgress = options.onProgress || function () {};
   if (!isNative()) return Promise.reject(new Error("not native"));
   const unlisten = await T.event.listen("install://progress", function (e) {
@@ -68,7 +74,10 @@ export async function repair(options) {
   });
   taskbarProgress(0);
   try {
-    const report = await T.core.invoke("run_repair", { dest: dest });
+    const report = await T.core.invoke("run_repair", {
+      dest: dest,
+      disabledFeatures: disabledFeatures,
+    });
     taskbarProgress(null);
     return report;
   } catch (e) {
@@ -76,6 +85,17 @@ export async function repair(options) {
     throw e;
   } finally {
     unlisten();
+  }
+}
+
+/** The features the installed copy currently leaves out, for seeding the toggles. */
+export async function installedFeatures(dest) {
+  if (!isNative()) return [];
+  try {
+    const list = await T.core.invoke("installed_features", { dest: dest });
+    return Array.isArray(list) ? list : [];
+  } catch {
+    return [];
   }
 }
 
@@ -100,11 +120,18 @@ export async function openExternal(url) {
 
 export async function fetchChangelog() {
   if (!isNative()) {
-    const res = await fetch("https://compass.sarl/updates/versions-beta.json", {
-      cache: "no-store",
-    });
-    if (!res.ok) throw new Error("changelog " + res.status);
-    return await res.json();
+    try {
+      const res = await fetch("https://compass.sarl/updates/versions-beta.json", {
+        cache: "no-store",
+      });
+      if (!res.ok) throw new Error("changelog " + res.status);
+      return await res.json();
+    } catch {
+      // The dev server exposes the embedded copy at /changelog.json (see serve.mjs).
+      const fallback = await fetch("changelog.json", { cache: "no-store" });
+      if (!fallback.ok) throw new Error("changelog " + fallback.status);
+      return await fallback.json();
+    }
   }
   const raw = await T.core.invoke("fetch_changelog");
   return JSON.parse(raw);
@@ -274,8 +301,10 @@ export async function installFacts() {
         { key: "ffmpeg", bytes: 202776576 },
         { key: "ytdlp", bytes: 18454528 },
         { key: "support", bytes: 9961472 },
+        { key: "plugins", bytes: 41943040 },
+        { key: "games", bytes: 91226112 },
       ],
-      installed_bytes: 584596958,
+      installed_bytes: 717766110,
       installer_bytes: 287309824,
       webview2_present: true,
       webview2_bytes: 136000000,

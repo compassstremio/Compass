@@ -342,7 +342,7 @@ test("league read sends the required headers and resolves the transclusion", asy
   assert.ok(calls[0].url.includes("rvslots=main"));
   assert.equal(calls[0].headers["Accept-Encoding"], "gzip");
   assert.equal(calls[0].headers["User-Agent"], calls[0].headers["Api-User-Agent"]);
-  assert.match(calls[0].headers["User-Agent"], /^CompassEsports\/1\.0 \(https:\/\/compass\.site; /);
+  assert.match(calls[0].headers["User-Agent"], /^CompassEsports\/1\.0 \(https:\/\/compass\.sarl; /);
   assert.equal(new URL(calls[1].url).searchParams.get("titles"), "The International/2025/prizepool");
   assert.equal(league?.prizePoolUsd, 2881791);
   assert.equal(league?.city, "Hamburg");

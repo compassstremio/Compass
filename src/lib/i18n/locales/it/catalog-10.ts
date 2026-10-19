@@ -784,7 +784,7 @@ const catalog10: Record<string, string> = {
   "{n} options active": "{n} opzioni attive",
   "{n} options#few": "{n} opzioni#few",
   "{n} options#one": "{n} opzione#one",
-  "{n} other Compasses": "{n} altri Compass",
+  "{n} other Compasss": "{n} altri Compass",
   "{n} pages": "{n} pagine",
   "{n} pages#few": "{n} pagine#few",
   "{n} pages#one": "{n} pagina#one",

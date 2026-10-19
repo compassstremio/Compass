@@ -417,8 +417,8 @@ const settings: Record<string, string> = {
     "Dùng cho tình trạng có thể phát trực tuyến và khung thời gian phát hành Đang chiếu. Chọn một quốc gia để Compass đồng bộ ngôn ngữ giao diện, siêu dữ liệu và phụ đề tương ứng.",
   "A free TMDB key is highly recommended. It unlocks the full Compass experience. The rest are optional, and Cinemeta works out of the box without any.":
     "Rất nên dùng khóa TMDB miễn phí. Khóa này mở khóa đầy đủ trải nghiệm Compass. Các khóa còn lại là tùy chọn, còn Cinemeta hoạt động ngay mà không cần khóa nào.",
-  "TMDB asks for an app URL when you create the key. Put any URL at all, like https://compass.app. The only thing you need back is the API key.":
-    "TMDB yêu cầu URL ứng dụng khi bạn tạo khóa. Nhập URL bất kỳ, chẳng hạn https://compass.app. Thứ duy nhất bạn cần nhận lại là khóa API.",
+  "TMDB asks for an app URL when you create the key. Put any URL at all, like https://compass.sarl. The only thing you need back is the API key.":
+    "TMDB yêu cầu URL ứng dụng khi bạn tạo khóa. Nhập URL bất kỳ, chẳng hạn https://compass.sarl. Thứ duy nhất bạn cần nhận lại là khóa API.",
   "RPDB already paints scores onto the poster. Toggle to override.":
     "RPDB đã hiển thị điểm số trên áp phích. Bật để ghi đè.",
   "MyAnimeList scores for anime titles. RPDB doesn't cover anime, so this stays optional.":

@@ -1,31 +1,32 @@
+import {
+  COMPASS_MARK_DIAL_D,
+  COMPASS_MARK_NEEDLE_D,
+  COMPASS_MARK_TICKS_D,
+  COMPASS_MARK_VIEW_BOX,
+} from "@/components/icons/compass-mark";
+
 /**
  * Compass's mark, taken apart so the setup flow can build it one confirmed step
- * at a time. The path data is copied from components/icons/compass-mark.tsx
- * rather than imported: that component paints all three paths inside one
- * flipped matrix, and a transform on a child path would be applied in that
- * flipped, 0.1333-scaled user space. Each part gets its own upright <svg> so
- * every transform here is plain CSS pixels.
+ * at a time: the dial first, then its ticks, then the needle. Each part gets its
+ * own <svg> so every hoist transform is plain CSS pixels.
  */
-const VIEW_BOX = "0 0 700 642.88";
-const FLIP = "matrix(0.13333333,0,0,-0.13333333,0,642.88)";
-
-const JIB_D =
-  "m 72.0781,1534.27 c 0,0 1127.5819,922.03 1526.9319,2636.89 0,0 463.95,-1274.4 17.61,-2625.15 L 72.0781,1534.27";
-const SAIL_D =
-  "M 3975.59,2945.05 2812.18,2222.26 c -36.68,-22.79 -84.13,3.59 -84.13,46.78 v 1391.45 c 0,42.35 45.8,68.85 82.51,47.75 l 1163.41,-668.68 c 36.11,-20.75 37,-72.53 1.62,-94.51 z M 2021.85,4821.57 V 1438.84 l 2818.94,416.96 c 0,0 252.54,2501.82 -2818.94,2965.77";
-const HULL_D =
-  "m 615.313,4.40234 c 0,0 -364.817,308.39866 -604.4224,706.25766 -28.3125,47.012 1.4922,107.77 55.8555,115.281 L 5090.13,1520.12 c 57.31,7.92 102.66,-47.69 82.95,-102.09 C 5065.81,1122 4746.77,351.742 4222.68,0 L 615.313,4.40234";
+const VIEW_BOX = COMPASS_MARK_VIEW_BOX;
 
 type Part = "hull" | "jib" | "sail";
 
-/** Earned order. A hull is the first thing that exists, sails go up after. */
+/** Earned order. The dial is the first thing that exists, the needle lands last. */
 const BUILD_ORDER: readonly Part[] = ["hull", "jib", "sail"];
-/** Paint order. The hull has to sit over the foot of both sails. */
-const PAINT_ORDER: readonly Part[] = ["jib", "sail", "hull"];
+/** Paint order. The needle sits over the dial. */
+const PAINT_ORDER: readonly Part[] = ["hull", "jib", "sail"];
 
 export const BOAT_PARTS = BUILD_ORDER.length;
 
-const PATH_OF: Record<Part, string> = { hull: HULL_D, jib: JIB_D, sail: SAIL_D };
+// Part keys keep their old names so the hoist animations in CSS still apply.
+const PATH_OF: Record<Part, string> = {
+  hull: COMPASS_MARK_DIAL_D,
+  jib: COMPASS_MARK_TICKS_D,
+  sail: COMPASS_MARK_NEEDLE_D,
+};
 const HOIST_OF: Record<Part, string> = {
   hull: "setup-hoist-hull",
   jib: "setup-hoist-jib",
@@ -69,9 +70,7 @@ export function SetupBoat({
               : "";
         return (
           <svg key={part} viewBox={VIEW_BOX} fill="currentColor" className={`setup-boat-part ${hoist}`}>
-            <g transform={FLIP}>
-              <path d={PATH_OF[part]} />
-            </g>
+            <path fillRule="evenodd" d={PATH_OF[part]} />
           </svg>
         );
       })}

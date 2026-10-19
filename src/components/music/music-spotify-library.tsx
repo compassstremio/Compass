@@ -24,6 +24,7 @@ import {
 import { useT } from "@/lib/i18n";
 import { useSectionBack } from "@/lib/section-back";
 import { connectSource } from "@/lib/music/catalog";
+import { guardMusicSource } from "@/lib/music/source-consent";
 import {
   createSpotifyPlaylist,
   importSpotifyCollection,
@@ -232,6 +233,7 @@ export function MusicSpotifyLibrary({
   };
 
   const reconnect = async () => {
+    if (!guardMusicSource("spotify", () => void reconnect())) return;
     setWorking("connect");
     setFailure("");
     try {

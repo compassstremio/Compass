@@ -130,6 +130,7 @@ export type PlayerOverlayLayersProps = {
   setHideOthersDrawings: (fn: (h: boolean) => boolean) => void;
   canPickAnother: boolean;
   resolvedImdbId: string | null;
+  resolvedImdbVerified: boolean;
   contentAdvisory: { categories: ParentalCategory[]; playKey: string; imdbId: string | null };
   tmdbKey: string | null;
   download: Shell["download"];
@@ -505,6 +506,7 @@ export const PlayerOverlayLayers = memo(function PlayerOverlayLayers(p: PlayerOv
         meta={p.src.meta}
         episode={p.src.episode}
         imdbId={p.resolvedImdbId}
+        imdbIdVerified={p.resolvedImdbVerified}
         hostSource={p.guestHostSource}
       />
 

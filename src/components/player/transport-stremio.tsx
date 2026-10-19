@@ -160,6 +160,7 @@ export function TransportStremio(p: TransportStremioProps) {
   const [aspectMenuOpen, setAspectMenuOpen] = useState(false);
   const [anime4kMenuOpen, setAnime4kMenuOpen] = useState(false);
   const [castModalOpen, setCastModalOpen] = useState(false);
+  const [chapterMenuOpen, setChapterMenuOpen] = useState(false);
   const [showRemaining, setShowRemaining] = useState(false);
   const [config, setConfig] = useState<PlayerChromeConfig>(() => readPlayerChromeConfig("stremio"));
   const isLiveChannel = isLivePlaybackSrc({ meta: meta ?? {}, isLive: p.isLive });
@@ -170,7 +171,12 @@ export function TransportStremio(p: TransportStremioProps) {
 
   useEffect(() => {
     onMenuOpenChange?.(
-      audioMenuOpen || subtitleMenuOpen || speedMenuOpen || aspectMenuOpen || anime4kMenuOpen,
+      audioMenuOpen ||
+        subtitleMenuOpen ||
+        speedMenuOpen ||
+        aspectMenuOpen ||
+        anime4kMenuOpen ||
+        chapterMenuOpen,
     );
   }, [
     audioMenuOpen,
@@ -178,6 +184,7 @@ export function TransportStremio(p: TransportStremioProps) {
     speedMenuOpen,
     aspectMenuOpen,
     anime4kMenuOpen,
+    chapterMenuOpen,
     onMenuOpenChange,
   ]);
 
@@ -245,6 +252,7 @@ export function TransportStremio(p: TransportStremioProps) {
     setSubtitleMenuOpen,
     setSpeedMenuOpen,
     setAspectMenuOpen,
+    setChapterMenuOpen,
     cropMode,
     onCropMode,
     setAnime4kMenuOpen,
@@ -252,6 +260,7 @@ export function TransportStremio(p: TransportStremioProps) {
     onAnime4kMode,
     anime4kAvailable,
     onPlayPause,
+    onSeek,
     onMute,
     onVolume,
     onAudio,
@@ -320,7 +329,12 @@ export function TransportStremio(p: TransportStremioProps) {
             </>
           ) : (
             <div className="min-w-0 flex-1">
-              <SeekBar durationSec={snap.durationSec} onSeek={onSeek} active={visible} />
+              <SeekBar
+                durationSec={snap.durationSec}
+                onSeek={onSeek}
+                active={visible}
+                chapters={snap.chapters}
+              />
             </div>
           )}
         </div>

@@ -1,5 +1,5 @@
 import type { KitsuEpisode } from "@/lib/providers/kitsu";
-import { pickLocalizedText } from "@/lib/localized-text";
+import { pickPreferredEpisodeOverview, pickPreferredEpisodeTitle } from "@/lib/localized-text";
 import { seasonDateRange, type TvdbOrder } from "@/lib/providers/tvdb-order";
 import { resolveAnimeSlotMatch } from "./anime-slot-match";
 import type { PickerItem } from "../series-episodes/season-arc-picker";
@@ -46,24 +46,30 @@ export function buildAnimeOrder(
         byAbs,
         matched,
       );
+      const title = pickPreferredEpisodeTitle([{ text: e.name, language: e.nameLanguage }, { text: e.nameEn, language: e.nameEnLanguage }], [{ text: match?.title, language: match?.titleLanguage }], lang);
+      const synopsis = pickPreferredEpisodeOverview(
+        [{ text: e.overview, language: e.overviewLanguage }, { text: e.overviewEn, language: e.overviewEnLanguage }], [{ text: match?.synopsis, language: match?.synopsisLanguage }], lang,
+      );
       if (match) {
         matched.add(match.id);
-        return match;
+        if ((!title || title === match.title) && (!synopsis || synopsis === match.synopsis)) return match;
+        return {
+          ...match,
+          title: title ?? match.title,
+          synopsis: synopsis ?? match.synopsis,
+          titleLanguage: title === match.title ? match.titleLanguage : title === e.name ? e.nameLanguage : e.nameEnLanguage,
+          synopsisLanguage: synopsis === match.synopsis ? match.synopsisLanguage : synopsis === e.overview ? e.overviewLanguage : e.overviewEnLanguage,
+        };
       }
       const img = abs != null ? ordering.imageByAbs.get(abs) : undefined;
       return {
         id: -e.id,
         number: e.episodeNumber,
         seasonNumber: e.seasonNumber,
-        title:
-          pickLocalizedText([{ text: e.name }, { text: e.nameEn ?? "" }], {
-            forName: true,
-            lang,
-          }) ?? `Episode ${e.episodeNumber}`,
-        synopsis:
-          pickLocalizedText([{ text: e.overview }, { text: e.overviewEn ?? "" }], { lang }) ??
-          e.overview ??
-          "",
+        titleLanguage: title === e.name ? e.nameLanguage : e.nameEnLanguage,
+        synopsisLanguage: synopsis === e.overview ? e.overviewLanguage : e.overviewEnLanguage,
+        title: title ?? `Episode ${e.episodeNumber}`,
+        synopsis: synopsis ?? "",
         thumbnail: img ?? null,
         airdate: e.airDate ?? null,
         length: e.runtime ?? null,

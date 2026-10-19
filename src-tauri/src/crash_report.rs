@@ -76,6 +76,11 @@ fn install_panic_hook(path: PathBuf, version: String, platform: String) {
             .map(|value| (*value).to_string())
             .or_else(|| info.payload().downcast_ref::<String>().cloned())
             .unwrap_or_else(|| "Rust panic".to_string());
+        // A closed console pipe makes `eprintln!` panic; the app itself is fine, so
+        // it must not be reported as a crash on the next launch.
+        if message.starts_with("failed printing to std") {
+            return;
+        }
         let location = info.location().map(|location| {
             format!(
                 "{}:{}:{}",

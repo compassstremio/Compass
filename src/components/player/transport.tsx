@@ -176,6 +176,7 @@ export function Transport({
   const [aspectMenuOpen, setAspectMenuOpen] = useState(false);
   const [anime4kMenuOpen, setAnime4kMenuOpen] = useState(false);
   const [castModalOpen, setCastModalOpen] = useState(false);
+  const [chapterMenuOpen, setChapterMenuOpen] = useState(false);
   const [chromeConfig, setChromeConfig] = useState<PlayerChromeConfig>(() =>
     readPlayerChromeConfig("default"),
   );
@@ -189,7 +190,12 @@ export function Transport({
   const [tight, setTight] = useState(false);
   useEffect(() => {
     onMenuOpenChange?.(
-      audioMenuOpen || subtitleMenuOpen || speedMenuOpen || aspectMenuOpen || anime4kMenuOpen,
+      audioMenuOpen ||
+        subtitleMenuOpen ||
+        speedMenuOpen ||
+        aspectMenuOpen ||
+        anime4kMenuOpen ||
+        chapterMenuOpen,
     );
   }, [
     audioMenuOpen,
@@ -197,6 +203,7 @@ export function Transport({
     speedMenuOpen,
     aspectMenuOpen,
     anime4kMenuOpen,
+    chapterMenuOpen,
     onMenuOpenChange,
   ]);
   useEffect(() => {
@@ -389,6 +396,7 @@ export function Transport({
     sleep,
     onPlayPause,
     onSeekStep,
+    onSeek,
     onMute,
     onVolume,
     onAudio,
@@ -417,6 +425,7 @@ export function Transport({
     setSubtitleMenuOpen,
     setSpeedMenuOpen,
     setAspectMenuOpen,
+    setChapterMenuOpen,
     cropMode,
     onCropMode,
     setAnime4kMenuOpen,
@@ -486,7 +495,12 @@ export function Transport({
                 <Fragment key={c.id}>{renderFadedControl(c.id)}</Fragment>
               ))}
               <div className={`flex-1 ${fadeClassName}`}>
-                <SeekBar durationSec={snap.durationSec} onSeek={onSeek} active={visible} />
+                <SeekBar
+                  durationSec={snap.durationSec}
+                  onSeek={onSeek}
+                  active={visible}
+                  chapters={snap.chapters}
+                />
               </div>
               {controlsInSlot(chromeConfig, "seek-trailing").map((c) => (
                 <Fragment key={c.id}>{renderFadedControl(c.id)}</Fragment>

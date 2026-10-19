@@ -18,6 +18,7 @@ export function useEpisodeOrder(
   enabled = true,
 ): TvdbOrder | null {
   const [order, setOrder] = useState<TvdbOrder | null>(null);
+  const metadataLanguage = tmdbLanguageIso();
   const remoteId =
     imdbId && imdbId.startsWith("tt")
       ? imdbId
@@ -34,7 +35,7 @@ export function useEpisodeOrder(
       return;
     }
     let cancelled = false;
-    const lang = tvdbLangFromIso1(tmdbLanguageIso());
+    const lang = tvdbLangFromIso1(metadataLanguage);
     void (async () => {
       let o: TvdbOrder | null = null;
       if (kitsuId != null) {
@@ -49,7 +50,7 @@ export function useEpisodeOrder(
     return () => {
       cancelled = true;
     };
-  }, [active, remoteId, kitsuId, tvdbKey, seasonType]);
+  }, [active, remoteId, kitsuId, tvdbKey, seasonType, metadataLanguage]);
 
   return active ? order : null;
 }

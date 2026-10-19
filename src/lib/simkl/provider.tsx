@@ -19,7 +19,9 @@ import {
 import { getSession, setSession, subscribeSession } from "./session";
 import { stremioIdToSimklTarget } from "./ids";
 import { addToHistory } from "./history";
-import { armOnlineFlush, flushPendingWatches } from "./pending-sync";
+import { isSimklEpisodeWatched } from "./list-status";
+import { hasActiveSimklPlayback } from "./playback";
+import { armPendingFlush, flushPendingWatches } from "./pending-sync";
 import { recordWatchedFallback } from "./record-watched";
 import { simklScrobble } from "./scrobble";
 import type { SimklPin, SimklSession, SimklTarget } from "./types";
@@ -77,11 +79,16 @@ export function SimklProvider({ children }: { children: ReactNode }) {
 
   useEffect(
     () =>
-      armOnlineFlush({
+      armPendingFlush({
         hasSession: () => getSession() != null,
         stopScrobble: (metaId, episode) => simklScrobble("stop", metaId, episode, 100),
         recordWatched: (metaId, episode, imdb) =>
           recordWatchedFallback(metaId, episode, imdb ? { imdb } : undefined),
+        // An entry Simkl already holds needs no write, and replaying it would
+        // re-mark an item the user may have removed from their history.
+        isWatched: (metaId, episode, imdb) => isSimklEpisodeWatched(metaId, episode, imdb),
+        hasActivePlayback: (metaId, episode, imdb) =>
+          hasActiveSimklPlayback(metaId, episode, imdb),
       }),
     [],
   );

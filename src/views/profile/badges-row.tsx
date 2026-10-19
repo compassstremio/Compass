@@ -1,7 +1,7 @@
+import { badgeLabel } from "@/lib/social/badge-label";
 import { Award } from "lucide-react";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { useT } from "@/lib/i18n";
-import { badgeLabel } from "@/lib/social/badge-label";
 import { HoverTooltip } from "@/components/hover-tooltip";
 import { NavArrow } from "@/components/nav-arrow";
 import { SectionHeader } from "./section-header";

@@ -1,3 +1,4 @@
+import { AutoplayTrailerQuality } from "../autoplay-trailer-quality";
 import { SliderRow } from "../theme-panel/display-section";
 import { useEffect, useRef, useState } from "react";
 import compassStyleImg from "@/assets/onboarding/compassstyle.webp";
@@ -7,6 +8,7 @@ import traktLogo from "@/assets/trakt.svg";
 import {
   Check,
   Contrast,
+  EyeOff,
   Image as ImageIcon,
   LayoutTemplate,
   Maximize,
@@ -72,6 +74,16 @@ export function HomeTab() {
             onChange={(v) => update({ heroFullQuality: v })}
             leading={<ImageIcon size={18} strokeWidth={2} />}
           />
+          <ToggleRow
+            label={t("Hide watched titles in the featured hero")}
+            newId="home:hero-hide-watched"
+            sub={t(
+              "Watched movies and shows you've made progress on are skipped in the featured hero and replaced with the next unwatched pick from the same row. Uses your local watch history, Trakt, and Simkl.",
+            )}
+            value={settings.hideWatchedInHero}
+            onChange={(v) => update({ hideWatchedInHero: v })}
+            leading={<EyeOff size={18} strokeWidth={2} />}
+          />
         </SettingGroup>
 
         <SettingGroup label={t("Hero trailers")}>
@@ -87,6 +99,7 @@ export function HomeTab() {
           />
           {settings.heroTrailers && (
             <Nested>
+              <AutoplayTrailerQuality />
               <ToggleRow
                 label={t("Home hero audio")}
                 sub={t(
@@ -285,6 +298,14 @@ export function HomeTab() {
                   )
                 : undefined
             }
+          />
+          <ToggleRow
+            label={t("PublicMetaDB progress")}
+            sub={t(
+              "Pulls what you have part-watched on PublicMetaDB into the row, marked with the PublicMetaDB logo. Requires a connected PublicMetaDB account.",
+            )}
+            value={settings.cwSources.publicmetadb}
+            onChange={(v) => update({ cwSources: { ...settings.cwSources, publicmetadb: v } })}
           />
         </SettingGroup>
 

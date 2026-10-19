@@ -1163,7 +1163,7 @@ const sweepC: Record<string, string> = {
   "Liquid Glass": "液态玻璃",
   Listen: "朗读",
   Listening: "正在聆听",
-  "Listening for Compasses": "正在侦听 Compass 实例",
+  "Listening for Compasss": "正在侦听 Compass 实例",
   Lists: "列表",
   Literary: "文学",
   Live: "直播",

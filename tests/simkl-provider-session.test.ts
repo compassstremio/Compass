@@ -34,6 +34,7 @@ function fixture() {
   const dependencies: Record<string, unknown> = {
     react,
     "react/jsx-runtime": { jsx: (_: unknown, props: unknown) => ({ props }) },
+    "@/lib/secret-store": { subscribeSecretsReady: () => () => {} },
     "./session": {
       getSession: () => session,
       subscribeSession: (fn: () => void) => {
@@ -42,13 +43,21 @@ function fixture() {
       },
       setSession: () => {},
     },
-    "@/lib/secret-store": { subscribeSecretsReady: () => () => {} },
     "./device-auth": {},
     "./ids": {},
+    "./list-status": { isSimklEpisodeWatched: async () => false },
+    "./playback": { hasActiveSimklPlayback: async () => false },
     "./history": {},
-    "./pending-sync": { armOnlineFlush: () => () => {}, flushPendingWatches: async () => {} },
+    "./pending-sync": { armPendingFlush: () => () => {}, flushPendingWatches: async () => {} },
     "./record-watched": {},
     "./scrobble": {},
+    // The provider re-reads the session when the persisted secret store lands.
+    "@/lib/secret-store": {
+      subscribeSecretsReady: (fn: () => void) => {
+        subscribers.add(fn);
+        return () => subscribers.delete(fn);
+      },
+    },
   };
   const code = ts.transpileModule(readFileSync("src/lib/simkl/provider.tsx", "utf8"), {
     compilerOptions: { jsx: ts.JsxEmit.ReactJSX, module: ts.ModuleKind.CommonJS },

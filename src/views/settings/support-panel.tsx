@@ -1,9 +1,10 @@
-import { ArrowUpRight } from "./icons";
+import { ArrowUpRight, Heart } from "./icons";
 import type { ReactNode } from "react";
 import stremioLogo from "@/assets/stremio.png";
 import amfIcon from "@/assets/support/amf.png";
 import charityNavigatorIcon from "@/assets/support/charity-navigator.png";
 import effIcon from "@/assets/support/eff.png";
+import ehsanIcon from "@/assets/support/ehsan.svg";
 import internetArchiveIcon from "@/assets/support/internet-archive.png";
 import msfIcon from "@/assets/support/msf.png";
 import nationalPcfIcon from "@/assets/support/nationalpcf.png";
@@ -17,9 +18,17 @@ import { SButton, SRow } from "./ui";
 
 const STREMIO_DONATE = "https://www.stremio.com/donate";
 
+const KOFI_DONATE = "https://ko-fi.com/compass_sio";
+
 const CHARITY_NAVIGATOR = "https://www.charitynavigator.org/";
 
 const CHARITIES = [
+  {
+    name: "Ehsan (إحسان)",
+    url: "https://ehsan.sa/",
+    icon: ehsanIcon,
+    blurb: "Saudi Arabia's national platform for charitable giving, with licensed charities and projects.",
+  },
   {
     name: "St. Jude Children's Research Hospital",
     url: "https://www.stjude.org",
@@ -61,6 +70,7 @@ const CHARITIES = [
 ];
 
 const LEAD_IMG = "h-[22px] w-[22px] shrink-0 object-contain";
+const LEAD_ICON = "shrink-0 text-ink-subtle";
 const CHARITY_IMG = "h-9 w-9 shrink-0 rounded-[9px] object-cover";
 
 function OutArrow() {
@@ -133,13 +143,20 @@ export function SupportPanel() {
 
       <Section
         title={t("Donating to Compass")}
-        subtitle={t("Short version: don't. Compass takes no donations.")}
+        subtitle={t("Donations are optional. Compass is free to use either way.")}
       >
         <Prose>
           {t(
-            "If you were going to send something, send it to Stremio above or to one of the charities below. They do more good with it.",
+            "If you would like to support Compass directly, you can do it on Ko-fi. If you would rather give elsewhere, send it to Stremio above, or to one of the charities below. They all do more good with it.",
           )}
         </Prose>
+        <SettingRow
+          icon={<Heart size={22} strokeWidth={2} className={LEAD_ICON} />}
+          label={t("Support Compass")}
+          desc={t("Opens the Compass Ko-fi page in your browser.")}
+        >
+          <OpenButton label={t("Donate")} url={KOFI_DONATE} primary />
+        </SettingRow>
       </Section>
 
       <Section

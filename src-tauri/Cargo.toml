@@ -1,6 +1,6 @@
 [package]
 name = "compass"
-version = "0.9.135"
+version = "0.9.136"
 description = "A Stremio client built for adventure"
 edition = "2021"
 
@@ -16,6 +16,7 @@ default = []
 silero-vad = ["dep:ort", "dep:ndarray"]
 asr-whisper = ["dep:whisper-rs"]
 chromaprint = []
+context-review = []
 
 [dependencies]
 anyhow = "1"

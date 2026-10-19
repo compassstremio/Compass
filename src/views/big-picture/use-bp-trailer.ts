@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useState } from "react";
 import { meta as fetchMeta, narrowMediaType, type Meta } from "@/lib/cinemeta";
 import { tmdbTrailerList } from "@/lib/providers/tmdb";
-import { fetchTrailer, resolveTrailerQuality, trailerSrc, type TrailerInfo } from "@/lib/trailer";
+import { fetchFirstTrailer, resolveTrailerQuality, trailerSrc, type TrailerInfo } from "@/lib/trailer";
 import { usePageVisible } from "@/lib/visibility";
 import { useSettings } from "@/lib/settings";
 
@@ -13,7 +13,7 @@ export function useBpTrailer(meta: Meta | null): { src: string | null } {
   const id = meta?.id ?? "";
   const type = meta?.type;
   const enabled = Boolean(id) && settings.heroTrailers !== false;
-  const quality = resolveTrailerQuality(settings.trailerQuality);
+  const quality = resolveTrailerQuality(settings.autoplayTrailerQuality);
   const request = useMemo(
     () => ({ id, type, quality, enabled, tmdbKey: settings.tmdbKey }),
     [id, type, quality, enabled, settings.tmdbKey],
@@ -37,7 +37,7 @@ export function useBpTrailer(meta: Meta | null): { src: string | null } {
       lookup
         .then((ids) => {
           if (cancelled || !ids[0]) return;
-          return fetchTrailer(ids[0], request.quality).then((info) => {
+          return fetchFirstTrailer(ids, request.quality, () => !cancelled).then((info) => {
             if (!cancelled && info) setResult({ request, info });
           });
         })

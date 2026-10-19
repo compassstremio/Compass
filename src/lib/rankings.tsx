@@ -1,4 +1,4 @@
-import { createContext, useContext, useEffect, useState, type ReactNode } from "react";
+import { createContext, useCallback, useContext, useEffect, useMemo, useState, type ReactNode } from "react";
 import { useSettings } from "./settings";
 
 const TMDB = "https://api.themoviedb.org/3";
@@ -134,19 +134,23 @@ export function RankingsProvider({ children }: { children: ReactNode }) {
     };
   }, [settings.tmdbKey]);
 
-  const list = (dept: string): PersonEntry[] => {
+  const list = useCallback((dept: string): PersonEntry[] => {
     if (!cache) return [];
     if (dept === "Directing") return cache.directors;
     if (dept === "Production") return cache.producers;
     if (dept === "Writing") return cache.writers;
     return cache.actors;
-  };
+  }, []);
 
-  const rank = (id: number, dept = "Acting"): number | undefined => {
-    return list(dept).find((p) => p.id === id)?.rank;
-  };
+  const rank = useCallback(
+    (id: number, dept = "Acting"): number | undefined => list(dept).find((p) => p.id === id)?.rank,
+    [list],
+  );
 
-  return <Ctx.Provider value={{ ready, rank, topList: list }}>{children}</Ctx.Provider>;
+  // Stable value: a fresh object here re-rendered every cast row on every provider render.
+  const value = useMemo<RankingsValue>(() => ({ ready, rank, topList: list }), [ready, rank, list]);
+
+  return <Ctx.Provider value={value}>{children}</Ctx.Provider>;
 }
 
 export function useRankings() {

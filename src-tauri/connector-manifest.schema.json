@@ -1,6 +1,6 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
-  "$id": "https://compass.app/schemas/music-connector-manifest.json",
+  "$id": "https://compass.sarl/schemas/music-connector-manifest.json",
   "title": "Compass Music Connector Manifest",
   "type": "object",
   "additionalProperties": false,

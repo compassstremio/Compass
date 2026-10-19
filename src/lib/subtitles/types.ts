@@ -67,6 +67,12 @@ export type SubResult = {
   upstreamProvider?: string;
   hash?: string;
   timingStatus?: SubtitleTimingStatus;
+  /**
+   * The URL is served by the same origin as the user-installed local-network
+   * addon that provided it. Downloading it may use the local fetch guard
+   * exemption instead of the public-network-only policy.
+   */
+  localTrusted?: boolean;
 };
 
 export type SubtitleLoadMetadata = {
@@ -98,6 +104,8 @@ export type SubtitleLoadMetadata = {
   providerMatch?: ProviderMatchEvidence;
   downloadAuth?: SubtitleDownloadAuth;
   providerDerived?: boolean;
+  /** See SubResult.localTrusted; downloads for these tracks may use local networking. */
+  localTrusted?: boolean;
   prepared?: boolean;
   autoSelectionEligible?: boolean;
   originalUrl?: string;

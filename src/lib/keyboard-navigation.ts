@@ -68,9 +68,10 @@ const BACK_KEYCODES = new Set([27, 4, 461, 10009, 166]);
 const BACK_KEYS = new Set(["Escape", "Esc", "BrowserBack", "GoBack", "Back"]);
 
 const MODAL_SELECTOR = '[role="dialog"], [aria-modal="true"]';
+const CONTEXT_INPUT_SELECTOR = "[data-compass-context-layer],[data-compass-image-viewer]";
 const LOCAL_KEYBOARD_SELECTOR = [
   // Embedded surfaces handle their own keys; shadow DOM retargets events to their host.
-  '[data-local-keyboard]',
+  "[data-local-keyboard]",
   '[role="listbox"]',
   '[role="menu"]',
   '[role="grid"]',
@@ -277,8 +278,7 @@ export function isVisible(el: HTMLElement) {
     const label = el.getAttribute("aria-label") ?? "";
     if (
       label.toLowerCase().includes("compass home") ||
-      label.toLowerCase().includes("compass home") ||
-      ((label.includes("Compass") || label.includes("Compass")) && label.includes("الرئيسية")) ||
+      (label.includes("Compass") && label.includes("الرئيسية")) ||
       el.hasAttribute("data-brand-logo") ||
       !!el.querySelector("svg.compass-logo, img.compass-logo")
     ) {
@@ -714,10 +714,7 @@ function scrollNavItemIntoView(el: HTMLElement, mode: "center" | "nearest" = "ce
 function getSearchFocusVisual(el: HTMLElement): HTMLElement | null {
   if (!isSearchLikeField(el)) return null;
 
-  return (
-    el.closest<HTMLElement>("label, [data-tv-text-field], [data-tv-focus-container]") ??
-    el
-  );
+  return el.closest<HTMLElement>("label, [data-tv-text-field], [data-tv-focus-container]") ?? el;
 }
 
 function clearSearchVisualFocus() {
@@ -757,7 +754,12 @@ function focusElement(el: HTMLElement, scroll: "center" | "nearest" | "none" = "
     document.getElementById("root")?.setAttribute("data-card-focus-active", "");
   }
 
-  if (navEnabled && inputModality !== "pointer" && isSearchLikeField(el) && activeSearchEditEl !== el) {
+  if (
+    navEnabled &&
+    inputModality !== "pointer" &&
+    isSearchLikeField(el) &&
+    activeSearchEditEl !== el
+  ) {
     // Navigation focus is not editing mode.
     el.removeAttribute("data-search-editing");
     setSearchNavMode(el);
@@ -1289,6 +1291,16 @@ export function useKeyboardNavigation(options: TVNavigationOptions = {}) {
     const onKeyDown = (e: KeyboardEvent) => {
       if (e.defaultPrevented) return;
       if (e.altKey || e.ctrlKey || e.metaKey) return;
+      // These portals own their nearest-layer Back behavior. App's capture
+      // listener mounts first, so even Escape must reach the owning surface.
+      if (document.querySelector(CONTEXT_INPUT_SELECTOR)) {
+        if (isBackKey(e) && e.key !== "Escape") {
+          e.preventDefault();
+          e.stopImmediatePropagation();
+          dispatchTvNav("back", e.repeat);
+        }
+        return;
+      }
 
       // Tab is native keyboard navigation, but does not call moveFocus().
       // Restore keyboard modality so its focus cues are not hidden after mouse use.
@@ -1571,6 +1583,37 @@ export function dispatchTvNav(
   repeat = false,
 ): void {
   hasTvNavigationIntent = true;
+  const contextLayer = document.querySelector(CONTEXT_INPUT_SELECTOR);
+  if (contextLayer) {
+    hoveredEl = null;
+    const active = document.activeElement;
+    const sink = active instanceof HTMLElement ? active : window;
+    const key = action === "select" ? "Enter" : action === "home" ? "Home" : TV_NAV_KEY[action];
+    if (key) {
+      const event = new KeyboardEvent("keydown", {
+        key,
+        code: key,
+        bubbles: true,
+        cancelable: true,
+        repeat,
+      });
+      sink.dispatchEvent(event);
+      // Synthetic Enter has no native button activation. Give the owning layer
+      // first refusal, then activate its still-focused command exactly once.
+      if (
+        action === "select" &&
+        !repeat &&
+        !event.defaultPrevented &&
+        active instanceof HTMLElement &&
+        active.isConnected &&
+        document.activeElement === active &&
+        active.closest("[data-compass-context-layer],[data-compass-image-viewer]") &&
+        !isEditable(active)
+      )
+        active.click();
+    }
+    return;
+  }
   if (typeof window !== "undefined") {
     window.dispatchEvent(new Event("compass:user-activity"));
   }

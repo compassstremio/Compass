@@ -2,6 +2,7 @@ import { useState } from "react";
 import { LoaderCircle } from "@/components/icons/music-icons";
 import { useT } from "@/lib/i18n";
 import { connectSpotifyBrowsing } from "@/lib/music/spotify-setup";
+import { guardMusicSource } from "@/lib/music/source-consent";
 
 /**
  * The paired session drives playback on librespot's desktop client, whose Web API quota is
@@ -14,6 +15,7 @@ export function SpotifyBrowsingApp({ onDone }: { onDone: () => void }) {
   const [failure, setFailure] = useState<string | null>(null);
 
   const connect = () => {
+    if (!guardMusicSource("spotify", connect)) return;
     setBusy(true);
     setFailure(null);
     void connectSpotifyBrowsing()

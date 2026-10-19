@@ -1088,8 +1088,8 @@ const personalization: Record<string, string> = {
   "S{s} · E{e}": "S{s} · B{e}",
   "THEN notify on": "ARDINDAN şurada bildir",
   "TMDB API key": "TMDB API anahtarı",
-  "TMDB asks for an app URL when you create the key. Put any URL at all, like https://compass.app. The only thing you need back is the API key.":
-    "TMDB, anahtarı oluştururken bir uygulama URL'si ister. https://compass.app gibi herhangi bir URL girebilirsiniz. İhtiyacınız olan tek şey, oluşturulan API anahtarıdır.",
+  "TMDB asks for an app URL when you create the key. Put any URL at all, like https://compass.sarl. The only thing you need back is the API key.":
+    "TMDB, anahtarı oluştururken bir uygulama URL'si ister. https://compass.sarl gibi herhangi bir URL girebilirsiniz. İhtiyacınız olan tek şey, oluşturulan API anahtarıdır.",
   "TMDB did not accept that key.": "TMDB bu anahtarı kabul etmedi.",
   "TMDB is temporarily unavailable, so these results may be incomplete.":
     "TMDB geçici olarak kullanılamıyor, bu nedenle sonuçlar eksik olabilir.",

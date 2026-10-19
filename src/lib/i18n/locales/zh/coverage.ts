@@ -460,8 +460,8 @@ const coverage: Record<string, string> = {
   "Save review": "保存短评",
   "Playlist URL": "播放列表 URL",
   "A new anime comes out": "有新动漫上线",
-  "TMDB asks for an app URL when you create the key. Put any URL at all, like https://compass.app. The only thing you need back is the API key.":
-    "TMDB 会在创建密钥时要求填写应用 URL。填写任意 URL 即可，例如 https://compass.app。你只需获取 API 密钥。",
+  "TMDB asks for an app URL when you create the key. Put any URL at all, like https://compass.sarl. The only thing you need back is the API key.":
+    "TMDB 会在创建密钥时要求填写应用 URL。填写任意 URL 即可，例如 https://compass.sarl。你只需获取 API 密钥。",
   "Reset to default": "恢复默认设置",
   "chrome.lockedRequiresPin": "{label}（已锁定，需要 PIN）",
   "Download video": "下载视频",

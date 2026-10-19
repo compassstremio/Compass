@@ -62,14 +62,19 @@ test("a catalogue that is no longer here pins nothing", () => {
   assert.equal(pinnedPluginUrl(undefined, [pluginAddon]), undefined);
 });
 
-test("a saved row keeps the base it is resolved and played through", () => {
+test("a saved row keeps internal plugin identifiers and omits network transport URLs", () => {
   assert.deepEqual(
     persistableAddonOrigin({ id: "k", name: "n", base: PROVIDER_BASE }),
     { id: "k", name: "n", logo: undefined, base: PROVIDER_BASE },
   );
   assert.deepEqual(
     persistableAddonOrigin({ id: "k", name: "n", base: "https://v3-cinemeta.strem.io" }),
-    { id: "k", name: "n", logo: undefined, base: "https://v3-cinemeta.strem.io" },
+    {
+      id: "k",
+      name: "n",
+      logo: undefined,
+      configurationKey: "e3925fa6e9c5bb0e9104b06dddbd41c649111e060774ed36a089fc7bf6ff8151",
+    },
   );
   const without = persistableAddonOrigin({ id: "k", name: "n" });
   assert.ok(without && !("base" in without), "no base stored, none invented");

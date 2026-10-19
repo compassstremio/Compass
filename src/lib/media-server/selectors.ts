@@ -64,6 +64,16 @@ export function groupMediaServerTitles(items: MediaServerItem[]): MediaServerTit
       };
       groups.set(key, group);
     }
+    // Prefer the server's own poster from a movie/series item (episode images
+    // are usually stills, not posters).
+    if (
+      !group.title.posterPath &&
+      item.posterPath &&
+      (item.kind === "movie" || item.kind === "series")
+    ) {
+      group.title.posterPath = item.posterPath;
+      group.title.posterConnectionId = item.connectionId;
+    }
     const itemKey = `${item.connectionId}:${item.id}`;
     group.title.itemKeys.push(itemKey);
     if (!group.title.connectionIds.includes(item.connectionId))

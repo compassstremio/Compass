@@ -169,7 +169,9 @@ svg {
   background: var(--canvas);
   overflow: hidden;
   display: grid;
-  grid-template-rows: var(--band-header) 1px var(--band-body) var(--band-footer);
+  /* The body takes every pixel the fixed header and footer leave, so the 632px window has no
+     dead band and a taller list gets the room instead of a scrollbar. */
+  grid-template-rows: var(--band-header) 1px 1fr var(--band-footer);
 }
 
 .hb-header {

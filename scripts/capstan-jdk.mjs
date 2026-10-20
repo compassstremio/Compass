@@ -201,7 +201,10 @@ function jdkOnPath() {
 export async function resolveJdks(target, log) {
   if (!TARGETS[target]) throw new Error(`unknown target ${target}, known: ${Object.keys(TARGETS).join(", ")}`);
   const host = hostTriple();
-  const fits = (dir) => hasJmods(dir) && existsSync(join(dir, "bin", exe("jlink")));
+  // The layer is compiled for Java 17, so an older JDK (JAVA_HOME on ubuntu-22.04 runners is 11)
+  // links a runtime that cannot load it.
+  const fits = (dir) =>
+    hasJmods(dir) && existsSync(join(dir, "bin", exe("jlink"))) && featureOf(dir) >= DEFAULT_FEATURE;
   const named = jdkHome(process.env.COMPASS_CAPSTAN_JDK ?? process.env.JAVA_HOME ?? "");
   let hostJdk;
   if (fits(named)) {

@@ -1,7 +1,7 @@
 // Build the separately licensed engine from immutable source revisions.
 import { spawn } from "node:child_process";
 import { createHash } from "node:crypto";
-import { access, cp, mkdir, readFile, writeFile } from "node:fs/promises";
+import { access, cp, mkdir, readFile, rm, writeFile } from "node:fs/promises";
 import { dirname, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 const here = dirname(fileURLToPath(import.meta.url));
@@ -30,6 +30,8 @@ for (const [key, folder] of [["pkforge",""],["pkhex","external/PKHeX"],["automod
 }
 await mkdir(output,{recursive:true});
 await run(sdk,["publish",resolve(here,"Compass.PokemonEngine.csproj"),`-p:PKForgeRoot=${resolve(source)}`,"--artifacts-path",resolve(argument("--artifacts") || resolve(output,"../engine-build")),"-r",rid,"--self-contained","true","--source","https://api.nuget.org/v3/index.json","-o",resolve(output),"-v","minimal"],here);
+// The LTTng tracing provider links liblttng-ust.so.0, which linuxdeploy cannot find on current distros, and the runtime only loads it when DOTNET_LTTng asks for tracing.
+if(rid.startsWith("linux-"))await rm(resolve(output,"libcoreclrtraceptprovider.so"),{force:true});
 const sources=resolve(output,"sources");await mkdir(sources,{recursive:true});
 for(const [key,folder] of [["pkforge",""],["pkhex","external/PKHeX"],["automod","external/PKHeX-Plugins"]])await run("git",["archive","--format=zip","--output",resolve(sources,`${key}.zip`),"HEAD"],resolve(source,folder));
 for(const file of ["Program.cs","Compass.PokemonEngine.csproj","upstream.json","LICENSE","build.mjs","README.md"])await cp(resolve(here,file),resolve(sources,file));

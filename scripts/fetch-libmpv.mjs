@@ -4,8 +4,8 @@ import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
 
 const SHA256 = "0a81c004aae0ee7d512b9a26e38f66281f9591e84e1663215cc3a36a4bde6f6a";
-// The pinned DLL rides on the community build-dependencies release; the SHA-256 below is the authority.
-const TAG = process.env.COMPASS_LIBMPV_TAG ?? "community-build-dependencies-0.9.132";
+// Keep each DLL pin on its own release so older branches retain their matching binary.
+const TAG = process.env.COMPASS_LIBMPV_TAG ?? "mpvdll-0a81c004aae0";
 const url =
   process.env.COMPASS_LIBMPV_URL ??
   `https://github.com/compassstremio/compass/releases/download/${TAG}/libmpv-2.dll`;

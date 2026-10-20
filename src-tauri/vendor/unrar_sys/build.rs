@@ -114,7 +114,10 @@ fn link_compiler_rt_on_intel_mac() {
         .join("lib")
         .join("darwin");
     if !darwin.join("libclang_rt.osx.a").exists() {
-        panic!("no libclang_rt.osx.a under {}; UnRAR needs it for ___cpu_model", darwin.display());
+        panic!(
+            "no libclang_rt.osx.a under {}; UnRAR needs it for ___cpu_model",
+            darwin.display()
+        );
     }
     println!("cargo:rustc-link-search=native={}", darwin.display());
     println!("cargo:rustc-link-lib=static=clang_rt.osx");

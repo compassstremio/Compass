@@ -207,7 +207,12 @@ if (-not $env:COMPASS_THEMES_ADMIN_TOKEN) {
   if (-not (Test-Path -LiteralPath $envFile)) { Fail "No admin token: set COMPASS_THEMES_ADMIN_TOKEN or create $envFile" }
   foreach ($line in Get-Content -LiteralPath $envFile) {
     if ($line -match '^\s*([A-Z0-9_]+)\s*=\s*(.*)$') {
-      Set-Item -Path "env:$($Matches[1])" -Value $Matches[2].Trim()
+      # Strip the quotes a dotenv value may carry, or they are sent as part of the token.
+      # Name is read first: the quote match below overwrites $Matches.
+      $name = $Matches[1]
+      $value = $Matches[2].Trim()
+      if ($value -match '^"(.*)"$' -or $value -match "^'(.*)'$") { $value = $Matches[1] }
+      Set-Item -Path "env:$name" -Value $value
     }
   }
 }

@@ -168,8 +168,11 @@ foreach ($name in $staged.Keys) {
 }
 
 Step 'Sign (each exe gets its own signature)'
-$keyPath = Join-Path $env:USERPROFILE '.tauri\compass-updater.key'
-if (-not (Test-Path -LiteralPath $keyPath)) { Fail "No updater signing key at $keyPath" }
+$keyPath = @(
+  (Join-Path $env:USERPROFILE '.tauri\compass-updater.key'),
+  (Join-Path $env:USERPROFILE '.compass\updater.key')
+) | Where-Object { Test-Path -LiteralPath $_ } | Select-Object -First 1
+if (-not $keyPath) { Fail "No updater signing key at ~\.tauri\compass-updater.key or ~\.compass\updater.key" }
 $env:TAURI_SIGNING_PRIVATE_KEY = (Get-Content -LiteralPath $keyPath -Raw).Trim()
 # PowerShell 5.1 drops empty arguments and removes empty environment variables, so a
 # passwordless key can never reach the signer as "no password given": it prompts

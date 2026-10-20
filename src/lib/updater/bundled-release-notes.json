@@ -2,7 +2,7 @@
   "notes": {
     "0.9.136": {
       "title": "Compass Beta 0.9.136",
-      "intro": "A big feature update: right-click menus across the app, PublicMetaDB, your TorBox cloud in the Library, chapter navigation in the player, much stronger anime sync, and a new Compass look.",
+      "intro": "A big feature update: right-click menus across the app, PublicMetaDB, your TorBox cloud in the Library, chapter navigation in the player, Pictorium posters, much stronger anime sync, and a new Compass look.",
       "sections": [
         {
           "heading": "Highlights",
@@ -10,6 +10,7 @@
             "Right-click menus for titles, tracks, playlists, albums and artists.",
             "PublicMetaDB joins as a tracker.",
             "The Library opens your private TorBox cloud.",
+            "Pictorium posters, served from Compass's own server.",
             "The player gains chapter navigation.",
             "Anime sync lands every episode on the right cour.",
             "Trackers stop signing you out.",
@@ -38,6 +39,13 @@
           "items": [
             "Browse your private TorBox cloud and play files straight from it.",
             "Browse server collections, pick refresh intervals, and server posters come first with TMDB as fallback."
+          ]
+        },
+        {
+          "heading": "Posters",
+          "items": [
+            "Pictorium joins the custom poster services: paste https://pictorium.compass.sarl, or your own Pictorium link with its editor options, in Settings › Library & metadata › Custom poster service.",
+            "Series get their Pictorium posters too, and {type} in a custom poster template now reads series for shows."
           ]
         },
         {
@@ -75,7 +83,7 @@
       "translations": {
         "ar": {
           "title": "Compass بيتا 0.9.136",
-          "intro": "تحديث كبير بالميزات: قوائم بزر الفأرة الأيمن في كل التطبيق، دعم PublicMetaDB، سحابة TorBox الخاصة بك داخل المكتبة، التنقّل بين الفصول في المشغّل، مزامنة أنمي أقوى بكثير، ومظهر جديد لـ Compass.",
+          "intro": "تحديث كبير بالميزات: قوائم بزر الفأرة الأيمن في كل التطبيق، دعم PublicMetaDB، سحابة TorBox الخاصة بك داخل المكتبة، التنقّل بين الفصول في المشغّل، ملصقات Pictorium، مزامنة أنمي أقوى بكثير، ومظهر جديد لـ Compass.",
           "sections": [
             {
               "heading": "أبرز ما في التحديث",
@@ -83,6 +91,7 @@
                 "قوائم بزر الفأرة الأيمن للعناوين والمقاطع الموسيقية وقوائم التشغيل والألبومات والفنانين.",
                 "انضمام PublicMetaDB كخدمة تتبّع.",
                 "المكتبة تفتح سحابة TorBox الخاصة بك.",
+                "ملصقات Pictorium من خادم Compass نفسه.",
                 "المشغّل يدعم التنقّل بين الفصول.",
                 "مزامنة الأنمي تضع كل حلقة في الجزء الصحيح.",
                 "خدمات التتبّع لم تعد تسجّل خروجك.",
@@ -111,6 +120,13 @@
               "items": [
                 "تصفّح سحابة TorBox الخاصة بك وشغّل الملفات منها مباشرة.",
                 "تصفّح مجموعات الخادم، واختر فترات التحديث، وتظهر ملصقات الخادم أولاً مع TMDB كبديل."
+              ]
+            },
+            {
+              "heading": "الملصقات",
+              "items": [
+                "إضافة Pictorium إلى خدمات الملصقات المخصّصة: الصق https://pictorium.compass.sarl أو رابط Pictorium الخاص بك مع خيارات المحرّر، من الإعدادات ‹ المكتبة والبيانات ‹ خدمة ملصقات مخصّصة.",
+                "المسلسلات تحصل على ملصقات Pictorium أيضاً، و{type} في قالب الملصقات المخصّص يعطي series للمسلسلات."
               ]
             },
             {

@@ -183,6 +183,7 @@ import { AnilistProvider } from "@/lib/anilist/provider";
 import { MalProvider } from "@/lib/mal/provider";
 import { SimklProvider } from "@/lib/simkl/provider";
 import { PublicMetaDbProvider } from "@/lib/publicmetadb/provider";
+import { BingersProvider } from "@/lib/bingers/provider";
 import { LetterboxdProvider } from "@/lib/stremboxd/provider";
 import {
   useKeyboardNavigation,
@@ -431,7 +432,16 @@ function useIdleEvict(active: boolean, pin = false): boolean {
   return alive || active || pin;
 }
 
+// Bingers needs no other provider, so it wraps the tree from outside it.
 export function App({ onReady }: { onReady?: () => void }) {
+  return (
+    <BingersProvider>
+      <AppProviders onReady={onReady} />
+    </BingersProvider>
+  );
+}
+
+function AppProviders({ onReady }: { onReady?: () => void }) {
   return (
     <SettingsProvider syncTorrentEnginePolicy>
       <ProfilesProvider>

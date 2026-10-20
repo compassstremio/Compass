@@ -42,6 +42,7 @@ import type { Settings } from "./types";
 import { adoptLegacyPlaylists, readPlaylists } from "@/lib/iptv/playlists-store";
 import { sanitizeDisplaySelection } from "@/lib/monitors";
 import { migratePublicRelayUrl } from "@/lib/together/relay-version";
+import { adoptHarborSettingsFields } from "@/lib/harbor-migration";
 
 const HEX_RE = /^#[0-9a-f]{6}$/i;
 
@@ -186,6 +187,7 @@ function parseStoredSettings(raw: string | null): { settings: Settings; cacheabl
       _playbackSourcePreferenceV1?: boolean;
       _playbackSourcePreferenceV2?: boolean;
     };
+    adoptHarborSettingsFields(parsed as Record<string, unknown>);
     // Legacy defaults and playlist adoption depend on other stores. Re-read them
     // until a self-contained settings blob has been persisted by the normal flow.
     const cacheable =

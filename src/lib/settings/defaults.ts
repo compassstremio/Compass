@@ -568,6 +568,7 @@ export const DEFAULT: Settings = {
   simklScrobbleEnabled: true,
   animeTitleLanguage: "english",
   publicmetadbScrobbleEnabled: true,
+  bingersScrobbleEnabled: true,
   weekStartsMonday: false,
   calendarPosterSize: "default",
   customCalendar: {

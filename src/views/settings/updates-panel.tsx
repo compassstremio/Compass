@@ -6,6 +6,7 @@ import { BetaChannelRow, ModifyInstallationRow, UpdatesRow } from "./advanced-pa
 import { RollbackRow } from "./rollback-row";
 import { BuildFeedback } from "./build-feedback";
 import { BackupRow } from "./backup-row";
+import { HarborImportRow } from "./harbor-import-row";
 import { SettingsRecoverRow } from "./settings-recover-row";
 import { ExperimentalBuildsSection } from "./experimental-builds-section";
 import { readBetaReturnContext } from "@/lib/updater/beta-return";
@@ -46,6 +47,7 @@ export function UpdatesPanel() {
         )}
       >
         <SettingsRecoverRow />
+        <HarborImportRow />
         <BackupRow />
       </Section>
     </>

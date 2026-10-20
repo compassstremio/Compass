@@ -860,6 +860,15 @@ const coverage: Record<string, string> = {
   "NYT Books API key": "NYT Books API 密钥",
   "Choose whether Compass prefers direct and debrid sources, peer-to-peer torrents, or shows both.":
     "选择 Compass 优先使用直连和 debrid 来源、点对点种子，或同时显示两者。",
+  "Import from Harbor": "从 Harbor 导入",
+  "Your Harbor data was already brought over. Import it again to replace what Compass has now.": "你的 Harbor 数据已导入过。再次导入会替换 Compass 当前的数据。",
+  "Harbor is Compass's former name. Bring over its profiles, settings, lists, keys and connected accounts.": "Harbor 是 Compass 的旧名称。导入其个人资料、设置、列表、密钥和已连接的账户。",
+  "Import your Harbor data?": "导入你的 Harbor 数据？",
+  "Compass restarts and replaces its current data with your Harbor setup. Close Harbor first.": "Compass 将重启，并用你的 Harbor 设置替换当前数据。请先关闭 Harbor。",
+  "Restarting...": "正在重启...",
+  "Import and restart": "导入并重启",
+  "Compass could not start the import. Try again.": "Compass 无法开始导入。请重试。",
+  "Nothing is deleted: Compass keeps its current data in a backup folder next to its own, and Harbor stays as it is.": "不会删除任何内容：Compass 会把当前数据保存在其文件夹旁的备份文件夹中，Harbor 保持不变。",
 };
 
 export default coverage;

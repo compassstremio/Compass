@@ -5,7 +5,9 @@ import simklLogo from "@/assets/simkl.png";
 import traktLogo from "@/assets/trakt.png";
 import letterboxdLogo from "@/assets/addon-logos/letterboxd.png";
 import publicmetadbLogo from "@/assets/publicmetadb.svg";
+import bingersLogo from "@/assets/bingers.png";
 import { useAnilist } from "@/lib/anilist/provider";
+import { useBingers } from "@/lib/bingers/provider";
 import { useMal } from "@/lib/mal/provider";
 import { useSimkl } from "@/lib/simkl/provider";
 import { useTrakt } from "@/lib/trakt/provider";
@@ -26,8 +28,9 @@ const LetterboxdPanel = lazy(() =>
 const PublicMetaDbPanel = lazy(() =>
   import("./publicmetadb-panel").then((m) => ({ default: m.PublicMetaDbPanel })),
 );
+const BingersPanel = lazy(() => import("./bingers-panel").then((m) => ({ default: m.BingersPanel })));
 
-type TrackerId = "trakt" | "simkl" | "anilist" | "mal" | "letterboxd" | "publicmetadb";
+type TrackerId = "trakt" | "simkl" | "anilist" | "mal" | "letterboxd" | "publicmetadb" | "bingers";
 
 const TRACKERS: Array<{ id: TrackerId; name: string; logo: string; blurb: string }> = [
   {
@@ -66,6 +69,12 @@ const TRACKERS: Array<{ id: TrackerId; name: string; logo: string; blurb: string
     logo: publicmetadbLogo,
     blurb: "Scrobbles playback progress, resume points, and syncs watch history.",
   },
+  {
+    id: "bingers",
+    name: "Bingers",
+    logo: bingersLogo,
+    blurb: "Marks the episodes and movies you finish as watched on Bingers.",
+  },
 ];
 
 export function TrackersPanel() {
@@ -80,6 +89,7 @@ export function TrackersPanel() {
   const anilist = useAnilist();
   const mal = useMal();
   const publicmetadb = usePublicMetaDb();
+  const bingers = useBingers();
   const connected: Record<TrackerId, boolean> = {
     trakt: trakt.isConnected,
     simkl: simkl.isConnected,
@@ -87,6 +97,7 @@ export function TrackersPanel() {
     mal: mal.isConnected,
     letterboxd: !!settings.letterboxd?.enabled && !!settings.letterboxd?.username,
     publicmetadb: publicmetadb.isConnected,
+    bingers: bingers.isConnected,
   };
   const total = TRACKERS.filter((s) => connected[s.id]).length;
 
@@ -117,6 +128,7 @@ export function TrackersPanel() {
           {active === "mal" && <MalPanel />}
           {active === "letterboxd" && <LetterboxdPanel />}
           {active === "publicmetadb" && <PublicMetaDbPanel />}
+          {active === "bingers" && <BingersPanel />}
         </Suspense>
       </div>
     </>

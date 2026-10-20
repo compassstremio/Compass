@@ -694,6 +694,7 @@ export type Settings = {
   /** Preferred language for anime titles across the app (cards, picker, presence). */
   animeTitleLanguage: "english" | "romaji" | "native";
   publicmetadbScrobbleEnabled: boolean;
+  bingersScrobbleEnabled: boolean;
   weekStartsMonday: boolean;
   calendarPosterSize: CalendarPosterSize;
   customCalendar: {

@@ -1,3 +1,4 @@
+import "@/lib/harbor-migration-boot";
 import { getCurrentWindow } from "@tauri-apps/api/window";
 import { StrictMode, useCallback, useEffect, useRef, useState } from "react";
 import { createRoot } from "react-dom/client";
@@ -7,6 +8,7 @@ import { getUiLanguage } from "@/lib/i18n/store";
 import { ensureUiLocale } from "@/lib/i18n/load-locale";
 import { applyOsDataset } from "@/lib/platform";
 import { loadSecrets } from "@/lib/secret-store";
+import { migrateHarborDatabases } from "@/lib/harbor-migration";
 import { initializeMusic } from "@/lib/music/player";
 import { initSubtitleCache } from "@/lib/subtitles/subtitle-cache";
 import { CaptionsApp } from "@/views/captions-app";
@@ -229,6 +231,7 @@ async function mount() {
     !isRemote
   ) {
     returnPreferencesReady = completeBetaReturnPreferences(__APP_VERSION__);
+    await migrateHarborDatabases().catch(() => {});
   }
   await Promise.all([
     loadSecrets(),

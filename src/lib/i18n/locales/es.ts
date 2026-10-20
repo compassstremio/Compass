@@ -109,6 +109,7 @@ import manga from "./es/manga";
 import controllers from "./es/controllers";
 import bpSources from "./es/bp-sources";
 import coverage from "./es/coverage";
+import bingers from "./es/bingers";
 import plugins from "./es/plugins";
 import brands from "./es/brands";
 import bpSports from "./es/bp-sports";
@@ -322,6 +323,7 @@ const es: Record<string, string> = {
   ...controllers,
   ...bpSources,
   ...coverage,
+  ...bingers,
   ...settingsRefinements,
   ...plugins,
   ...brands,

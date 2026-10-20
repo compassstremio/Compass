@@ -5,6 +5,7 @@ import { resetForProfile as resetSimkl } from "./simkl/session";
 import { resetForProfile as resetAnilist } from "./anilist/session";
 import { resetForProfile as resetMal } from "./mal/session";
 import { resetForProfile as resetPmdb } from "./publicmetadb/session";
+import { resetForProfile as resetBingers } from "./bingers/session";
 import { invalidatePmdbWatchedCache } from "./publicmetadb/history";
 import { clearPmdbWatchlistCache } from "./publicmetadb/watchlist";
 import { resetForProfile as resetSimklCache } from "./simkl/activities/store";
@@ -30,6 +31,7 @@ export function TrackerProfileBridge() {
     resetAnilist();
     resetMal();
     resetPmdb();
+    resetBingers();
     invalidatePmdbWatchedCache();
     clearPmdbWatchlistCache();
   }, [id]);

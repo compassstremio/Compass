@@ -20,6 +20,7 @@ function loadBackup(overrides: Record<string, unknown>): BackupModule {
     "@/lib/active-profile-id": { activeProfileId: () => "local" },
     "@/lib/secret-store": empty,
     "@/lib/storage-recovery": empty,
+    "@/lib/harbor-migration": { renameHarborKey: () => null },
     "@/lib/local-library": empty,
     ...overrides,
   };
@@ -96,4 +97,22 @@ test("a file that cannot be read surfaces the failure", async () => {
   });
 
   await assert.rejects(() => backup.pickBackupFile(), /ENOENT/);
+});
+
+test("a Harbor backup restores under the Compass keys", async () => {
+  const { renameHarborKey } = await import("../src/lib/harbor-migration.ts");
+  const backup = loadBackup({ "@/lib/harbor-migration": { renameHarborKey } });
+
+  const parsed = backup.parseBackup(
+    JSON.stringify({
+      format: "harbor-backup",
+      version: 1,
+      app: "0.9.0",
+      data: { "harbor.settings": "{}", "harbor.auth": "secret", "compass.theme": "dark" },
+    }),
+  );
+
+  assert.ok(parsed.ok);
+  assert.deepEqual(parsed.backup.data, { "compass.settings": "{}", "compass.theme": "dark" });
+  assert.equal(parsed.backup.format, "compass-backup");
 });

@@ -11,6 +11,7 @@ const SECRET_PREFIXES = [
   "compass.media-server.token.v1",
   "compass.plex-auth.device.v1",
   "compass.publicmetadb.session.v1",
+  "compass.bingers.session.v1",
 ];
 
 let store: Record<string, string> = {};
@@ -37,6 +38,7 @@ const IMMEDIATE_KEY_PREFIXES = [
   "compass.media-server.token.v1",
   "compass.plex-auth.device.v1",
   "compass.publicmetadb.session.v1",
+  "compass.bingers.session.v1",
 ];
 
 function isImmediateKey(key: string): boolean {

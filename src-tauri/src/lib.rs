@@ -92,6 +92,8 @@ mod monitors;
 #[cfg(desktop)]
 mod compass_lan;
 #[cfg(desktop)]
+mod harbor_import;
+#[cfg(desktop)]
 mod hdr_overlay;
 #[cfg(desktop)]
 mod installer_handoff;
@@ -763,6 +765,7 @@ pub fn run() {
     context_review::prepare(context.config())
         .expect("unsafe context review configuration");
     if !cfg!(feature = "context-review") {
+        harbor_import::run_pending(&context.config().identifier);
         let args: Vec<String> = std::env::args().skip(1).collect();
         if let Some(p) = media_file_from_args(&args) {
             if let Ok(mut g) = pending_open_file().lock() {
@@ -1315,6 +1318,8 @@ pub fn run() {
             settings_store::settings_write,
             settings_store::secrets_read,
             settings_store::secrets_write,
+            harbor_import::harbor_import_status,
+            harbor_import::harbor_import_request,
             media_server::media_server_request,
             proc_mem::compass_process_memory,
             diagnostics::diagnostics_collect,

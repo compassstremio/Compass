@@ -80,6 +80,7 @@ import contextActionsFallback from "./context-actions-fallback";
 import ebookSources from "./id/ebook-sources";
 import settingsRefinements from "./id/settings-refinements";
 import coverage from "./id/coverage";
+import bingers from "./id/bingers";
 import catalog01 from "./id/catalog-01";
 import catalog02 from "./id/catalog-02";
 import catalog03 from "./id/catalog-03";
@@ -277,6 +278,7 @@ const id: Record<string, string> = {
 
   ...ebookSources,
   ...coverage,
+  ...bingers,
   ...catalog01,
   ...catalog02,
   ...catalog03,

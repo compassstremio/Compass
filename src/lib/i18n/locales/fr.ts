@@ -112,6 +112,7 @@ import controllers from "./fr/controllers";
 import plurals from "./fr/plurals";
 import bpSources from "./fr/bp-sources";
 import coverage from "./fr/coverage";
+import bingers from "./fr/bingers";
 import plugins from "./fr/plugins";
 import brands from "./fr/brands";
 import bpSports from "./fr/bp-sports";
@@ -328,6 +329,7 @@ const fr: Record<string, string> = {
   ...plurals,
   ...bpSources,
   ...coverage,
+  ...bingers,
   ...settingsRefinements,
   ...plugins,
   ...brands,

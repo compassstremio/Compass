@@ -80,6 +80,7 @@ import contextActionsFallback from "./context-actions-fallback";
 import ebookSources from "./ko/ebook-sources";
 import settingsRefinements from "./ko/settings-refinements";
 import coverage from "./ko/coverage";
+import bingers from "./ko/bingers";
 import catalog01 from "./ko/catalog-01";
 import catalog02 from "./ko/catalog-02";
 import catalog03 from "./ko/catalog-03";
@@ -274,6 +275,7 @@ const ko: Record<string, string> = {
 
   ...ebookSources,
   ...coverage,
+  ...bingers,
   ...catalog01,
   ...catalog02,
   ...catalog03,

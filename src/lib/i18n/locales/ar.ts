@@ -84,6 +84,7 @@ import settingsRefinements from "./ar/settings-refinements";
 import uiFallback from "./ui-fallback";
 import experimentalUpdates from "./ar/experimental-updates";
 import coverage from "./ar/coverage";
+import bingers from "./ar/bingers";
 import settingsFill from "./ar/settings-fill";
 import profileFill from "./ar/profile-fill";
 import appFill from "./ar/app-fill";
@@ -297,6 +298,7 @@ const ar: Record<string, string> = {
   ...ebookSources,
   ...uiFallback,
   ...coverage,
+  ...bingers,
   ...settingsFill,
   ...profileFill,
   ...appFill,

@@ -13,6 +13,7 @@ import { useSettings } from "@/lib/settings";
 import { useSimklScrobble } from "@/lib/simkl/scrobble-hook";
 import { useTraktScrobble } from "@/lib/trakt/scrobble-hook";
 import { usePublicMetaDbScrobble } from "@/lib/publicmetadb/scrobble-hook";
+import { useBingersScrobble } from "@/lib/bingers/scrobble-hook";
 import { useMediaServerProgress } from "@/lib/media-server/progress-sync";
 import {
   claimTorrentPlaybackHandoff,
@@ -322,6 +323,7 @@ export function usePlayerMedia(params: {
   useTraktScrobble({ src, snap });
   useSimklScrobble({ src, snap });
   usePublicMetaDbScrobble({ src, snap });
+  useBingersScrobble({ src, snap });
   useMediaServerProgress({ src, snap });
   const download = useVideoDownload({
     url: src.url,

@@ -14,6 +14,8 @@
   If the updater key is protected by a password, set TAURI_SIGNING_PRIVATE_KEY_PASSWORD
   first; without it the signer stops and prompts interactively, which hangs a script.
 
+  The NSIS setup is staged as Compass_<version>_x64-setup.exe, the manifest's windows-x86_64
+  updater target, so -SkipApp needs a previous full build that bundled it.
   The Compass Setup installer is staged twice: as Compass_<version>_x64-installer.exe, the name the
   release API parses, and as compass-setup-v<version>-<channel>.exe for identification.
   installer/changelog/<version>-changelog.json must exist with this channel's notes, or the
@@ -108,13 +110,26 @@ if (-not $note -or $changelogChannel -ne $nameChannel -or -not $note.Value.title
 }
 Write-Host "  ok  $changelogFile"
 
+Step 'Updater signing key'
+$keyPath = @(
+  (Join-Path $env:USERPROFILE '.tauri\compass-updater.key'),
+  (Join-Path $env:USERPROFILE '.compass\updater.key')
+) | Where-Object { Test-Path -LiteralPath $_ } | Select-Object -First 1
+if (-not $keyPath) { Fail "No updater signing key at ~\.tauri\compass-updater.key or ~\.compass\updater.key" }
+# tauri build signs the updater artifacts itself (createUpdaterArtifacts), so the key must be set before it runs.
+$env:TAURI_SIGNING_PRIVATE_KEY = (Get-Content -LiteralPath $keyPath -Raw).Trim()
+if (-not $env:TAURI_SIGNING_PRIVATE_KEY_PASSWORD) { $env:TAURI_SIGNING_PRIVATE_KEY_PASSWORD = '' }
+Write-Host "  ok  key loaded from $keyPath"
+
 if (-not $SkipApp) {
   Step 'App build'
   # The frontend reads COMPASS_CHANNEL at build time; only "stable" clears the Beta label the
   # app shows in About. Tie the stamp to the channel this release is cut for.
   $env:COMPASS_CHANNEL = $Channel
   Write-Host "  channel stamp: $Channel"
-  Run 'pnpm' @('tauri', 'build', '--no-bundle')
+  # The NSIS setup is the manifest's windows-x86_64 updater target: the release API refuses to
+  # publish without it, and installed apps fall back to it when the installer handoff fails.
+  Run 'pnpm' @('tauri', 'build', '--bundles', 'nsis')
 } else {
   Step 'App build skipped'
 }
@@ -155,8 +170,11 @@ Step 'Stage artifacts'
 $stage = Join-Path $StageRoot $version
 New-Item -ItemType Directory -Force -Path $stage | Out-Null
 if (-not (Test-Path -LiteralPath $setupExe)) { Fail "Missing $setupExe" }
+$nsisSetup = Join-Path $appRelease "bundle/nsis/Compass_${version}_x64-setup.exe"
+if (-not (Test-Path -LiteralPath $nsisSetup)) { Fail "Missing NSIS bundle $nsisSetup. Run without -SkipApp so tauri build produces it." }
 $staged = @{
-  # The release API reads version and platform from this name, so the upload keeps it.
+  # The release API reads version and platform from these names, so the upload keeps them.
+  "Compass_${version}_x64-setup.exe"                = $nsisSetup
   "Compass_${version}_x64-installer.exe"            = $setupExe
   # The channel-named copy marks the channel the folder was cut for and names the GitHub
   # asset. publish-release.mjs only uploads the Compass_<version>_* name.
@@ -168,12 +186,6 @@ foreach ($name in $staged.Keys) {
 }
 
 Step 'Sign (each exe gets its own signature)'
-$keyPath = @(
-  (Join-Path $env:USERPROFILE '.tauri\compass-updater.key'),
-  (Join-Path $env:USERPROFILE '.compass\updater.key')
-) | Where-Object { Test-Path -LiteralPath $_ } | Select-Object -First 1
-if (-not $keyPath) { Fail "No updater signing key at ~\.tauri\compass-updater.key or ~\.compass\updater.key" }
-$env:TAURI_SIGNING_PRIVATE_KEY = (Get-Content -LiteralPath $keyPath -Raw).Trim()
 # PowerShell 5.1 drops empty arguments and removes empty environment variables, so a
 # passwordless key can never reach the signer as "no password given": it prompts
 # interactively and a script hangs. "--password=" carries an explicit empty password.

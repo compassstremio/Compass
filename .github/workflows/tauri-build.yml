@@ -248,6 +248,12 @@ jobs:
         if: contains(matrix.platform.runner, 'ubuntu')
         # --verbose: without it a linuxdeploy failure only says "failed to run linuxdeploy".
         run: pnpm tauri:build:linux-system --target ${{ matrix.platform.target }} --bundles deb,appimage --verbose
+        env:
+          # The staged Java runtime's lib/*.so list libjvm.so as needed, but it lives in lib/server and
+          # the launcher loads it first. linuxdeploy cannot resolve it without this path, and the
+          # exclusion keeps it from copying a second libjvm.so into usr/lib.
+          LD_LIBRARY_PATH: ${{ github.workspace }}/src-tauri/resources/capstan/runtime/lib/server
+          LINUXDEPLOY_EXCLUDED_LIBRARIES: libjvm.so
 
       - name: Build verified Windows managed installer
         if: matrix.platform.target == 'x86_64-pc-windows-msvc'

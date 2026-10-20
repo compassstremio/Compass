@@ -11,6 +11,7 @@ fn main() {
     } else {
         println!("cargo:rustc-link-lib=pthread");
     }
+    link_compiler_rt_on_intel_mac();
     let files: Vec<String> = [
         "strlist",
         "strfn",
@@ -93,4 +94,28 @@ fn main() {
         .files(&files)
         .file("compass_layout.cpp")
         .compile("libunrar.a");
+}
+
+// UnRAR's x86 SIMD probes use __builtin_cpu_supports, which clang resolves through ___cpu_model in
+// compiler-rt. rustc links Apple targets with -nodefaultlibs, so libclang_rt.osx.a is never pulled
+// in and x86_64-apple-darwin fails to link. Linux gets the symbol from libgcc, Windows uses __cpuid,
+// and arm64 has no SSE probes.
+fn link_compiler_rt_on_intel_mac() {
+    if std::env::var("TARGET").as_deref() != Ok("x86_64-apple-darwin") {
+        return;
+    }
+    let compiler = cc::Build::new().cpp(true).get_compiler();
+    let output = std::process::Command::new(compiler.path())
+        .arg("--print-resource-dir")
+        .output()
+        .expect("run the C++ compiler to locate compiler-rt");
+    let resource_dir = String::from_utf8(output.stdout).expect("compiler resource dir is UTF-8");
+    let darwin = std::path::Path::new(resource_dir.trim())
+        .join("lib")
+        .join("darwin");
+    if !darwin.join("libclang_rt.osx.a").exists() {
+        panic!("no libclang_rt.osx.a under {}; UnRAR needs it for ___cpu_model", darwin.display());
+    }
+    println!("cargo:rustc-link-search=native={}", darwin.display());
+    println!("cargo:rustc-link-lib=static=clang_rt.osx");
 }

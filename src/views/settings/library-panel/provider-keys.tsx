@@ -307,6 +307,8 @@ export function useProviderKeys({
             <>
               {t("Leave empty to use your RPDB key above. Or paste")}{" "}
               <strong>Better Posters</strong> (<code>https://btttr.cc</code>),{" "}
+              <strong>Pictorium</strong> (<code>https://pictorium.compass.sarl</code>
+              {t(", keep any ?options from its editor link")}),{" "}
               {t(
                 "a bare RPDB-compatible server (your RPDB key is still sent), or a full URL template using",
               )}{" "}

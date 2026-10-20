@@ -11,9 +11,10 @@ type ParsedId = {
   mediaType: "movie" | "series";
 };
 
-function parseMetaId(metaId: string): ParsedId | undefined {
+// An IMDb id carries no type, so the caller's hint decides it; TMDB and TVDB ids carry their own.
+function parseMetaId(metaId: string, type?: "movie" | "series"): ParsedId | undefined {
   if (!metaId) return undefined;
-  if (metaId.startsWith("tt")) return { imdb: metaId, mediaType: "movie" };
+  if (metaId.startsWith("tt")) return { imdb: metaId, mediaType: type ?? "movie" };
   const tmdb = metaId.match(/^tmdb:(movie|tv):(\d+)$/);
   if (tmdb) {
     return { tmdbId: tmdb[2], mediaType: tmdb[1] === "tv" ? "series" : "movie" };
@@ -65,6 +66,25 @@ function betterPostersPath(base: string, id: ParsedId): string | undefined {
   return `${base}/poster/imdb/poster-default/${id.imdb}.jpg`;
 }
 
+/**
+ * Pictorium serves /api/poster/{type}/{imdb|tmdb id}. Its editor encodes every badge
+ * and style choice as query parameters on the install link, so whatever the user pastes
+ * after the host is carried onto each poster request unchanged.
+ */
+function pictoriumPath(base: string, id: ParsedId): string | undefined {
+  const poster = id.imdb ?? id.tmdbId;
+  if (!poster) return undefined;
+  let url: URL;
+  try {
+    url = new URL(/^https?:\/\//i.test(base) ? base : `https://${base}`);
+  } catch {
+    return undefined;
+  }
+  const root = url.pathname.replace(/\/api\/poster(\/.*)?$/i, "").replace(/\/+$/, "");
+  const type = id.mediaType === "series" ? "series" : "movie";
+  return `${url.origin}${root}/api/poster/${type}/${poster}${url.search}`;
+}
+
 function postersPlusPath(base: string, id: ParsedId): string | undefined {
   if (!id.imdb || !id.tmdbId) return undefined;
   const root = base.replace(/\/poster$/i, "");
@@ -90,8 +110,9 @@ export function rpdbPoster(
   metaId: string,
   fallback?: string,
   altId?: string,
+  type?: "movie" | "series",
 ): string | undefined {
-  const parsed = parseMetaId(metaId);
+  const parsed = parseMetaId(metaId, type);
   if (!parsed) return fallback;
   const id = mergeAlt(parsed, altId);
 
@@ -110,6 +131,9 @@ export function rpdbPoster(
   }
   if (host.includes("btttr.cc")) {
     return betterPostersPath(posterBase, id) ?? fallback;
+  }
+  if (host.includes("pictorium")) {
+    return pictoriumPath(posterBase, id) ?? fallback;
   }
   if (host.includes("postersplus") || host.includes("elfhosted")) {
     return postersPlusPath(posterBase, id) ?? fallback;

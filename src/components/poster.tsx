@@ -164,7 +164,7 @@ export function usePosterChain(
       : [
           animeImdb ? rpdbPoster(rpdbKey, animeImdb, base, animeTmdb) : undefined,
           animeTvdb ? rpdbPoster(rpdbKey, `tvdb:${animeTvdb}`, base) : undefined,
-          rpdbPoster(rpdbKey, metaId, base, altId),
+          rpdbPoster(rpdbKey, metaId, base, altId, type),
           localized,
           metaPoster,
         ];
@@ -180,6 +180,7 @@ export function usePosterChain(
     metaId,
     altId,
     metaPoster,
+    type,
     animeImdb,
     animeTvdb,
     animeTmdb,

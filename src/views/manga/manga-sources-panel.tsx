@@ -15,6 +15,7 @@ import { ExtensionsSection } from "./manga-sources-panel/extensions-section";
 import { PluginGuide } from "./manga-sources-panel/plugin-guide";
 import { SetupGuide } from "./manga-sources-panel/setup-guide";
 import { CustomSource } from "./manga-sources-panel/custom-source";
+import { CompassMangaKey } from "./manga-sources-panel/compass-manga-key";
 import { SourceEditor } from "./manga-sources-panel/source-editor";
 import { SuwayomiWorkspace } from "./manga-sources-panel/suwayomi/suwayomi-workspace";
 import { listServers, subscribeServers } from "./manga-sources-panel/suwayomi/servers-store";
@@ -274,6 +275,8 @@ export function MangaSourcesView({
           )}
         </p>
       </div>
+
+      <CompassMangaKey />
 
       {customs.length > 0 && (
         <div className="flex flex-col gap-3">

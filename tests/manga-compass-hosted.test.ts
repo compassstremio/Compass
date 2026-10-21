@@ -6,15 +6,18 @@ import {
   hostedSourceId,
   hostedSourcesSync,
   makeHostedProvider,
+  mangaKeyState,
   refreshHostedSources,
+  removeMangaKey,
+  saveMangaKey,
+  savedKeyPrefix,
+  sourcesForLanguage,
   toHostedSources,
-  type KeyGetter,
 } from "../src/lib/manga/sources/compass-hosted.ts";
 
 const SOURCE = { id: "3asq", name: "مانجا العاشق", lang: "ar" };
 const KEY = "cmp_" + "a".repeat(43);
-const NEW_KEY = "cmp_" + "b".repeat(43);
-const withKey: KeyGetter = async () => KEY;
+const withKey = () => KEY;
 const realFetch = globalThis.fetch;
 
 type Seen = { url: string; key: string | null };
@@ -33,9 +36,10 @@ function stubFetch(answer: (url: string, key: string | null) => { status?: numbe
 
 test.afterEach(() => {
   globalThis.fetch = realFetch;
+  removeMangaKey();
 });
 
-test("every request carries the account key, and browse pages by the grid's page size", async () => {
+test("every request carries the key, and browse pages by the grid's page size", async () => {
   const seen = stubFetch(() => ({ body: { items: [{ id: "island-rock", title: "Island rock" }], hasMore: true } }));
   const p = makeHostedProvider(SOURCE, withKey);
   const items = await p.popular(MANGA_PAGE);
@@ -50,26 +54,38 @@ test("every request carries the account key, and browse pages by the grid's page
 
 test("without a key nothing is requested", async () => {
   const seen = stubFetch(() => ({ body: {} }));
-  await assert.rejects(makeHostedProvider(SOURCE, async () => null).popular(0), /sign in/);
+  await assert.rejects(makeHostedProvider(SOURCE, () => null).popular(0), /Compass Manga key/);
   assert.equal(seen.length, 0);
 });
 
-test("a key reset elsewhere: a 401 fetches a fresh key and retries once", async () => {
-  const seen = stubFetch((_url, key) => (key === NEW_KEY ? { body: { items: [] } } : { status: 401, body: {} }));
-  const asked: boolean[] = [];
-  const getKey: KeyGetter = async (fresh) => {
-    asked.push(!!fresh);
-    return fresh ? NEW_KEY : KEY;
-  };
-  await makeHostedProvider(SOURCE, getKey).tags!();
-  assert.deepEqual(asked, [false, true]);
-  assert.deepEqual(seen.map((s) => s.key), [KEY, NEW_KEY]);
+test("saving a key: malformed is caught locally, a refused key is not kept, an accepted one is", async () => {
+  const seen = stubFetch((url, key) => (url.endsWith("/api/key") && key === KEY ? { body: { ok: true } } : { status: 401, body: {} }));
+  assert.equal(await saveMangaKey("not a key"), "malformed");
+  assert.equal(seen.length, 0);
+  assert.equal(await saveMangaKey("cmp_" + "z".repeat(43)), "rejected");
+  assert.equal(mangaKeyState(), "missing");
+  assert.equal(await saveMangaKey(`  ${KEY} `), "saved");
+  assert.equal(seen.find((s) => s.url.endsWith("/api/key") && s.key === KEY)?.url, `${COMPASS_MANGA_URL}/api/key`);
+  assert.equal(mangaKeyState(), "saved");
+  assert.equal(savedKeyPrefix(), KEY.slice(0, 8));
 });
 
-test("a 401 with no newer key is a failure, not a loop", async () => {
-  const seen = stubFetch(() => ({ status: 401, body: {} }));
-  await assert.rejects(makeHostedProvider(SOURCE, withKey).popular(0), /401/);
-  assert.equal(seen.length, 1);
+test("an unreachable server does not save the key", async () => {
+  globalThis.fetch = (async () => {
+    throw new TypeError("offline");
+  }) as typeof fetch;
+  assert.equal(await saveMangaKey(KEY), "unreachable");
+  assert.equal(mangaKeyState(), "missing");
+});
+
+test("a key reset on the account page: the next 401 marks it rejected and hides the sources", async () => {
+  stubFetch((url) => (url.endsWith("/api/key") ? { body: { ok: true } } : { status: 401, body: {} }));
+  assert.equal(await saveMangaKey(KEY), "saved");
+  await assert.rejects(makeHostedProvider(SOURCE).popular(0), /401/);
+  assert.equal(mangaKeyState(), "rejected");
+  assert.deepEqual(hostedSourcesSync(), []);
+  removeMangaKey();
+  assert.equal(mangaKeyState(), "missing");
 });
 
 test("a genre with no query browses that genre instead of searching for nothing", async () => {
@@ -111,12 +127,25 @@ test("page URLs are kept only when they are http(s)", async () => {
   ]);
 });
 
-test("signed out there are no hosted sources, and a refresh does not throw", async () => {
+test("no key, no hosted sources; the list refresh sends no key and survives a failure", async () => {
   assert.deepEqual(hostedSourcesSync(), []);
   const seen = stubFetch(() => ({ status: 503, body: {} }));
-  await refreshHostedSources(async () => null);
-  await refreshHostedSources(withKey);
+  await refreshHostedSources();
   assert.equal(seen.length, 1);
+  assert.equal(seen[0].url, `${COMPASS_MANGA_URL}/api/sources`);
+  assert.equal(seen[0].key, null);
+});
+
+test("a source is listed only for readers whose interface is in its language", () => {
+  const list = [
+    { id: "3asq", name: "مانجا العاشق", lang: "ar" },
+    { id: "jp", name: "JP", lang: "ja" },
+    { id: "any", name: "Any", lang: "" },
+  ];
+  assert.deepEqual(sourcesForLanguage(list, "ar").map((s) => s.id), ["3asq", "any"]);
+  assert.deepEqual(sourcesForLanguage(list, "ar-SA").map((s) => s.id), ["3asq", "any"]);
+  assert.deepEqual(sourcesForLanguage(list, "en").map((s) => s.id), ["any"]);
+  assert.deepEqual(sourcesForLanguage([{ id: "x", name: "X", lang: "AR" }], "ar").map((s) => s.id), ["x"]);
 });
 
 test("the server's source list is validated", () => {

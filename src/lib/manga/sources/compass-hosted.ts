@@ -1,24 +1,28 @@
 import { safeFetch } from "@/lib/safe-fetch";
-import { authenticatedFetch } from "@/lib/account/authenticated-fetch";
-import { currentAuthor, subscribeAuthor } from "@/lib/theme-auth";
+import { getUiLanguage, subscribe as subscribeUiLanguage } from "@/lib/i18n/store";
 import { MANGA_PAGE, type MangaProvider } from "@/lib/manga/types";
 import { toChapters, toStrings, toSummaries, toSummary, toTags } from "@/lib/manga/plugins/adapter";
 
 // Sources served by Compass's own manga server (Compass-hosted services/compass-manga-addon).
-// They need a Compass account: each account has one key, which this module fetches with the
-// signed-in session and sends on every request. Signed out, there are no hosted sources.
-// Page images load straight from the source site.
+// Each source is in one language and is offered only to readers whose interface is in that
+// language. Reading needs a key: the reader gets it from their account page on the server
+// (signing in with Compass) and pastes it into Manga sources. Without a saved, accepted key no
+// hosted source is listed. Page images load straight from the source site.
 
 export const COMPASS_MANGA_URL = "https://manga.compass.sarl";
+export const COMPASS_MANGA_ACCOUNT_URL = `${COMPASS_MANGA_URL}/account`;
 
 export type HostedSource = { id: string; name: string; lang: string; icon?: string };
 
-/** Resolves the account's key; `fresh` skips the cache after the server rejected it. */
-export type KeyGetter = (fresh?: boolean) => Promise<string | null>;
+/** "missing": nothing saved. "rejected": the server refused the saved key (reset or revoked). */
+export type MangaKeyState = "missing" | "saved" | "rejected";
 
-const STORAGE_KEY = "compass.manga.hosted.v1";
+export type SaveKeyResult = "saved" | "malformed" | "rejected" | "unreachable";
 
-// What the server offered when this build shipped, so a signed-in reader has content before
+const SOURCES_STORAGE = "compass.manga.hosted.v1";
+const KEY_STORAGE = "compass.manga.key.v1";
+
+// What the server offered when this build shipped, so a reader with a key has content before
 // /api/sources has answered once.
 const SHIPPED: HostedSource[] = [
   {
@@ -41,48 +45,93 @@ export function hostedSourceId(id: string): string {
   return `compass-${id}`;
 }
 
-// ------------------------------------------------------------------------------- account key
+const listeners = new Set<() => void>();
 
-let cachedKey: { userId: string; key: string } | null = null;
-let pendingKey: Promise<string | null> | null = null;
+function notify(): void {
+  for (const cb of listeners) cb();
+}
 
-async function fetchKey(userId: string): Promise<string | null> {
+export function subscribeHostedSources(cb: () => void): () => void {
+  listeners.add(cb);
+  return () => {
+    listeners.delete(cb);
+  };
+}
+
+// ------------------------------------------------------------------------------- the key
+
+function readKey(): string | null {
   try {
-    const res = await authenticatedFetch(`${COMPASS_MANGA_URL}/account/key`);
-    if (!res.ok) return null;
-    const body: unknown = await res.json();
-    const key = (body as { key?: unknown } | null)?.key;
-    if (typeof key !== "string" || !KEY.test(key)) return null;
-    if (currentAuthor()?.id !== userId) return null;
-    cachedKey = { userId, key };
-    return key;
+    const raw = localStorage.getItem(KEY_STORAGE);
+    return raw && KEY.test(raw) ? raw : null;
   } catch {
     return null;
   }
 }
 
-// The key lives in memory only: one request per app start (or after a reset on the account
-// page) fetches it again, and it is never written to disk.
-export const compassKey: KeyGetter = (fresh = false) => {
-  const user = currentAuthor();
-  if (!user) return Promise.resolve(null);
-  if (!fresh && cachedKey?.userId === user.id) return Promise.resolve(cachedKey.key);
-  pendingKey ??= fetchKey(user.id).finally(() => {
-    pendingKey = null;
-  });
-  return pendingKey;
-};
+let savedKey: string | null = readKey();
+let rejected = false;
 
-// Sends one request with the key, and once more with a fresh key if the server refused it
-// (the key was reset on another device).
+export function mangaKeyState(): MangaKeyState {
+  if (!savedKey) return "missing";
+  return rejected ? "rejected" : "saved";
+}
+
+/** The first characters only, for showing which key is saved. */
+export function savedKeyPrefix(): string | null {
+  return savedKey ? savedKey.slice(0, 8) : null;
+}
+
+function writeKey(key: string | null): void {
+  savedKey = key;
+  rejected = false;
+  try {
+    if (key) localStorage.setItem(KEY_STORAGE, key);
+    else localStorage.removeItem(KEY_STORAGE);
+  } catch {
+    /* kept for this session */
+  }
+  notify();
+}
+
+// Checks the key with the server before keeping it, so a typo is caught at the field instead of
+// as a broken manga section.
+export async function saveMangaKey(raw: string): Promise<SaveKeyResult> {
+  const key = raw.trim();
+  if (!KEY.test(key)) return "malformed";
+  let res: Response;
+  try {
+    res = await safeFetch(`${COMPASS_MANGA_URL}/api/key`, { headers: { "X-Compass-Key": key } });
+  } catch {
+    return "unreachable";
+  }
+  if (res.status === 401) return "rejected";
+  if (!res.ok) return "unreachable";
+  writeKey(key);
+  void refreshHostedSources();
+  return "saved";
+}
+
+export function removeMangaKey(): void {
+  writeKey(null);
+}
+
+/** Resolves the key to send; null when none is saved. Injectable for tests. */
+export type KeyGetter = () => string | null;
+const currentKey: KeyGetter = () => savedKey;
+
+function markRejected(key: string): void {
+  if (savedKey !== key || rejected) return;
+  rejected = true;
+  notify();
+}
+
 async function keyedFetch(url: string, getKey: KeyGetter): Promise<Response> {
-  const key = await getKey();
-  if (!key) throw new Error("sign in to Compass to read from Compass sources");
+  const key = getKey();
+  if (!key) throw new Error("add your Compass Manga key in Manga sources");
   const res = await safeFetch(url, { headers: { "X-Compass-Key": key } });
-  if (res.status !== 401) return res;
-  const fresh = await getKey(true);
-  if (!fresh || fresh === key) return res;
-  return safeFetch(url, { headers: { "X-Compass-Key": fresh } });
+  if (res.status === 401) markRejected(key);
+  return res;
 }
 
 // ------------------------------------------------------------------------------- source list
@@ -107,7 +156,7 @@ export function toHostedSources(v: unknown): HostedSource[] {
 
 function readStored(): HostedSource[] | null {
   try {
-    const raw = localStorage.getItem(STORAGE_KEY);
+    const raw = localStorage.getItem(SOURCES_STORAGE);
     return raw ? toHostedSources(JSON.parse(raw)) : null;
   } catch {
     return null;
@@ -115,30 +164,30 @@ function readStored(): HostedSource[] | null {
 }
 
 let current: HostedSource[] = readStored() ?? SHIPPED;
-const listeners = new Set<() => void>();
 
-function notify(): void {
-  for (const cb of listeners) cb();
+// "ar" matches "ar" and "ar-SA"; a source without a language is for everyone.
+export function sourcesForLanguage(list: HostedSource[], uiLanguage: string): HostedSource[] {
+  const ui = uiLanguage.toLowerCase().split("-")[0];
+  return list.filter((s) => !s.lang || s.lang.toLowerCase().split("-")[0] === ui);
 }
 
-/** The sources to list: none while signed out of Compass. */
+/** Sources offered in the interface language, whether or not a key is saved yet. */
+export function hostedSourcesForLanguage(): HostedSource[] {
+  return sourcesForLanguage(current, getUiLanguage());
+}
+
+/** The sources to list: those in the interface language, once an accepted key is saved. */
 export function hostedSourcesSync(): HostedSource[] {
-  return currentAuthor() ? current : [];
+  return mangaKeyState() === "saved" ? hostedSourcesForLanguage() : [];
 }
 
-export function subscribeHostedSources(cb: () => void): () => void {
-  listeners.add(cb);
-  return () => {
-    listeners.delete(cb);
-  };
-}
-
-// A failed refresh keeps the last known list: the server being down for a moment must not
+// The list is open (no key), so it can say which sources fit this reader before they have a
+// key. A failed refresh keeps the last known list: the server being down for a moment must not
 // empty the manga section.
-export async function refreshHostedSources(getKey: KeyGetter = compassKey): Promise<void> {
+export async function refreshHostedSources(): Promise<void> {
   let next: HostedSource[];
   try {
-    const res = await keyedFetch(`${COMPASS_MANGA_URL}/api/sources`, getKey);
+    const res = await safeFetch(`${COMPASS_MANGA_URL}/api/sources`);
     if (!res.ok) return;
     const body: unknown = await res.json();
     next = toHostedSources((body as { sources?: unknown } | null)?.sources);
@@ -148,24 +197,15 @@ export async function refreshHostedSources(getKey: KeyGetter = compassKey): Prom
   if (JSON.stringify(next) === JSON.stringify(current)) return;
   current = next;
   try {
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(next));
+    localStorage.setItem(SOURCES_STORAGE, JSON.stringify(next));
   } catch {
     /* the in-memory list still applies for this session */
   }
   notify();
 }
 
-// Signing in or out (or switching accounts) changes whether hosted sources exist at all and
-// whose key they use.
-let lastUserId = currentAuthor()?.id ?? null;
-subscribeAuthor(() => {
-  const id = currentAuthor()?.id ?? null;
-  if (id === lastUserId) return;
-  lastUserId = id;
-  cachedKey = null;
-  notify();
-  if (id) void refreshHostedSources();
-});
+// A language change can add or remove every hosted source at once.
+subscribeUiLanguage(notify);
 
 // ------------------------------------------------------------------------------- provider
 
@@ -173,7 +213,7 @@ function field(v: unknown, key: string): unknown {
   return v && typeof v === "object" ? (v as Record<string, unknown>)[key] : undefined;
 }
 
-export function makeHostedProvider(src: HostedSource, getKey: KeyGetter = compassKey): MangaProvider {
+export function makeHostedProvider(src: HostedSource, getKey: KeyGetter = currentKey): MangaProvider {
   const base = `${COMPASS_MANGA_URL}/api/${src.id}`;
 
   // A 404 is an answer (no such series or chapter); anything else non-2xx is a failure the

@@ -30,7 +30,7 @@ Offering things like a native player, a stream ranking engine, Wikidata, watch p
 <br/>
 <h4 align="center">💬 New: By popular demand, join our community discord for support and help (https://discord.gg/pQBRmN9XdD)!</h4>
 <p align="center">
-  <img src="https://compass.sarl/readme-media/hero.png" width="900">
+  <img src="https://compass.sarl/readme-media/compass-home.webp" width="900">
   <br/>
   <sub>Compass on launch: a rotating hero, Continue Watching, and full width rails. Works on Cinemeta out of the box; richer with a free TMDB key.</sub>
 </p>

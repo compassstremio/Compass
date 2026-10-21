@@ -30,7 +30,15 @@ type OpenPicker = (
   opts?: { autoPlay?: boolean; attempt?: number },
 ) => void;
 
-export type SourceError = { status: number; host: string; exhausted?: boolean };
+/** Why a source failed, so the card does not call a stream that answered unresponsive. */
+export type SourceFailureCause = "no-response" | "no-video" | "playback";
+
+export type SourceError = {
+  status: number;
+  host: string;
+  exhausted?: boolean;
+  cause?: SourceFailureCause;
+};
 
 function hostOf(url: string): string {
   try {
@@ -162,7 +170,7 @@ export function useAutoRetry(params: {
   }, [isLive, snap.errorCode, src.url, src.subtitles, src.notWebReady, bridgeRef]);
 
   const triggerAutoRetry = useCallback(
-    (reason: string) => {
+    (reason: string, cause: SourceFailureCause = "no-response") => {
       if (autoRetriedRef.current) return;
       if (isLocal) {
         console.warn(`[player] local file: skipping auto-retry (${reason})`);
@@ -179,7 +187,7 @@ export function useAutoRetry(params: {
       // or a genuine mpv error own the visible failure state.
       if (!instantPlay && !inRoom) {
         console.warn(`[player] manual source failed (${reason})`);
-        setSourceError((prev) => prev ?? { status: 0, host: hostOf(src.url) });
+        setSourceError((prev) => prev ?? { status: 0, host: hostOf(src.url), cause });
         return;
       }
       const currentAttempt = src.attempt ?? 0;
@@ -243,7 +251,7 @@ export function useAutoRetry(params: {
     // A recovery belongs to the failed load, never to a later source or bridge.
     const current = () => !ac.signal.aborted && bridgeRef.current === recoveryBridge;
     const retry = () => {
-      if (current()) triggerAutoRetry(`playback error "${snap.errorCode}"`);
+      if (current()) triggerAutoRetry(`playback error "${snap.errorCode}"`, "playback");
     };
     const cancel = () => ac.abort();
     const failoverHash = src.streamRef?.infoHash;
@@ -362,7 +370,7 @@ export function useAutoRetry(params: {
       }).catch(retry);
       return cancel;
     }
-    triggerAutoRetry(`playback error "${snap.errorCode}"`);
+    triggerAutoRetry(`playback error "${snap.errorCode}"`, "playback");
   }, [
     snap.errorCode,
     snap.status,
@@ -491,7 +499,7 @@ export function useAutoRetry(params: {
       : BLACK_SCREEN_GRACE_MS;
     if (Date.now() - noVideoSinceRef.current > graceMs) {
       if (!isP2pEngine || engineFailure) {
-        triggerAutoRetry("audio plays but no video frames (black screen)");
+        triggerAutoRetry("audio plays but no video frames (black screen)", "no-video");
       }
     }
   }, [
@@ -554,7 +562,7 @@ export function useAutoRetry(params: {
     const t = window.setTimeout(() => {
       if (!selfFrameReadyRef.current && (snap.videoWidth <= 0 || snap.videoHeight <= 0)) {
         if (!isP2pEngine || engineFailure) {
-          triggerAutoRetry("room stream produced no video");
+          triggerAutoRetry("room stream produced no video", "no-video");
         }
       }
     }, ROOM_STALL_MS);

@@ -376,6 +376,28 @@ fn mpv_header_field(name: &str, value: &str) -> String {
     format!("{name}: {value}").replace('\\', "\\\\").replace(',', "\\,")
 }
 
+// On the NVIDIA driver auto-safe can pick VA-API through nvidia-vaapi-driver,
+// which Bazzite and other gaming distros install by default. Its EGL interop
+// with the embedded render API presents black frames while audio plays
+// (issue #17), so NVDEC decodes and copies frames back instead. mpv before
+// 0.36 rejects an hwdec list, hence the single-value fallback.
+fn set_linux_hwdec(init: &MpvInitializer, embed: bool) {
+    let nvidia = embed && std::path::Path::new("/proc/driver/nvidia/version").exists();
+    if !nvidia {
+        if let Err(e) = init.set_property("hwdec", "auto-safe") {
+            eprintln!("[compass::mpv] pre-init skip hwdec: {}", e);
+        }
+        return;
+    }
+    eprintln!("[compass::mpv] NVIDIA driver with embedded video; using copy-back hwdec");
+    if init.set_property("hwdec", "nvdec-copy,vaapi-copy").is_ok() {
+        return;
+    }
+    if let Err(e) = init.set_property("hwdec", "nvdec-copy") {
+        eprintln!("[compass::mpv] pre-init skip hwdec: {}", e);
+    }
+}
+
 fn apply_pre_init(
     init: &MpvInitializer,
     args: &MpvStartArgs,
@@ -437,7 +459,7 @@ fn apply_pre_init(
         set("hwdec", "videotoolbox-copy");
         set("force-window", "no");
     } else if cfg!(target_os = "linux") {
-        set("hwdec", "auto-safe");
+        set_linux_hwdec(init, args.embed.unwrap_or(false));
         if args.embed.unwrap_or(false) {
             set("force-window", "no");
         } else {

@@ -682,6 +682,10 @@ const coverage: Record<string, string> = {
   "Import and restart": "가져오고 다시 시작",
   "Compass could not start the import. Try again.": "Compass가 가져오기를 시작하지 못했습니다. 다시 시도하세요.",
   "Nothing is deleted: Compass keeps its current data in a backup folder next to its own, and Harbor stays as it is.": "아무것도 삭제되지 않습니다. Compass는 현재 데이터를 자체 폴더 옆의 백업 폴더에 보관하며, Harbor는 그대로 유지됩니다.",
+  "The video couldn't be displayed": "영상을 표시할 수 없습니다",
+  "The source is playing, but no picture reached the screen. Try another source, or change Hardware acceleration in the player settings.": "소스는 재생 중이지만 화면에 영상이 표시되지 않습니다. 다른 소스를 시도하거나 플레이어 설정에서 하드웨어 가속을 변경하세요.",
+  "No video": "영상 없음",
+  "Playback error": "재생 오류",
 };
 
 export default coverage;

@@ -659,6 +659,10 @@ const coverage: Record<string, string> = {
   "Import and restart": "Импортировать и перезапустить",
   "Compass could not start the import. Try again.": "Compass не удалось начать импорт. Попробуйте ещё раз.",
   "Nothing is deleted: Compass keeps its current data in a backup folder next to its own, and Harbor stays as it is.": "Ничего не удаляется: Compass сохраняет текущие данные в резервной папке рядом со своей, а Harbor остаётся без изменений.",
+  "The video couldn't be displayed": "Не удалось показать видео",
+  "The source is playing, but no picture reached the screen. Try another source, or change Hardware acceleration in the player settings.": "Источник воспроизводится, но изображение не выводится на экран. Попробуйте другой источник или измените аппаратное ускорение в настройках плеера.",
+  "No video": "Нет видео",
+  "Playback error": "Ошибка воспроизведения",
 };
 
 export default coverage;

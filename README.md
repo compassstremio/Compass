@@ -139,11 +139,11 @@ Eleven themes and seven font pairings, a live theme studio for every token, cust
 <table>
 <tr>
 <td width="50%" align="center">
-<img src="https://compass.sarl/readme-media/detail.png" width="100%"><br/>
+<img src="https://compass.sarl/readme-media/detail.png?v=2" width="100%"><br/>
 <sub><b>Detail page</b> &middot; ratings from IMDb, Rotten Tomatoes, and MAL, award laurels, cast and crew, episodes, and region aware Watch on chips.</sub>
 </td>
 <td width="50%" align="center">
-<img src="https://compass.sarl/readme-media/discover.png" width="100%"><br/>
+<img src="https://compass.sarl/readme-media/discover.png?v=2" width="100%"><br/>
 <sub><b>Discover</b> &middot; up to 14 rotating daily rails tuned by what you open, play, and save, plus a daily Critics Pick.</sub>
 </td>
 </tr>
@@ -153,23 +153,23 @@ Eleven themes and seven font pairings, a live theme studio for every token, cust
 <sub><b>Player</b> &middot; native libmpv, trickplay seek previews, skip intro/outro, and a customizable seek bar.</sub>
 </td>
 <td width="50%" align="center">
-<img src="https://compass.sarl/readme-media/live-tv.png" width="100%"><br/>
+<img src="https://compass.sarl/readme-media/live-tv.png?v=2" width="100%"><br/>
 <sub><b>Live TV</b> &middot; M3U and Xtream playlists rendered as a real EPG grid guide with favorites and catchup.</sub>
 </td>
 </tr>
 <tr>
 <td width="50%" align="center">
-<img src="https://compass.sarl/readme-media/multiview.png" width="100%"><br/>
+<img src="https://compass.sarl/readme-media/multiview.png?v=2" width="100%"><br/>
 <sub><b>Multiview</b> &middot; one, two, three, or 2x2 streams at once, with independent audio focus per tile.</sub>
 </td>
 <td width="50%" align="center">
-<img src="https://compass.sarl/readme-media/together.jpg" width="100%"><br/>
+<img src="https://compass.sarl/readme-media/together.jpg?v=2" width="100%"><br/>
 <sub><b>Together</b> &middot; synced playback, a live chat overlay, on screen cursors, and collaborative drawing.</sub>
 </td>
 </tr>
 <tr>
 <td colspan="2" align="center">
-<img src="https://compass.sarl/readme-media/themes.png" width="80%"><br/>
+<img src="https://compass.sarl/readme-media/themes.png?v=2" width="80%"><br/>
 <sub><b>Themes</b> &middot; eleven presets and a full visual studio. Colors, fonts, card and button shapes, backgrounds, and the entire nav layout.</sub>
 </td>
 </tr>
@@ -381,7 +381,7 @@ Awards laurels surface across detail pages, covering Oscar, Emmy, BAFTA, Golden 
 </p>
 
 <p align="left">
-  <img src="https://compass.sarl/readme-media/richactivity.gif" width="320">
+  <img src="https://compass.sarl/readme-media/richactivity.gif?v=2" width="320">
   <br/>
   <sub>Discord Rich Presence, cycling live as you browse and watch.</sub>
 </p>

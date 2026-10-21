@@ -1,5 +1,5 @@
 import { useSyncExternalStore } from "react";
-import { persistCritical } from "./storage-recovery";
+import { persistCritical, setItemOrThrow } from "./storage-recovery";
 
 const KEY_PREFIX = "compass.moviewatched.v1.";
 const LEGACY_KEY = "compass.moviewatched.v1";
@@ -111,7 +111,7 @@ export function setMovieWatchedLocalAcknowledged(metaId: string, watched: boolea
   const next = new Set(load());
   if (watched) next.add(metaId);
   else next.delete(metaId);
-  localStorage.setItem(storeKey(), JSON.stringify([...next]));
+  setItemOrThrow(storeKey(), JSON.stringify([...next]));
   cache = next;
   version += 1;
   for (const fn of subs) fn();

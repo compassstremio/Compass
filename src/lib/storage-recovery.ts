@@ -162,6 +162,11 @@ export function setItemWithRecovery(key: string, value: string): boolean {
   return false;
 }
 
+/** Like setItemWithRecovery, but a write that still fails after pruning throws. */
+export function setItemOrThrow(key: string, value: string): void {
+  if (!setItemWithRecovery(key, value)) throw new Error(`Storage is full; "${key}" was not saved.`);
+}
+
 export function freeStorageSpace(): { freedBytes: number; pruned: string[] } {
   let freed = 0;
   const pruned: string[] = [];

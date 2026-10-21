@@ -83,7 +83,8 @@ async function perform(
             });
             return result;
           }
-        } catch {
+        } catch (error) {
+          console.warn(`[media-actions] ${write.provider} preflight failed`, error);
           result.outcomes.push({
             provider: write.provider,
             status: "failed",
@@ -97,7 +98,8 @@ async function perform(
       assertCurrent();
       await local();
       result.outcomes.push({ provider: "Compass", status: "updated" });
-    } catch {
+    } catch (error) {
+      console.warn("[media-actions] local save failed", error);
       result.outcomes.push({
         provider: "Compass",
         status: "failed",
@@ -114,7 +116,8 @@ async function perform(
             ? { provider: write.provider, status: "unsupported", reason: unavailable }
             : { provider: write.provider, status: "updated" },
         );
-      } catch {
+      } catch (error) {
+        console.warn(`[media-actions] ${write.provider} write failed`, error);
         result.outcomes.push({
           provider: write.provider,
           status: "failed",

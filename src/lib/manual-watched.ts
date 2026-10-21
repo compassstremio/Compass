@@ -1,6 +1,6 @@
 import type { LibraryItem } from "@/lib/stremio";
 import { noteNotify } from "@/lib/render-cause";
-import { persistCritical } from "@/lib/storage-recovery";
+import { persistCritical, setItemOrThrow } from "@/lib/storage-recovery";
 
 const PROFILES_KEY = "compass.profiles.v1";
 
@@ -373,8 +373,8 @@ export function setManualWatchedManyAcknowledged(
     remote.delete(k);
   }
   try {
-    localStorage.setItem(storeKey("unwatchedAt"), JSON.stringify(at));
-    localStorage.setItem(storeKey("remote"), JSON.stringify([...remote]));
+    setItemOrThrow(storeKey("unwatchedAt"), JSON.stringify(at));
+    setItemOrThrow(storeKey("remote"), JSON.stringify([...remote]));
     // Clear the opposing override before setting the requested state.
     const pairs = watched
       ? ([
@@ -386,7 +386,7 @@ export function setManualWatchedManyAcknowledged(
           ["unwatched", off],
         ] as const);
     for (const [name, values] of pairs)
-      localStorage.setItem(storeKey(name), JSON.stringify([...values]));
+      setItemOrThrow(storeKey(name), JSON.stringify([...values]));
   } finally {
     watchedCache = null;
     unwatchedCache = null;

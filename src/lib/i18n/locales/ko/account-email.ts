@@ -1,0 +1,23 @@
+const accountEmail: Record<string, string> = {
+  "Email isn't available on this Compass server.": "이 Compass 서버에서는 이메일을 사용할 수 없습니다.",
+  "Enter your email address to create an account.": "계정을 만들려면 이메일 주소를 입력하세요.",
+  "That doesn't look like an email address. Check it and try again.": "이메일 주소 형식이 아닌 것 같습니다. 확인하고 다시 시도하세요.",
+  "There's no email waiting to be confirmed.": "확인을 기다리는 이메일이 없습니다.",
+  "We'll send a link to confirm it. It's also how you reset your password.": "확인 링크를 보내드립니다. 비밀번호를 재설정할 때도 이 이메일을 사용합니다.",
+  "We sent a link to {email}. Open it to confirm the address.": "{email}(으)로 링크를 보냈습니다. 링크를 열어 주소를 확인하세요.",
+  "{email} · Confirmed": "{email} · 확인됨",
+  "Add an email so you can reset your password without the recovery key.": "이메일을 추가하면 복구 키 없이 비밀번호를 재설정할 수 있습니다.",
+  "New email": "새 이메일",
+  "Your current address stays until you confirm the new one.": "새 주소를 확인할 때까지 현재 주소가 유지됩니다.",
+  "Send confirmation link": "확인 링크 보내기",
+  "Resend": "다시 보내기",
+  "Add email": "이메일 추가",
+  "Sent. Check your inbox.": "보냈습니다. 받은편지함을 확인하세요.",
+  "Reset by email": "이메일로 재설정",
+  "Enter the email you confirmed on your account. We'll send a link to choose a new password.": "계정에서 확인한 이메일을 입력하세요. 새 비밀번호를 정할 수 있는 링크를 보내드립니다.",
+  "Lost your recovery key? Reset by email": "복구 키를 잃어버렸나요? 이메일로 재설정",
+  "If {email} is confirmed on a Compass account, a reset link is on its way. It works once, for one hour.": "{email}이(가) Compass 계정에서 확인된 주소라면 재설정 링크를 보내고 있습니다. 한 번만, 1시간 동안 사용할 수 있습니다.",
+  "Send reset link": "재설정 링크 보내기",
+};
+
+export default accountEmail;

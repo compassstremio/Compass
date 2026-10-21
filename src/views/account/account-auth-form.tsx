@@ -2,6 +2,8 @@ import { useLayoutEffect, useRef, useState } from "react";
 import { KeyRound, Loader2, X } from "@/views/settings/icons";
 import { ModalShell, useModalExit } from "@/components/modal-shell";
 import { loginIdentity, registerIdentity } from "@/lib/account/identity";
+import { normaliseEmail } from "@/lib/account/email";
+import { useEmailCapabilities } from "@/hooks/use-email-capabilities";
 import { accountErrorMessage, type AccountErrorMessage } from "@/lib/account/error-messages";
 import { PasswordField, TextField } from "./fields";
 import { AccountRecoverForm } from "./account-recover-form";
@@ -96,16 +98,26 @@ export function AccountAuthForm({
   const [mode, setMode] = useState<Mode>(initialMode);
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
+  const [email, setEmail] = useState("");
+  const [newsletter, setNewsletter] = useState<boolean | null>(null);
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<AccountErrorMessage | null>(null);
+  const caps = useEmailCapabilities();
 
   const trimmed = username.trim();
   const usernameOk = USERNAME_RE.test(trimmed);
   const passwordOk = mode === "register" ? password.length >= 8 : password.length > 0;
-  const ready = usernameOk && passwordOk;
+  const askEmail = mode === "register" && caps.email;
+  const emailOk = !askEmail || normaliseEmail(email) !== "";
+  const optIn = newsletter ?? caps.newsletter.defaultChecked;
+  const ready = usernameOk && passwordOk && emailOk;
   const usernameHint =
     mode === "register" && trimmed.length > 0 && !usernameOk
       ? "3 to 24 letters, numbers, or underscores."
+      : undefined;
+  const emailHint =
+    askEmail && email.trim().length > 0 && !emailOk
+      ? "That doesn't look like an email address. Check it and try again."
       : undefined;
 
   const submit = async () => {
@@ -114,7 +126,16 @@ export function AccountAuthForm({
     setError(null);
     try {
       if (mode === "register") {
-        const { recoveryCode } = await registerIdentity(trimmed, password);
+        const { recoveryCode } = await registerIdentity(
+          trimmed,
+          password,
+          askEmail
+            ? {
+                email: normaliseEmail(email),
+                newsletterOptIn: caps.newsletter.enabled && optIn,
+              }
+            : undefined,
+        );
         onRecovery?.(recoveryCode);
       } else {
         await loginIdentity(trimmed, password);
@@ -268,6 +289,37 @@ export function AccountAuthForm({
             placeholder={mode === "register" ? t("At least 8 characters") : t("Your password")}
             onEnter={submit}
           />
+
+          {askEmail && (
+            <TextField
+              label={t("Email")}
+              value={email}
+              onChange={setEmail}
+              placeholder={t("you@example.com")}
+              maxLength={254}
+              inputMode="email"
+              autoComplete="email"
+              hint={
+                emailHint
+                  ? t(emailHint)
+                  : t("We'll send a link to confirm it. It's also how you reset your password.")
+              }
+              tone={emailHint ? "danger" : "muted"}
+              onEnter={submit}
+            />
+          )}
+
+          {askEmail && caps.newsletter.enabled && (
+            <label className="flex cursor-pointer items-start gap-2.5 text-[15px] leading-[22px] text-ink-muted transition-colors hover:text-ink">
+              <input
+                type="checkbox"
+                checked={optIn}
+                onChange={(e) => setNewsletter(e.target.checked)}
+                className="mt-1 h-4 w-4 shrink-0 rounded border-edge bg-elevated accent-ink"
+              />
+              {caps.newsletter.label}
+            </label>
+          )}
 
           {mode === "signin" && (
             <button

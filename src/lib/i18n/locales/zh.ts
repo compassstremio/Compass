@@ -79,6 +79,7 @@ import contextActionsFallback from "./context-actions-fallback";
 
 import ebookSources from "./zh/ebook-sources";
 import settingsRefinements from "./zh/settings-refinements";
+import accountEmail from "./zh/account-email";
 import coverage from "./zh/coverage";
 import bingers from "./zh/bingers";
 import sweepA from "./zh/sweep-a";
@@ -286,6 +287,7 @@ const zh: Record<string, string> = {
   ...books,
   ...system,
   ...settingsRefinements,
+  ...accountEmail,
   ...plugins,
   ...brands,
   ...sportsHub,

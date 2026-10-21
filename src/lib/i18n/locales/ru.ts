@@ -79,6 +79,7 @@ import contextActionsFallback from "./context-actions-fallback";
 
 import ebookSources from "./ru/ebook-sources";
 import settingsRefinements from "./ru/settings-refinements";
+import accountEmail from "./ru/account-email";
 import gap from "./ru/gap";
 import experimentalUpdates from "./ru/experimental-updates";
 import coverage from "./ru/coverage";
@@ -346,6 +347,7 @@ const ru: Record<string, string> = {
   ...surfaces5,
   ...experimentalUpdates,
   ...settingsRefinements,
+  ...accountEmail,
   ...plugins,
   ...brands,
   ...sportsHub,

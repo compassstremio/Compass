@@ -79,6 +79,7 @@ import contextActionsFallback from "./context-actions-fallback";
 
 import ebookSources from "./it/ebook-sources";
 import settingsRefinements from "./it/settings-refinements";
+import accountEmail from "./it/account-email";
 import catalog01 from "./it/catalog-01";
 import catalog02 from "./it/catalog-02";
 import catalog03 from "./it/catalog-03";
@@ -289,6 +290,7 @@ const it: Record<string, string> = {
   ...coverage,
   ...bingers,
   ...settingsRefinements,
+  ...accountEmail,
   ...plugins,
   ...brands,
   ...sportsHub,

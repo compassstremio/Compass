@@ -80,6 +80,7 @@ import contextActionsFallback from "./context-actions-fallback";
 
 import ebookSources from "./pt/ebook-sources";
 import settingsRefinements from "./pt/settings-refinements";
+import accountEmail from "./pt/account-email";
 import experimentalUpdates from "./pt/experimental-updates";
 import coverage from "./pt/coverage";
 import bingers from "./pt/bingers";
@@ -339,6 +340,7 @@ const pt: Record<string, string> = {
   ...wiringSweep4,
   ...experimentalUpdates,
   ...settingsRefinements,
+  ...accountEmail,
   ...plugins,
   ...brands,
   ...sportsHub,

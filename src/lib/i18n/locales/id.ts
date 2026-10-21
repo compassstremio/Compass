@@ -79,6 +79,7 @@ import contextActionsFallback from "./context-actions-fallback";
 
 import ebookSources from "./id/ebook-sources";
 import settingsRefinements from "./id/settings-refinements";
+import accountEmail from "./id/account-email";
 import coverage from "./id/coverage";
 import bingers from "./id/bingers";
 import catalog01 from "./id/catalog-01";
@@ -295,6 +296,7 @@ const id: Record<string, string> = {
   ...audit,
   ...identityAudit,
   ...settingsRefinements,
+  ...accountEmail,
   ...plugins,
   ...brands,
   ...sportsHub,

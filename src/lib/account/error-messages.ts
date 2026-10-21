@@ -34,10 +34,14 @@ const BY_CODE = {
   slow_down: "You're doing that too fast. Wait a moment and try again.",
   blocked_text: "That text isn't allowed. Try different wording.",
   password_too_short: "Your password needs to be at least 8 characters.",
+  email_not_configured: "Email isn't available on this Compass server.",
 } as const;
 
 const BY_REASON = {
   password_too_short: "Your password needs to be at least 8 characters.",
+  email_required: "Enter your email address to create an account.",
+  bad_email: "That doesn't look like an email address. Check it and try again.",
+  nothing_pending: "There's no email waiting to be confirmed.",
   "too-short": "That name is too short. Use at least 3 characters.",
   invalid:
     "That name has characters that aren't allowed. Stick to letters, numbers, and underscores.",

@@ -5,6 +5,7 @@ import { useT } from "@/lib/i18n";
 import { Section } from "@/views/settings/shared";
 import { RecoveryReveal } from "@/views/settings/theme-panel/custom-themes-section/author-account-panel/recovery-reveal";
 import { AccountAuthForm } from "./account-auth-form";
+import { AccountEmailCard } from "./account-email-card";
 import { AccountIdentityCard } from "./account-identity-card";
 import { AccountThemeCta } from "./account-theme-cta";
 import { JoinDiscordCard } from "./join-discord-card";
@@ -53,6 +54,7 @@ export function CompassAccountPanel() {
   return (
     <Section title={t("Compass account")} subtitle={t("Your handle across Compass.")}>
       <AccountIdentityCard author={author} />
+      <AccountEmailCard author={author} />
       <JoinDiscordCard />
       <AccountThemeCta />
       {authOpen && <AccountAuthForm onRecovery={setReveal} onClose={() => setAuthOpen(false)} />}

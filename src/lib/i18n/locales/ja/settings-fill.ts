@@ -40,7 +40,7 @@ const settingsFill: Record<string, string> = {
   "Check the shared database first. When this exact subtitle has already been synced by someone else, yours snaps into place with no analysis.":
     "最初に共有データベースを確認します。同じ字幕がすでにほかのユーザーによって同期されていれば、解析せずにすぐ適用されます。",
   "Community sync server": "コミュニティ同期サーバー",
-  "https://sync.compass.site": "https://sync.compass.site",
+  "https://sync.compass.sarl": "https://sync.compass.sarl",
   "Leave blank to use Compass's own community server. Enter a URL to point at your own server instead. Private mode below stops all contact either way.":
     "空欄にするとCompass公式のコミュニティサーバーを使用します。独自サーバーを使う場合はURLを入力してください。下のプライベートモードを有効にすると、どちらの場合も通信をすべて停止します。",
   "Private mode": "プライベートモード",

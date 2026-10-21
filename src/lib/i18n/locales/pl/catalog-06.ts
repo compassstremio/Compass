@@ -24,10 +24,10 @@ const catalog06: Record<string, string> = {
     "Gdy Compass jest otwarty, sprawdza dostępność kilka razy dziennie i powiadamia o niej tutaj.",
   "Compass checks automatically every few hours.":
     "Compass automatycznie sprawdza dostępność aktualizacji co kilka godzin.",
-  "Compass checks compass.site for new versions and installs them in place.":
-    "Compass sprawdza dostępność nowych wersji w witrynie compass.site i instaluje je w miejscu bieżącej wersji.",
-  "Compass checks compass.site for new versions and installs them in place. Nothing installs until you choose to, and a dismissed update never nags you again.":
-    "Compass sprawdza w compass.site dostępność nowych wersji i aktualizuje istniejącą instalację. Nic nie zostanie zainstalowane bez Twojej zgody, a odrzucona aktualizacja nie będzie ponownie wyświetlana.",
+  "Compass checks compass.sarl for new versions and installs them in place.":
+    "Compass sprawdza dostępność nowych wersji w witrynie compass.sarl i instaluje je w miejscu bieżącej wersji.",
+  "Compass checks compass.sarl for new versions and installs them in place. Nothing installs until you choose to, and a dismissed update never nags you again.":
+    "Compass sprawdza w compass.sarl dostępność nowych wersji i aktualizuje istniejącą instalację. Nic nie zostanie zainstalowane bez Twojej zgody, a odrzucona aktualizacja nie będzie ponownie wyświetlana.",
   "Compass could not find these": "Compass nie znalazł tych pozycji",
   "Compass could not open its web server. Try again, or set this up on the TV.":
     "Compass nie mógł uruchomić serwera WWW. Spróbuj ponownie lub skonfiguruj to na telewizorze.",
@@ -213,7 +213,7 @@ const catalog06: Record<string, string> = {
   "Compass's temporary viewer requires HTTPS.":
     "Tymczasowa przeglądarka Compass wymaga protokołu HTTPS.",
   "Compass, from a public domain frame": "Compass, z kadru należącego do domeny publicznej",
-  "Compasses on your network": "Instancje Compass w twojej sieci",
+  "Compasss on your network": "Instancje Compass w twojej sieci",
   "Hard Boiled": "Kryminały w stylu hard-boiled",
   "Hard outline": "Wyraźny kontur",
   "Hard stroke around each letter. High contrast.": "Wyraźny obrys każdej litery. Wysoki kontrast.",

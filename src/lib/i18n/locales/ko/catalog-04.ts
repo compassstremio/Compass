@@ -273,8 +273,8 @@ const catalog04: Record<string, string> = {
   "Font name can only use letters, numbers, and spaces.":
     "글꼴 이름에는 문자, 숫자, 공백만 사용할 수 있습니다.",
   "Font tokens": "글꼴 토큰",
-  "For Application URL anything works, for example https://compass.site. TMDB never visits it.":
-    "Application URL에는 아무 주소나 사용할 수 있습니다. 예: https://compass.site. TMDB는 이 주소에 접속하지 않습니다.",
+  "For Application URL anything works, for example https://compass.sarl. TMDB never visits it.":
+    "Application URL에는 아무 주소나 사용할 수 있습니다. 예: https://compass.sarl. TMDB는 이 주소에 접속하지 않습니다.",
   "For Everyone": "모두를 위한 작품",
   "For a link or image you usually want an attribute:":
     "링크나 이미지에는 일반적으로 다음 속성을 사용합니다.",
@@ -648,10 +648,10 @@ const catalog04: Record<string, string> = {
   "Compass checks a few times a day while it's open and lets you know here.":
     "Compass가 열려 있는 동안 하루에 몇 차례 확인하여 이곳에서 알려드립니다.",
   "Compass checks automatically every few hours.": "Compass는 몇 시간마다 자동으로 확인합니다.",
-  "Compass checks compass.site for new versions and installs them in place.":
-    "Compass가 compass.site에서 새 버전을 확인하고 현재 위치에 설치합니다.",
-  "Compass checks compass.site for new versions and installs them in place. Nothing installs until you choose to, and a dismissed update never nags you again.":
-    "Compass는 compass.site에서 새 버전을 확인하고 현재 위치에 설치합니다. 사용자가 선택하기 전에는 아무것도 설치되지 않으며, 무시한 업데이트는 다시 알리지 않습니다.",
+  "Compass checks compass.sarl for new versions and installs them in place.":
+    "Compass가 compass.sarl에서 새 버전을 확인하고 현재 위치에 설치합니다.",
+  "Compass checks compass.sarl for new versions and installs them in place. Nothing installs until you choose to, and a dismissed update never nags you again.":
+    "Compass는 compass.sarl에서 새 버전을 확인하고 현재 위치에 설치합니다. 사용자가 선택하기 전에는 아무것도 설치되지 않으며, 무시한 업데이트는 다시 알리지 않습니다.",
   "Compass could not find these": "Compass가 다음 항목을 찾지 못했습니다",
   "Compass could not open its web server. Try again, or set this up on the TV.":
     "Compass에서 웹 서버를 열 수 없습니다. 다시 시도하거나 TV에서 설정하세요.",
@@ -829,7 +829,7 @@ const catalog04: Record<string, string> = {
   "Compass's temporary viewer requires HTTPS.":
     "Compass의 임시 뷰어를 사용하려면 HTTPS가 필요합니다.",
   "Compass, from a public domain frame": "퍼블릭 도메인 프레임에서 가져온 Compass",
-  "Compasses on your network": "네트워크의 Compass",
+  "Compasss on your network": "네트워크의 Compass",
   "Hard Boiled": "하드보일드",
   "Hard outline": "선명한 외곽선",
   "Hard stroke around each letter. High contrast.":

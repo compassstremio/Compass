@@ -3,7 +3,7 @@ import { readFileSync } from "node:fs";
 import test from "node:test";
 import ts from "typescript";
 
-const RELAY = "https://app.compass.site";
+const RELAY = "https://app.compass.sarl";
 const DISCORD_URL_LIMIT = 512;
 
 function loadDeepLink() {

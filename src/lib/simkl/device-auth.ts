@@ -1,43 +1,81 @@
 import { simklRequest } from "./client";
+import { postOauth2 } from "./refresh";
 import { setSession } from "./session";
 import type { SimklPin, SimklSession } from "./types";
 
+// OAuth 2.0 (V2) device flow. Write access must be requested up front: a refresh can never widen it,
+// and an unknown scope string is silently downgraded to read-only.
+const SIMKL_SCOPE = "media:read media:write";
+const DEVICE_GRANT = "urn:ietf:params:oauth:grant-type:device_code";
+const SLOW_DOWN_EXTRA_SEC = 5;
+
 export async function requestPin(): Promise<SimklPin> {
-  interface PinResponse {
-    user_code: string;
-    verification_url: string;
-    expires_in: number;
-    interval: number;
+  const { status, json } = await postOauth2("/oauth2/device", { scope: SIMKL_SCOPE });
+  const deviceCode = typeof json.device_code === "string" ? json.device_code : "";
+  const userCode = typeof json.user_code === "string" ? json.user_code : "";
+  if (status !== 200 || !deviceCode || !userCode) {
+    throw new Error(`Simkl refused the sign-in request (${json.error ?? `HTTP ${status}`}).`);
   }
-  const data = await simklRequest<PinResponse>("/oauth/pin", { authed: false });
+  const verificationUrl =
+    typeof json.verification_uri === "string" ? json.verification_uri : "https://simkl.com/pin";
+  const deepLinkUrl =
+    typeof json.verification_uri_complete === "string"
+      ? json.verification_uri_complete
+      : `${verificationUrl}?user_code=${encodeURIComponent(userCode)}`;
   return {
-    userCode: data.user_code,
-    verificationUrl: data.verification_url,
-    deepLinkUrl: `https://simkl.com/pin/${data.user_code}`,
-    expiresIn: data.expires_in,
-    pollIntervalSec: data.interval,
+    deviceCode,
+    userCode,
+    verificationUrl,
+    deepLinkUrl,
+    expiresIn: typeof json.expires_in === "number" ? json.expires_in : 900,
+    pollIntervalSec: typeof json.interval === "number" ? json.interval : 5,
   };
 }
 
 export type PollResult =
   | { kind: "authorized"; session: SimklSession }
-  | { kind: "expired" };
+  | { kind: "expired" }
+  | { kind: "error"; message: string };
 
 export type PollHandle = { cancel: () => void };
 
-async function pollOnce(userCode: string): Promise<SimklSession | null> {
+type PollStep =
+  | { kind: "pending" }
+  | { kind: "slow" }
+  | PollResult;
+
+async function pollOnce(deviceCode: string): Promise<PollStep> {
+  let status: number;
+  let json: Awaited<ReturnType<typeof postOauth2>>["json"];
   try {
-    interface PollResponse {
-      result?: string;
-      access_token?: string;
-    }
-    const data = await simklRequest<PollResponse>(`/oauth/pin/${userCode}`, { authed: false });
-    if (data.result === "OK" && data.access_token) {
-      return { accessToken: data.access_token, username: null };
-    }
-    return null;
+    ({ status, json } = await postOauth2("/oauth2/token", {
+      grant_type: DEVICE_GRANT,
+      device_code: deviceCode,
+    }));
   } catch {
-    return null;
+    return { kind: "pending" };
+  }
+  if (status === 200 && json.access_token) {
+    const expiresIn = typeof json.expires_in === "number" ? json.expires_in : 604800;
+    return {
+      kind: "authorized",
+      session: {
+        accessToken: json.access_token,
+        refreshToken: json.refresh_token,
+        expiresAt: Date.now() + expiresIn * 1000,
+        username: null,
+      },
+    };
+  }
+  switch (json.error) {
+    case "authorization_pending":
+      return { kind: "pending" };
+    case "slow_down":
+      return { kind: "slow" };
+    case "expired_token":
+      return { kind: "expired" };
+    default:
+      return { kind: "error", message: `Simkl sign-in failed (${json.error ?? `HTTP ${status}`}).` };
   }
 }
 
@@ -45,18 +83,22 @@ export function pollForToken(pin: SimklPin, onUpdate: (result: PollResult) => vo
   let cancelled = false;
   const startedAt = Date.now();
   (async () => {
+    let intervalSec = pin.pollIntervalSec;
     while (!cancelled) {
       if ((Date.now() - startedAt) / 1000 >= pin.expiresIn) {
         if (!cancelled) onUpdate({ kind: "expired" });
         return;
       }
-      const session = await pollOnce(pin.userCode);
+      await new Promise((r) => setTimeout(r, intervalSec * 1000));
       if (cancelled) return;
-      if (session) {
-        onUpdate({ kind: "authorized", session });
+      const step = await pollOnce(pin.deviceCode);
+      if (cancelled) return;
+      if (step.kind === "slow") {
+        intervalSec += SLOW_DOWN_EXTRA_SEC;
+      } else if (step.kind !== "pending") {
+        onUpdate(step);
         return;
       }
-      await new Promise((r) => setTimeout(r, pin.pollIntervalSec * 1000));
     }
   })();
   return {

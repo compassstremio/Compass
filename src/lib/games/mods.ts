@@ -27,7 +27,7 @@ export async function modRequest(params: Params, signal: AbortSignal): Promise<u
     let value: unknown;
     if (isTauri()) value = await invoke("games_modrinth", { query: "", loader: "fabric", game: "", offset: 0, sort: "downloads", ...params });
     else {
-      const response = await fetch(url, { signal: AbortSignal.any([signal, AbortSignal.timeout(20_000)]), headers: { "User-Agent": "Compass-Games/0.9 (https://compass.site)" } });
+      const response = await fetch(url, { signal: AbortSignal.any([signal, AbortSignal.timeout(20_000)]), headers: { "User-Agent": "Compass-Games/0.9 (https://compass.sarl)" } });
       if (!response.ok) throw Error(response.status === 429 ? "mods_rate_limit" : "mods_network");
       const reader = response.body?.getReader(); if (!reader) throw Error("mods_network");
       const chunks: Uint8Array[] = []; let bytes = 0;

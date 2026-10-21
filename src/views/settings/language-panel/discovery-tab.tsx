@@ -52,7 +52,7 @@ export function DiscoveryLanguageTab() {
           <span className="flex flex-wrap items-center gap-2.5">
             <button
               type="button"
-              onClick={() => openUrl("https://github.com/Compasssio/Compass")}
+              onClick={() => openUrl("https://github.com/compassstremio/compass")}
               className={ROW_ACTION}
             >
               <GitHubIcon size={18} />

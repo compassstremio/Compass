@@ -22,7 +22,7 @@ async function load(url: string, signal: AbortSignal, ttl = 600_000, init: Reque
       headers.set("Accept","text/html,application/xhtml+xml;q=0.9,*/*;q=0.8");
       // The native bridge otherwise advertises an old Chrome identity. Identify
       // this public reader honestly when requesting provider HTML.
-      if(typeof window!=="undefined"&&"__TAURI_INTERNALS__" in window)headers.set("User-Agent",`Compass/${APP_VERSION} (+https://compass.site)`);
+      if(typeof window!=="undefined"&&"__TAURI_INTERNALS__" in window)headers.set("User-Agent",`Compass/${APP_VERSION} (+https://compass.sarl)`);
     }
     const response = await safeFetchBytes(url, { ...init, headers, signal: timeout }, 15_000, limit);
     if(response.status===429){const until=guideRetryAt(response.headers.get("retry-after"));cooldown.set(host,until);throw new GuideSourceRateLimit(until);}

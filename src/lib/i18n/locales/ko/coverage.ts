@@ -1,4 +1,4 @@
-const coverage: Record<string, string> = {
+const coverage: Record<string, string> = {
   "Sound descriptions": "소리 설명",
   "Hide sound effects and speaker names": "효과음과 화자 이름 숨기기",
   "Removes bracketed descriptions like [door creaks] and shouted speaker labels like JOHN: while subtitles play, so a release that only ships an SDH track still reads as plain dialogue. Song lyrics, ordinary parentheses and non-Latin scripts are left alone. Skipped on forced and picture-based tracks.": "재생 중인 자막에서 [문이 삐걱거린다] 같은 대괄호 설명과 JOHN: 처럼 대문자로 쓴 화자 이름을 지웁니다. SDH 자막만 들어 있는 릴리스도 일반 대사처럼 읽을 수 있습니다. 가사, 일반 괄호, 라틴 문자가 아닌 문자는 그대로 둡니다. 강제 자막과 이미지 자막에는 적용되지 않습니다.",
@@ -673,6 +673,15 @@ const coverage: Record<string, string> = {
   "NYT Books API key": "NYT Books API 키",
   "Choose whether Compass prefers direct and debrid sources, peer-to-peer torrents, or shows both.":
     "Compass가 직접 및 debrid 소스, P2P 토렌트를 우선할지 또는 둘 다 표시할지 선택합니다.",
+  "Import from Harbor": "Harbor에서 가져오기",
+  "Your Harbor data was already brought over. Import it again to replace what Compass has now.": "Harbor 데이터를 이미 가져왔습니다. 다시 가져오면 현재 Compass 데이터가 교체됩니다.",
+  "Harbor is Compass's former name. Bring over its profiles, settings, lists, keys and connected accounts.": "Harbor는 Compass의 이전 이름입니다. 프로필, 설정, 목록, 키, 연결된 계정을 가져옵니다.",
+  "Import your Harbor data?": "Harbor 데이터를 가져올까요?",
+  "Compass restarts and replaces its current data with your Harbor setup. Close Harbor first.": "Compass가 다시 시작되고 현재 데이터를 Harbor 설정으로 교체합니다. 먼저 Harbor를 닫으세요.",
+  "Restarting...": "다시 시작하는 중...",
+  "Import and restart": "가져오고 다시 시작",
+  "Compass could not start the import. Try again.": "Compass가 가져오기를 시작하지 못했습니다. 다시 시도하세요.",
+  "Nothing is deleted: Compass keeps its current data in a backup folder next to its own, and Harbor stays as it is.": "아무것도 삭제되지 않습니다. Compass는 현재 데이터를 자체 폴더 옆의 백업 폴더에 보관하며, Harbor는 그대로 유지됩니다.",
 };
 
 export default coverage;

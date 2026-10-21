@@ -26,12 +26,12 @@ export function MobileNotice() {
         </p>
       </div>
       <a
-        href="https://github.com/Compasssio/Compass"
+        href="https://github.com/compassstremio/compass"
         target="_blank"
         rel="noreferrer"
         onClick={(event) => {
           event.preventDefault();
-          openUrl("https://github.com/Compasssio/Compass");
+          openUrl("https://github.com/compassstremio/compass");
         }}
         className="flex h-11 items-center justify-center rounded-full bg-elevated px-6 text-[14px] font-semibold text-ink ring-1 ring-edge-soft transition-colors hover:bg-raised"
       >

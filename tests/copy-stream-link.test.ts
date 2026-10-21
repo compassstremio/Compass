@@ -41,6 +41,7 @@ function fixture(
   const input = {
     value: "",
     style: {},
+    setAttribute() {},
     select() {
       calls.push("select");
     },
@@ -48,19 +49,16 @@ function fixture(
       calls.push("remove");
     },
   };
-  const copy = load(
-    "src/components/player/copy-link-button.tsx",
+  const clipboard = load(
+    "src/lib/clipboard-text.ts",
     {
-      react: {},
-      "lucide-react": {},
-      "@/lib/i18n": {},
-      "@/lib/torrent/magnet": magnet,
-      "@/lib/torrent/stremio-stream": torrent,
-      "@tauri-apps/plugin-clipboard-manager": {
-        writeText: async (value: string) => {
+      "@tauri-apps/api/core": {
+        isTauri: () => !!options.native,
+        invoke: async (command: string, { text }: { text: string }) => {
+          assert.equal(command, "plugin:clipboard-manager|write_text");
           calls.push("native");
           if (options.nativeFails) throw new Error("unavailable");
-          copied = value;
+          copied = text;
         },
       },
     },
@@ -79,6 +77,7 @@ function fixture(
               },
       },
       document: {
+        getSelection: () => null,
         createElement: () => input,
         body: {
           appendChild() {
@@ -93,7 +92,15 @@ function fixture(
         },
       },
     },
-  ) as typeof import("../src/components/player/copy-link-button");
+  );
+  const copy = load("src/components/player/copy-link-button.tsx", {
+    react: {},
+    "lucide-react": {},
+    "@/lib/i18n": {},
+    "@/lib/torrent/magnet": magnet,
+    "@/lib/torrent/stremio-stream": torrent,
+    "@/lib/clipboard-text": clipboard,
+  }) as typeof import("../src/components/player/copy-link-button");
   return { ...copy, calls, copied: () => copied };
 }
 
@@ -107,13 +114,20 @@ test("desktop copy uses native clipboard; browser copy avoids native IPC", async
 });
 
 test("clipboard fallback retains legacy WebViews and cleans temporary elements on failure", async () => {
-  const h = fixture({ native: true, nativeFails: true, webFails: true });
+  const h = fixture({ webFails: true });
   assert.equal(await h.copyText("test"), true);
-  assert.deepEqual(h.calls, ["native", "web", "append", "select", "legacy", "remove"]);
+  assert.deepEqual(h.calls, ["web", "append", "select", "legacy", "remove"]);
   assert.equal(h.copied(), "test");
   const unavailable = fixture({ web: false, legacyFails: true });
   assert.equal(await unavailable.copyText("test"), false);
   assert.equal(unavailable.calls.at(-1), "remove");
+});
+
+test("a denied native copy remains a reported failure without invoking browser editing commands", async () => {
+  const h = fixture({ native: true, nativeFails: true });
+  assert.equal(await h.copyText("test"), false);
+  assert.deepEqual(h.calls, ["native"]);
+  assert.equal(h.copied(), "");
 });
 
 test("stream copy retains direct links and creates usable torrent magnets", () => {

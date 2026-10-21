@@ -286,7 +286,7 @@ export function useBpDiscoverRails(count: number): BpDiscoverRail[] {
 
 export function useBpTopPeople(limit: number): CompassRankExplanation[] {
   // Seeded from the snapshot fetchRankList already writes, so the row paints on
-  // the first frame instead of after a compass.site round trip. Desktop has done
+  // the first frame instead of after a compass.sarl round trip. Desktop has done
   // this since top-people-cta; Big Picture wrote the snapshot and never read it,
   // so a television opened Discover to an empty People row every single time.
   const [people, setPeople] = useState<CompassRankExplanation[]>(() => {

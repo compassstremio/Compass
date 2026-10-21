@@ -268,7 +268,7 @@ const catalog12: Record<string, string> = {
   "https://...manifest.json or stremio://...": "https://...manifest.json 또는 stremio://...",
   "https://posters.example.com or a pattern with {id}":
     "https://posters.example.com 또는 {id} 포함 패턴",
-  "https://sync.compass.site": "https://sync.compass.site",
+  "https://sync.compass.sarl": "https://sync.compass.sarl",
   "huge ({width}×{height}px)": "너무 큼({width}×{height}px)",
   "if the first page is 0. Use this when the URL counts pages.":
     "첫 페이지가 0인 경우입니다. URL에서 페이지 번호를 세는 경우 사용합니다.",
@@ -847,7 +847,7 @@ const catalog12: Record<string, string> = {
   "{n} options active": "옵션 {n}개 활성",
   "{n} options#few": "옵션 {n}개#few",
   "{n} options#one": "옵션 {n}개#one",
-  "{n} other Compasses": "다른 Compass {n}개",
+  "{n} other Compasss": "다른 Compass {n}개",
   "{n} pages": "{n}페이지",
   "{n} pages#few": "{n}페이지#few",
   "{n} pages#one": "{n}페이지#one",

@@ -100,7 +100,7 @@ export function render(mount, ctx) {
       back.type = 'button';
       back.className = 'hb-rm-link';
       back.textContent = t('Download Compass again');
-      back.addEventListener('click', () => openExternal('https://compass.site'));
+      back.addEventListener('click', () => openExternal('https://compass.sarl'));
       mount.appendChild(back);
 
       ctx.setFooter({ nextEnabled: true, onNext: () => closeWindow() });

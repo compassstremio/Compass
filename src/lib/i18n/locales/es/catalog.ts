@@ -918,8 +918,8 @@ const catalog: Record<string, string> = {
   "Font tokens": "Tokens de fuente",
   "for {count} more episodes": "durante {count} episodios más",
   "for 1 more episode": "durante 1 episodio más",
-  "For Application URL anything works, for example https://compass.site. TMDB never visits it.":
-    "Para la URL de la aplicación, cualquier valor sirve; por ejemplo, https://compass.site. TMDB nunca la visita.",
+  "For Application URL anything works, for example https://compass.sarl. TMDB never visits it.":
+    "Para la URL de la aplicación, cualquier valor sirve; por ejemplo, https://compass.sarl. TMDB nunca la visita.",
   "Forward {n} seconds#few": "Avanzar {n} segundos",
   "Forward {n} seconds#one": "Avanzar {n} segundos",
   "Frame grab failed": "No se pudo capturar el fotograma",

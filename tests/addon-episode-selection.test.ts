@@ -8,6 +8,7 @@ import ts from "typescript";
 import * as jsx from "react/jsx-runtime";
 import type { Meta } from "../src/lib/cinemeta.ts";
 import { buildStreamIds } from "../src/lib/streams/stream-ids.ts";
+import * as seasonViewPref from "../src/lib/season-view-pref.ts";
 import * as groups from "../src/views/detail/episode-groups.ts";
 
 const read = (path: string) => readFileSync(new URL(`../${path}`, import.meta.url), "utf8");
@@ -47,6 +48,9 @@ function harness(layout: "list" | "grid" | "strip", videos: NonNullable<Meta["vi
     "./episode-layout-toggle": { EpisodeLayoutToggle: "EpisodeLayoutToggle" },
     "./helpers": { isUpcomingDate: () => false },
     "./episode-groups": groups,
+    "@/lib/season-view-pref": seasonViewPref,
+    "./episode-rating-badge": { EpisodeRatingBadge: "EpisodeRatingBadge" },
+    "./use-episode-imdb-ratings": { useEpisodeImdbRatings: () => new Map() },
   };
   const exports: Record<string, any> = {};
   new Function("require", "exports", compile(read("src/views/detail/cinemeta-episodes.tsx")))((id: string) => {

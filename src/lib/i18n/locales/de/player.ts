@@ -132,7 +132,7 @@ const player: Record<string, string> = {
   "HI/SDH": "HI/SDH",
   "HW decode": "Hardwaredekodierung",
   "Compass's streaming server only runs in the desktop app.":
-    "Compasses Streaming-Server läuft nur in der Desktop-App.",
+    "Compasss Streaming-Server läuft nur in der Desktop-App.",
   Hidden: "Ausgeblendet",
   "Hidden by filter: {reason}": "Durch Filter ausgeblendet: {reason}",
   "Hide HI/SDH": "HI/SDH ausblenden",

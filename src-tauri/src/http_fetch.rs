@@ -759,8 +759,15 @@ async fn compass_fetch_inner(
     })
 }
 
-const BACKGROUND_PROVIDER_HOSTS: &[&str] =
-    &["api.theintrodb.org", "api.introdb.app", "api.skipdb.tv"];
+// Friends' reviews are fetched on detail-page load. A Letterboxd challenge must
+// return to the caller instead of opening the "Checking source" window.
+const BACKGROUND_PROVIDER_HOSTS: &[&str] = &[
+    "api.theintrodb.org",
+    "api.introdb.app",
+    "api.skipdb.tv",
+    "letterboxd.com",
+    "www.letterboxd.com",
+];
 
 fn solver_host_allowed(host: &str) -> bool {
     let host = host.trim_end_matches('.').to_ascii_lowercase();
@@ -872,8 +879,40 @@ fn cross_origin_redirect_forwards_body(cross_origin: bool, body: &Option<Vec<u8>
 mod tests {
     use super::{
         apply_redirect_method, cross_origin_redirect_forwards_body, host_is_blocked_literal,
-        is_https_downgrade, is_public_network_ip, same_origin, strip_headers, validate_target,
+        is_https_downgrade, is_public_network_ip, same_origin, solver_host_allowed, strip_headers,
+        validate_target,
     };
+
+    #[test]
+    fn background_metadata_does_not_open_cloudflare_windows() {
+        for host in [
+            "letterboxd.com",
+            "www.letterboxd.com",
+            "LETTERBOXD.COM.",
+            "api.theintrodb.org",
+            "api.introdb.app",
+            "api.skipdb.tv",
+        ] {
+            assert!(!solver_host_allowed(host), "{host}");
+        }
+        assert!(solver_host_allowed("torrentio.strem.fun"));
+    }
+
+    #[test]
+    fn connected_letterboxd_friends_reviews_cannot_open_checking_source() {
+        let url: reqwest::Url =
+            "https://letterboxd.com/fixture/friends/film/practical-magic/reviews/"
+                .parse()
+                .unwrap();
+        for status in [403, 503] {
+            assert!(super::is_cloudflare_challenge(
+                status,
+                Some("challenge"),
+                "<title>Just a moment...</title>",
+            ));
+            assert!(!solver_host_allowed(url.host_str().unwrap()));
+        }
+    }
 
     #[test]
     fn cross_host_redirects_strip_credentials() {

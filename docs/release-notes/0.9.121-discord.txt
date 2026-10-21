@@ -23,7 +23,7 @@
 
 The full details and contributor credits are available in the in-app changelog.
 
--# [STABLE] Download the latest stable [here](https://github.com/Compasssio/Compass/releases)
+-# [STABLE] Download the latest stable [here](https://github.com/compassstremio/compass/releases)
 -# [BETA] Download the latest beta using the in-app updater (Settings --> Advanced --> Updates)
 
 -# Thanks for all the testing and feedback — it really helps us improve.

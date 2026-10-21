@@ -11,9 +11,13 @@ export async function readSettingsFile(): Promise<string | null> {
   }
 }
 
-export async function writeSettingsFile(content: string): Promise<void> {
-  if (!isTauri) return;
+export async function writeSettingsFile(content: string): Promise<boolean> {
+  if (!isTauri) return true;
   try {
     await invoke("settings_write", { content });
-  } catch {}
+    return true;
+  } catch {
+    console.warn("[settings] could not write the settings file; localStorage still holds the changes");
+    return false;
+  }
 }

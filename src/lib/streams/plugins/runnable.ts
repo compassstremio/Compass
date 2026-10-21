@@ -1,4 +1,5 @@
 import { adultContentHidden } from "@/lib/addons-store/adult-filter";
+import { getInstallFeatures } from "@/lib/features/install";
 import { extensionsSupported } from "./extension/bridge";
 import { installedStreamPluginsSync } from "./store";
 import type { InstalledStreamPlugin } from "./types";
@@ -11,8 +12,10 @@ import type { InstalledStreamPlugin } from "./types";
  * the worker runtime that chrome should not have to load. */
 export function runnableStreamPlugins(): InstalledStreamPlugin[] {
   const hideAdult = adultContentHidden();
+  const pluginsInstalled = getInstallFeatures().plugins;
   return installedStreamPluginsSync().filter(
     (p) =>
+      (p.format !== "android-extension" || pluginsInstalled) &&
       p.enabled &&
       !p.repoDisabled &&
       !p.incompatible &&

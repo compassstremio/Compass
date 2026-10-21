@@ -28,6 +28,7 @@ export function useAnimeOrder(
   solo = false,
 ): AnimeOrder | null {
   const t = useT();
+  const metadataLanguage = tmdbLanguageIso();
   const ordering = useEpisodeOrder(imdbId, metaId, provider, seasonType, tvdbKey, !solo);
   const partSeason = solo ? splitFranchiseDisplaySeason(parseKitsuId(metaId)) : null;
   const built = useMemo(
@@ -37,8 +38,8 @@ export function useAnimeOrder(
         ? buildSoloAnimeOrder(episodes, t("Specials"), (s) =>
             t("Season {n}", { n: partSeason ?? s }),
           )
-        : buildAnimeOrder(ordering, episodes, t("Specials"), tmdbLanguageIso()),
-    [solo, ordering, episodes, t, partSeason, metaId],
+        : buildAnimeOrder(ordering, episodes, t("Specials"), metadataLanguage),
+    [solo, ordering, episodes, t, partSeason, metaId, metadataLanguage],
   );
   const [sel, setSel] = useState<string | null>(null);
   const [touched, setTouched] = useState(false);

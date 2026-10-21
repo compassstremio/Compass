@@ -4,6 +4,7 @@ import type {
   AuthResult,
   MediaIdentity,
   MediaServerAdapter,
+  MediaServerCollection,
   MediaServerConnection,
   MediaServerItem,
   MediaServerLibrary,
@@ -18,11 +19,27 @@ import { parseEpisodeSpan } from "@/lib/episode-span";
 
 type ApiItem = Record<string, any>;
 const fields =
-  "ProviderIds,MediaSources,RunTimeTicks,DateCreated,UserData,ParentId,SeriesId,IndexNumber,ParentIndexNumber,ProductionYear,Path";
+  "ProviderIds,MediaSources,RunTimeTicks,DateCreated,UserData,ParentId,SeriesId,IndexNumber,ParentIndexNumber,ProductionYear,Path,ImageTags";
 const ticksMs = (value: unknown) =>
   typeof value === "number" ? Math.round(value / 10_000) : undefined;
 const dateMs = (value: unknown) =>
   typeof value === "string" ? Date.parse(value) || undefined : undefined;
+// The server reports the true pixel height, which for 2.00:1 shows is 960 even
+// though the release is a 1080p source. Prefer the resolution named in the
+// filename (matching what the badges and every other client show) and only fall
+// back to the measured height.
+function resolutionLabel(name: string | undefined, height: number | undefined): string | undefined {
+  const match = name?.match(
+    /(?:^|[^0-9a-z])(2160p|1440p|1080p|1080i|720p|576p|480p|360p|240p|4k|8k|uhd)(?:[^0-9a-z]|$)/i,
+  );
+  if (match) {
+    const token = match[1].toLowerCase();
+    if (token === "4k" || token === "uhd") return "2160p";
+    if (token === "8k") return "4320p";
+    return token;
+  }
+  return height ? `${height}p` : undefined;
+}
 
 function normalized(
   connectionId: string,
@@ -64,6 +81,9 @@ function normalized(
       episode: Number.isFinite(episode) ? episode : undefined,
       episodeEnd: episodeHint?.episodeEnd,
     },
+    posterPath: raw.ImageTags?.Primary
+      ? `Items/${raw.Id}/Images/Primary?tag=${encodeURIComponent(raw.ImageTags.Primary)}&maxHeight=600&quality=90`
+      : undefined,
     versions: (raw.MediaSources ?? []).map((source: ApiItem) => {
       const streams = source.MediaStreams ?? raw.MediaStreams ?? [];
       const video = streams.find((stream: ApiItem) => stream.Type === "Video");
@@ -97,7 +117,7 @@ function normalized(
         audioCodec: audio?.Codec,
         width: video?.Width,
         height: video?.Height,
-        resolution: video?.Height ? `${video.Height}p` : undefined,
+        resolution: resolutionLabel(sourceFilename, video?.Height),
         videoProfile: video?.Profile,
         hdr: /hdr/i.test(videoRange) ? videoRange : undefined,
         dolbyVisionProfile: /dovi|dolby.?vision/i.test(videoRange)
@@ -134,12 +154,27 @@ export class JellyfinEmbyAdapter implements MediaServerAdapter {
   ) {
     this.origin = normalizeServerOrigin(origin);
   }
-  private headers(connection?: MediaServerConnection, token?: string) {
+  private headers(connection?: MediaServerConnection, token?: string): Record<string, string> {
     const auth = token ?? (connection ? mediaServerToken(connection) : null);
-    return {
-      Accept: "application/json",
-      "X-Emby-Authorization": `MediaBrowser Client="Compass", Device="Compass", DeviceId="compass", Version="1"${auth ? `, Token="${auth}"` : ""}`,
-    };
+    const value = `MediaBrowser Client="Compass", Device="Compass", DeviceId="compass", Version="1"${auth ? `, Token="${auth}"` : ""}`;
+    // Jellyfin (and current Emby) authenticate with the standard Authorization
+    // header. The X-Emby-Authorization header is legacy: some Jellyfin
+    // deployments reject it with a 400, so Jellyfin never sends it. Emby still
+    // reads X-Emby-Authorization.
+    return this.provider === "emby"
+      ? { Accept: "application/json", "X-Emby-Authorization": value }
+      : { Accept: "application/json", Authorization: value };
+  }
+  // Playback (mpv) requests are authorised by header, not by the URL. Jellyfin
+  // rejects the X-Emby-Token header and the api_key query param on current
+  // builds, so it uses a comma-free Authorization header (mpv treats commas as
+  // header separators). Emby keeps its X-Emby-Token.
+  private playbackHeaders(connection: MediaServerConnection): Record<string, string> {
+    const token = mediaServerToken(connection);
+    if (!token) return {};
+    return this.provider === "emby"
+      ? { "X-Emby-Token": token }
+      : { Authorization: `MediaBrowser Token="${token}"` };
   }
   async authenticate(input: Record<string, string>): Promise<AuthResult> {
     const response = await mediaServerRequest<ApiItem>(this.origin, "/Users/AuthenticateByName", {
@@ -172,19 +207,67 @@ export class JellyfinEmbyAdapter implements MediaServerAdapter {
       enabled: true,
     }));
   }
-  async synchronize(
+  async collections(connection: MediaServerConnection): Promise<MediaServerCollection[]> {
+    const params = new URLSearchParams({
+      Recursive: "true",
+      IncludeItemTypes: "BoxSet",
+      Fields: "ChildCount,ImageTags",
+      SortBy: "SortName",
+    });
+    const r = await mediaServerRequest<{ Items?: ApiItem[] }>(
+      connection.origin,
+      `/Users/${encodeURIComponent(connection.userId)}/Items?${params}`,
+      { headers: this.headers(connection) },
+    );
+    return (r.body.Items ?? []).map((x) => ({
+      id: x.Id,
+      connectionId: connection.id,
+      name: x.Name ?? "Untitled",
+      childCount: typeof x.ChildCount === "number" ? x.ChildCount : undefined,
+      posterPath: x.ImageTags?.Primary
+        ? `Items/${x.Id}/Images/Primary?tag=${encodeURIComponent(x.ImageTags.Primary)}&maxHeight=600&quality=90`
+        : undefined,
+    }));
+  }
+  async collectionItemIds(
+    connection: MediaServerConnection,
+    collectionId: string,
+  ): Promise<string[]> {
+    const ids: string[] = [];
+    let start = 0;
+    for (;;) {
+      const params = new URLSearchParams({
+        ParentId: collectionId,
+        Recursive: "false",
+        IncludeItemTypes: "Movie,Series",
+        StartIndex: String(start),
+        Limit: "500",
+      });
+      const r = await mediaServerRequest<{ Items?: ApiItem[] }>(
+        connection.origin,
+        `/Users/${encodeURIComponent(connection.userId)}/Items?${params}`,
+        { headers: this.headers(connection) },
+      );
+      const raw = r.body.Items ?? [];
+      ids.push(...raw.map((x) => x.Id));
+      if (raw.length < 500) break;
+      start += raw.length;
+    }
+    return ids;
+  }
+  private async fetchItemsPage(
     connection: MediaServerConnection,
     library: MediaServerLibrary,
-    cursor?: string,
-  ): Promise<SyncPage> {
-    const start = Number(cursor ?? 0);
+    start: number,
+    limit: number,
+  ): Promise<{ raw: ApiItem[]; total: number }> {
     const params = new URLSearchParams({
       ParentId: library.id,
       Recursive: "true",
       IncludeItemTypes: "Movie,Series,Season,Episode",
       Fields: fields,
       StartIndex: String(start),
-      Limit: "500",
+      Limit: String(limit),
       SortBy: "SortName",
     });
     const r = await mediaServerRequest<{ Items?: ApiItem[]; TotalRecordCount?: number }>(
@@ -193,13 +276,45 @@ export class JellyfinEmbyAdapter implements MediaServerAdapter {
       { headers: this.headers(connection) },
     );
     const raw = r.body.Items ?? [];
+    return { raw, total: r.body.TotalRecordCount ?? start + raw.length };
+  }
+  async synchronize(
+    connection: MediaServerConnection,
+    library: MediaServerLibrary,
+    cursor?: string,
+  ): Promise<SyncPage> {
+    const start = Number(cursor ?? 0);
+    const PAGE = 1000;
+    // Fetch one page to learn the total, then a few more at the same time.
+    // Keeps each response small while cutting the wall-clock time of a large
+    // library by roughly the concurrency factor.
+    const first = await this.fetchItemsPage(connection, library, start, PAGE);
+    const total = first.total;
+    const pages = [first];
+    if (first.raw.length === PAGE) {
+      const offsets: number[] = [];
+      for (let index = 1; index < 4; index += 1) {
+        const offset = start + index * PAGE;
+        if (offset >= total) break;
+        offsets.push(offset);
+      }
+      const rest = await Promise.all(
+        offsets.map((offset) => this.fetchItemsPage(connection, library, offset, PAGE)),
+      );
+      pages.push(...rest);
+    }
+    const raw = pages.flatMap((page) => page.raw);
     const items = raw
       .map((x) => normalized(connection.id, library, x))
       .filter((x): x is MediaServerItem => !!x);
-    const total = r.body.TotalRecordCount ?? raw.length;
+    // Advance by what the server actually returned. A batch with no items at
+    // all ends the library (some servers report a TotalRecordCount larger than
+    // the items they return, which would otherwise loop forever), while a short
+    // page keeps the index moving instead of truncating it.
+    const consumed = pages.reduce((sum, page) => sum + page.raw.length, 0);
     return {
       items,
-      cursor: start + raw.length < total ? String(start + raw.length) : undefined,
+      cursor: consumed > 0 && start + consumed < total ? String(start + consumed) : undefined,
       processed: Math.min(total, start + raw.length),
       total,
     };
@@ -275,6 +390,7 @@ export class JellyfinEmbyAdapter implements MediaServerAdapter {
       };
     });
     const token = mediaServerToken(connection) ?? "";
+    const playbackHeaders = this.playbackHeaders(connection);
     if (direct)
       return {
         url: new URL(
@@ -284,7 +400,7 @@ export class JellyfinEmbyAdapter implements MediaServerAdapter {
         protocol: "http",
         direct: true,
         versionId: version.id,
-        headers: { "X-Emby-Token": token },
+        headers: playbackHeaders,
         subtitles,
         effectiveQuality: request.quality,
         decision: "direct-play",
@@ -383,7 +499,7 @@ export class JellyfinEmbyAdapter implements MediaServerAdapter {
       protocol: "hls",
       direct: false,
       versionId: version.id,
-      headers: { "X-Emby-Token": token },
+      headers: playbackHeaders,
       subtitles,
       effectiveQuality: request.quality,
       playbackSessionId: playSessionId,

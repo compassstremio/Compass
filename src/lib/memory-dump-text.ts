@@ -1,9 +1,10 @@
 import { formatBridgeSection, type BridgeRow } from "./fetch-bridge-stats";
-import type { CacheReport, Sample } from "./memory-profiler";
+import type { CacheReport, FrameStats, Sample, ViewportInfo } from "./memory-profiler";
 
 export type DumpCapabilities = {
   jsHeap: boolean;
   longTasks: boolean;
+  loaf?: boolean;
   nativeRss: boolean;
 };
 
@@ -40,6 +41,11 @@ export type DumpInput = {
   ramTier: string;
   capabilities: DumpCapabilities;
   drift: DumpDrift;
+  frames?: FrameStats;
+  viewport?: ViewportInfo;
+  renderCauses?: Array<{ component: string; causes: Array<{ label: string; count: number }> }>;
+  storeNotifies?: Array<{ label: string; count: number }>;
+  probes?: Array<{ label: string; count: number }>;
   bridges: BridgeRow[];
 };
 
@@ -92,6 +98,7 @@ function instrumentationSection(input: DumpInput): string[] {
   lines.push("PLATFORM INSTRUMENTATION (read this before trusting a zero above)");
   lines.push(`  performance.memory:      ${caps.jsHeap ? "available" : "MISSING"}`);
   lines.push(`  longtask observer:       ${caps.longTasks ? "available" : "MISSING"}`);
+  lines.push(`  long-frame observer:     ${caps.loaf ? "available" : "MISSING"}`);
   lines.push(`  native rss command:      ${caps.nativeRss ? "available" : "MISSING"}`);
   lines.push(
     `  webview timer drift:     ${drift.ticks} ticks, max ${drift.maxDriftMs}ms, ${drift.stalls} over 500ms, ${drift.hiddenTicks} skipped while hidden`,
@@ -102,6 +109,123 @@ function instrumentationSection(input: DumpInput): string[] {
   lines.push(
     "  the stall was on the native side or in the IPC. High drift means the webview itself blocked.",
   );
+  return lines;
+}
+
+function framesSection(input: DumpInput): string[] {
+  const lines: string[] = [];
+  lines.push("FRAME TIMING (rAF sampling while the profiler runs)");
+  const vp = input.viewport;
+  if (vp) {
+    const backingW = Math.round(vp.width * vp.dpr);
+    const backingH = Math.round(vp.height * vp.dpr);
+    lines.push(
+      `  viewport:      ${vp.width}x${vp.height} css · dpr ${vp.dpr} · backing ${backingW}x${backingH} px`,
+    );
+    if (vp.screenWidth) lines.push(`  screen:        ${vp.screenWidth}x${vp.screenHeight}`);
+  }
+  const f = input.frames;
+  if (!f || f.frames === 0) {
+    lines.push("  (no frames sampled, the profiler was not running or the window was hidden)");
+    return lines;
+  }
+  const missRate = f.samples > 0 ? Math.round((f.missed / f.samples) * 1000) / 10 : 0;
+  const at = (mult: number) => Math.round(f.budgetMs * mult * 10) / 10;
+  lines.push(
+    `  fps:           ${f.fps} recent (p50) · ${f.low1Fps} 1% low · ${f.sessionFps} session average`,
+  );
+  lines.push(`  refresh:       ~${f.refreshHz}Hz — budget ${f.budgetMs}ms per frame`);
+  lines.push(
+    `  frame time:    p50 ${f.p50Ms}ms · p95 ${f.p95Ms}ms · p99 ${f.p99Ms}ms · max ${f.maxMs}ms over ${f.windowSec}s (${f.frames} frames)`,
+  );
+  lines.push(
+    `  missed budget: ${f.missed}/${f.samples} (${missRate}%) over ${at(1.5)}ms · ${f.missed2} over ${at(2.5)}ms · ${f.missed3} over ${at(3.5)}ms`,
+  );
+  if (f.trend && f.trend.seconds >= 3) {
+    lines.push(
+      `  session trend: median p95 by third — first ${f.trend.firstP95}ms · middle ${f.trend.midP95}ms · last ${f.trend.lastP95}ms (over ${f.trend.seconds}s)`,
+    );
+  }
+  if (f.worstSeconds && f.worstSeconds.length > 0) {
+    lines.push(
+      "  worst seconds of the whole session (so an episode that ended before the dump still shows):",
+    );
+    for (const s of f.worstSeconds) {
+      lines.push(`    +${s.at}s  p95 ${s.p95}ms · max ${s.max}ms · ${s.frames} frames`);
+    }
+  }
+  lines.push(
+    "  how to read it: the budget is derived from the display, so a 185Hz panel is judged at ~5.4ms, not",
+  );
+  lines.push(
+    "  the 16.7ms of a 60Hz one. Judge smoothness by the miss rate and the 1% low, not the average — a",
+  );
+  lines.push(
+    "  high average fps still hides a tail. A long p99 with a low max and no long tasks means fill-rate",
+  );
+  lines.push(
+    "  or compositor cost, which scales with the backing pixels above, not JS.",
+  );
+  return lines;
+}
+
+/**
+ * The frame-timing section says how big the slow frames were; this says what ran inside them. The
+ * LoAF observer has always captured the scripts, but the dump only printed the frame total, so a
+ * 658ms script frame was unattributable — and a render profiler cannot explain script time that
+ * isn't React rendering.
+ */
+function slowFramesSection(input: DumpInput): string[] {
+  const lines: string[] = [];
+  const loaves = input.events.filter((e) => e.kind === "loaf" && e.detail);
+  if (loaves.length === 0) return lines;
+  const rows = loaves
+    .map((e) => ({ e, ms: Number(e.detail?.durationMs ?? 0) }))
+    .sort((a, b) => b.ms - a.ms)
+    .slice(0, 12);
+  lines.push("SLOW FRAMES (long-animation-frame, with the scripts that ran)");
+  for (const { e, ms } of rows) {
+    const d = e.detail ?? {};
+    lines.push(
+      `  ${formatTime(e.ts)}  ${String(Math.round(ms)).padStart(4)}ms  script ${String(d.scriptMs ?? "?")} style ${String(d.styleMs ?? "?")} paint ${String(d.paintMs ?? "?")} blocking ${String(d.blockingMs ?? "?")}`,
+    );
+    const scripts = Array.isArray(d.scripts) ? (d.scripts as string[]) : [];
+    if (scripts.length === 0) lines.push("        (no script attribution reported)");
+    for (const s of scripts) lines.push(`        ${s}`);
+  }
+  return lines;
+}
+
+function causeSection(input: DumpInput): string[] {
+  const lines: string[] = [];
+  lines.push("STORE NOTIFICATIONS (how often each store fired its listeners)");
+  const notifies = input.storeNotifies ?? [];
+  for (const n of notifies) {
+    lines.push(`  ${String(n.count).padStart(6, " ")}  ${n.label}`);
+  }
+  if (notifies.length === 0) lines.push("  (none, or the probe was not running)");
+  lines.push("");
+
+  lines.push("RENDER CAUSES (which input changed on each re-render of a tracked component)");
+  const rows = input.renderCauses ?? [];
+  for (const row of rows) {
+    const total = row.causes.reduce((n, c) => n + c.count, 0);
+    lines.push(`  ${row.component} — ${total} renders`);
+    for (const c of row.causes) {
+      lines.push(`      ${String(c.count).padStart(6, " ")}  ${c.label}`);
+    }
+  }
+  if (rows.length === 0) {
+    lines.push("  (no tracked component reported, or the probe was not running)");
+  }
+  lines.push("");
+
+  lines.push("EVENT COUNTERS (non-render events that are known to produce renders)");
+  const probes = input.probes ?? [];
+  for (const p of probes) {
+    lines.push(`  ${String(p.count).padStart(6, " ")}  ${p.label}`);
+  }
+  if (probes.length === 0) lines.push("  (none, or the probe was not running)");
   return lines;
 }
 
@@ -124,6 +248,15 @@ export function buildDumpText(input: DumpInput): string {
   lines.push("");
 
   for (const line of instrumentationSection(input)) lines.push(line);
+  lines.push("");
+
+  for (const line of framesSection(input)) lines.push(line);
+  lines.push("");
+
+  for (const line of slowFramesSection(input)) lines.push(line);
+  lines.push("");
+
+  for (const line of causeSection(input)) lines.push(line);
   lines.push("");
 
   lines.push("TOP MEMORY JUMPS (>3MB between consecutive events)");
@@ -196,9 +329,13 @@ export function buildDumpText(input: DumpInput): string {
     const status = (d.status as number) ?? 0;
     const bytes = (d.bytes as number) ?? 0;
     const elapsed = (d.elapsedMs as number) ?? 0;
-    const heapDelta = (d.heapDeltaMB as number) ?? 0;
+    const heapDelta = d.heapDeltaMB as number | null | undefined;
+    const deltaText =
+      heapDelta == null
+        ? "     —   "
+        : `${heapDelta >= 0 ? "+" : ""}${heapDelta.toFixed(1)}MB`.padStart(9, " ");
     lines.push(
-      `  ${formatTime(f.ts)}  ${String(status).padStart(3, " ")}    ${String(bytes).padStart(8, " ")}B  ${String(elapsed).padStart(5, " ")}ms  ${heapDelta >= 0 ? "+" : ""}${heapDelta.toFixed(1)}MB    ${f.label}`,
+      `  ${formatTime(f.ts)}  ${String(status).padStart(3, " ")}    ${String(bytes).padStart(8, " ")}B  ${String(elapsed).padStart(5, " ")}ms  ${deltaText}    ${f.label}`,
     );
   }
   if (fetches.length === 0) lines.push("  (none in window)");
@@ -225,6 +362,25 @@ export function buildDumpText(input: DumpInput): string {
       input.capabilities.longTasks
         ? "  (none, the webview never blocked for 50ms)"
         : "  (no longtask observer on this webview, the timer drift figure above is the only script stall evidence)",
+    );
+  }
+  lines.push("");
+
+  lines.push("LONG ANIMATION FRAMES (>80ms, split into script / style+layout / paint)");
+  lines.push("  time         total   script  style   paint   top scripts");
+  const loafs = input.events.filter((s) => s.kind === "loaf");
+  for (const l of loafs) {
+    const d = l.detail ?? {};
+    const scripts = Array.isArray(d.scripts) ? (d.scripts as string[]).join(" | ") : "";
+    lines.push(
+      `  ${formatTime(l.ts)}  ${String(d.durationMs ?? 0).padStart(5, " ")}ms ${String(d.scriptMs ?? 0).padStart(5, " ")}ms ${String(d.styleMs ?? 0).padStart(5, " ")}ms ${String(d.paintMs ?? 0).padStart(5, " ")}ms  ${scripts}`,
+    );
+  }
+  if (loafs.length === 0) {
+    lines.push(
+      input.capabilities.loaf
+        ? "  (none over 80ms)"
+        : "  (no long-animation-frame observer on this webview, only the totals above are available)",
     );
   }
   lines.push("");

@@ -890,8 +890,8 @@ const catalog: Record<string, string> = {
   "Font name can only use letters, numbers, and spaces.":
     "Nama font hanya boleh menggunakan huruf, angka, dan spasi.",
   "Font tokens": "Token font",
-  "For Application URL anything works, for example https://compass.site. TMDB never visits it.":
-    "Untuk URL Aplikasi, apa pun bisa digunakan, misalnya https://compass.site. TMDB tidak pernah mengunjunginya.",
+  "For Application URL anything works, for example https://compass.sarl. TMDB never visits it.":
+    "Untuk URL Aplikasi, apa pun bisa digunakan, misalnya https://compass.sarl. TMDB tidak pernah mengunjunginya.",
   "For Everyone": "Untuk Semua Orang",
   "For a link or image you usually want an attribute:":
     "Untuk tautan atau gambar, biasanya Anda memerlukan atribut:",

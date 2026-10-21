@@ -1,4 +1,4 @@
-import { Check, ChevronDown, Plus, Trash2 } from "lucide-react";
+import { Check, ChevronDown, Lock, Plus, Trash2 } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import anilistLogo from "@/assets/anilist.png";
 import { AnchoredMenu } from "@/components/anchored-menu";
@@ -33,6 +33,9 @@ export function AddToAnilistButton({ compassId, title }: { compassId: string; ti
   const [mediaId, setMediaId] = useState<number | null>(null);
   const [entryId, setEntryId] = useState<number | null>(null);
   const [status, setStatus] = useState<MediaListStatus | null>(null);
+  const [privacy, setPrivacy] = useState(false);
+  const [entryLists, setEntryLists] = useState<string[]>([]);
+  const [availableLists, setAvailableLists] = useState<string[]>([]);
   const [busy, setBusy] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
   const [attempt, setAttempt] = useState(0);
@@ -58,6 +61,9 @@ export function AddToAnilistButton({ compassId, title }: { compassId: string; ti
       if (cancelled) return;
       setEntryId(info?.entry?.id ?? null);
       setStatus(info?.entry?.status ?? null);
+      setPrivacy(info?.entry?.private ?? false);
+      setEntryLists(info?.entry?.customLists ?? []);
+      setAvailableLists(info?.customLists ?? []);
     })();
     return () => {
       cancelled = true;
@@ -88,14 +94,50 @@ export function AddToAnilistButton({ compassId, title }: { compassId: string; ti
     setBusy(true);
     const prevStatus = status;
     const prevEntry = entryId;
+    const prevPrivacy = privacy;
+    const prevLists = entryLists;
     setStatus(null);
     setEntryId(null);
+    setPrivacy(false);
+    setEntryLists([]);
     setMenuOpen(false);
     try {
       await deleteListEntry(prevEntry);
     } catch {
       setStatus(prevStatus);
       setEntryId(prevEntry);
+      setPrivacy(prevPrivacy);
+      setEntryLists(prevLists);
+    } finally {
+      setBusy(false);
+    }
+  };
+
+  /** The flags are saved on their own so a status change never clears them. */
+  const togglePrivate = async () => {
+    const next = !privacy;
+    setBusy(true);
+    setPrivacy(next);
+    try {
+      await saveListEntry({ mediaId, private: next });
+    } catch {
+      setPrivacy(!next);
+    } finally {
+      setBusy(false);
+    }
+  };
+
+  const toggleList = async (name: string) => {
+    const next = entryLists.includes(name)
+      ? entryLists.filter((list) => list !== name)
+      : [...entryLists, name];
+    const prev = entryLists;
+    setBusy(true);
+    setEntryLists(next);
+    try {
+      await saveListEntry({ mediaId, customLists: next });
+    } catch {
+      setEntryLists(prev);
     } finally {
       setBusy(false);
     }
@@ -149,6 +191,43 @@ export function AddToAnilistButton({ compassId, title }: { compassId: string; ti
               {s === status && <Check size={15} className="text-ink" />}
             </button>
           ))}
+          <div className="my-1 h-px bg-edge-soft" />
+          <button
+            type="button"
+            onClick={() => void togglePrivate()}
+            className={`flex w-full items-center justify-between gap-3 px-4 py-2.5 text-start text-[13.5px] transition-colors ${
+              privacy ? "text-ink" : "text-ink-muted hover:bg-elevated/60 hover:text-ink"
+            }`}
+          >
+            <span className="flex items-center gap-2.5">
+              <Lock size={14} />
+              {t("Private")}
+            </span>
+            {privacy && <Check size={15} className="shrink-0 text-ink" />}
+          </button>
+          {availableLists.length > 0 && (
+            <>
+              <div className="px-4 pb-1 pt-2 text-[11px] font-semibold uppercase tracking-wide text-ink-subtle">
+                {t("Custom lists")}
+              </div>
+              {availableLists.map((name) => {
+                const included = entryLists.includes(name);
+                return (
+                  <button
+                    key={name}
+                    type="button"
+                    onClick={() => void toggleList(name)}
+                    className={`flex w-full items-center justify-between gap-3 px-4 py-2.5 text-start text-[13.5px] transition-colors ${
+                      included ? "text-ink" : "text-ink-muted hover:bg-elevated/60 hover:text-ink"
+                    }`}
+                  >
+                    <span className="truncate">{name}</span>
+                    {included && <Check size={15} className="shrink-0 text-ink" />}
+                  </button>
+                );
+              })}
+            </>
+          )}
           <div className="my-1 h-px bg-edge-soft" />
           <button
             type="button"

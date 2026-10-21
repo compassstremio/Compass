@@ -217,6 +217,18 @@ fn native_display(backend: Backend) -> u64 {
     native as u64
 }
 
+// WebKitGTK variables that choose its buffer transport by themselves. Any of
+// them set, to any value (WebKit reads "0" as unset), means the environment has
+// already made that choice. The last two only exist to select the hardware
+// DMA-BUF path, so forcing shared memory on top of them would silently undo
+// them.
+const WEBKIT_TRANSPORT_VARIABLES: [&str; 4] = [
+    "WEBKIT_DISABLE_DMABUF_RENDERER",
+    "WEBKIT_DMABUF_RENDERER_FORCE_SHM",
+    "WEBKIT_FORCE_DMABUF_RENDERER",
+    "WEBKIT_DMABUF_RENDERER_BUFFER_FORMAT",
+];
+
 pub fn configure_linux_graphics() {
     // WebKit only implements transparent backgrounds inside the accelerated
     // compositor (WebKit bug 192305), and with compositing off every layer the
@@ -230,21 +242,54 @@ pub fn configure_linux_graphics() {
         eprintln!("[compass::mpv_linux] COMPASS_LINUX_LEGACY_GFX=1: disabling WebKit accelerated compositing (legacy behaviour)");
         std::env::set_var("WEBKIT_DISABLE_COMPOSITING_MODE", "1");
     }
-    if !std::path::Path::new("/proc/driver/nvidia/version").exists() {
-        return;
-    }
+    // Keyed off the session, not the backend GTK chose: a Wayland session that
+    // falls back to XWayland still presents through the same compositor.
     let wayland = std::env::var("XDG_SESSION_TYPE")
         .map(|v| v.eq_ignore_ascii_case("wayland"))
         .unwrap_or(false)
         || std::env::var("WAYLAND_DISPLAY")
             .map(|v| !v.is_empty())
             .unwrap_or(false);
-    if wayland && std::env::var("__NV_DISABLE_EXPLICIT_SYNC").is_err() {
-        eprintln!(
-            "[compass::mpv_linux] NVIDIA + Wayland detected; setting __NV_DISABLE_EXPLICIT_SYNC=1"
-        );
-        std::env::set_var("__NV_DISABLE_EXPLICIT_SYNC", "1");
+
+    if std::path::Path::new("/proc/driver/nvidia/version").exists() {
+        if wayland && std::env::var("__NV_DISABLE_EXPLICIT_SYNC").is_err() {
+            eprintln!(
+                "[compass::mpv_linux] NVIDIA + Wayland detected; setting __NV_DISABLE_EXPLICIT_SYNC=1"
+            );
+            std::env::set_var("__NV_DISABLE_EXPLICIT_SYNC", "1");
+        }
+        return;
     }
+
+    if !wayland {
+        return;
+    }
+
+    // Hardware DMA-BUF buffers leave the WebKit web process hanging on some
+    // Wayland compositor + Mesa stacks (issue #31: opening the Library tab
+    // froze the window on KDE Plasma with amdgpu). WEBKIT_DISABLE_DMABUF_RENDERER
+    // also avoids it, but it returns before WebKit adds SharedMemory to the
+    // transport set, which leaves the set empty and stops accelerated
+    // compositing altogether: the thing the comment above forbids.
+    // WEBKIT_DMABUF_RENDERER_FORCE_SHM is read after that add and before the
+    // hardware path, so compositing stays on and only the DMA-BUF buffers go.
+    // NVIDIA + Wayland never reaches this point: its failure is explicit sync,
+    // and the variable above keeps it on the hardware path.
+    if let Some(name) = WEBKIT_TRANSPORT_VARIABLES
+        .iter()
+        .copied()
+        .find(|name| std::env::var_os(name).is_some())
+    {
+        eprintln!(
+            "[compass::mpv_linux] {} is set; leaving WebKitGTK's buffer transport as it is",
+            name
+        );
+        return;
+    }
+    eprintln!(
+        "[compass::mpv_linux] non-NVIDIA Wayland detected; setting WEBKIT_DMABUF_RENDERER_FORCE_SHM=1"
+    );
+    std::env::set_var("WEBKIT_DMABUF_RENDERER_FORCE_SHM", "1");
 }
 
 pub fn prepare(mpv_ctx: NonNull<mpv_handle>) -> Result<(), String> {

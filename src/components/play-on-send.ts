@@ -1,5 +1,5 @@
 import { REMOTE_PROTO, REMOTE_WS_PATH, WEB_PORT } from "@/lib/remote/protocol";
-import { pairedCompasses, readTrustFrame, speaksTrust, trustTokenFor } from "@/lib/lan-trust";
+import { pairedCompasss, readTrustFrame, speaksTrust, trustTokenFor } from "@/lib/lan-trust";
 import { compassIdentity, isTauri, type CompassInstance } from "./play-on-lan";
 
 export type PlayOnPayload = {
@@ -215,7 +215,7 @@ async function flushConfig(): Promise<PlayOnConfigReport[]> {
   const config = pendingConfig;
   pendingConfig = null;
   if (!config) return [];
-  const peers = pairedCompasses();
+  const peers = pairedCompasss();
   if (peers.length === 0) return [];
   const self = await selfIdentity();
   const jobs = peers.map(async (peer): Promise<PlayOnConfigReport> => {
@@ -256,9 +256,9 @@ function armConfigFlush(): void {
   }, CONFIG_COALESCE_MS);
 }
 
-export function pushConfigToPairedCompasses(config: PlayOnConfig): Promise<PlayOnConfigReport[]> {
+export function pushConfigToPairedCompasss(config: PlayOnConfig): Promise<PlayOnConfigReport[]> {
   if (typeof window === "undefined" || configEmpty(config)) return Promise.resolve([]);
-  if (pairedCompasses().length === 0) return Promise.resolve([]);
+  if (pairedCompasss().length === 0) return Promise.resolve([]);
   pendingConfig = config;
   const done = new Promise<PlayOnConfigReport[]>((resolve) => {
     waiters.push(resolve);

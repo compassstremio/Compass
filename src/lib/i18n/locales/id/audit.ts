@@ -1642,7 +1642,7 @@ const audit: Record<string, string> = {
   "{n} min lead": "{n} mnt lebih awal",
   "{n} ms round trip": "{n} ms waktu tempuh bolak-balik",
   "{n} not matched": "{n} tidak berhasil dicocokkan",
-  "{n} other Compasses": "{n} Compasses lainnya",
+  "{n} other Compasss": "{n} Compasss lainnya",
   "{n} section fixes. Reset all": "{n} perbaikan pada bagian. Atur ulang semua",
   "{wins} major award wins, {noms} nominations":
     "{wins} kemenangan di penghargaan utama, {noms} nominasi",

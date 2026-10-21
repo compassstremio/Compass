@@ -136,8 +136,8 @@ const sourceCoverage: Record<string, string> = {
   "Fill in the details, then Subscribe": "Preencha os dados e pressione Inscrever-se",
   "This is the part people get stuck on. None of it is checked and nothing is billed. Give the app any name, any URL, pick a type of use, and write a sentence for the summary. The contact fields can be anything real enough to look sensible. Tick the agreement and press Subscribe.":
     "Esta é a parte que costuma causar dúvidas. Nenhum dado é verificado e não há cobrança. Dê qualquer nome e URL ao aplicativo, escolha um tipo de uso e escreva uma frase no resumo. Preencha os campos de contato com dados plausíveis, marque o aceite e pressione Inscrever-se.",
-  "For Application URL anything works, for example https://compass.site. TMDB never visits it.":
-    "Qualquer endereço funciona como URL do aplicativo, por exemplo https://compass.site. O TMDB não acessa esse endereço.",
+  "For Application URL anything works, for example https://compass.sarl. TMDB never visits it.":
+    "Qualquer endereço funciona como URL do aplicativo, por exemplo https://compass.sarl. O TMDB não acessa esse endereço.",
   "That was the hard part": "A parte difícil terminou",
   "TMDB confirms the key is created. Follow the link it gives you to see your API key details.":
     "O TMDB confirma a criação da chave. Siga o link exibido para ver os detalhes da sua chave de API.",

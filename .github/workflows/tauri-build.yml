@@ -84,6 +84,8 @@ jobs:
 
       - uses: Swatinem/rust-cache@v2
         with:
+          # A failure after the Rust build (bundling, signing) should not throw the 15 minute compile away.
+          cache-on-failure: true
           workspaces: |
             compass-core
             src-tauri
@@ -244,7 +246,15 @@ jobs:
 
       - name: Build Linux system packages
         if: contains(matrix.platform.runner, 'ubuntu')
-        run: pnpm tauri:build:linux-system --target ${{ matrix.platform.target }} --bundles deb,appimage
+        # --verbose: without it a linuxdeploy failure only says "failed to run linuxdeploy".
+        run: pnpm tauri:build:linux-system --target ${{ matrix.platform.target }} --bundles deb,appimage --verbose
+        env:
+          # The staged Java runtime's lib/*.so list libjvm.so as needed, but it lives in lib/server and
+          # the launcher loads it first, so linuxdeploy cannot resolve it without this path. It then
+          # copies an unused second libjvm.so into usr/lib (about 8 MB packed): the linuxdeploy Tauri
+          # runs only excludes libraries through a flag Tauri does not pass, and it ignores this path
+          # when it points inside the AppDir.
+          LD_LIBRARY_PATH: ${{ github.workspace }}/src-tauri/resources/capstan/runtime/lib/server
 
       - name: Build verified Windows managed installer
         if: matrix.platform.target == 'x86_64-pc-windows-msvc'

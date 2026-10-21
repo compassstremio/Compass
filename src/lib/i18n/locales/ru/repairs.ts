@@ -92,8 +92,8 @@ const repairs: Record<string, string> = {
   "Export your Compass setup to a single file — pick exactly what goes in. Restore brings back only what the file contains. Your Stremio sign-in is always left out.":
     "Экспортируйте настройки Compass в один файл и выберите, что именно сохранить. При восстановлении вернутся только данные из файла. Вход в Stremio никогда не включается.",
   "Fill in the details, then Subscribe": "Заполните данные и нажмите Subscribe",
-  "For Application URL anything works, for example https://compass.site. TMDB never visits it.":
-    "В поле Application URL подойдёт любой адрес, например https://compass.site. TMDB не будет его открывать.",
+  "For Application URL anything works, for example https://compass.sarl. TMDB never visits it.":
+    "В поле Application URL подойдёт любой адрес, например https://compass.sarl. TMDB не будет его открывать.",
   "Free forever for personal use. No payment, ever.":
     "Бесплатно навсегда для личного использования. Оплата не требуется.",
   "Fresh tomato for 60%+, splat for under.": "Свежий помидор при 60%+, клякса – ниже.",

@@ -1,4 +1,5 @@
 import { compatibleVocalVersion } from "./source-version";
+import { filterMusicSourceCandidates } from "./source-consent";
 import { invoke } from "@tauri-apps/api/core";
 import { withTimeout } from "@/lib/progressive-rows";
 import { loadArtistFreshTracks } from "./artist-releases";
@@ -103,7 +104,11 @@ export function getMusicHealth(): Promise<MusicConnectorHealth[]> {
 }
 
 export function getMusicSourceCandidates(track: MusicTrack): Promise<MusicSourceCandidate[]> {
-  return invoke<MusicSourceCandidate[]>("music_source_candidates", { track }).then(candidates => candidates.filter(candidate => compatibleVocalVersion(track, candidate.track)));
+  return invoke<MusicSourceCandidate[]>("music_source_candidates", { track }).then(candidates =>
+    filterMusicSourceCandidates(
+      candidates.filter(candidate => compatibleVocalVersion(track, candidate.track)),
+    ),
+  );
 }
 
 export function getSpotifyStatus(): Promise<SpotifyStatus> {

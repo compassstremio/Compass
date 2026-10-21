@@ -98,12 +98,7 @@ import {
   library,
   type LibraryItem,
 } from "@/lib/stremio";
-import {
-  clearLocalCw,
-  listLocalCw,
-  localCwVersion,
-  subscribeLocalCw,
-} from "@/lib/local-cw";
+import { clearLocalCw, listLocalCw, localCwVersion, subscribeLocalCw } from "@/lib/local-cw";
 import {
   dismissManualWatched,
   manualWatchedLibraryItems,
@@ -212,26 +207,39 @@ export function AnimeView({ active = true }: { active?: boolean }) {
           };
         });
       })
-      .catch(() => setRowsByKey(prev => ({ ...prev, [key]: { ...prev[key], failed: true } })))
+      .catch(() => setRowsByKey((prev) => ({ ...prev, [key]: { ...prev[key], failed: true } })))
       .finally(() => {
         loadingRef.current.delete(key);
       });
   }, []);
 
-  const retryRow = useCallback((key: string) => {
-    if (loadingRef.current.has(key)) return;
-    const spec = SPECS.find(s => s.key === key);
-    const row = rowsRef.current[key];
-    if (!spec || !row) return;
-    if (row.metas.length > 0) { loadMore(key); return; }
-    loadingRef.current.add(key);
-    setRowsByKey(prev => ({ ...prev, [key]: { ...prev[key], ready: false, failed: false } }));
-    spec.fetcher(1).then(metas => {
-      setRowsByKey(prev => ({ ...prev, [key]: { metas, page: 1, hasMore: metas.length >= ROW_MIN_VISIBLE, ready: true } }));
-    }).catch(() => {
-      setRowsByKey(prev => ({ ...prev, [key]: { ...prev[key], ready: true, failed: true } }));
-    }).finally(() => loadingRef.current.delete(key));
-  }, [loadMore]);
+  const retryRow = useCallback(
+    (key: string) => {
+      if (loadingRef.current.has(key)) return;
+      const spec = SPECS.find((s) => s.key === key);
+      const row = rowsRef.current[key];
+      if (!spec || !row) return;
+      if (row.metas.length > 0) {
+        loadMore(key);
+        return;
+      }
+      loadingRef.current.add(key);
+      setRowsByKey((prev) => ({ ...prev, [key]: { ...prev[key], ready: false, failed: false } }));
+      spec
+        .fetcher(1)
+        .then((metas) => {
+          setRowsByKey((prev) => ({
+            ...prev,
+            [key]: { metas, page: 1, hasMore: metas.length >= ROW_MIN_VISIBLE, ready: true },
+          }));
+        })
+        .catch(() => {
+          setRowsByKey((prev) => ({ ...prev, [key]: { ...prev[key], ready: true, failed: true } }));
+        })
+        .finally(() => loadingRef.current.delete(key));
+    },
+    [loadMore],
+  );
 
   const filterSig = `${settings.animeExcludeOrigins.join(",")}|${settings.animeHideWatchedPicks}`;
   const [heroSeed, setHeroSeed] = useState(() => Math.floor(Math.random() * 0x7fffffff));
@@ -970,11 +978,11 @@ export function AnimeView({ active = true }: { active?: boolean }) {
                         item={item}
                         onDismiss={(it) => {
                           if (it.manualWatched) {
-                            dismissManualWatched(it._id);
+                            dismissManualWatched(it._id, { acknowledged: true });
                             return;
                           }
-                          if (it.local) clearLocalCw(it._id);
-                          dismissCw(it, authKey);
+                          if (it.local) clearLocalCw(it._id, { acknowledged: true });
+                          return dismissCw(it, authKey, { acknowledged: true });
                         }}
                       />
                     ))}
@@ -1046,9 +1054,13 @@ export function AnimeView({ active = true }: { active?: boolean }) {
                 node: r.failed ? (
                   <>
                     <AnimeRowStatus title={specName} onRetry={() => retryRow(spec.key)} />
-                    {r.metas.length > 0 && <Row title="" scrollKey={`anime:${spec.key}`} onViewAll={viewAll}>
-                      {r.metas.map((m, i) => <PickCard key={`${m.id}-${i}`} meta={m} />)}
-                    </Row>}
+                    {r.metas.length > 0 && (
+                      <Row title="" scrollKey={`anime:${spec.key}`} onViewAll={viewAll}>
+                        {r.metas.map((m, i) => (
+                          <PickCard key={`${m.id}-${i}`} meta={m} />
+                        ))}
+                      </Row>
+                    )}
                   </>
                 ) : !r.ready || settling ? (
                   <RowSkeleton title={spec.rank ? rankName : specName} />

@@ -380,8 +380,8 @@ const catalog05: Record<string, string> = {
   "Font name can only use letters, numbers, and spaces.":
     "Nazwa czcionki może zawierać tylko litery, cyfry i spacje.",
   "Font tokens": "Tokeny czcionek",
-  "For Application URL anything works, for example https://compass.site. TMDB never visits it.":
-    "W polu Application URL możesz wpisać dowolny adres, na przykład https://compass.site. TMDB nigdy go nie odwiedza.",
+  "For Application URL anything works, for example https://compass.sarl. TMDB never visits it.":
+    "W polu Application URL możesz wpisać dowolny adres, na przykład https://compass.sarl. TMDB nigdy go nie odwiedza.",
   "For Everyone": "Dla każdego",
   "For a link or image you usually want an attribute:":
     "W przypadku linku lub obrazu zwykle potrzebny jest atrybut:",

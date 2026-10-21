@@ -1,7 +1,7 @@
 {
   "$schema": "https://schema.tauri.app/config/2",
   "productName": "Compass",
-  "version": "0.9.132",
+  "version": "0.9.136",
   "identifier": "app.compass",
   "build": {
     "beforeDevCommand": "pnpm dev",
@@ -51,7 +51,7 @@
         "role": "Viewer"
       }
     ],
-    "createUpdaterArtifacts": false,
+    "createUpdaterArtifacts": true,
     "targets": ["app", "dmg", "deb", "rpm", "appimage", "nsis"],
     "externalBin": ["binaries/yt-dlp", "binaries/ffmpeg", "binaries/ffprobe"],
     "resources": {
@@ -124,8 +124,8 @@
       }
     },
     "updater": {
-      "endpoints": ["https://compass.site/updates/latest.json"],
-      "pubkey": "dW50cnVzdGVkIGNvbW1lbnQ6IG1pbmlzaWduIHB1YmxpYyBrZXk6IEIyNjlEMjU4NjQ4OTM2MjAKUldRZ05vbGtXTkpwc3ZDQnlvZUYyL2VEWHgwODdJa2dkZ2xlNWk3emRWL1V0dXVrcUJlVmhCWEUK",
+      "endpoints": ["https://compass.sarl/updates/latest.json"],
+      "pubkey": "dW50cnVzdGVkIGNvbW1lbnQ6IG1pbmlzaWduIHB1YmxpYyBrZXk6IDc1NzE2RTIzQzgzNDQxNjYKUldSbVFUVElJMjV4ZFhYc21YMHRMbmpGNkI3MnJNbzJmWGtTbXFjaUxsS05YS1kwZk9pZi9TdlkK",
       "windows": {
         "installMode": "passive"
       }

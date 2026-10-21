@@ -3,6 +3,7 @@ import { Music2, Play } from "@/components/icons/music-icons";
 import { useT } from "@/lib/i18n";
 import { searchTyped } from "@/lib/music/catalog";
 import { musicHealthSnapshot } from "@/lib/music/sources";
+import { musicSourceAllowed } from "@/lib/music/source-consent";
 import { musicSourceName } from "@/lib/music/recovery";
 import type { MusicTrack } from "@/lib/music/types";
 import { MusicServiceLogo } from "./music-service-logo";
@@ -21,7 +22,7 @@ async function unmatchedSources(covered: string): Promise<string[]> {
   const health = await musicHealthSnapshot().catch(() => []);
   return health
     .filter((entry) => entry.searchable && entry.playable && entry.health !== "offline")
-    .filter((entry) => !listed.has(entry.id))
+    .filter((entry) => !listed.has(entry.id) && musicSourceAllowed(entry.id))
     .map((entry) => entry.id);
 }
 
@@ -54,7 +55,7 @@ async function searchSources(track: MusicTrack, ids: string[]): Promise<MusicTra
       picked.push(found);
     }
   }
-  return picked;
+  return picked.filter((found) => musicSourceAllowed(found.connectorId));
 }
 
 export function MusicSourcePossible({

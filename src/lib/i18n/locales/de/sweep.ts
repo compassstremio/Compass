@@ -662,13 +662,13 @@ const sweep: Record<string, string> = {
   "Compass tried {n} sources for {title} and none of them played. Usually that means a debrid key has expired, no stream addon is installed yet, or nothing has this title cached.":
     "Compass hat {n} Quellen für {title} ausprobiert, aber keine davon ließ sich abspielen. Meist ist ein Debrid-Schlüssel abgelaufen, noch kein Stream-Add-on installiert oder dieser Titel nirgends zwischengespeichert.",
   "Compass was built in English. Multi-language support is partial, so your addons usually catch what Compass's own filters miss. If you speak another language and want to help, the source is open.":
-    "Compass wurde auf Englisch entwickelt. Die Unterstützung mehrerer Sprachen ist noch unvollständig, daher erfassen deine Add-ons meist, was Compasses eigene Filter übersehen. Wenn du eine andere Sprache sprichst und helfen möchtest, ist der Quellcode offen zugänglich.",
+    "Compass wurde auf Englisch entwickelt. Die Unterstützung mehrerer Sprachen ist noch unvollständig, daher erfassen deine Add-ons meist, was Compasss eigene Filter übersehen. Wenn du eine andere Sprache sprichst und helfen möchtest, ist der Quellcode offen zugänglich.",
   "Compass's built-in HDR to SDR conversion is on. Turn it off in Video tuning to use this instead. Running both double-processes the picture.":
-    "Compasses integrierte HDR-zu-SDR-Konvertierung ist aktiviert. Deaktiviere sie unter „Video-Feinabstimmung“, um stattdessen diese Option zu verwenden. Wenn beide aktiviert sind, wird das Bild doppelt verarbeitet.",
-  "Compass's own bar": "Compasses eigene Leiste",
-  "Compass's own community server": "Compasses eigener Community-Server",
+    "Compasss integrierte HDR-zu-SDR-Konvertierung ist aktiviert. Deaktiviere sie unter „Video-Feinabstimmung“, um stattdessen diese Option zu verwenden. Wenn beide aktiviert sind, wird das Bild doppelt verarbeitet.",
+  "Compass's own bar": "Compasss eigene Leiste",
+  "Compass's own community server": "Compasss eigener Community-Server",
   "Compass's public relay": "Öffentlicher Relay-Server von Compass",
-  "Compasses on your network": "Compass-Instanzen in deinem Netzwerk",
+  "Compasss on your network": "Compass-Instanzen in deinem Netzwerk",
   "Hard outline": "Harte Kontur",
   "Hardware acceleration (hwdec)": "Hardwarebeschleunigung (hwdec)",
   Head: "Kopf",
@@ -804,7 +804,7 @@ const sweep: Record<string, string> = {
   "Leave setup": "Einrichtung verlassen",
   "Leave setup?": "Einrichtung verlassen?",
   "Leave this blank to use Compass's own community server, or enter the address of a server you run yourself.":
-    "Lass dieses Feld leer, um Compasses eigenen Community-Server zu verwenden, oder gib die Adresse eines selbst betriebenen Servers ein.",
+    "Lass dieses Feld leer, um Compasss eigenen Community-Server zu verwenden, oder gib die Adresse eines selbst betriebenen Servers ein.",
   "Let the TV keep its own theme": "Eigenes Design des Fernsehers beibehalten",
   "Letterboxd connection": "Letterboxd-Verbindung",
   "Letterboxd, Trakt, Metacritic, and audience scores.":
@@ -817,7 +817,7 @@ const sweep: Record<string, string> = {
   "Link a title": "Titel verknüpfen",
   "Linked as {username}": "Als {username} verknüpft",
   "Linked to your Compass account.": "Mit deinem Compass-Konto verknüpft.",
-  "Listening for Compasses": "Auf Compass-Instanzen warten",
+  "Listening for Compasss": "Auf Compass-Instanzen warten",
   "Live TV source": "Live-TV-Quelle",
   "Live TV sources": "Live-TV-Quellen",
   "Live action": "Realfilm",
@@ -1187,9 +1187,9 @@ const sweep: Record<string, string> = {
   "Remember your place on show pages": "Position auf Serienseiten merken",
   "Remote control is off on that Compass, so it cannot be driven from here.":
     "Die Fernsteuerung ist auf dieser Compass-Instanz deaktiviert, daher kann sie nicht von hier aus gesteuert werden.",
-  "Remote control is off, so other Compasses can see this one but cannot drive it.":
+  "Remote control is off, so other Compasss can see this one but cannot drive it.":
     "Die Fernsteuerung ist deaktiviert. Andere Compass-Instanzen können diese sehen, aber nicht steuern.",
-  "Remote control is on, so other Compasses on this network can drive this one.":
+  "Remote control is on, so other Compasss on this network can drive this one.":
     "Die Fernsteuerung ist aktiviert, sodass andere Compass-Installationen in diesem Netzwerk diese steuern können.",
   "Remote off": "Fernsteuerung aus",
   Remotes: "Fernbedienungen",
@@ -1840,7 +1840,7 @@ const sweep: Record<string, string> = {
   "{n} of {total} chosen": "{n} von {total} ausgewählt",
   "{n} of {total} connected": "{n} von {total} verbunden",
   "{n} on": "{n} an",
-  "{n} other Compasses": "{n} andere Compass-Instanzen",
+  "{n} other Compasss": "{n} andere Compass-Instanzen",
   "{n} picks, refreshed daily": "{n} Tipps, täglich aktualisiert",
   "{n} recorded winners": "{n} erfasste Gewinner",
   "{n} seeders": "{n} Seeder",

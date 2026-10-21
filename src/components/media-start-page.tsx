@@ -1,10 +1,10 @@
-import { ArrowRight, CalendarRange, FolderOpen, Globe2, PackagePlus, Server, Tv } from "lucide-react";
+import { ArrowRight, CalendarRange, FolderOpen, Globe2, PackagePlus, Radio, Server, Tv } from "lucide-react";
 import type { Ref } from "react";
 import { NavGlyph } from "@/components/icons/nav-glyph";
 import { useT } from "@/lib/i18n";
 import "./media-start-page.css";
 
-type MediaStartKind = "ebook" | "manga" | "live";
+type MediaStartKind = "ebook" | "manga" | "live" | "music";
 
 /** Shared first-run composition; each view retains its existing setup flow. */
 export function MediaStartPage({ kind, onSetup, actionLabel, actionRef }: {
@@ -18,6 +18,10 @@ export function MediaStartPage({ kind, onSetup, actionLabel, actionRef }: {
     { Icon: Tv, title: t("M3U playlist"), text: t("start.live.playlist") },
     { Icon: Globe2, title: t("Xtream codes"), text: t("Server URL plus username and password.") },
     { Icon: CalendarRange, title: t("EPG / XMLTV only"), text: t("start.live.guide") },
+  ] : kind === "music" ? [
+    { Icon: FolderOpen, title: t("Open a folder"), text: t("music.home.filesBody") },
+    { Icon: Radio, title: t("music.connections.streaming"), text: t("music.connect.artistsBody") },
+    { Icon: Server, title: t("music.connections.server"), text: t("start.server") },
   ] : [
     {
       Icon: FolderOpen,
@@ -44,14 +48,14 @@ export function MediaStartPage({ kind, onSetup, actionLabel, actionRef }: {
             <NavGlyph name={kind === "live" ? "livetv" : kind} />
             {t(`nav.${kind}`)}
           </h1>
-          <p>{t(`start.${kind}.description`)}</p>
+          <p>{t(kind === "music" ? "music.hero.connectBody" : `start.${kind}.description`)}</p>
           <button
             ref={actionRef}
             type="button"
             className="media-start-primary rounded-lg bg-ink text-canvas"
             onClick={onSetup}
           >
-            {actionLabel ?? t(kind === "ebook" ? "Set up eBooks" : kind === "manga" ? "Set up a source" : "Connect a provider")}
+            {actionLabel ?? t(kind === "ebook" ? "Set up eBooks" : kind === "manga" || kind === "music" ? "Set up a source" : "Connect a provider")}
             <ArrowRight size={19} className="dir-icon" aria-hidden="true" />
           </button>
         </header>

@@ -5,7 +5,7 @@ import type { PushResponse, PushResult, PushWrite, SyncDoc, SyncStateResponse } 
 /**
  * These paths hang off the authenticated themes API that socialGet/socialPost already
  * carry a bearer for. They deliberately do NOT use COMPASS_SYNC_BASE from
- * lib/config/endpoints: sync.compass.site is the anonymous subtitle autosync crowd
+ * lib/config/endpoints: sync.compass.sarl is the anonymous subtitle autosync crowd
  * database keyed on content hashes, it has no auth and no backup, and the name is a trap.
  */
 const STATE_PATH = "/sync/v1/state";

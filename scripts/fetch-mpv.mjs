@@ -19,18 +19,15 @@ if (process.platform !== "win32") {
   process.exit(0);
 }
 
-// Mirrored as a Compass pre-release so setup keeps working when upstream
-// rotates old tags away. To bump: upload the new shinchiro mpv 7z builds to a
-// Compass release, then update the tag, assets and hashes below.
-const RELEASE = "mpv-20261015-git-492bae0768";
+const RELEASE = "20261010";
 const SPECS = {
   x64: {
-    asset: "mpv-x86_64-20261015-git-492bae0768.7z",
-    sha256: "f9becefe40e2a29d2ce5f3ab231ff094f9cf3e4038ff014cfe4a0c09ad90e79e",
+    asset: "mpv-x86_64-20261010-git-b2c255c13e.7z",
+    sha256: "70a568c046a10f0b365319c4ec5382d8fb37f509615944b7e9932b66e5ccfb25",
   },
   arm64: {
-    asset: "mpv-aarch64-20261015-git-492bae0768.7z",
-    sha256: "0084391b2de928bbe8e4667465bd61ca717d0e17ef71cd2fdc37d3d3f180d470",
+    asset: "mpv-aarch64-20261010-git-b2c255c13e.7z",
+    sha256: "c3aabf7bcc2c7b1350b46571e992437d53164a7f11ff54010d8715a913c80f2f",
   },
 };
 
@@ -60,7 +57,7 @@ function findFile(dir, name) {
   return null;
 }
 
-const url = `https://github.com/Compasssio/Compass/releases/download/${RELEASE}/${spec.asset}`;
+const url = `https://github.com/shinchiro/mpv-winbuild-cmake/releases/download/${RELEASE}/${spec.asset}`;
 const temp = mkdtempSync(join(tmpdir(), "compass-mpv-"));
 
 try {
@@ -76,19 +73,14 @@ try {
 
   const extracted = join(temp, "extracted");
   mkdirSync(extracted);
-  // Prefer 7-Zip. Windows 10+ also ships bsdtar (`tar`), which reads 7z
-  // archives, so fall back to it when 7-Zip is missing or produced nothing.
   try {
     execFileSync("7z", ["x", "-y", archive, `-o${extracted}`], { stdio: "inherit" });
-  } catch {}
-  let mpv = findFile(extracted, "mpv.exe");
-  if (!mpv) {
-    try {
-      execFileSync("tar", ["-xf", archive, "-C", extracted], { stdio: "inherit" });
-    } catch {}
-    mpv = findFile(extracted, "mpv.exe");
+  } catch {
+    throw new Error("[mpv] extraction failed; install 7-Zip and ensure `7z` is on PATH");
   }
-  if (!mpv) throw new Error("[mpv] extraction failed; install 7-Zip, or ensure `tar` (bsdtar) is on PATH");
+
+  const mpv = findFile(extracted, "mpv.exe");
+  if (!mpv) throw new Error("[mpv] mpv.exe was not found in the archive");
   mkdirSync(dirname(destination), { recursive: true });
   copyFileSync(mpv, destination);
   console.log(`[mpv] wrote ${destination}`);

@@ -11,7 +11,7 @@ import {
 export type { FilmSoundtrack } from "./musicbrainz-soundtrack-pick";
 
 const WS = "https://musicbrainz.org/ws/2";
-const AGENT = "Compass/0.9 (https://compass.site)";
+const AGENT = "Compass/0.9 (https://compass.sarl)";
 const TIMEOUT_MS = 8000;
 const MAX_BYTES = 256 * 1024;
 const CACHE_MAX = 120;

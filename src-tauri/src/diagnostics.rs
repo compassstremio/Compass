@@ -1,15 +1,14 @@
 use std::io::{Read, Seek, SeekFrom, Write};
 use std::path::{Path, PathBuf};
-use std::sync::OnceLock;
 use std::time::{SystemTime, UNIX_EPOCH};
 
-use regex::Regex;
 use serde::{Deserialize, Serialize};
 use tauri::{AppHandle, Manager};
 use zip::write::SimpleFileOptions;
 use zip::{CompressionMethod, ZipWriter};
 
-const REDACTED: &str = "[REDACTED]";
+pub use crate::log_privacy::scrub as diagnostics_scrub;
+
 const MAX_BUNDLE_BYTES: u64 = 25 * 1024 * 1024;
 const MAX_MPV_BYTES: usize = 20 * 1024 * 1024;
 const MAX_RUNTIME_BYTES: usize = 4 * 1024 * 1024;
@@ -28,71 +27,6 @@ pub struct CollectInput {
 pub struct CollectResult {
     pub temp_path: String,
     pub bytes: u64,
-}
-
-struct ScrubRules {
-    bearer: Regex,
-    authorization: Regex,
-    storage_key: Regex,
-    key_value: Regex,
-    email: Regex,
-    user_path: Regex,
-    ip_addr: Regex,
-    path_seg: Regex,
-    base64_token: Regex,
-    long_token: Regex,
-}
-
-fn rules() -> &'static ScrubRules {
-    static RULES: OnceLock<ScrubRules> = OnceLock::new();
-    RULES.get_or_init(|| ScrubRules {
-        bearer: Regex::new(r"(?i)bearer\s+[A-Za-z0-9._~+/=\-]{8,}").unwrap(),
-        authorization: Regex::new(
-            r#"(?i)(authorization"?\s*[:=]\s*"?)(bearer\s+|basic\s+)?([^"'\s,;&}\)]+)"#,
-        )
-        .unwrap(),
-        storage_key: Regex::new(
-            r#"(?i)(compass\.(?:theme-session|session\.token|auth(?:\.[A-Za-z0-9_.-]+)?))("?\s*[:=]\s*"?)([^"'\s,;&}\)]+)"#,
-        )
-        .unwrap(),
-        key_value: Regex::new(
-            r#"(?i)(auth[_-]?key|api[_-]?key|access[_-]?token|refresh[_-]?token|session[_-]?token|client[_-]?secret|secret|token|password|passwd|pwd)("?\s*[:=]\s*"?)([^"'\s,;&}\)]+)"#,
-        )
-        .unwrap(),
-        email: Regex::new(r"(?i)[A-Za-z0-9._%+\-]+@[A-Za-z0-9.\-]+\.[A-Za-z]{2,}").unwrap(),
-        user_path: Regex::new(r#"(?i)([A-Za-z]:[\\/]+Users[\\/]+|/Users/|/home/)([^\\/\s"']+)"#)
-            .unwrap(),
-        ip_addr: Regex::new(r"\b(?:\d{1,3}\.){3}\d{1,3}\b").unwrap(),
-        path_seg: Regex::new(r"(/)([A-Za-z0-9_+=\-]{12,})").unwrap(),
-        base64_token: Regex::new(r"[A-Za-z0-9+/]{32,}={0,2}").unwrap(),
-        long_token: Regex::new(r"[A-Za-z0-9_\-]{20,}").unwrap(),
-    })
-}
-
-pub fn diagnostics_scrub(text: &str) -> String {
-    let r = rules();
-    let step1 = r
-        .bearer
-        .replace_all(text, |_: &regex::Captures| format!("Bearer {REDACTED}"));
-    let step2 = r.authorization.replace_all(&step1, |c: &regex::Captures| {
-        format!("{}{}{}", &c[1], &c[2], REDACTED)
-    });
-    let step3 = r.storage_key.replace_all(&step2, |c: &regex::Captures| {
-        format!("{}{}{}", &c[1], &c[2], REDACTED)
-    });
-    let step4 = r.key_value.replace_all(&step3, |c: &regex::Captures| {
-        format!("{}{}{}", &c[1], &c[2], REDACTED)
-    });
-    let step5 = r.email.replace_all(&step4, "<email>");
-    let step6 = r
-        .user_path
-        .replace_all(&step5, |c: &regex::Captures| format!("{}<user>", &c[1]));
-    let step7 = r.ip_addr.replace_all(&step6, "<ip>");
-    let step8 = r.path_seg.replace_all(&step7, |c: &regex::Captures| {
-        format!("{}{}", &c[1], REDACTED)
-    });
-    let step9 = r.base64_token.replace_all(&step8, REDACTED);
-    r.long_token.replace_all(&step9, REDACTED).into_owned()
 }
 
 fn read_text_capped(path: &Path, max_bytes: usize) -> Option<String> {
@@ -274,8 +208,8 @@ mod tests {
     #[test]
     fn redacts_stremio_authkey_param() {
         let out = diagnostics_scrub("https://api.strem.io/getUser?authKey=af93kd0slQ92mfPzz1&x=1");
-        assert!(out.contains("authKey=[REDACTED]"));
-        assert!(out.contains("&x=1"));
+        assert!(out.contains("api.strem.io/[REDACTED]"));
+        assert!(!out.contains("authKey="));
         assert!(!out.contains("af93kd0slQ92mfPzz1"));
     }
 

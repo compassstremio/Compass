@@ -37,7 +37,10 @@ export type MediaServerConnection = {
   priority: number;
   createdAt: number;
   refreshInterval: MediaServerRefreshInterval;
+  /** @deprecated superseded by refreshEveryValue/refreshEveryUnit. */
   refreshEveryDays?: number;
+  refreshEveryValue?: number;
+  refreshEveryUnit?: RefreshUnit;
   lastSyncAt?: number;
   lastSyncResult?: { ok: boolean; message: string; at: number };
   enabledLibraryIds?: string[];
@@ -51,12 +54,23 @@ export type MediaServerRefreshInterval =
   | "custom"
   | "manual";
 
+export type RefreshUnit = "minutes" | "hours" | "days" | "weeks";
+
 export type MediaServerLibrary = {
   id: string;
   connectionId: string;
   name: string;
   kind: MediaKind | "mixed";
   enabled: boolean;
+};
+
+export type MediaServerCollection = {
+  id: string;
+  connectionId: string;
+  name: string;
+  childCount?: number;
+  /** Primary-image path on the server (relative to its origin). */
+  posterPath?: string;
 };
 
 export type MediaServerVersion = {
@@ -118,6 +132,9 @@ export type MediaServerTitle = {
   libraryIds: string[];
   episodeCount: number;
   versionCount: number;
+  /** Path to this title's Primary image on the owning server (relative to its origin). */
+  posterPath?: string;
+  posterConnectionId?: string;
   addedAt?: number;
   progress?: MediaServerProgress;
 };
@@ -151,6 +168,8 @@ export type MediaServerItem = {
   year?: number;
   identity: MediaIdentity;
   versions: MediaServerVersion[];
+  /** Primary-image path (relative to the connection origin), when the server has one. */
+  posterPath?: string;
   progress?: MediaServerProgress;
   addedAt?: number;
   updatedAt: number;
@@ -194,6 +213,13 @@ export interface MediaServerAdapter {
     library: MediaServerLibrary,
     cursor?: string,
   ): Promise<SyncPage>;
+  /** Server-side collections (Jellyfin/Emby BoxSets), when supported. */
+  collections?(connection: MediaServerConnection): Promise<MediaServerCollection[]>;
+  /** Ids of the items inside a collection, for filtering the synced library. */
+  collectionItemIds?(
+    connection: MediaServerConnection,
+    collectionId: string,
+  ): Promise<string[]>;
   lookup(connection: MediaServerConnection, identity: MediaIdentity): Promise<MediaServerItem[]>;
   playback(
     connection: MediaServerConnection,

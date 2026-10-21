@@ -1,9 +1,8 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1320 360" width="1320" height="360" role="img" aria-label="Compass">
-  <g transform="translate(24,22) scale(0.31)">
-    <circle cx="512" cy="512" r="440" fill="none" stroke="#e0a33e" stroke-width="48"/>
-    <g fill="#e0a33e"><rect x="492" y="120" width="40" height="84" rx="12"/><rect x="492" y="820" width="40" height="84" rx="12"/><rect x="120" y="492" width="84" height="40" rx="12"/><rect x="820" y="492" width="84" height="40" rx="12"/></g>
-    <g transform="rotate(45 512 512)"><polygon points="512,190 602,512 422,512" fill="#e8ab42"/><polygon points="512,834 602,512 422,512" fill="#f1ebe0"/></g>
-    <circle cx="512" cy="512" r="38" fill="none" stroke="#e0a33e" stroke-width="18"/>
+  <g transform="translate(18,30) scale(0.3472)">
+    <path fill="#000" fill-rule="evenodd" d="M432 5a431 426.5 0 1 0 0 853a431 426.5 0 1 0 0-853Zm0 41a390 385.5 0 1 1 0 771a390 385.5 0 1 1 0-771Z" />
+    <path fill="#000" d="M412 30h44v106h-44ZM412 725h44v110h-44ZM26 415h95v40H26ZM744 415h95v40h-95Z" />
+    <path fill="#000" fill-rule="evenodd" d="M674 206 485 487 202 651 381 382ZM432 400a37 37 0 1 0 0 74a37 37 0 1 0 0-74Z" />
   </g>
-  <text x="389" y="250" font-family="Fraunces, 'Iowan Old Style', Georgia, 'Times New Roman', serif" font-size="218" font-weight="600" letter-spacing="-5" fill="#16181d">Compass</text>
+  <text x="389" y="250" font-family="Fraunces, 'Iowan Old Style', Georgia, 'Times New Roman', serif" font-size="218" font-weight="600" letter-spacing="-5" fill="#000">Compass</text>
 </svg>

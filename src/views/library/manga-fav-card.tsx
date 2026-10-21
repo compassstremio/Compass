@@ -6,6 +6,7 @@ import { resolveMangaOpen } from "@/lib/manga/open-resolve";
 import { useMangaFavorites, type MangaFavEntry } from "@/lib/manga-favorites";
 import { useT } from "@/lib/i18n";
 import { useView } from "@/lib/view";
+import { useMangaContext } from "@/lib/use-manga-context";
 
 export function MangaFavCard({ entry }: { entry: MangaFavEntry }) {
   const t = useT();
@@ -24,7 +25,7 @@ export function MangaFavCard({ entry }: { entry: MangaFavEntry }) {
     setBusy(true);
     setMissing(false);
     const resolved = await resolveMangaOpen({
-      id: entry.id,
+      id: entry.sourceId && !entry.id.includes("::") ? `${entry.sourceId}::${entry.id}` : entry.id,
       title,
       altTitle: entry.altTitle,
     });
@@ -47,9 +48,17 @@ export function MangaFavCard({ entry }: { entry: MangaFavEntry }) {
     }
     openManga(resolved.id);
   };
+  const context = useMangaContext(
+    { ...entry, sourceId: entry.sourceId ?? (entry.id.includes("::") ? undefined : "") },
+    {
+      open,
+      disabled: busy,
+    },
+  );
 
   return (
     <button
+      ref={context.ref}
       type="button"
       onClick={() => void open()}
       disabled={busy}

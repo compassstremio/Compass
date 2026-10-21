@@ -220,8 +220,8 @@ const catalog10: Record<string, string> = {
   "TMDB API key": "TMDB API 키",
   "TMDB API key (v3)": "TMDB API 키(v3)",
   "TMDB API key, v3 auth": "TMDB API 키, v3 인증",
-  "TMDB asks for an app URL when you create the key. Put any URL at all, like https://compass.app. The only thing you need back is the API key.":
-    "TMDB에서 키를 만들 때 앱 URL을 요구합니다. https://compass.app처럼 아무 URL이나 입력하세요. 필요한 것은 API 키뿐입니다.",
+  "TMDB asks for an app URL when you create the key. Put any URL at all, like https://compass.sarl. The only thing you need back is the API key.":
+    "TMDB에서 키를 만들 때 앱 URL을 요구합니다. https://compass.sarl처럼 아무 URL이나 입력하세요. 필요한 것은 API 키뿐입니다.",
   "TMDB asks what the key is for. Choose Yes, this is for my own personal use only.":
     "TMDB에서 키의 용도를 묻습니다. Yes, this is for my own personal use only.를 선택하세요.",
   "TMDB confirms the key is created. Follow the link it gives you to see your API key details.":

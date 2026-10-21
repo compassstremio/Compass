@@ -349,8 +349,8 @@ const catalog: Record<string, string> = {
   "Couldn't reach Trakt. Check your connection and try again.":
     "Tidak dapat menghubungi Trakt. Periksa koneksi Anda lalu coba lagi.",
   "Couldn't reach Trakt. Try refreshing.": "Tidak dapat menghubungi Trakt. Coba muat ulang.",
-  "Couldn't reach compass.site to load earlier builds. Check your connection and try again.":
-    "Tidak dapat menghubungi compass.site untuk memuat build sebelumnya. Periksa koneksi Anda lalu coba lagi.",
+  "Couldn't reach compass.sarl to load earlier builds. Check your connection and try again.":
+    "Tidak dapat menghubungi compass.sarl untuk memuat build sebelumnya. Periksa koneksi Anda lalu coba lagi.",
   "Couldn't reach that pack": "Tidak dapat menghubungi paket tersebut",
   "Couldn't reach that pack (HTTP {n})": "Tidak dapat menghubungi paket tersebut (HTTP {n})",
   "Couldn't reach the update server. Try again in a moment.":

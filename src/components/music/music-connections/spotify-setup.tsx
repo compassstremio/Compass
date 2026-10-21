@@ -11,6 +11,7 @@ import {
   startSpotifyDevicePairing,
   type SpotifyDevicePrompt,
 } from "@/lib/music/spotify-setup";
+import { guardMusicSource } from "@/lib/music/source-consent";
 import { openUrl } from "@/lib/window";
 
 function text(reason: unknown): string {
@@ -75,6 +76,7 @@ function SpotifyDevicePairing({
   };
 
   const start = () => {
+    if (!guardMusicSource("spotify", start)) return;
     setBusy(true);
     setFailure(null);
     setCopyState("idle");

@@ -10,7 +10,7 @@ import { stripArrowKeys } from "./shared";
 import { SButton } from "./ui";
 
 const KEY = "compass.build.rating.v1";
-const REPO_ISSUE = "https://github.com/Compasssio/Compass/issues/new";
+const REPO_ISSUE = "https://github.com/compassstremio/compass/issues/new";
 
 const QUAL =
   "inline-flex h-[22px] shrink-0 items-center rounded-[6px] px-2 text-[13px] font-bold uppercase leading-[17px] tracking-[0.72px]";

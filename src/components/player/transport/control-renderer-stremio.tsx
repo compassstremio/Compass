@@ -33,6 +33,7 @@ import { DownloadButton } from "./download-button";
 import { Tooltip } from "./tooltip";
 import { DvrButton } from "./dvr-button";
 import { SpeedMenu } from "./speed-menu";
+import { ChapterMenu } from "./chapter-menu";
 import { AspectMenu } from "./aspect-menu";
 import { Anime4kMenu } from "./anime4k-menu";
 import { ShaderMenu } from "./shader-menu";
@@ -108,6 +109,7 @@ export type StremioRenderCtx = {
   setSubtitleMenuOpen: (v: boolean) => void;
   setSpeedMenuOpen: (v: boolean) => void;
   setAspectMenuOpen: (v: boolean) => void;
+  setChapterMenuOpen: (v: boolean) => void;
   cropMode?: string;
   onCropMode?: (id: string) => void;
   setAnime4kMenuOpen: (v: boolean) => void;
@@ -115,6 +117,7 @@ export type StremioRenderCtx = {
   onAnime4kMode?: (id: string) => void;
   anime4kAvailable?: boolean;
   onPlayPause: () => void;
+  onSeek: (sec: number) => void;
   onMute: () => void;
   onVolume: (v: number) => void;
   onAudio: (id: string) => void;
@@ -371,6 +374,16 @@ export function RenderedStremioControl({
           onRate={ctx.onRate}
           sleep={ctx.sleep}
           onOpenChange={ctx.setSpeedMenuOpen}
+        />
+      );
+    case "chapter-menu":
+      if (ctx.snap.chapters.length === 0) return null;
+      return (
+        <ChapterMenu
+          chapters={ctx.snap.chapters}
+          positionSec={ctx.snap.positionSec}
+          onSeek={ctx.onSeek}
+          onOpenChange={ctx.setChapterMenuOpen}
         />
       );
     case "aspect-menu":

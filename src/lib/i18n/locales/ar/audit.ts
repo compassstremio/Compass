@@ -19,8 +19,8 @@ const audit: Record<string, string> = {
     "أكّد مرة أخرى أن الاستخدام شخصي، ثم حدّد مربع الموافقة على شروط API.",
   "Copy your API Key": "انسخ مفتاح API",
   "Fill in the details, then Subscribe": "أدخل التفاصيل، ثم اضغط «اشتراك»",
-  "For Application URL anything works, for example https://compass.site. TMDB never visits it.":
-    "يمكنك إدخال أي عنوان في حقل Application URL، مثل https://compass.site. لن يزور TMDB هذا العنوان.",
+  "For Application URL anything works, for example https://compass.sarl. TMDB never visits it.":
+    "يمكنك إدخال أي عنوان في حقل Application URL، مثل https://compass.sarl. لن يزور TMDB هذا العنوان.",
   "Free forever for personal use. No payment, ever.":
     "مجاني دائمًا للاستخدام الشخصي. لا يتطلب أي دفع.",
   "Get your free TMDB key": "احصل على مفتاح TMDB المجاني",

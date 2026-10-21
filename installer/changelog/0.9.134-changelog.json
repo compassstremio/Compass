@@ -1,0 +1,28 @@
+{
+  "channel": "stable",
+  "pub_date": "2026-10-18T21:58:21Z",
+  "notes": {
+    "0.9.134": {
+      "title": "Compass 0.9.134",
+      "intro": "Compass 0.9.134 is now on the stable channel, with the fixes and improvements tested in recent betas.",
+      "sections": [
+        {
+          "heading": "Improvements",
+          "items": [
+            "Skip intro now uses TheIntroDB's new API for more reliable intro and recap detection.",
+            "Profile badges show readable names, for example \"theme creator\" instead of \"theme_creator\".",
+            "Loading screens show the Compass mark instead of the old boat."
+          ]
+        },
+        {
+          "heading": "Fixes",
+          "items": [
+            "The sidebar brand lines up correctly in right-to-left languages.",
+            "Updated the Discord invite link.",
+            "Updates are signed with a new key and delivered from Compass's own servers."
+          ]
+        }
+      ]
+    }
+  }
+}

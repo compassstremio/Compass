@@ -103,6 +103,7 @@ export function VariantRow({
             lang: track.lang,
             format: track.format ?? subExt(track),
             downloadAuth: track.downloadAuth,
+            localTrusted: track.localTrusted === true,
             label: tr("Subtitle"),
           })
       : undefined,

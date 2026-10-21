@@ -9,6 +9,8 @@ import { fetchUserRatings } from "@/lib/social/ratings-api";
 import type { PublicRating, RatingCounts } from "@/lib/ratings/types";
 import { timeAgo } from "@/views/profile/profile-bits";
 import { useProfileTitle } from "@/views/profile/use-profile-title";
+import { profileMediaMeta } from "@/lib/social/profile-media-meta";
+import { useTitleContext } from "@/components/context-menu/use-title-context";
 
 const TABS: Array<{ id: string; label: string; countKey: keyof RatingCounts }> = [
   { id: "all", label: "All", countKey: "total" },
@@ -94,9 +96,15 @@ export function UserRatings({
   const loadMore = useCallback(async () => {
     const current = request.current;
     if (
-      !cursor || !current || current.loading || current.more ||
-      current.handle !== handle || current.type !== type || current.controller.signal.aborted
-    ) return;
+      !cursor ||
+      !current ||
+      current.loading ||
+      current.more ||
+      current.handle !== handle ||
+      current.type !== type ||
+      current.controller.signal.aborted
+    )
+      return;
     current.more = true;
     setMore(true);
     try {
@@ -154,7 +162,9 @@ export function UserRatings({
                 }`}
               >
                 {t(tab.label)}
-                <span className={`tabular-nums ${active ? "text-canvas/70" : "text-ink-subtle"}`}>{n}</span>
+                <span className={`tabular-nums ${active ? "text-canvas/70" : "text-ink-subtle"}`}>
+                  {n}
+                </span>
               </button>
             );
           })}
@@ -209,21 +219,36 @@ function RatingRow({
     ? () => onOpenMeta(r.itemKey, r.mediaType, { name: media.title, poster: media.poster })
     : undefined;
 
+  const onContextMenu = useTitleContext(
+    profileMediaMeta(r.itemKey, r.mediaType, { name: media.title, poster: media.poster }),
+    media.poster,
+  );
   return (
-    <div ref={media.ref} className="flex gap-4 rounded-2xl border border-edge-soft bg-canvas/40 p-3.5">
+    <div
+      ref={media.ref}
+      className="flex gap-4 rounded-2xl border border-edge-soft bg-canvas/40 p-3.5"
+    >
       <button
         type="button"
         onClick={open}
+        onContextMenu={onContextMenu}
         disabled={!open}
         className="w-16 shrink-0 disabled:cursor-default"
       >
-        <Poster src={media.poster} seed={r.title} ratio="portrait" lazy className="rounded-[8px] ring-1 ring-edge-soft" />
+        <Poster
+          src={media.poster}
+          seed={r.title}
+          ratio="portrait"
+          lazy
+          className="rounded-[8px] ring-1 ring-edge-soft"
+        />
       </button>
       <div className="min-w-0 flex-1">
         <div className="flex items-start justify-between gap-3">
           <button
             type="button"
             onClick={open}
+            onContextMenu={onContextMenu}
             disabled={!open}
             className="truncate text-start text-[15px] font-semibold text-ink hover:underline disabled:cursor-default disabled:no-underline"
           >

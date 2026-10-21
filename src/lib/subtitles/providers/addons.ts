@@ -1,5 +1,6 @@
 import { addonAccepts, type Addon } from "@/lib/addons";
-import { safeFetch } from "@/lib/safe-fetch";
+import { isLocalNetworkUrl } from "@/lib/local-network";
+import { safeFetch as fetch, safeFetchLocal } from "@/lib/safe-fetch";
 import { dlog } from "@/lib/debug";
 import type { SubResult, SubSearchQuery } from "../types";
 import { isPlausibleLang, normalizeLang } from "../language";
@@ -8,7 +9,7 @@ import {
   classifyProviderSubtitleMetadata,
   type ProviderSubtitleFlags,
 } from "../provider-classification";
-import { isSafeProviderSubtitleUrl } from "../provider-url";
+import { isLocalAddonSubtitleUrl, isSafeProviderSubtitleUrl } from "../provider-url";
 import {
   inferSubtitleUpstreamProvider,
   subtitleContextTitle,
@@ -92,9 +93,13 @@ function extraSegment(q: SubSearchQuery): string {
   return parts.length > 0 ? `/${parts.join("&")}` : "";
 }
 
-async function fetchAddonSubtitles(url: string, addonName: string): Promise<RawAddonSub[]> {
+async function fetchAddonSubtitles(
+  url: string,
+  addonName: string,
+  doFetch: typeof fetch = fetch,
+): Promise<RawAddonSub[]> {
   dlog(`[addons] Fetching subtitles from ${addonName}`);
-  const res = await safeFetch(url, { headers: { Accept: "application/json" } });
+  const res = await doFetch(url, { headers: { Accept: "application/json" } });
   if (!res.ok) {
     dlog(`[addons] ${addonName} returned ${res.status}`);
     return [];
@@ -114,15 +119,20 @@ async function callOne(
 ): Promise<RawAddonSub[]> {
   const base = transportBase(addon.transportUrl);
   const url = `${base}/subtitles/${type}/${id}${extra}.json`;
+  // A self-hosted addon lives on loopback, which the guarded bridge fetch
+  // rejects outright ("blocked internal target"). Only a URL the user installed
+  // themselves opts into local networking, so public addons keep the
+  // DNS-rebinding guard.
+  const doFetch = isLocalNetworkUrl(base) ? safeFetchLocal : fetch;
   const startedAt = Date.now();
   try {
     if (!extra) {
-      return await fetchAddonSubtitles(url, addon.manifest.name);
+      return await fetchAddonSubtitles(url, addon.manifest.name, doFetch);
     }
 
     const enrichedBudget = Math.min(4_000, Math.max(1_500, Math.floor(timeoutMs / 3)));
     const enriched = await withSubtitleTimeout(
-      fetchAddonSubtitles(url, addon.manifest.name),
+      fetchAddonSubtitles(url, addon.manifest.name, doFetch),
       enrichedBudget,
       [],
     );
@@ -133,7 +143,7 @@ async function callOne(
     const bareUrl = `${base}/subtitles/${type}/${id}.json`;
     dlog(`[addons] ${addon.manifest.name} retrying without stream hints`);
     return await withSubtitleTimeout(
-      fetchAddonSubtitles(bareUrl, addon.manifest.name),
+      fetchAddonSubtitles(bareUrl, addon.manifest.name, doFetch),
       remaining,
       [],
     );
@@ -197,9 +207,12 @@ export async function searchAddons(
   const displayTitle = subtitleContextTitle(q);
   settled.forEach((subs, i) => {
     const addonName = targets[i].addon.manifest.name;
+    const addonBase = transportBase(targets[i].addon.transportUrl);
     for (let idx = 0; idx < subs.length; idx++) {
       const s = subs[idx];
-      if (!s.url || !isSafeProviderSubtitleUrl(s.url) || !isPlausibleLang(s.lang)) continue;
+      if (!s.url || !isPlausibleLang(s.lang)) continue;
+      const localTrusted = isLocalAddonSubtitleUrl(s.url, addonBase);
+      if (!localTrusted && !isSafeProviderSubtitleUrl(s.url)) continue;
       // Include addon name and index to ensure unique IDs across different addons
       const uniqueId = s.id
         ? `${addonName.toLowerCase().replace(/[^a-z0-9]/g, "-")}-${s.id}`
@@ -218,6 +231,7 @@ export async function searchAddons(
         fps: subtitleFpsFromMetadata(s.fps, s.m),
         author: s.author?.trim() || s.uploader?.trim() || undefined,
         ...classification,
+        ...(localTrusted ? { localTrusted: true } : {}),
         upstreamProvider: inferSubtitleUpstreamProvider(
           s.provider,
           s.source,

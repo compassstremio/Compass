@@ -1,5 +1,9 @@
 import { useSyncExternalStore } from "react";
 import { invoke } from "@tauri-apps/api/core";
+import {
+  musicPlaybackSourceAllowed,
+  musicSourceAllowed,
+} from "./source-consent";
 import { appDataDir, audioDir, join } from "@tauri-apps/api/path";
 import { exists, mkdir, remove } from "@tauri-apps/plugin-fs";
 import { revealItemInDir } from "@tauri-apps/plugin-opener";
@@ -153,7 +157,11 @@ export async function downloadMusic(
 ): Promise<void> {
   const prior = musicDownloadFor(track);
   if (prior?.status === "downloading" || prior?.status === "done") return;
-  if (track.connectorId === "spotify" || track.connectorId === "local")
+  if (
+    !musicPlaybackSourceAllowed(track) ||
+    track.connectorId === "spotify" ||
+    track.connectorId === "local"
+  )
     throw new Error("music.download.unsupported");
   const id = prior?.id ?? crypto.randomUUID();
   const { playbackUrl: _url, ...metadata } = track;
@@ -177,6 +185,7 @@ export async function downloadMusic(
         const preferred = readMusicPreference("compass.music.preferred-source.v1");
         const playable = candidates.filter(
           (candidate) =>
+            musicSourceAllowed(candidate.connectorId) &&
             !["spotify", "catalog"].includes(candidate.connectorId) &&
             candidate.health !== "offline",
         );

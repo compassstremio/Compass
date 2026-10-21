@@ -20,6 +20,7 @@ import { connectSource, disconnectSource, scanLocalFolder } from "@/lib/music/ca
 import {
   isGatedMusicSource,
   type GatedMusicSource,
+  guardMusicSource,
   musicSourceAllowed,
   useMusicSourceConsent,
   requestMusicSourceConsent,
@@ -81,7 +82,9 @@ export function MusicConnectionRow({
   const t = useT();
   const rowRef = useRef<HTMLLIElement>(null);
   useMusicSourceConsent();
-  const [open, setOpen] = useState(defaultOpen && connection.needs.length > 0);
+  const [open, setOpen] = useState(
+    defaultOpen && connection.needs.length > 0 && musicSourceAllowed(connection.id),
+  );
   const [values, setValues] = useState<Record<string, string>>({});
   const [busy, setBusy] = useState<Busy>(null);
   const [failure, setFailure] = useState<string | null>(null);
@@ -109,8 +112,10 @@ export function MusicConnectionRow({
 
   const connect = (payload: Record<string, string>) => {
     // These are third party services; their terms are accepted before the first connect.
-    if (isGatedMusicSource(connection.id) && !musicSourceAllowed(connection.id)) {
-      requestMusicSourceConsent(() => connect(payload), connection.id);
+    if (
+      isGatedMusicSource(connection.id) &&
+      !guardMusicSource(connection.id, () => connect(payload))
+    ) {
       return;
     }
     setBusy("connect");
@@ -138,6 +143,12 @@ export function MusicConnectionRow({
   // Spotify playback comes from device pairing, so this form's sign in only gives browsing
   // its own rate quota through the listener's own app.
   const connectBrowsing = (clientId: string) => {
+    if (
+      isGatedMusicSource(connection.id) &&
+      !guardMusicSource(connection.id, () => connectBrowsing(clientId))
+    ) {
+      return;
+    }
     setBusy("connect");
     setFailure(null);
     setScanned(null);
@@ -386,19 +397,34 @@ function RowAction({
   if (connection.status === "unavailable") return <span />;
   if (isGatedMusicSource(connection.id)) {
     const allowed = musicSourceAllowed(connection.id);
-    return (
-      <button
-        type="button"
-        onClick={() =>
-          allowed
-            ? setMusicSourceEnabled(connection.id as GatedMusicSource, false)
-            : requestMusicSourceConsent(undefined, connection.id as GatedMusicSource)
-        }
-        className={allowed ? SECONDARY_BUTTON : PRIMARY_BUTTON}
-      >
-        {t(allowed ? "music.consent.turnOff" : "music.consent.review")}
-      </button>
-    );
+    // Anonymous sources (YouTube, SoundCloud) have no account to sign into, so the consent
+    // switch is also their on/off control. Account-based sources keep their normal action.
+    if (connection.anonymous) {
+      return (
+        <button
+          type="button"
+          onClick={() =>
+            allowed
+              ? setMusicSourceEnabled(connection.id as GatedMusicSource, false)
+              : requestMusicSourceConsent(undefined, connection.id as GatedMusicSource)
+          }
+          className={allowed ? SECONDARY_BUTTON : PRIMARY_BUTTON}
+        >
+          {t(allowed ? "music.consent.turnOff" : "music.consent.review")}
+        </button>
+      );
+    }
+    if (!allowed) {
+      return (
+        <button
+          type="button"
+          onClick={() => requestMusicSourceConsent(undefined, connection.id as GatedMusicSource)}
+          className={PRIMARY_BUTTON}
+        >
+          {t("music.consent.review")}
+        </button>
+      );
+    }
   }
   if (connection.anonymous) return <span />;
   if (connection.status === "connected") {

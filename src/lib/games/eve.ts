@@ -5,7 +5,7 @@ import { EVE_COMPATIBILITY, EVE_UNIVERSE, evePlan, parseEveIncursions, parseEveK
 
 export type EveSnapshot<T> = { data: T; at: number | null; receivedAt: number };
 type RawSnapshot = { data: unknown; at: number | null; receivedAt: number; expiresAt: number; status: number; etag?: string };
-const base = "https://esi.evetech.net", identity = "CompassEveCompanion/1.0 (+https://compass.site)";
+const base = "https://esi.evetech.net", identity = "CompassEveCompanion/1.0 (+https://compass.sarl)";
 let cooldown = 0;
 const snapshots = new Map<string, RawSnapshot>();
 function cacheUntil(response: Response, now: number, fallback: number) {

@@ -87,7 +87,7 @@ const used: Record<string, string> = {
   "Compass loads the native svpflow filter through VapourSynth and starts SVP Manager when available. Restart playback to apply.":
     "Compass lädt den nativen svpflow-Filter über VapourSynth und startet, falls verfügbar, SVP Manager. Starte die Wiedergabe neu, um die Änderung anzuwenden.",
   "Compass's own menus and labels. Subtitle languages come later, and you can change both in Settings.":
-    "Compasses eigene Menüs und Beschriftungen. Untertitelsprachen folgen später, und du kannst beides in den Einstellungen ändern.",
+    "Compasss eigene Menüs und Beschriftungen. Untertitelsprachen folgen später, und du kannst beides in den Einstellungen ändern.",
   "Hide breakdown": "Aufschlüsselung ausblenden",
   "Hide card": "Karte ausblenden",
   "Hide curated packs": "Kuratierte Pakete ausblenden",

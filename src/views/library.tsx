@@ -14,11 +14,13 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import traktLogo from "@/assets/trakt.svg";
 import anilistLogo from "@/assets/anilist.png";
 import simklLogo from "@/assets/simkl.png";
+import publicmetadbLogo from "@/assets/publicmetadb.svg";
 import letterboxdLogo from "@/assets/addon-logos/letterboxd.png";
 import { MalLogo } from "@/components/icons/mal-logo";
 import { useAnilist } from "@/lib/anilist/provider";
 import { useMal } from "@/lib/mal/provider";
 import { useSimkl } from "@/lib/simkl/provider";
+import { usePublicMetaDb } from "@/lib/publicmetadb/provider";
 import { useTrakt } from "@/lib/trakt/provider";
 import { useScrollMemory, useView } from "@/lib/view";
 import { useSettings } from "@/lib/settings";
@@ -34,10 +36,13 @@ import { MyListsTab } from "./library/my-lists-tab";
 import { FavoritesTab } from "./library/favorites-tab";
 import { TabBtn, type Tab } from "./library/shared";
 import { SimklTab } from "./library/simkl-tab";
+import { PublicMetaDbTab } from "./library/publicmetadb-tab";
 import { TraktTab } from "./library/trakt-tab";
 import { WatchlistTab } from "./library/watchlist-tab";
 import { LetterboxdTab } from "./library/letterboxd-tab";
 import { MediaServersTab } from "./library/media-servers-tab";
+import { TorboxTab } from "./library/torbox-tab";
+import torboxLogo from "@/assets/addon-logos/torbox.png";
 import { pushActivityHint } from "@/lib/discord/activity-hint";
 import { HeroCarousel } from "@/components/hero-carousel";
 import { LibraryFeaturedProvider, useLibraryFeatured } from "./library/featured-context";
@@ -62,11 +67,13 @@ function readSavedTab(): Tab {
       v === "history" ||
       v === "local" ||
       v === "media-servers" ||
+      v === "torbox" ||
       v === "lists" ||
       v === "favorites" ||
       v === "trakt" ||
       v === "anilist" ||
       v === "simkl" ||
+      v === "publicmetadb" ||
       v === "letterboxd" ||
       v === "mal"
     )
@@ -82,6 +89,7 @@ export function LibraryView({ active }: { active: boolean }) {
   const { isConnected: anilistConnected } = useAnilist();
   const { isConnected: malConnected } = useMal();
   const { isConnected: simklConnected } = useSimkl();
+  const { isConnected: pmdbConnected } = usePublicMetaDb();
   const lb = useLetterboxd();
   const scrollRef = useRef<HTMLElement>(null);
   useScrollMemory("library", scrollRef, active);
@@ -104,6 +112,10 @@ export function LibraryView({ active }: { active: boolean }) {
   useEffect(() => {
     if (tab === "simkl" && !simklConnected) setTab("library");
   }, [tab, simklConnected]);
+
+  useEffect(() => {
+    if (tab === "publicmetadb" && !pmdbConnected) setTab("library");
+  }, [tab, pmdbConnected]);
 
   useEffect(() => {
     if (tab === "letterboxd" && !lb.isActive) setTab("library");
@@ -140,7 +152,7 @@ export function LibraryView({ active }: { active: boolean }) {
       className="flex-1 overflow-y-auto px-5 pt-24 pb-14 sm:px-8 lg:px-12 lg:pt-28"
     >
       <LibraryFeaturedProvider>
-        <div {...contentDrag} className="flex flex-col gap-7">
+        <div {...contentDrag} data-context-page-background className="flex flex-col gap-7">
           {settings.libraryHero && <LibraryHero tabKey={tab} />}
           <Header
             tab={tab}
@@ -149,6 +161,7 @@ export function LibraryView({ active }: { active: boolean }) {
             anilistConnected={anilistConnected}
             malConnected={malConnected}
             simklConnected={simklConnected}
+            pmdbConnected={pmdbConnected}
             lbConnected={lb.isActive}
           />
           {tab === "library" && <WatchlistTab mode="library" scrollRef={scrollRef} />}
@@ -156,11 +169,13 @@ export function LibraryView({ active }: { active: boolean }) {
           {tab === "history" && <HistoryTab />}
           {tab === "local" && <LocalTab scrollRef={scrollRef} />}
           {tab === "media-servers" && <MediaServersTab scrollRef={scrollRef} />}
+          {tab === "torbox" && <TorboxTab />}
           {tab === "lists" && <MyListsTab />}
           {tab === "favorites" && <FavoritesTab />}
           {tab === "trakt" && traktConnected && <TraktTab />}
           {tab === "anilist" && anilistConnected && <AnilistTab />}
           {tab === "simkl" && simklConnected && <SimklTab />}
+          {tab === "publicmetadb" && pmdbConnected && <PublicMetaDbTab />}
           {tab === "letterboxd" && lb.isActive && <LetterboxdTab />}
           {tab === "mal" && malConnected && <MalTab />}
         </div>
@@ -191,6 +206,7 @@ function Header({
   anilistConnected,
   malConnected,
   simklConnected,
+  pmdbConnected,
   lbConnected,
 }: {
   tab: Tab;
@@ -199,6 +215,7 @@ function Header({
   anilistConnected: boolean;
   malConnected: boolean;
   simklConnected: boolean;
+  pmdbConnected: boolean;
   lbConnected: boolean;
 }) {
   const t = useT();
@@ -269,6 +286,10 @@ function Header({
           <Server size={14} strokeWidth={2.2} />
           {t("Media Servers")}
         </TabBtn>
+        <TabBtn active={tab === "torbox"} onClick={() => onTab("torbox")}>
+          <img src={torboxLogo} alt="" className="h-3.5 w-3.5 object-contain" />
+          TorBox
+        </TabBtn>
         <TabBtn active={tab === "lists"} onClick={() => onTab("lists")}>
           <UiIcon name="list" className="h-3.5 w-3.5" />
           {t("My Lists")}
@@ -299,6 +320,16 @@ function Header({
           <TabBtn active={tab === "simkl"} onClick={() => onTab("simkl")}>
             <img src={simklLogo} alt="" className="h-3.5 w-3.5 object-contain" />
             Simkl
+          </TabBtn>
+        )}
+        {pmdbConnected && (
+          <TabBtn active={tab === "publicmetadb"} onClick={() => onTab("publicmetadb")}>
+            <img
+              src={publicmetadbLogo}
+              alt=""
+              className="h-3.5 w-3.5 rounded-[3px] object-contain"
+            />
+            PMDB
           </TabBtn>
         )}
         {lbConnected && (

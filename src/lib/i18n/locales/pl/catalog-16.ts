@@ -407,7 +407,7 @@ const catalog16: Record<string, string> = {
   "{n} on": "Włączonych: {n}",
   "{n} on Trakt": "{n} pozycji w Trakt",
   "{n} options active": "{n} aktywnych opcji",
-  "{n} other Compasses": "{n} innych Compassów",
+  "{n} other Compasss": "{n} innych Compassów",
   "{n} picks, refreshed daily": "{n} propozycji, odświeżanych codziennie",
   "{n} px": "{n} pikseli",
   "{n} ratings were saved before you stopped.": "Przed zatrzymaniem zapisano {n} ocen.",

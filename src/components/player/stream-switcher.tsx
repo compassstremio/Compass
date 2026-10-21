@@ -51,6 +51,7 @@ export function StreamSwitcher({
   meta,
   episode,
   imdbId,
+  imdbIdVerified = false,
   hostSource,
 }: {
   open: boolean;
@@ -65,6 +66,7 @@ export function StreamSwitcher({
   meta: Meta;
   episode?: PlayEpisode;
   imdbId?: string | null;
+  imdbIdVerified?: boolean;
   hostSource?: SourceDescriptor | null;
 }) {
   const t = useT();
@@ -89,21 +91,23 @@ export function StreamSwitcher({
     }
     return out;
   }, [baseLangs, settings.preferredAudioLangs, isAnimeRequest]);
-  const [cache, setCache] = useState(() => peekPickerCache(meta, episode));
+  const [cache, setCache] = useState(() => peekPickerCache(meta, episode, settings.animePreferImdbStreams));
   const [addonLogos, setAddonLogos] = useState<Map<string, string | null>>(new Map());
   const [filterToPreferred, setFilterToPreferred] = useState(
     settings.requirePreferredLanguage === true && preferredLangs.length > 0,
   );
 
-  useEffect(
-    () => subscribePickerCache(() => setCache(peekPickerCache(meta, episode))),
-    [meta, episode],
-  );
+  useEffect(() => {
+    const updateCache = () => setCache(peekPickerCache(meta, episode, settings.animePreferImdbStreams));
+    updateCache();
+    return subscribePickerCache(updateCache);
+  }, [meta, episode, settings.animePreferImdbStreams]);
 
   const { refreshing, refresh } = useSwitcherRefresh({
     meta,
     episode,
     imdbId: imdbId ?? null,
+    imdbIdVerified,
     active: open,
   });
 

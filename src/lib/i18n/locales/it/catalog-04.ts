@@ -113,10 +113,10 @@ const catalog04: Record<string, string> = {
     "Quando è aperto, Compass controlla alcune volte al giorno e ti avvisa qui.",
   "Compass checks automatically every few hours.":
     "Compass controlla automaticamente ogni poche ore.",
-  "Compass checks compass.site for new versions and installs them in place.":
-    "Compass cerca nuove versioni su compass.site e le installa direttamente.",
-  "Compass checks compass.site for new versions and installs them in place. Nothing installs until you choose to, and a dismissed update never nags you again.":
-    "Compass cerca nuove versioni su compass.site e le installa direttamente. Non viene installato nulla finché non decidi tu e un aggiornamento ignorato non ti verrà più proposto.",
+  "Compass checks compass.sarl for new versions and installs them in place.":
+    "Compass cerca nuove versioni su compass.sarl e le installa direttamente.",
+  "Compass checks compass.sarl for new versions and installs them in place. Nothing installs until you choose to, and a dismissed update never nags you again.":
+    "Compass cerca nuove versioni su compass.sarl e le installa direttamente. Non viene installato nulla finché non decidi tu e un aggiornamento ignorato non ti verrà più proposto.",
   "Compass could not find these": "Compass non ha trovato questi elementi",
   "Compass could not open its web server. Try again, or set this up on the TV.":
     "Compass non è riuscito ad aprire il proprio server web. Riprova oppure esegui la configurazione sulla TV.",
@@ -282,7 +282,7 @@ const catalog04: Record<string, string> = {
   "Compass's public relay updates automatically; nothing to do.":
     "Il relay pubblico di Compass si aggiorna automaticamente; non devi fare nulla.",
   "Compass, from a public domain frame": "Compass, da un fotogramma di pubblico dominio",
-  "Compasses on your network": "Installazioni di Compass sulla tua rete",
+  "Compasss on your network": "Installazioni di Compass sulla tua rete",
   "Hard Boiled": "Hard Boiled",
   "Hard outline": "Contorno netto",
   "Hard stroke around each letter. High contrast.":
@@ -1201,7 +1201,7 @@ const catalog04: Record<string, string> = {
   "Listed collections will appear in community browse when that rolls out.":
     "Le raccolte elencate appariranno nella sezione Esplora della community quando sarà disponibile.",
   Listen: "Ascolta",
-  "Listening for Compasses": "Ricerca di istanze Compass in corso",
+  "Listening for Compasss": "Ricerca di istanze Compass in corso",
   Lists: "Liste",
   Literary: "Letterario",
   Live: "In diretta",

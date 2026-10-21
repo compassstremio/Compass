@@ -42,7 +42,7 @@ function trailerHarness() {
   let slot = 0;
   let nextTimer = 0;
   let visible = true;
-  const settings = { heroTrailers: true, trailerQuality: "720p", tmdbKey: "fixture" };
+  const settings = { heroTrailers: true, autoplayTrailerQuality: "720p", trailerQuality: "best", tmdbKey: "fixture" };
   const same = (a?: unknown[], b?: unknown[]) => a && b && a.length === b.length && a.every((v, i) => Object.is(v, b[i]));
   const react = {
     useState(initial: unknown) {
@@ -70,7 +70,7 @@ function trailerHarness() {
     "@/lib/providers/tmdb": { tmdbTrailerList: async (_: string, id: string) => [id] },
     "@/lib/trailer": {
       resolveTrailerQuality: (q: string) => q === "auto" ? "360p" : q,
-      fetchTrailer: (id: string, quality: string) => new Promise(resolve => requests.push({ id, quality, resolve })),
+      fetchFirstTrailer: (ids: readonly string[], quality: string) => new Promise(resolve => requests.push({ id: ids[0], quality, resolve })),
       prefetchTrailer: () => {},
       trailerSrc: (info: { stream_url: string }) => info.stream_url,
     },
@@ -109,7 +109,7 @@ test("trailer uses the selected quality and replaces the same title when it chan
   h.requests[0].resolve({ stream_url: "720p.mp4" });
   await Promise.resolve();
   assert.equal(h.render(), "720p.mp4");
-  h.settings.trailerQuality = "1080p";
+  h.settings.autoplayTrailerQuality = "1080p";
   assert.equal(h.render(), null, "hide old quality before effects run");
   await h.dwell();
   assert.equal(h.requests[1].quality, "1080p");
@@ -124,7 +124,7 @@ test("a stale native result cannot overwrite a new quality or disabled trailer",
   const h = trailerHarness();
   h.render();
   await h.dwell();
-  h.settings.trailerQuality = "best";
+  h.settings.autoplayTrailerQuality = "best";
   h.render();
   await h.dwell();
   h.requests[1].resolve({ stream_url: "best.mp4" });
@@ -140,7 +140,7 @@ test("a stale native result cannot overwrite a new quality or disabled trailer",
 
 test("quick focus changes cancel the old dwell; auto quality uses the shared resolver", async () => {
   const h = trailerHarness();
-  h.settings.trailerQuality = "auto";
+  h.settings.autoplayTrailerQuality = "auto";
   h.render("tt-old");
   h.render("tt-current");
   await h.dwell();

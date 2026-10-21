@@ -13,6 +13,7 @@ import type { AddonProgress } from "@/lib/streams/addons";
 import { pluginCacheTokens } from "@/lib/streams/plugins";
 import { runPipeline, type PipelineResult } from "@/lib/streams/pipeline";
 import { buildEpisodePipelineInput } from "@/lib/streams/episode-pipeline-input";
+import { hasAnimeStreamIds, preferredAnimeImdbStreamId } from "@/lib/streams/stream-ids";
 import type { PlayEpisode } from "@/lib/view";
 import {
   pickerErrorTransport,
@@ -27,6 +28,7 @@ export function usePipelineResult({
   meta,
   episode,
   imdbId,
+  imdbIdVerified = false,
   streamIds,
   addons,
   debrids,
@@ -38,6 +40,7 @@ export function usePipelineResult({
   meta: Meta;
   episode: PlayEpisode | undefined;
   imdbId: string | null;
+  imdbIdVerified?: boolean;
   streamIds: string[] | null;
   addons: Addon[] | null;
   debrids: ReturnType<typeof useDebridClients>;
@@ -61,6 +64,10 @@ export function usePipelineResult({
   });
   const [pipelineStartedAt, setPipelineStartedAt] = useState<number | null>(null);
 
+  const animePreference = streamIds && hasAnimeStreamIds(streamIds)
+    ? settings.animePreferImdbStreams : undefined;
+  const preferredAnimeImdbId = animePreference && streamIds
+    ? preferredAnimeImdbStreamId(meta.id, episode, imdbId, imdbIdVerified, streamIds) : undefined;
   const configHash = useMemo(
     () =>
       buildPickerConfigHash({
@@ -68,8 +75,10 @@ export function usePipelineResult({
         debridSlugs: debrids.map((d) => d.slug),
         scraperKeys: pluginCacheTokens(),
         filterMode: filterDisabled ? "off" : strictMode ? "strict" : "balanced",
+        animePreferImdbStreams: animePreference,
+        preferredAnimeImdbId,
       }),
-    [addons, debrids, filterDisabled, strictMode],
+    [addons, debrids, filterDisabled, strictMode, animePreference, preferredAnimeImdbId],
   );
 
   useEffect(() => {
@@ -110,6 +119,7 @@ export function usePipelineResult({
         meta,
         episode,
         imdbId,
+        imdbIdVerified,
         streamIds,
         addons,
         debrids,
@@ -126,7 +136,7 @@ export function usePipelineResult({
         setResult(partial);
         setLoading(false);
         setFirstResultAt((prev) => prev ?? performance.now());
-        setPickerCache(meta, episode, partial, configHash, false);
+        setPickerCache(meta, episode, partial, configHash, false, animePreference);
       },
       (progress) => {
         if (ac.signal.aborted) return;
@@ -140,7 +150,7 @@ export function usePipelineResult({
         setLoading(false);
         setPipelineDone(true);
         setAutoSettleReady(true);
-        setPickerCache(meta, episode, r, configHash);
+        setPickerCache(meta, episode, r, configHash, true, animePreference);
       })
       .catch((e) => {
         if (ac.signal.aborted) return;
@@ -153,6 +163,8 @@ export function usePipelineResult({
   }, [
     streamIds,
     imdbId,
+    imdbIdVerified,
+    configHash,
     addons,
     debrids,
     meta.id,

@@ -161,6 +161,12 @@ async fn expire_session_torrents(dir: &std::path::Path, retention_hours: u64) ->
     expired
 }
 
+/// `eprintln!` panics when the console pipe is closed, which would end the sweeper loop.
+fn sweep_log(args: std::fmt::Arguments<'_>) {
+    use std::io::Write;
+    let _ = writeln!(std::io::stderr(), "{args}");
+}
+
 fn spawn_cache_sweeper(app: AppHandle) -> CacheSweeper {
     let cancelled = Arc::new(AtomicBool::new(false));
     let cancelled_for_task = cancelled.clone();
@@ -199,7 +205,7 @@ fn spawn_cache_sweeper(app: AppHandle) -> CacheSweeper {
                 })
                 .await;
                 match result {
-                    Ok(Some(stats)) => eprintln!(
+                    Ok(Some(stats)) => sweep_log(format_args!(
                         "[torrent-engine] cache sweep completed in {:?}: scanned={} deleted={} reclaimed_bytes={} errors={} cancelled={} first_error={:?}",
                         started.elapsed(),
                         stats.scanned,
@@ -208,9 +214,13 @@ fn spawn_cache_sweeper(app: AppHandle) -> CacheSweeper {
                         stats.errors,
                         stats.cancelled,
                         stats.first_error,
-                    ),
-                    Ok(None) => eprintln!("[torrent-engine] cache sweep skipped; another sweep is active"),
-                    Err(error) => eprintln!("[torrent-engine] cache sweep task failed: {error}"),
+                    )),
+                    Ok(None) => sweep_log(format_args!(
+                        "[torrent-engine] cache sweep skipped; another sweep is active"
+                    )),
+                    Err(error) => sweep_log(format_args!(
+                        "[torrent-engine] cache sweep task failed: {error}"
+                    )),
                 }
             }
             tokio::time::sleep(Duration::from_secs(CACHE_SWEEP_INTERVAL_SECS)).await;

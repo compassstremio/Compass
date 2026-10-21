@@ -339,11 +339,11 @@ const music: Record<string, string> = {
   "music.source.preferred": "Tercih edilen",
   "music.source.loading": "Müzik kaynakları bulunuyor",
   "music.source.none": "Şu anda eşleşen bir kaynak yok.",
-  "music.consent.title": "YouTube veya SoundCloud'u açmadan önce",
+  "music.consent.title": "YouTube, SoundCloud veya Spotify'ı açmadan önce",
   "music.consent.hosting":
     "Compass müzik barındırmaz. Dünyanın her yerinden katkıda bulunanların yazdığı açık kaynak bir koddur ve yalnızca açmayı seçtiğiniz servislerin herkese açık sayfalarını açar. Compass da ona katkıda bulunanlar da hiçbir içeriği saklamaz, yüklemez veya sunmaz.",
   "music.consent.terms":
-    "YouTube ve SoundCloud, kendi hizmet koşulları olan bağımsız servislerdir. Burada birini açmanız, o servisin koşullarına uymayı ve artık kabul etmiyorsanız kullanmayı bırakmayı kabul ettiğiniz anlamına gelir. Compass bu servislerle bağlantılı değildir ve onlar tarafından desteklenmez.",
+    "YouTube, SoundCloud ve Spotify, kendi hizmet koşulları olan bağımsız servislerdir. Burada birini açmanız, o servisin koşullarına uymayı ve artık kabul etmiyorsanız kullanmayı bırakmayı kabul ettiğiniz anlamına gelir. Compass bu servislerle bağlantılı değildir ve onlar tarafından desteklenmez.",
   "music.consent.responsibility":
     "Bu kaynakları nasıl kullandığınızdan ve bulunduğunuz yerdeki yasalara uymaktan siz sorumlusunuz. Compass'a katkıda bulunanlar, çaldığınız, indirdiğiniz veya paylaştığınız şeyler için hiçbir sorumluluk kabul etmez.",
   "music.consent.rights":

@@ -2,12 +2,7 @@ import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useAuth } from "@/lib/auth";
 import { useSettings } from "@/lib/settings";
 import { type Meta } from "@/lib/cinemeta";
-import {
-  library,
-  libraryMetaType,
-  removeStremioBookmark,
-  type LibraryItem,
-} from "@/lib/stremio";
+import { library, libraryMetaType, removeStremioBookmark, type LibraryItem } from "@/lib/stremio";
 import { fetchWatchlist } from "@/lib/trakt/watchlist";
 import { useTrakt } from "@/lib/trakt/provider";
 import { traktItemToMeta } from "@/lib/trakt/to-meta";
@@ -251,7 +246,7 @@ export function WatchlistTab({
   })();
 
   return (
-    <section className="flex flex-col gap-4">
+    <section data-context-page-background className="flex flex-col gap-4">
       {merged.length > 0 && (
         <FilterBar
           type={type}
@@ -376,10 +371,9 @@ export function filterLibrary(
 ): LibraryItem[] {
   return items.filter((i) => {
     if (i.removed) return false;
-    // Hide temp entries (auto-added just by opening a details page) in BOTH modes
-    // when bookmarked-only is on. It defaults on, so the Library tab must honour it
-    // instead of short-circuiting past it and showing everything you merely viewed.
-    if (bookmarkedOnly && i.temp) return false;
+    // Watchlist contains explicit bookmarks; temporary browse/history entries
+    // can still appear in Library when its bookmarked-only filter is disabled.
+    if ((bookmarkedOnly || mode === "watchlist") && i.temp) return false;
     if (mode === "library") return true;
     if ((i.state?.flaggedWatched ?? 0) > 0 || (i.state?.timesWatched ?? 0) > 0) return false;
     if ((i.state?.timeOffset ?? 0) > 0) return false;

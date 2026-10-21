@@ -650,6 +650,15 @@ const coverage: Record<string, string> = {
   "NYT Books API key": "Ключ API NYT Books",
   "Choose whether Compass prefers direct and debrid sources, peer-to-peer torrents, or shows both.":
     "Выберите, должен ли Compass предпочитать прямые и debrid-источники, одноранговые торренты или показывать оба варианта.",
+  "Import from Harbor": "Импорт из Harbor",
+  "Your Harbor data was already brought over. Import it again to replace what Compass has now.": "Данные Harbor уже перенесены. Импортируйте их снова, чтобы заменить текущие данные Compass.",
+  "Harbor is Compass's former name. Bring over its profiles, settings, lists, keys and connected accounts.": "Harbor — прежнее название Compass. Перенесите профили, настройки, списки, ключи и подключённые аккаунты.",
+  "Import your Harbor data?": "Импортировать данные Harbor?",
+  "Compass restarts and replaces its current data with your Harbor setup. Close Harbor first.": "Compass перезапустится и заменит текущие данные настройками Harbor. Сначала закройте Harbor.",
+  "Restarting...": "Перезапуск...",
+  "Import and restart": "Импортировать и перезапустить",
+  "Compass could not start the import. Try again.": "Compass не удалось начать импорт. Попробуйте ещё раз.",
+  "Nothing is deleted: Compass keeps its current data in a backup folder next to its own, and Harbor stays as it is.": "Ничего не удаляется: Compass сохраняет текущие данные в резервной папке рядом со своей, а Harbor остаётся без изменений.",
 };
 
 export default coverage;

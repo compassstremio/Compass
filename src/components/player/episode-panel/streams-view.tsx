@@ -37,13 +37,15 @@ export function StreamsView({
   const { settings } = useSettings();
   const debrids = useDebridClients();
   const { addons } = useAddons(authKey, settings);
-  const imdbId = useImdbId(meta, settings.tmdbKey).id;
+  const resolvedImdb = useImdbId(meta, settings.tmdbKey);
+  const imdbId = resolvedImdb.id;
   const streamIds = useStreamIds(meta, episode, imdbId);
   const animeTitles = useAnimeAltTitles(meta);
   const { result, loading, pipelineDone } = usePipelineResult({
     meta,
     episode,
     imdbId,
+    imdbIdVerified: resolvedImdb.verified,
     streamIds,
     addons,
     debrids,

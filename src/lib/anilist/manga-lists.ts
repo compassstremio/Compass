@@ -6,12 +6,14 @@ const COLLECTION_QUERY = `query ($userId: Int) {
   MediaListCollection(userId: $userId, type: MANGA) {
     lists {
       status
+      name
       isCustomList
       entries {
         id
         status
         progress
         score
+        private
         media {
           id
           idMal
@@ -30,6 +32,7 @@ const COLLECTION_QUERY = `query ($userId: Int) {
 
 type RawGroup = {
   status: MediaListStatus | null;
+  name?: string | null;
   isCustomList: boolean;
   entries: AnilistMediaEntry[];
 };
@@ -73,9 +76,17 @@ function writeCachedMangaCollection(userId: number, groups: AnilistListGroup[]):
 
 function buildGroups(lists: RawGroup[]): AnilistListGroup[] {
   const byStatus = new Map<MediaListStatus, AnilistMediaEntry[]>();
+  const custom: AnilistListGroup[] = [];
   const seen = new Set<number>();
   for (const group of lists) {
-    if (group.isCustomList || !group.status) continue;
+    if (group.isCustomList) {
+      const name = group.name?.trim();
+      const entries = group.entries.filter((entry) => entry.media.format !== "NOVEL");
+      if (name && entries.length > 0)
+        custom.push({ status: null, name, isCustomList: true, entries });
+      continue;
+    }
+    if (!group.status) continue;
     const bucket = byStatus.get(group.status) ?? [];
     for (const entry of group.entries) {
       if (entry.media.format === "NOVEL") continue;
@@ -85,7 +96,10 @@ function buildGroups(lists: RawGroup[]): AnilistListGroup[] {
     }
     byStatus.set(group.status, bucket);
   }
-  return Array.from(byStatus.entries()).map(([status, entries]) => ({ status, entries }));
+  return [
+    ...Array.from(byStatus.entries()).map(([status, entries]) => ({ status, entries })),
+    ...custom,
+  ];
 }
 
 export async function fetchMangaListCollection(userId: number): Promise<AnilistListGroup[]> {

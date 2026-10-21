@@ -76,6 +76,8 @@ import sportsStatistics from "./fr/sports-statistics";
 import sportsApi from "./fr/sports-api";
 import esportsArena from "./fr/esports-arena";
 import sportsHub from "./fr/sports-hub";
+import contextActionsFallback from "./context-actions-fallback";
+
 import ebookSources from "./fr/ebook-sources";
 import settingsRefinements from "./fr/settings-refinements";
 import inventory from "./fr/inventory";
@@ -110,6 +112,7 @@ import controllers from "./fr/controllers";
 import plurals from "./fr/plurals";
 import bpSources from "./fr/bp-sources";
 import coverage from "./fr/coverage";
+import bingers from "./fr/bingers";
 import plugins from "./fr/plugins";
 import brands from "./fr/brands";
 import bpSports from "./fr/bp-sports";
@@ -137,32 +140,40 @@ const fr: Record<string, string> = {
   ...gameHub,
   ...floatingPlayer,
   ...gameAntiCheat,
-  "Translations": "Traductions",
+  Translations: "Traductions",
   "Translating…": "Traduction en cours…",
   "Showing {lang}": "Affichage : {lang}",
   "Show all": "Tout afficher",
   "games.download.speed.title": "Vitesse de téléchargement",
-  "games.download.speed.note": "Partagée entre les téléchargements directs et les torrents de ce profil. Un torrent peut avoir une limite individuelle plus basse.",
+  "games.download.speed.note":
+    "Partagée entre les téléchargements directs et les torrents de ce profil. Un torrent peut avoir une limite individuelle plus basse.",
   "games.download.speed.unlimited": "Illimitée",
   "games.download.speed.limited": "Limiter la vitesse",
   "games.download.speed.rate": "Kilooctets par seconde",
   "games.download.speed.range": "Saisissez un nombre entier entre {min} et {max}.",
-  "games.download.speed.error": "Impossible de charger ou d’enregistrer le réglage de vitesse. Réessayez.",
+  "games.download.speed.error":
+    "Impossible de charger ou d’enregistrer le réglage de vitesse. Réessayez.",
   "games.download.speed.current": "Vitesse de téléchargement : {rate}",
   "games.discovery.sale.cards.included": "Cartes à échanger",
   "games.discovery.sale.cards.none": "Pas de cartes de soldes",
   "games.discovery.sale.cards.unknown": "Cartes non confirmées",
-  "games.discovery.sale.cards.includedNote": "Incluses selon les règles actuelles de Steam pour les cartes de soldes. Ouvrez Steam pour savoir comment les obtenir.",
-  "games.discovery.sale.cards.noneNote": "Les règles actuelles de Steam ne prévoient pas de cartes pour ces soldes saisonnières. Les autres récompenses de l’évènement sont distinctes.",
-  "games.discovery.sale.cards.unknownNote": "Impossible de vérifier les règles actuelles de Steam pour les cartes. Ouvrez Steam pour vérifier leur disponibilité.",
-  "games.discovery.sale.cards.badgeNote": "Réunissez un ensemble pour créer un badge de soldes, une émoticône et un arrière-plan de profil.",
+  "games.discovery.sale.cards.includedNote":
+    "Incluses selon les règles actuelles de Steam pour les cartes de soldes. Ouvrez Steam pour savoir comment les obtenir.",
+  "games.discovery.sale.cards.noneNote":
+    "Les règles actuelles de Steam ne prévoient pas de cartes pour ces soldes saisonnières. Les autres récompenses de l’évènement sont distinctes.",
+  "games.discovery.sale.cards.unknownNote":
+    "Impossible de vérifier les règles actuelles de Steam pour les cartes. Ouvrez Steam pour vérifier leur disponibilité.",
+  "games.discovery.sale.cards.badgeNote":
+    "Réunissez un ensemble pour créer un badge de soldes, une émoticône et un arrière-plan de profil.",
   "games.download.storage.title": "Espace pour les téléchargements",
-  "games.download.storage.note": "Les estimations couvrent les téléchargements directs, les torrents et les fichiers temporaires, y compris les téléchargements en pause. Les programmes d’installation externes sont exclus.",
+  "games.download.storage.note":
+    "Les estimations couvrent les téléchargements directs, les torrents et les fichiers temporaires, y compris les téléchargements en pause. Les programmes d’installation externes sont exclus.",
   "games.download.storage.error": "Impossible de vérifier le stockage.",
   "games.download.storage.unavailable": "Espace libre indisponible",
   "games.download.storage.free": "{size} libres",
   "games.download.storage.remaining": "Espace supplémentaire : {size}",
-  "games.download.storage.estimate": "Certains fichiers existants n’ont pas encore été vérifiés. L’espace nécessaire peut être inférieur.",
+  "games.download.storage.estimate":
+    "Certains fichiers existants n’ont pas encore été vérifiés. L’espace nécessaire peut être inférieur.",
   "games.download.storage.unknown": "Taille inconnue : {count} fichiers",
   "games.download.storage.other": "{size} réservés par d'autres opérations Compass",
   "games.download.storage.shortfall": "{size} d’espace supplémentaire nécessaire",
@@ -185,7 +196,8 @@ const fr: Record<string, string> = {
   ...gameEve,
   ...warhammerUniverse,
   ...gameWow,
-  "games.selection.partial": "{count} jeux sur {total} ont été mis à jour. Les autres jeux restent sélectionnés ; réessayez.",
+  "games.selection.partial":
+    "{count} jeux sur {total} ont été mis à jour. Les autres jeux restent sélectionnés ; réessayez.",
   "games.selection.failed": "Impossible de mettre à jour les jeux sélectionnés. Réessayez.",
   "games.custom.nav": "Jeux locaux",
   "games.libraryPersonal.visibility": "Visibilité dans la bibliothèque",
@@ -207,7 +219,8 @@ const fr: Record<string, string> = {
   "games.selection.hide": "Masquer",
   "games.selection.pin": "Épingler",
   "games.selection.unpin": "Désépingler",
-  "games.selection.matchNote": "Certains jeux sélectionnés sont indisponibles. Actualisez votre bibliothèque et réessayez.",
+  "games.selection.matchNote":
+    "Certains jeux sélectionnés sont indisponibles. Actualisez votre bibliothèque et réessayez.",
   "games.selection.collection": "Ajouter à une collection",
   "games.collections.localMissing": "N’est plus dans la bibliothèque de ce profil",
   "games.collections.dynamic": "Collection basée sur des filtres",
@@ -215,15 +228,21 @@ const fr: Record<string, string> = {
   "games.collections.type": "Type de collection",
   "games.collections.filters": "Filtres de la collection",
   "games.collections.ruleQuery": "Le titre du jeu contient",
-  "games.collections.autoNote": "Les jeux sont ajoutés à cette collection ou retirés automatiquement selon qu’ils correspondent à ses filtres dans votre bibliothèque.",
-  "games.collections.pickerAutoNote": "Les collections basées sur des filtres se mettent à jour automatiquement. Gérez leurs filtres dans Collections.",
+  "games.collections.autoNote":
+    "Les jeux sont ajoutés à cette collection ou retirés automatiquement selon qu’ils correspondent à ses filtres dans votre bibliothèque.",
+  "games.collections.pickerAutoNote":
+    "Les collections basées sur des filtres se mettent à jour automatiquement. Gérez leurs filtres dans Collections.",
   "games.collections.matches": "Jeux correspondants : {count}",
-  "games.collections.emptyDynamic": "Aucun jeu de votre bibliothèque ne correspond à ces filtres. Modifiez les filtres ou ajoutez des jeux à votre bibliothèque.",
-  "games.collections.collections_rules": "Les filtres de cette collection n’ont pas pu être lus. Les données enregistrées n’ont pas été remplacées.",
-  "games.collections.collections_dynamic": "Cette collection se met à jour automatiquement. Modifiez ses filtres dans Collections pour changer les jeux qui apparaissent.",
+  "games.collections.emptyDynamic":
+    "Aucun jeu de votre bibliothèque ne correspond à ces filtres. Modifiez les filtres ou ajoutez des jeux à votre bibliothèque.",
+  "games.collections.collections_rules":
+    "Les filtres de cette collection n’ont pas pu être lus. Les données enregistrées n’ont pas été remplacées.",
+  "games.collections.collections_dynamic":
+    "Cette collection se met à jour automatiquement. Modifiez ses filtres dans Collections pour changer les jeux qui apparaissent.",
   "games.collections.title": "Collections",
   "games.collections.personal": "Créées par vous",
-  "games.collections.note": "Une place pour chaque type de jeu. Regroupez vos favoris, vos prochaines découvertes et les mondes qui méritent d’être revisités.",
+  "games.collections.note":
+    "Une place pour chaque type de jeu. Regroupez vos favoris, vos prochaines découvertes et les mondes qui méritent d’être revisités.",
   "games.collections.addTo": "Ajouter à une collection",
   "games.collections.count": "{count} jeux",
   "games.collections.one": "1 jeu",
@@ -233,7 +252,8 @@ const fr: Record<string, string> = {
   "games.collections.create": "Créer",
   "games.collections.first": "Votre première collection commence ici.",
   "games.collections.noMatches": "Aucune collection correspondante.",
-  "games.collections.pickerNote": "Choisissez-en autant que vous le souhaitez. Les modifications sont enregistrées au fur et à mesure.",
+  "games.collections.pickerNote":
+    "Choisissez-en autant que vous le souhaitez. Les modifications sont enregistrées au fur et à mesure.",
   "games.collections.empty": "De la place pour votre prochaine passion.",
   "games.collections.findGames": "Trouver des jeux",
   "games.collections.description": "Quelques mots à son sujet",
@@ -241,22 +261,31 @@ const fr: Record<string, string> = {
   "games.collections.pin": "Épingler la collection",
   "games.collections.unpin": "Désépingler la collection",
   "games.collections.remove": "Supprimer la collection",
-  "games.collections.removeNote": "Seule cette collection est supprimée. Vos jeux, sauvegardes, téléchargements et autres collections sont conservés.",
+  "games.collections.removeNote":
+    "Seule cette collection est supprimée. Vos jeux, sauvegardes, téléchargements et autres collections sont conservés.",
   "games.collections.confirmRemove": "Supprimer cette collection",
   "games.collections.removeGame": "Retirer {name} de cette collection",
   "games.collections.removeShort": "Retirer de la collection",
   "games.collections.added": "Derniers ajouts en premier",
   "games.collections.done": "Terminé",
   "games.collections.save": "Enregistrer les modifications",
-  "games.collections.collections_name": "Donnez à la collection un nom de 1 à 80 caractères et une description de 240 caractères maximum.",
+  "games.collections.collections_name":
+    "Donnez à la collection un nom de 1 à 80 caractères et une description de 240 caractères maximum.",
   "games.collections.collections_duplicate": "Vous avez déjà une collection portant ce nom.",
-  "games.collections.collections_limit": "Ce profil a atteint la limite de stockage des collections. Supprimez des collections ou des jeux inutilisés, puis réessayez.",
-  "games.collections.collections_missing": "Cette collection a été supprimée. Choisissez-en une autre.",
-  "games.collections.collections_read": "Vos collections n’ont pas pu être lues. Les données enregistrées n’ont pas été remplacées. Essayez de les charger à nouveau.",
-  "games.collections.collections_write": "La modification n’a pas pu être enregistrée. Votre collection précédente est toujours là. Libérez de l’espace sur l’appareil et réessayez.",
-  "games.collections.collections_game": "Ce jeu n’a pas pu être identifié. Actualisez votre bibliothèque et réessayez.",
-  "games.collections.firstNote": "Créez une collection, puis ajoutez des jeux depuis leurs pages de détails ou sélectionnez-les dans votre bibliothèque. Les jeux PC et les ROMs peuvent y cohabiter.",
-  "games.collections.emptyNote": "Ajoutez des jeux depuis leurs pages de détails, ou sélectionnez des jeux dans votre bibliothèque et choisissez Ajouter à une collection.",
+  "games.collections.collections_limit":
+    "Ce profil a atteint la limite de stockage des collections. Supprimez des collections ou des jeux inutilisés, puis réessayez.",
+  "games.collections.collections_missing":
+    "Cette collection a été supprimée. Choisissez-en une autre.",
+  "games.collections.collections_read":
+    "Vos collections n’ont pas pu être lues. Les données enregistrées n’ont pas été remplacées. Essayez de les charger à nouveau.",
+  "games.collections.collections_write":
+    "La modification n’a pas pu être enregistrée. Votre collection précédente est toujours là. Libérez de l’espace sur l’appareil et réessayez.",
+  "games.collections.collections_game":
+    "Ce jeu n’a pas pu être identifié. Actualisez votre bibliothèque et réessayez.",
+  "games.collections.firstNote":
+    "Créez une collection, puis ajoutez des jeux depuis leurs pages de détails ou sélectionnez-les dans votre bibliothèque. Les jeux PC et les ROMs peuvent y cohabiter.",
+  "games.collections.emptyNote":
+    "Ajoutez des jeux depuis leurs pages de détails, ou sélectionnez des jeux dans votre bibliothèque et choisissez Ajouter à une collection.",
   "games.cache.saved": "Données enregistrées · {date}",
   "games.cache.refresh": "Actualiser",
   "games.cache.refreshing": "Actualisation…",
@@ -265,6 +294,8 @@ const fr: Record<string, string> = {
   ...spooktober,
   ...videoCast,
   ...music,
+  ...contextActionsFallback,
+
   ...ebookSources,
   ...inventory,
   ...wired,
@@ -298,6 +329,7 @@ const fr: Record<string, string> = {
   ...plurals,
   ...bpSources,
   ...coverage,
+  ...bingers,
   ...settingsRefinements,
   ...plugins,
   ...brands,
@@ -352,7 +384,8 @@ const fr: Record<string, string> = {
   ...gamePlaytime,
   ...gameLaunchHealth,
   "games.torrent.share.title": "Partager le torrent",
-  "games.torrent.share.note": "Partagez les fichiers vérifiés avec les pairs. Arrêt dès qu’une limite est atteinte ou que Compass se ferme. Arrêtez le partage avant de modifier les fichiers.",
+  "games.torrent.share.note":
+    "Partagez les fichiers vérifiés avec les pairs. Arrêt dès qu’une limite est atteinte ou que Compass se ferme. Arrêtez le partage avant de modifier les fichiers.",
   "games.torrent.share.upload": "Limite d’envoi (Ko/s)",
   "games.torrent.share.ratio": "Ratio de partage (1–10)",
   "games.torrent.share.minutes": "Durée limite (minutes)",
@@ -365,8 +398,10 @@ const fr: Record<string, string> = {
   "games.torrent.share.limitReached": "Limite atteinte",
   "games.torrent.share.failed": "Échec du partage. Vérifiez les fichiers et réessayez.",
   "games.torrent.share.stats": "{uploaded} envoyés · {minutes} min",
-  "games.torrent.torrent_seed_files": "Les fichiers sont absents, modifiés ou utilisés. Vérifiez le dossier de téléchargement avant le partage.",
-  "games.torrent.torrent_seed_limits": "Choisissez 32–1 048 576 Ko/s, un ratio de 1–10 et une durée de 1–1 440 minutes.",
+  "games.torrent.torrent_seed_files":
+    "Les fichiers sont absents, modifiés ou utilisés. Vérifiez le dossier de téléchargement avant le partage.",
+  "games.torrent.torrent_seed_limits":
+    "Choisissez 32–1 048 576 Ko/s, un ratio de 1–10 et une durée de 1–1 440 minutes.",
 
   ...gamePokemonUi,
   ...customArtwork,

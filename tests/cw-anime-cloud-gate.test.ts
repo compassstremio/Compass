@@ -99,7 +99,10 @@ test("every CW rail excludes cloud anime items", () => {
 
 test("anime room sources local CW entries", () => {
   assert.match(anime, /const localAnimeCw = useMemo<LibraryItem\[\]>/);
-  assert.match(anime, /listLocalCw\(hideSharedCw\)\s*\.filter\(\(e\) => ANIME_CLOUD_ID\.test\(e\.id\) \|\| e\.isAnime\)/);
+  assert.match(
+    anime,
+    /listLocalCw\(hideSharedCw\)\s*\.filter\(\(e\) => ANIME_CLOUD_ID\.test\(e\.id\) \|\| e\.isAnime\)/,
+  );
   assert.match(anime, /\[\s*\.\.\.localAnimeCw,\s*\.\.\.\(hideSharedCw \? \[\] : libItems\.filter/);
 });
 
@@ -128,12 +131,15 @@ test("dismissing a local anime entry persists past re-absorb", () => {
     /const onDismissCw = useCallback\([\s\S]*?\[authKey\],\s*\);/,
   )?.[0];
   assert.ok(homeDismiss, "home onDismissCw must exist");
-  assert.match(homeDismiss, /clearLocalCw\(item\._id\);\s*dismissCw\(item, authKey\);/);
+  assert.match(
+    homeDismiss,
+    /clearLocalCw\(item\._id, \{ acknowledged: true \}\);\s*return dismissCw\(item, authKey, \{ acknowledged: true \}\);/,
+  );
   const animeDismiss = anime.match(/onDismiss=\{\(it\) => \{[\s\S]*?\}\}/)?.[0];
   assert.ok(animeDismiss, "anime room onDismiss must exist");
   assert.match(
     animeDismiss,
-    /if \(it\.local\) clearLocalCw\(it\._id\);\s*dismissCw\(it, authKey\);/,
+    /if \(it\.local\) clearLocalCw\(it\._id, \{ acknowledged: true \}\);\s*return dismissCw\(it, authKey, \{ acknowledged: true \}\);/,
   );
 });
 
@@ -164,9 +170,10 @@ test("resurface walks past watched adjacent episodes", () => {
 });
 
 test("tracker sync cannot corrupt the wrong cour", () => {
-  for (const src of [anilistSync, malSync]) {
-    assert.match(src, /if \(target > total \+ 1\) return;/);
-  }
+  // AniList walks the sequel cour that aired the episode; MAL still bails out.
+  assert.match(anilistSync, /if \(total > 0 && target > total\) \{/);
+  assert.match(anilistSync, /resolveSplitEntry\(media, target\)/);
+  assert.match(malSync, /if \(total > 0 && target > total\) return;/);
   assert.match(anilistSync, /entry && total > 0 && entry\.progress >= total\) return;/);
   assert.match(
     malSync,

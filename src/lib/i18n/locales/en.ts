@@ -72,6 +72,8 @@ import gamePlayer from "./en/game-player";
 import gameDiscovery from "./en/game-discovery";
 import gameDetails from "./en/game-details";
 import gameAchievements from "./en/game-achievements";
+import contextActionsFallback from "./context-actions-fallback";
+
 import settingsRefinements from "./en/settings-refinements";
 
 import nytTv from "./en/nyt-tv";
@@ -110,7 +112,7 @@ const en: Record<string, string> = {
   "sports.boxing.draws": "Draws",
   "sports.boxing.knockouts": "KOs",
   "sports.boxing.tba": "Fighter to be announced",
-  "Translations": "Translations",
+  Translations: "Translations",
   "Translating…": "Translating…",
   "Showing {lang}": "Showing {lang}",
   "Show all": "Show all",
@@ -145,6 +147,8 @@ const en: Record<string, string> = {
   Soccer: "Football",
   "Build identity. Useful when filing a bug report.":
     "Build identity. Useful when filing a bug report.",
+  ...contextActionsFallback,
+
   "nav.home": "Home",
   "nav.discover": "Discover",
   "nav.catalogs": "Catalogs",

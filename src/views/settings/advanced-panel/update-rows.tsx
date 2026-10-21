@@ -1,8 +1,21 @@
-import { Download, FlaskConical, Loader2, RotateCw } from "../icons";
-import { useId, useState } from "react";
+import { Blocks, Download, FlaskConical, Loader2, RotateCw } from "../icons";
+import { useEffect, useId, useState } from "react";
 import { useSettings } from "@/lib/settings";
-import { readChannelPreference, selectedUpdateChannel } from "@/lib/updater/channel";
+import {
+  readChannelPreference,
+  selectedUpdateChannel,
+  updateHeaders,
+} from "@/lib/updater/channel";
 import { readBetaReturnContext } from "@/lib/updater/beta-return";
+import {
+  openModify,
+  probeHandoff,
+  probeModify,
+  readModifyPlan,
+  stageHandoff,
+  type ModifyProbe,
+  type StageProgress,
+} from "@/lib/updater/handoff";
 import {
   checkForUpdate,
   setUpdateChannel,
@@ -84,7 +97,7 @@ export function UpdatesRow() {
     u.intent === "return-beta"
       ? t("Continue the return to beta in Experimental builds below.")
       : u.status === "checking"
-        ? t("Checking compass.site for a newer build.")
+        ? t("Checking compass.sarl for a newer build.")
         : u.status === "downloading"
           ? t("Downloading {pct}%", { pct: Math.round(u.progress * 100) })
           : u.status === "downloaded"
@@ -150,6 +163,153 @@ export function UpdatesRow() {
           )}
           {busy ? t("Checking") : t("Check for updates")}
         </button>
+      )}
+    </SettingRow>
+  );
+}
+
+/**
+ * Changes which optional features are installed by opening Compass Setup. A setup left behind by
+ * an update is reused when its signature still verifies; otherwise the user is asked first,
+ * because continuing downloads the full installer again.
+ */
+export function ModifyInstallationRow() {
+  const t = useT();
+  const [managed, setManaged] = useState(false);
+  const [local, setLocal] = useState<ModifyProbe | null>(null);
+  const [ask, setAsk] = useState<"local" | "download" | null>(null);
+  const [busy, setBusy] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const [progress, setProgress] = useState<StageProgress | null>(null);
+
+  useEffect(() => {
+    let live = true;
+    void probeHandoff().then((probe) => {
+      if (live) setManaged(probe?.managed === true);
+    });
+    return () => {
+      live = false;
+    };
+  }, []);
+
+  // Only a managed install has features to change at all.
+  if (!managed) return null;
+
+  const check = async () => {
+    setError(null);
+    setBusy(true);
+    try {
+      const found = await probeModify();
+      setLocal(found?.found ? found : null);
+      setAsk(found?.found ? "local" : "download");
+    } finally {
+      setBusy(false);
+    }
+  };
+
+  const openLocal = async () => {
+    setBusy(true);
+    setError(null);
+    try {
+      await openModify(local?.path);
+    } catch (e) {
+      setBusy(false);
+      setError(String(e));
+    }
+  };
+
+  const downloadAndOpen = async () => {
+    setBusy(true);
+    setError(null);
+    setProgress(null);
+    try {
+      const plan = await readModifyPlan(updateHeaders(selectedUpdateChannel()));
+      if (!plan) {
+        throw new Error(
+          t("The update service has no installer available right now. Try again later."),
+        );
+      }
+      await stageHandoff(plan, (p) => setProgress(p));
+      await openModify();
+    } catch (e) {
+      setBusy(false);
+      setProgress(null);
+      setError(String(e));
+    }
+  };
+
+  const reset = () => {
+    setAsk(null);
+    setLocal(null);
+    setError(null);
+    setProgress(null);
+  };
+
+  const pct =
+    progress && progress.total
+      ? Math.min(100, Math.round((progress.received / progress.total) * 100))
+      : null;
+  const desc =
+    ask === "local"
+      ? t(
+          "Compass Setup {version} is already on this PC from your last update. Open it to change which features are installed; nothing changes unless you finish the installer.",
+          { version: local?.version || "" },
+        )
+      : ask === "download"
+        ? t(
+            "Compass Setup isn't on this PC. Continuing downloads the full installer again and opens it, where you can change which features are installed.",
+          )
+        : t(
+            "Add or remove optional features — extensions, games, and the Music, eBook and Manga tabs. Changing them opens Compass Setup.",
+          );
+
+  return (
+    <SettingRow
+      icon={<Blocks size={20} strokeWidth={2} className="text-ink-muted" />}
+      label={t("Modify installation")}
+      desc={desc}
+    >
+      {busy && progress ? (
+        <span className="text-[12px] text-ink-muted">
+          {progress.verifying
+            ? t("Verifying the download…")
+            : pct != null
+              ? t("Downloading {pct}%", { pct })
+              : t("Downloading…")}
+        </span>
+      ) : ask ? (
+        <div className="flex flex-wrap items-center gap-2">
+          <button type="button" onClick={reset} className={ROW_ACTION} disabled={busy}>
+            {t("Cancel")}
+          </button>
+          <button
+            type="button"
+            onClick={ask === "local" ? openLocal : downloadAndOpen}
+            className={ROW_ACTION_PRIMARY}
+            disabled={busy}
+          >
+            {ask === "local" ? t("Open Compass Setup") : t("Download and open")}
+          </button>
+        </div>
+      ) : (
+        <button
+          type="button"
+          onClick={busy ? undefined : check}
+          aria-disabled={busy}
+          className={`${ROW_ACTION}${busy ? " pointer-events-none opacity-45" : ""}`}
+        >
+          {busy ? (
+            <Loader2 size={16} className="animate-spin" />
+          ) : (
+            <Blocks size={16} strokeWidth={2.2} />
+          )}
+          {t("Modify installation")}
+        </button>
+      )}
+      {error && (
+        <span role="alert" className="text-[12px] text-danger">
+          {error}
+        </span>
       )}
     </SettingRow>
   );

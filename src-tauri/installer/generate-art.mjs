@@ -7,19 +7,14 @@ import { fileURLToPath } from "node:url";
 const here = dirname(fileURLToPath(import.meta.url));
 const assets = join(here, "..", "..", "src", "assets");
 
-const MARK_PATHS = [
-  "M50,321.44 a300,300 0 1,1 600,0 a300,300 0 1,1 -600,0 Z M88,321.44 a262,262 0 1,0 524,0 a262,262 0 1,0 -524,0 Z M338,73.44 h24 v48 h-24 Z M338,521.44 h24 v48 h-24 Z M102,309.44 h48 v24 h-48 Z M550,309.44 h48 v24 h-48 Z M330,321.44 a20,20 0 1,1 40,0 a20,20 0 1,1 -40,0 Z",
-  "M494.96,176.48 L386.77,358.21 L313.23,284.67 Z",
-  "M313.23,284.67 L386.77,358.21 L205.04,466.4 Z",
-];
+const compassIcon = join(here, "..", "icons", "icon.png");
 
-function markSvg(fill) {
-  const paths = MARK_PATHS.map((d) => `<path d="${d}" />`).join("");
-  return `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 700 642.88"><g transform="matrix(1,0,0,1,0,0)" fill="${fill}">${paths}</g></svg>`;
+function markPng(size) {
+  return sharp(compassIcon).resize(size, size).png().toBuffer();
 }
 
 function wordmarkSvg(fill) {
-  return readFileSync(join(assets, "compass-wordmark.svg"), "utf8").replace(/class="cls-1"/g, `fill="${fill}"`);
+  return readFileSync(join(assets, "compass-wordmark.svg"), "utf8").replace(/fill="#f3f3f3"/g, `fill="${fill}"`);
 }
 
 function rasterByWidth(svg, width) {
@@ -74,7 +69,7 @@ async function sidebar() {
   const base = rasterIntrinsic(
     `<svg xmlns="http://www.w3.org/2000/svg" width="${W * s}" height="${H * s}"><defs><linearGradient id="g" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#1c1f26"/><stop offset="0.55" stop-color="#15171c"/><stop offset="1" stop-color="#0d0f13"/></linearGradient></defs><rect width="${W * s}" height="${H * s}" fill="url(#g)"/></svg>`,
   );
-  const mark = rasterByWidth(markSvg("#f4f4f5"), 86 * s);
+  const mark = await markPng(86 * s);
   const word = rasterByWidth(wordmarkSvg("#eef0f2"), 122 * s);
   const mm = await sharp(mark).metadata();
   const wm = await sharp(word).metadata();
@@ -93,7 +88,7 @@ async function sidebar() {
 async function header() {
   const W = 150, H = 57, s = 2;
   const base = rasterIntrinsic(`<svg xmlns="http://www.w3.org/2000/svg" width="${W * s}" height="${H * s}"><rect width="${W * s}" height="${H * s}" fill="#ffffff"/></svg>`);
-  const mark = rasterByHeight(markSvg("#11141a"), 36 * s);
+  const mark = await markPng(36 * s);
   const mm = await sharp(mark).metadata();
   const composed = await sharp(base)
     .composite([{ input: mark, left: 16 * s, top: Math.round((H * s - mm.height) / 2) }])

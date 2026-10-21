@@ -206,8 +206,8 @@ const extra: Record<string, string> = {
   "Couldn't connect to MyAnimeList": "Impossible de se connecter à MyAnimeList",
   "Couldn't load this list. Check the URL and try again.":
     "Impossible de charger cette liste. Vérifiez l’URL et réessayez.",
-  "Couldn't reach compass.site to load earlier builds. Check your connection and try again.":
-    "Impossible de joindre compass.site pour charger les versions antérieures. Vérifiez votre connexion et réessayez.",
+  "Couldn't reach compass.sarl to load earlier builds. Check your connection and try again.":
+    "Impossible de joindre compass.sarl pour charger les versions antérieures. Vérifiez votre connexion et réessayez.",
   "Couldn't reach Trakt": "Impossible de joindre Trakt",
   "Couldn't reach Trakt. Check your connection and try again.":
     "Impossible de joindre Trakt. Vérifiez votre connexion et réessayez.",

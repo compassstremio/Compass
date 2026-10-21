@@ -167,6 +167,27 @@ export function SettingsProvider({
   }, [settings.theme.backgroundImage]);
 
   const fileTimerRef = useRef(0);
+  const pendingFileJsonRef = useRef<string | null>(null);
+  const flushSettingsFile = useCallback(() => {
+    window.clearTimeout(fileTimerRef.current);
+    const json = pendingFileJsonRef.current;
+    if (json == null) return;
+    pendingFileJsonRef.current = null;
+    void writeSettingsFile(json).then((ok) => {
+      if (!ok && pendingFileJsonRef.current == null) pendingFileJsonRef.current = json;
+    });
+  }, []);
+  useEffect(() => {
+    const onHide = () => {
+      if (document.visibilityState === "hidden") flushSettingsFile();
+    };
+    window.addEventListener("pagehide", flushSettingsFile);
+    document.addEventListener("visibilitychange", onHide);
+    return () => {
+      window.removeEventListener("pagehide", flushSettingsFile);
+      document.removeEventListener("visibilitychange", onHide);
+    };
+  }, [flushSettingsFile]);
   useEffect(() => {
     if (!settingsReady) return;
     try {
@@ -175,8 +196,9 @@ export function SettingsProvider({
         sourceRef.current.profileId,
         sourceRef.current.linked,
       );
+      pendingFileJsonRef.current = json;
       window.clearTimeout(fileTimerRef.current);
-      fileTimerRef.current = window.setTimeout(() => void writeSettingsFile(json), 600);
+      fileTimerRef.current = window.setTimeout(flushSettingsFile, 600);
     } catch (e) {
       if (e instanceof DOMException && (e.name === "QuotaExceededError" || e.code === 22)) {
         console.warn("[settings] localStorage quota exceeded, dropping avatar");
@@ -185,7 +207,7 @@ export function SettingsProvider({
         }
       }
     }
-  }, [settings, settingsReady]);
+  }, [settings, settingsReady, flushSettingsFile]);
 
   useEffect(() => {
     if (!syncTorrentEnginePolicy || !settingsReady || !("__TAURI_INTERNALS__" in window)) return;

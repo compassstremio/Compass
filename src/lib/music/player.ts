@@ -47,7 +47,12 @@ import { beginMusicQueue, getMusicPlaybackOrigin, restoreMusicPlaybackOrigin } f
 import { hydrateMusicContextTracks, hydrateMusicRecentContexts } from "./recent-context";
 import { hydrateMusicDestinations } from "./recent-destinations";
 import { hydratePinnedMusicPlaylists } from "./pinned-playlists";
-import { hydrateMusicSourceConsent } from "./source-consent";
+import {
+  hydrateMusicSourceConsent,
+  filterMusicSourceCandidates,
+  musicPlaybackSourceAllowed,
+  subscribeMusicSourceConsent,
+} from "./source-consent";
 import type {
   MusicAudioQuality,
   MusicPlayerState,
@@ -122,7 +127,13 @@ function sourcesFor(
     invoke<MusicSourceCandidate[]>("music_source_candidates", { track }),
     timeout,
   ])
-    .then((value) => (Array.isArray(value) ? value.filter(candidate => compatibleVocalVersion(track, candidate.track)) : []))
+    .then((value) =>
+      filterMusicSourceCandidates(
+        Array.isArray(value)
+          ? value.filter((candidate) => compatibleVocalVersion(track, candidate.track))
+          : [],
+      ),
+    )
     .catch((error) => {
       queuedSources.delete(key);
       throw error;
@@ -140,6 +151,12 @@ const NEAR_END_MS = 45_000;
 let warmTimer: ReturnType<typeof setTimeout> | null = null;
 let nearEndKey: string | null = null;
 
+// A cached resolution or prewarm must not outlive the listener turning its source off.
+subscribeMusicSourceConsent(() => {
+  queuedSources.clear();
+  warmed.clear();
+});
+
 function warmNeighbours(): void {
   if (warmTimer) return;
   warmTimer = setTimeout(() => {
@@ -147,7 +164,7 @@ function warmNeighbours(): void {
     const around = musicWarmTargets(state.queue, state.queueIndex, 3);
     const now = Date.now();
     for (const track of around) {
-      if (!track) continue;
+      if (!track || !musicPlaybackSourceAllowed(track)) continue;
       const key = `${track.connectorId ?? ""}:${track.id}`;
       const last = warmed.get(key);
       if (last !== undefined && now - last < WARM_AGAIN_MS) continue;
@@ -169,7 +186,7 @@ function warmBeforeEnd(): void {
   if (state.current.connectorId === "spotify") {
     // librespot plays a preloaded track without a load gap; stream URLs are warmed below.
     const next = musicWarmTargets(state.queue, state.queueIndex, 1)[0];
-    if (next && queueTrackKey(next) !== queueTrackKey(state.current))
+    if (next && musicPlaybackSourceAllowed(next) && queueTrackKey(next) !== queueTrackKey(state.current))
       void invoke("music_spotify_preload", { track: next }).catch(() => {});
   }
   warmNeighbours();
@@ -830,7 +847,12 @@ export async function playMusic(
     autoSkipped.clear();
   }
   recoverPlayback = null;
-  const catalog = track.connectorId === "catalog" && !track.playbackUrl;
+  // A track from a source the listener turned off is resolved like a catalog entry:
+  // find an enabled source for the same recording, or report that none can play it.
+  const sourceBlocked = !musicPlaybackSourceAllowed(track);
+  const catalog =
+    (track.connectorId === "catalog" && !track.playbackUrl) ||
+    (sourceBlocked && track.mediaKind !== "video");
   const preferredSource = readMusicPreference("compass.music.preferred-source.v1");
   const resolvePreferred = shouldResolvePreferredSource(track, preferredSource, explicitSource !== null, failedAttempts.size > 0);
   const workingSource = state.current?.connectorId;

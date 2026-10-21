@@ -348,10 +348,10 @@ const catalog: Record<string, string> = {
     "Saat terbuka, Compass memeriksa beberapa kali sehari dan memberi tahu Anda di sini.",
   "Compass checks automatically every few hours.":
     "Compass memeriksa secara otomatis setiap beberapa jam.",
-  "Compass checks compass.site for new versions and installs them in place.":
-    "Compass memeriksa versi baru di compass.site dan menginstalnya langsung.",
-  "Compass checks compass.site for new versions and installs them in place. Nothing installs until you choose to, and a dismissed update never nags you again.":
-    "Compass memeriksa versi baru di compass.site dan menginstalnya langsung. Tidak ada yang diinstal sampai Anda memilihnya, dan pembaruan yang diabaikan tidak akan mengganggu Anda lagi.",
+  "Compass checks compass.sarl for new versions and installs them in place.":
+    "Compass memeriksa versi baru di compass.sarl dan menginstalnya langsung.",
+  "Compass checks compass.sarl for new versions and installs them in place. Nothing installs until you choose to, and a dismissed update never nags you again.":
+    "Compass memeriksa versi baru di compass.sarl dan menginstalnya langsung. Tidak ada yang diinstal sampai Anda memilihnya, dan pembaruan yang diabaikan tidak akan mengganggu Anda lagi.",
   "Compass could not find these": "Compass tidak dapat menemukan item berikut",
   "Compass could not open its web server. Try again, or set this up on the TV.":
     "Compass tidak dapat membuka server webnya. Coba lagi, atau siapkan ini di TV.",
@@ -540,7 +540,7 @@ const catalog: Record<string, string> = {
     "Server streaming Compass hanya berjalan di aplikasi desktop.",
   "Compass's temporary viewer requires HTTPS.": "Penampil sementara Compass memerlukan HTTPS.",
   "Compass, from a public domain frame": "Compass, dari frame domain publik",
-  "Compasses on your network": "Compass di jaringan Anda",
+  "Compasss on your network": "Compass di jaringan Anda",
   "Hard Boiled": "Hard Boiled",
   "Hard outline": "Garis luar tegas",
   "Hard stroke around each letter. High contrast.":

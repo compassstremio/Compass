@@ -461,8 +461,8 @@ const settings: Record<string, string> = {
   "Check the spelling or try a shorter search.":
     "Yazımı kontrol edin veya daha kısa bir arama yapmayı deneyin.",
   "Check your connection and try again.": "Bağlantınızı kontrol edip tekrar deneyin.",
-  "Checking compass.site for a newer build.":
-    "Daha yeni bir derleme için compass.site kontrol ediliyor.",
+  "Checking compass.sarl for a newer build.":
+    "Daha yeni bir derleme için compass.sarl kontrol ediliyor.",
   "Checking plots, cast, and scenes": "Konular, oyuncular ve sahneler inceleniyor",
   "Checking sources and audio": "Kaynaklar ve ses kontrol ediliyor",
   "Checking with TMDB…": "TMDB ile kontrol ediliyor…",
@@ -1209,10 +1209,10 @@ const settings: Record<string, string> = {
     "Compass açıkken günde birkaç kez kontrol eder ve sizi burada bilgilendirir.",
   "Compass checks automatically every few hours.":
     "Compass birkaç saatte bir otomatik olarak kontrol eder.",
-  "Compass checks compass.site for new versions and installs them in place.":
-    "Compass yeni sürümleri compass.site üzerinden kontrol eder ve mevcut kurulumun üzerine yükler.",
-  "Compass checks compass.site for new versions and installs them in place. Nothing installs until you choose to, and a dismissed update never nags you again.":
-    "Compass, compass.site üzerinden yeni sürümleri kontrol eder ve mevcut kurulumun üzerine yükler. Siz onaylamadan hiçbir şey yüklenmez ve reddettiğiniz bir güncelleme için bir daha bildirim almazsınız.",
+  "Compass checks compass.sarl for new versions and installs them in place.":
+    "Compass yeni sürümleri compass.sarl üzerinden kontrol eder ve mevcut kurulumun üzerine yükler.",
+  "Compass checks compass.sarl for new versions and installs them in place. Nothing installs until you choose to, and a dismissed update never nags you again.":
+    "Compass, compass.sarl üzerinden yeni sürümleri kontrol eder ve mevcut kurulumun üzerine yükler. Siz onaylamadan hiçbir şey yüklenmez ve reddettiğiniz bir güncelleme için bir daha bildirim almazsınız.",
   "Compass couldn't analyze the audio for this source. Try again or adjust it manually.":
     "Compass bu kaynağın sesini analiz edemedi. Tekrar deneyin veya elle ayarlayın.",
   "Compass couldn't find a reliable timing correction for this subtitle.":

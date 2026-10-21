@@ -143,8 +143,8 @@ const catalog13: Record<string, string> = {
   "TMDB API key": "Klucz API TMDB",
   "TMDB API key (v3)": "Klucz API TMDB (v3)",
   "TMDB API key, v3 auth": "Klucz API TMDB, uwierzytelnianie v3",
-  "TMDB asks for an app URL when you create the key. Put any URL at all, like https://compass.app. The only thing you need back is the API key.":
-    "Podczas tworzenia klucza TMDB prosi o adres URL aplikacji. Wpisz dowolny adres, na przykład https://compass.app. Potrzebujesz jedynie zwróconego klucza API.",
+  "TMDB asks for an app URL when you create the key. Put any URL at all, like https://compass.sarl. The only thing you need back is the API key.":
+    "Podczas tworzenia klucza TMDB prosi o adres URL aplikacji. Wpisz dowolny adres, na przykład https://compass.sarl. Potrzebujesz jedynie zwróconego klucza API.",
   "TMDB asks what the key is for. Choose Yes, this is for my own personal use only.":
     "TMDB zapyta, do czego służy klucz. Wybierz Yes, this is for my own personal use only.",
   "TMDB confirms the key is created. Follow the link it gives you to see your API key details.":

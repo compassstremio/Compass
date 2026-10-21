@@ -967,9 +967,9 @@ const catalogPR: Record<string, string> = {
   Remote: "रिमोट",
   "Remote control is off on that Compass, so it cannot be driven from here.":
     "उस Compass पर रिमोट कंट्रोल बंद है, इसलिए उसे यहाँ से नियंत्रित नहीं किया जा सकता।",
-  "Remote control is off, so other Compasses can see this one but cannot drive it.":
+  "Remote control is off, so other Compasss can see this one but cannot drive it.":
     "रिमोट कंट्रोल बंद है, इसलिए अन्य Compass इसे देख तो सकते हैं, लेकिन नियंत्रित नहीं कर सकते।",
-  "Remote control is on, so other Compasses on this network can drive this one.":
+  "Remote control is on, so other Compasss on this network can drive this one.":
     "रिमोट कंट्रोल चालू है, इसलिए इस नेटवर्क के अन्य Compass इसे नियंत्रित कर सकते हैं।",
   "Remote off": "रिमोट बंद",
   "Remote server": "रिमोट सर्वर",

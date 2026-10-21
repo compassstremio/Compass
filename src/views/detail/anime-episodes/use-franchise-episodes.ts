@@ -40,7 +40,7 @@ export function useFranchiseEpisodes(
     return () => {
       cancelled = true;
     };
-  }, [sig]);
+  }, [sig, settings.tmdbLanguage, settings.uiLanguage]);
 
   return useMemo(() => {
     if (!enabled || otherIds.length === 0 || extra.length === 0) return currentEpisodes;

@@ -1291,6 +1291,15 @@ const coverage: Record<string, string> = {
     "Facoltativo. TheIntroDB risponde anche senza chiave, ma una chiave aumenta il limite di richieste, così i tempi continuano ad arrivare durante le maratone. Ottienine una su",
   "Linking your Discord account also joins you to Compass's Discord server, so the bot can send your Backup keys privately.":
     "Linking your Discord account also joins you to Compass's Discord server, so the bot can send your Backup keys privately.",
+  "Import from Harbor": "Importa da Harbor",
+  "Your Harbor data was already brought over. Import it again to replace what Compass has now.": "I tuoi dati di Harbor sono già stati trasferiti. Importali di nuovo per sostituire quelli attuali di Compass.",
+  "Harbor is Compass's former name. Bring over its profiles, settings, lists, keys and connected accounts.": "Harbor è il nome precedente di Compass. Trasferisci profili, impostazioni, elenchi, chiavi e account collegati.",
+  "Import your Harbor data?": "Importare i tuoi dati di Harbor?",
+  "Compass restarts and replaces its current data with your Harbor setup. Close Harbor first.": "Compass si riavvia e sostituisce i dati attuali con la tua configurazione di Harbor. Chiudi prima Harbor.",
+  "Restarting...": "Riavvio in corso...",
+  "Import and restart": "Importa e riavvia",
+  "Compass could not start the import. Try again.": "Compass non è riuscito ad avviare l'importazione. Riprova.",
+  "Nothing is deleted: Compass keeps its current data in a backup folder next to its own, and Harbor stays as it is.": "Non viene eliminato nulla: Compass conserva i dati attuali in una cartella di backup accanto alla sua e Harbor resta com'è.",
 };
 
 export default coverage;

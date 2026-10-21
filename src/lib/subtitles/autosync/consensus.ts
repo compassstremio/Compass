@@ -2,7 +2,7 @@ import { dinfo, dwarn } from "@/lib/debug";
 import { searchSubtitles } from "@/lib/subtitles/search";
 import type { SubCue } from "@/lib/subtitles/parser";
 import { prepareSubtitle } from "@/lib/subtitles/prepare";
-import { providerSubtitleDownloadHeaders } from "@/lib/subtitles/provider-auth";
+import { subtitleTrackDownloadHeaders } from "@/lib/subtitles/provider-auth";
 import { isGeneratedLangLabel, normalizeLang } from "@/lib/subtitles/language";
 import { normalizeArabicForMatch } from "@/lib/subtitles/arabic-normalize";
 import { gatherSubtitleAddons } from "@/lib/subtitles/addon-source";
@@ -253,7 +253,8 @@ export async function prepareConsensusCandidate(
         release: r.release ?? undefined,
         filename: r.rawFilename ?? undefined,
         durationSec: ctx.durationSec,
-        requestHeaders: providerSubtitleDownloadHeaders(r.downloadAuth, r.url),
+        allowLocalNetwork: r.localTrusted === true,
+        requestHeaders: subtitleTrackDownloadHeaders(r.downloadAuth, r.url, r.localTrusted !== true),
       });
       try {
         if (prepared.cues.length < MIN_LINES) return null;

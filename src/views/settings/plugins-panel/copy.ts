@@ -18,6 +18,10 @@ export function errorText(t: T, e: unknown): string {
   const detail = e instanceof Error ? e.message : String(e);
   if (code === "no-runtime" || RUNTIME_GONE.test(detail)) return runtimeMissingText(t);
   switch (code) {
+    case "installation-disabled":
+      return t(
+        "Plugins are disabled for this installation. Use Modify installation in Settings to enable them.",
+      );
     case "only-https":
       return t("Only https links are accepted.");
     case "no-answer":

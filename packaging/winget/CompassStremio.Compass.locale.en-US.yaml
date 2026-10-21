@@ -1,0 +1,25 @@
+# yaml-language-server: $schema=https://aka.ms/winget-manifest.defaultLocale.1.10.0.schema.json
+
+PackageIdentifier: CompassStremio.Compass
+PackageVersion: 0.9.21
+PackageLocale: en-US
+Publisher: Compass
+PublisherUrl: https://compass.sarl/
+PublisherSupportUrl: https://github.com/compassstremio/compass/issues
+PackageName: Compass
+PackageUrl: https://compass.sarl/
+License: MIT
+LicenseUrl: https://github.com/compassstremio/compass/blob/main/LICENSE
+Copyright: Copyright (c) Compass contributors
+ShortDescription: A Stremio client built for adventure
+Description: Compass is a desktop media client for browsing and playing content from Stremio addons.
+Moniker: compass
+Tags:
+  - media
+  - mpv
+  - player
+  - stremio
+  - video
+ReleaseNotesUrl: https://github.com/compassstremio/compass/releases/tag/V0.9.21
+ManifestType: defaultLocale
+ManifestVersion: 1.10.0

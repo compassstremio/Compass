@@ -5,7 +5,7 @@ import { useT } from "@/lib/i18n";
 import { Section } from "../shared";
 import { SRow } from "../ui";
 
-const REPO = "https://github.com/Compasssio/Compass";
+const REPO = "https://github.com/compassstremio/compass";
 
 function Chevron() {
   return <ChevronRight size={18} className="text-ink-subtle rtl:-scale-x-100" />;

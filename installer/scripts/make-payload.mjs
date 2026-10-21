@@ -12,13 +12,17 @@ const STAGE = join(INSTALLER, 'payload-stage');
 const OUT_DIR = join(SETUP, 'payload');
 const OUT = join(OUT_DIR, 'compass-payload.zip');
 
-const UNINSTALLER = join(SETUP, 'target', 'release', 'compass-uninstall.exe');
+// Cargo writes to CARGO_TARGET_DIR when set, else to each crate's own target/.
+const SHARED_TARGET = process.env.CARGO_TARGET_DIR ? resolve(process.env.CARGO_TARGET_DIR) : null;
+const APP_RELEASE = SHARED_TARGET ? join(SHARED_TARGET, 'release') : join(APP, 'target', 'release');
+const SETUP_RELEASE = SHARED_TARGET ? join(SHARED_TARGET, 'release') : join(SETUP, 'target', 'release');
+const UNINSTALLER = join(SETUP_RELEASE, 'compass-uninstall.exe');
 const UNINSTALLER_CEILING = 60 * 1048576;
 const BUILD_UNINSTALLER =
   'cd installer/src-tauri && cargo build --release --no-default-features --bin compass-uninstall';
 
 const FILES = [
-  [join(APP, 'target', 'release', 'compass.exe'), 'compass.exe'],
+  [join(APP_RELEASE, 'compass.exe'), 'compass.exe'],
   [join(APP, 'THIRD-PARTY-NOTICES.txt'), 'notices'],
   [join(APP, 'binaries', 'mpv-x86_64-pc-windows-msvc.exe'), 'mpv.exe'],
   [join(APP, 'binaries', 'ffmpeg-x86_64-pc-windows-msvc.exe'), 'ffmpeg.exe'],
@@ -36,6 +40,17 @@ if (!capstanStaged && !process.env.COMPASS_CAPSTAN_OPTIONAL) {
   console.error('No extension runtime is staged, so this installer would ship broken extensions.\n');
   console.error('  ' + CAPSTAN + '\n');
   console.error('Run "pnpm run setup:capstan" first, or set COMPASS_CAPSTAN_OPTIONAL=1 to ship without it.');
+  process.exit(1);
+}
+
+// The game engine is optional at build time the same way: ship it when it is staged, refuse to
+// forget it silently, and let an explicit env var declare a build without it.
+const POKEMON = join(APP, 'resources', 'pokemon-engine');
+const pokemonStaged = existsSync(join(POKEMON, 'Compass.PokemonEngine.exe'));
+if (!pokemonStaged && !process.env.COMPASS_POKEMON_OPTIONAL) {
+  console.error('No game engine is staged, so this installer would ship tab-only games.\n');
+  console.error('  ' + POKEMON + '\n');
+  console.error('Build tools/pokemon-engine first, or set COMPASS_POKEMON_OPTIONAL=1 to ship without it.');
   process.exit(1);
 }
 
@@ -119,6 +134,14 @@ if (capstanStaged) {
   total += treeBytes(CAPSTAN);
 } else {
   console.error('SHIPPING WITHOUT EXTENSION SUPPORT: no runtime staged at ' + CAPSTAN);
+}
+
+if (pokemonStaged) {
+  mkdirSync(join(STAGE, 'resources'), { recursive: true });
+  cpSync(POKEMON, join(STAGE, 'resources', 'pokemon-engine'), { recursive: true });
+  total += treeBytes(POKEMON);
+} else {
+  console.error('SHIPPING WITHOUT THE GAME ENGINE: no engine staged at ' + POKEMON);
 }
 
 const appVersion = JSON.parse(readFileSync(join(APP, 'tauri.conf.json'), 'utf8')).version;

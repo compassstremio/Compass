@@ -13,6 +13,7 @@
     "Rebuild when vendored source changes",
     "Compile current upstream motw/largepage units",
     "Match upstream packed DLL layouts in Rust FFI; compiler ABI regression test",
-    "Declare combined license file for MIT binding and distinct UnRAR license"
+    "Declare combined license file for MIT binding and distinct UnRAR license",
+    "Link compiler-rt on x86_64-apple-darwin for __builtin_cpu_supports"
   ]
 }

@@ -745,7 +745,7 @@ const sweep: Record<string, string> = {
   "Compass's own bar": "La barre de Compass",
   "Compass's own community server": "Le serveur communautaire de Compass",
   "Compass's public relay": "Le relais public de Compass",
-  "Compasses on your network": "Instances de Compass sur votre réseau",
+  "Compasss on your network": "Instances de Compass sur votre réseau",
   "Hard outline": "Contour net",
   "Hardware acceleration (hwdec)": "Accélération matérielle (hwdec)",
   "HDR to SDR toggle": "Bouton HDR vers SDR",
@@ -912,7 +912,7 @@ const sweep: Record<string, string> = {
   "Link Discord": "Associer Discord",
   "Linked as {username}": "Associé sous le nom {username}",
   "Linked to your Compass account.": "Associé à votre compte Compass.",
-  "Listening for Compasses": "Détection des Compass",
+  "Listening for Compasss": "Détection des Compass",
   Lists: "Listes",
   "Live action": "Prises de vues réelles",
   "Live state of Compass's own P2P engine on this machine.":
@@ -1338,9 +1338,9 @@ const sweep: Record<string, string> = {
   "Remember your place on show pages": "Mémoriser votre progression sur les pages des séries",
   "Remote control is off on that Compass, so it cannot be driven from here.":
     "Le contrôle à distance est désactivé sur ce Compass, il ne peut donc pas être contrôlé depuis ici.",
-  "Remote control is off, so other Compasses can see this one but cannot drive it.":
+  "Remote control is off, so other Compasss can see this one but cannot drive it.":
     "Le contrôle à distance est désactivé, les autres Compass peuvent donc voir celui-ci, mais pas le contrôler.",
-  "Remote control is on, so other Compasses on this network can drive this one.":
+  "Remote control is on, so other Compasss on this network can drive this one.":
     "Le contrôle à distance est activé, les autres Compass de ce réseau peuvent donc contrôler celui-ci.",
   "Remote off": "Contrôle à distance désactivé",
   Remotes: "Accès à distance",
@@ -2041,7 +2041,7 @@ const sweep: Record<string, string> = {
   "{n} of {total} chosen": "{n} choisis sur {total}",
   "{n} of {total} connected": "{n} connectés sur {total}",
   "{n} on": "{n} activés",
-  "{n} other Compasses": "{n} autres Compass",
+  "{n} other Compasss": "{n} autres Compass",
   "{n} picks, refreshed daily": "{n} sélections, actualisées chaque jour",
   "{n} recorded winners": "{n} lauréats enregistrés",
   "{n} seeders": "{n} sources",

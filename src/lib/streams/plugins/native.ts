@@ -1,8 +1,14 @@
 import { invoke } from "@tauri-apps/api/core";
+import { readInstallFeatures } from "@/lib/features/install";
 import { extensionsSupported, forgetBridgeProviders } from "./extension/bridge";
 import { PluginError, type NativeExtensionRef } from "./types";
 
 const ARCHIVE_DIR = "extension-archives";
+
+export async function requireAndroidExtensions(): Promise<void> {
+  if (!extensionsSupported()) throw new PluginError("desktop-only");
+  if (!(await readInstallFeatures()).plugins) throw new PluginError("installation-disabled");
+}
 
 type InstallAnswer = {
   id?: unknown;
@@ -28,7 +34,7 @@ export async function installNativeArchive(
   bytes: Uint8Array,
   fileName: string,
 ): Promise<NativeExtensionRef> {
-  if (!extensionsSupported()) throw new PluginError("desktop-only");
+  await requireAndroidExtensions();
   const [{ appDataDir, join }, { mkdir, writeFile, remove }] = await Promise.all([
     import("@tauri-apps/api/path"),
     import("@tauri-apps/plugin-fs"),

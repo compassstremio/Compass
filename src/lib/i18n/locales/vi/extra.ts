@@ -250,8 +250,8 @@ const extra: Record<string, string> = {
   "Couldn't connect to MyAnimeList": "Không thể kết nối với MyAnimeList",
   "Couldn't load this list. Check the URL and try again.":
     "Không thể tải danh sách này. Hãy kiểm tra URL rồi thử lại.",
-  "Couldn't reach compass.site to load earlier builds. Check your connection and try again.":
-    "Không thể kết nối với compass.site để tải các bản dựng trước. Hãy kiểm tra kết nối rồi thử lại.",
+  "Couldn't reach compass.sarl to load earlier builds. Check your connection and try again.":
+    "Không thể kết nối với compass.sarl để tải các bản dựng trước. Hãy kiểm tra kết nối rồi thử lại.",
   "Couldn't reach Trakt": "Không thể kết nối với Trakt",
   "Couldn't reach Trakt. Check your connection and try again.":
     "Không thể kết nối với Trakt. Hãy kiểm tra kết nối rồi thử lại.",

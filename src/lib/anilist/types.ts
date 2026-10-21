@@ -49,10 +49,14 @@ export type AnilistMediaEntry = {
   progress: number;
   progressVolumes?: number;
   score: number;
+  private?: boolean;
   media: AnilistMedia;
 };
 
 export type AnilistListGroup = {
-  status: MediaListStatus;
+  /** Status groups carry a status; custom lists carry their name and a null status. */
+  status: MediaListStatus | null;
+  name?: string | null;
+  isCustomList?: boolean;
   entries: AnilistMediaEntry[];
 };

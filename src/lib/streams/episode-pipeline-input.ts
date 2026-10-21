@@ -8,7 +8,7 @@ import { resolveAddonRanks } from "./addon-priority";
 import { animeAbsoluteFromScopedId } from "./anime-identity-core";
 import type { PipelineInput } from "./pipeline";
 import { PLUGIN_ADDON_PREFIX, isPluginAddon, pluginAddonById, pluginIdFromCatalogueBase, pluginsForAddon } from "./plugins/addon";
-import { unverifiedAnimeSeasonId } from "./stream-ids";
+import { preferredAnimeImdbStreamId, unverifiedAnimeSeasonId } from "./stream-ids";
 import type { Stream } from "./types";
 
 function runtimeMinutes(runtime: string | number | undefined): number | undefined {
@@ -52,6 +52,7 @@ export function buildEpisodePipelineInput(params: {
   meta: Meta;
   episode: PlayEpisode | undefined;
   imdbId: string | null;
+  imdbIdVerified?: boolean;
   streamIds: string[];
   addons: Addon[];
   debrids: DebridStore[];
@@ -122,6 +123,9 @@ export function buildEpisodePipelineInput(params: {
         ? "series"
         : "movie";
   const animeReq = streamIds.some((id) => id.startsWith("kitsu:") || id.startsWith("mal:"));
+  const preferredAnimeImdbId = settings.animePreferImdbStreams && !addonNative
+    ? preferredAnimeImdbStreamId(meta.id, episode, imdbId, params.imdbIdVerified === true, streamIds)
+    : undefined;
   const unverifiedAnimeId = unverifiedAnimeSeasonId(meta.id, episode);
   const animeIdUnverified =
     unverifiedAnimeId != null &&
@@ -153,6 +157,7 @@ export function buildEpisodePipelineInput(params: {
     request: {
       type: requestType,
       ids: streamIds,
+      preferredAnimeImdbId,
       animeIdUnverified,
       context: {
         imdbId: imdbId ?? null,

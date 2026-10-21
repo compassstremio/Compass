@@ -18,20 +18,29 @@ function entryKey(id: string, season?: number, episode?: number): string {
   return id;
 }
 
+const parsedResume = new Map<string, { raw: string | null; entries: Record<string, Entry> }>();
+
 function readAll(key = readKey()): Record<string, Entry> {
   try {
     const raw = localStorage.getItem(key);
-    return raw ? (JSON.parse(raw) as Record<string, Entry>) : {};
+    const cached = parsedResume.get(key);
+    if (cached && cached.raw === raw) return cached.entries;
+    const entries = raw ? (JSON.parse(raw) as Record<string, Entry>) : {};
+    parsedResume.set(key, { raw, entries });
+    return entries;
   } catch {
     return {};
   }
 }
 
-function writeAll(all: Record<string, Entry>, key: string): void {
+function writeAll(all: Record<string, Entry>, key: string, acknowledged = false): void {
   try {
-    localStorage.setItem(key, JSON.stringify(all));
-  } catch {
-    /* noop */
+    const raw = JSON.stringify(all);
+    localStorage.setItem(key, raw);
+    parsedResume.set(key, { raw, entries: all });
+  } catch (error) {
+    parsedResume.delete(key);
+    if (acknowledged) throw error;
   }
 }
 
@@ -128,11 +137,18 @@ export function readResumeSource(
   return readAll()[entryKey(id, season, episode)]?.source;
 }
 
-export function clearResume(id: string, season?: number, episode?: number, ownerId?: string): void {
+export function clearResume(
+  id: string,
+  season?: number,
+  episode?: number,
+  ownerOrOptions?: string | { acknowledged?: boolean; ownerId?: string },
+): void {
+  const ownerId = typeof ownerOrOptions === "string" ? ownerOrOptions : ownerOrOptions?.ownerId;
+  const acknowledged = typeof ownerOrOptions === "object" && ownerOrOptions.acknowledged === true;
   for (const key of ownerId ? [KEY, PRIVATE_PREFIX + ownerId] : [readKey()]) {
     const all = readAll(key);
     delete all[entryKey(id, season, episode)];
-    writeAll(all, key);
+    writeAll(all, key, acknowledged);
   }
 }
 

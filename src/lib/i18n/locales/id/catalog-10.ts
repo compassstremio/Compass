@@ -130,8 +130,8 @@ const catalog: Record<string, string> = {
   "TMDB API key (v3)": "Kunci API TMDB (v3)",
   "TMDB API key, v3 auth": "Kunci API TMDB, autentikasi v3",
   "TMDB Rating": "Rating TMDB",
-  "TMDB asks for an app URL when you create the key. Put any URL at all, like https://compass.app. The only thing you need back is the API key.":
-    "TMDB meminta URL aplikasi saat Anda membuat kunci. Masukkan URL apa saja, seperti https://compass.app. Anda hanya perlu mendapatkan kunci API.",
+  "TMDB asks for an app URL when you create the key. Put any URL at all, like https://compass.sarl. The only thing you need back is the API key.":
+    "TMDB meminta URL aplikasi saat Anda membuat kunci. Masukkan URL apa saja, seperti https://compass.sarl. Anda hanya perlu mendapatkan kunci API.",
   "TMDB asks what the key is for. Choose Yes, this is for my own personal use only.":
     "TMDB menanyakan tujuan penggunaan kunci. Pilih Yes, this is for my own personal use only.",
   "TMDB confirms the key is created. Follow the link it gives you to see your API key details.":

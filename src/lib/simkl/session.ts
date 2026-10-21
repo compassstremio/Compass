@@ -1,8 +1,13 @@
-import { readSharedSecret, subscribeSecretsReady, writeSharedSecret } from "@/lib/secret-store";
+import { activeProfileId, activeProfileIsPrimary } from "@/lib/active-profile-id";
+import { getSecret, setSecret, subscribeSecretsReady } from "@/lib/secret-store";
 import { clearPendingWatches } from "./pending-sync";
 import type { SimklSession } from "./types";
 
 const BASE_KEY = "compass.simkl.session.v1";
+
+function keyFor(): string {
+  return `${BASE_KEY}.${activeProfileId()}`;
+}
 
 const subscribers = new Set<() => void>();
 let cached: SimklSession | null = null;
@@ -10,7 +15,16 @@ let loaded = false;
 
 function read(): SimklSession | null {
   try {
-    const raw = readSharedSecret(BASE_KEY);
+    const key = keyFor();
+    let raw = getSecret(key);
+    if (!raw) {
+      const legacy = getSecret(BASE_KEY);
+      if (legacy && activeProfileIsPrimary()) {
+        setSecret(key, legacy);
+        setSecret(BASE_KEY, null);
+        raw = legacy;
+      }
+    }
     if (!raw) return null;
     const parsed = JSON.parse(raw) as SimklSession;
     if (typeof parsed?.accessToken !== "string") return null;
@@ -22,7 +36,8 @@ function read(): SimklSession | null {
 
 function write(session: SimklSession | null): void {
   try {
-    writeSharedSecret(BASE_KEY, session ? JSON.stringify(session) : null);
+    if (session) setSecret(keyFor(), JSON.stringify(session));
+    else setSecret(keyFor(), null);
   } catch {
     return;
   }

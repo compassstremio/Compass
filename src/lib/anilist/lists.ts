@@ -6,12 +6,14 @@ const COLLECTION_QUERY = `query ($userId: Int) {
   MediaListCollection(userId: $userId, type: ANIME) {
     lists {
       status
+      name
       isCustomList
       entries {
         id
         status
         progress
         score
+        private
         media {
           id
           idMal
@@ -30,6 +32,7 @@ const COLLECTION_QUERY = `query ($userId: Int) {
 
 type RawGroup = {
   status: MediaListStatus | null;
+  name?: string | null;
   isCustomList: boolean;
   entries: AnilistMediaEntry[];
 };
@@ -73,10 +76,18 @@ function writeCachedCollection(userId: number, groups: AnilistListGroup[]): void
 
 function buildGroups(lists: RawGroup[]): AnilistListGroup[] {
   const byStatus = new Map<MediaListStatus, AnilistMediaEntry[]>();
+  const custom: AnilistListGroup[] = [];
   const seen = new Set<number>();
   for (const group of lists) {
-    if (group.isCustomList || !group.status) continue;
+    if (group.isCustomList) {
+      const name = group.name?.trim();
+      if (name && group.entries.length > 0)
+        custom.push({ status: null, name, isCustomList: true, entries: group.entries });
+      continue;
+    }
+    if (!group.status) continue;
     const bucket = byStatus.get(group.status) ?? [];
+    // Status groups split COMPLETED by format, so the same entry repeats across them.
     for (const entry of group.entries) {
       if (seen.has(entry.media.id)) continue;
       seen.add(entry.media.id);
@@ -84,7 +95,10 @@ function buildGroups(lists: RawGroup[]): AnilistListGroup[] {
     }
     byStatus.set(group.status, bucket);
   }
-  return Array.from(byStatus.entries()).map(([status, entries]) => ({ status, entries }));
+  return [
+    ...Array.from(byStatus.entries()).map(([status, entries]) => ({ status, entries })),
+    ...custom,
+  ];
 }
 
 export async function fetchMediaListCollection(userId: number): Promise<AnilistListGroup[]> {

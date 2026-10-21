@@ -2,6 +2,34 @@ import type { PlayEpisode } from "@/lib/view";
 
 const ANIME_SCHEME_RX = /^(kitsu|mal|anilist|anidb):/;
 
+export function hasAnimeStreamIds(ids: readonly string[]): boolean {
+  return ids.some((id) => ANIME_SCHEME_RX.test(id));
+}
+
+export function preferredAnimeImdbStreamId(
+  metaId: string,
+  episode: PlayEpisode | undefined,
+  imdbId: string | null,
+  imdbIdVerified: boolean,
+  streamIds: readonly string[],
+): string | undefined {
+  if (!hasAnimeStreamIds(streamIds)) return undefined;
+  const verifiedId = /^tt\d+$/.test(metaId) ? metaId : imdbIdVerified ? imdbId : null;
+  const id = episode ? (episode.imdbId ?? verifiedId) : verifiedId;
+  if (!id || !/^tt\d+$/.test(id)) return undefined;
+  let candidate = id;
+  if (episode) {
+    const { imdbSeason, imdbEpisode } = episode;
+    if (
+      typeof imdbSeason !== "number" || !Number.isInteger(imdbSeason) || imdbSeason < 0 ||
+      typeof imdbEpisode !== "number" || !Number.isInteger(imdbEpisode) || imdbEpisode < 1
+    ) return undefined;
+    candidate = `${id}:${imdbSeason}:${imdbEpisode}`;
+  }
+  // Only prefer identities already emitted by the episode-aware candidate builder.
+  return streamIds.includes(candidate) ? candidate : undefined;
+}
+
 export function unverifiedAnimeSeasonId(
   metaId: string,
   episode: PlayEpisode | null | undefined,

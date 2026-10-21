@@ -1,3 +1,4 @@
+import { badgeLabel } from "@/lib/social/badge-label";
 import { createPortal } from "react-dom";
 import { Award, Check, X } from "lucide-react";
 import { useMemo, useState, type ReactNode } from "react";
@@ -63,7 +64,7 @@ function BadgeOption({
           <Award size={28} className="text-ink-muted" />
         )}
       </div>
-      <span className="line-clamp-2 text-[11px] leading-tight text-ink-muted">{badge.name}</span>
+      <span className="line-clamp-2 text-[11px] leading-tight text-ink-muted">{badgeLabel(badge.name)}</span>
     </button>
   );
 }

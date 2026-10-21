@@ -133,7 +133,10 @@ fn a_directory_that_cannot_be_read_removes_nothing() {
     let root = fixture();
     let absent = root.join("absent");
 
-    assert_eq!(purge_extractions(&absent, AN_HOUR, true, an_hour_later()), 0);
+    assert_eq!(
+        purge_extractions(&absent, AN_HOUR, true, an_hour_later()),
+        0
+    );
     assert_eq!(
         purge_extractions(&absent, Duration::ZERO, false, an_hour_later()),
         0
@@ -275,4 +278,62 @@ async fn timed_out_process_guard_kills_child() {
         .is_err());
     tokio::time::sleep(Duration::from_millis(500)).await;
     assert_eq!(process_count("ping.exe"), baseline);
+}
+
+#[test]
+fn ffmpeg_lookup_resolves_a_command_name_to_an_absolute_path() {
+    let root = fixture();
+    let name = "compass-test-ffmpeg.exe";
+    let executable = root.join(name);
+    std::fs::write(&executable, b"binary").unwrap();
+    let search = std::env::join_paths([&root]).unwrap();
+    let resolved = resolve_ffmpeg_path(Path::new(name), &search).unwrap();
+    assert!(resolved.is_absolute());
+    assert_eq!(resolved, executable.canonicalize().unwrap());
+    assert!(resolve_ffmpeg_path(Path::new("missing-compass-ffmpeg"), &search).is_none());
+    assert_eq!(resolve_ffmpeg_path(&root, &search), None);
+    std::fs::remove_dir_all(root).unwrap();
+}
+
+#[test]
+fn completed_metadata_reports_actual_resolution_instead_of_requested_quality() {
+    let output = YtDlpOutput {
+        success: true,
+        exit_code: Some(0),
+        stdout: b"other output\nCOMPASS_TRAILER:{\"title\":\"Trailer\",\"duration\":123.5,\"height\":360}\n".to_vec(),
+        stderr: vec![],
+    };
+    let metadata = download_metadata(&output).unwrap();
+    let info = cached_info(Path::new("trailer.mp4"), 2048, None, &metadata);
+    assert_eq!(info.quality, "360p");
+    assert_eq!(info.duration_seconds, 123);
+    assert_eq!(info.title, "Trailer");
+    assert!(download_metadata(&YtDlpOutput {
+        stdout: vec![],
+        ..output
+    })
+    .is_err());
+}
+
+#[test]
+fn adaptive_selection_and_cache_version_do_not_reuse_legacy_720p_files() {
+    assert_eq!(format_for("360p", true), FORMAT_LOW_MERGED);
+    assert_eq!(format_for("720p", true), FORMAT_HIGH_MERGED);
+    assert_eq!(format_for("720p", false), FORMAT_HIGH);
+    assert_eq!(
+        fallback_format("360p", true, true),
+        Some((FORMAT_LOW, false))
+    );
+    assert!(quality_path("example", "720p").ends_with("v2-example-720p.mp4"));
+    let args = download_args(
+        FORMAT_HIGH_MERGED,
+        "output.mp4",
+        "video-url",
+        Some(Path::new("/tools/ffmpeg")),
+    );
+    assert!(args
+        .iter()
+        .any(|arg| arg.starts_with("after_move:COMPASS_TRAILER:")));
+    assert!(args.iter().any(|arg| arg == "--no-simulate"));
+    assert!(!args.iter().any(|arg| arg == "--skip-download"));
 }

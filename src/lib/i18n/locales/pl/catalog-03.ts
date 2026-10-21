@@ -60,8 +60,8 @@ const catalog03: Record<string, string> = {
   Checking: "Sprawdzanie",
   "Checking SVP installation...": "Sprawdzanie instalacji SVP...",
   "Checking availability": "Sprawdzanie dostępności",
-  "Checking compass.site for a newer build.":
-    "Sprawdzanie dostępności nowszej kompilacji w compass.site.",
+  "Checking compass.sarl for a newer build.":
+    "Sprawdzanie dostępności nowszej kompilacji w compass.sarl.",
   "Checking plots, cast, and scenes": "Sprawdzanie fabuły, obsady i scen",
   "Checking sources and audio": "Sprawdzanie źródeł i dźwięku",
   "Checking the local SVP and VapourSynth installation...":
@@ -706,8 +706,8 @@ const catalog03: Record<string, string> = {
   "Couldn't reach Trakt. Check your connection and try again.":
     "Nie udało się połączyć z Trakt. Sprawdź połączenie i spróbuj ponownie.",
   "Couldn't reach Trakt. Try refreshing.": "Nie udało się połączyć z Trakt. Spróbuj odświeżyć.",
-  "Couldn't reach compass.site to load earlier builds. Check your connection and try again.":
-    "Nie udało się połączyć z compass.site, aby wczytać wcześniejsze kompilacje. Sprawdź połączenie i spróbuj ponownie.",
+  "Couldn't reach compass.sarl to load earlier builds. Check your connection and try again.":
+    "Nie udało się połączyć z compass.sarl, aby wczytać wcześniejsze kompilacje. Sprawdź połączenie i spróbuj ponownie.",
   "Couldn't reach that pack": "Nie udało się uzyskać dostępu do tego pakietu",
   "Couldn't reach that pack (HTTP {n})": "Nie udało się uzyskać dostępu do tego pakietu (HTTP {n})",
   "Couldn't reach the update server. Try again in a moment.":

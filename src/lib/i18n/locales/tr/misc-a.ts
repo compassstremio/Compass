@@ -970,8 +970,8 @@ const miscA: Record<string, string> = {
   "Couldn't reach Trakt": "Trakt'a erişilemedi",
   "Couldn't reach Trakt. Check your connection and try again.":
     "Trakt'a erişilemedi. Bağlantınızı kontrol edip tekrar deneyin.",
-  "Couldn't reach compass.site to load earlier builds. Check your connection and try again.":
-    "Önceki derlemeleri yüklemek için compass.site'a erişilemedi. Bağlantınızı kontrol edip tekrar deneyin.",
+  "Couldn't reach compass.sarl to load earlier builds. Check your connection and try again.":
+    "Önceki derlemeleri yüklemek için compass.sarl'a erişilemedi. Bağlantınızı kontrol edip tekrar deneyin.",
   "Couldn't reach this Roku": "Bu Roku'ya erişilemedi",
   "Couldn't reach {name}. Try refreshing.": "{name} hizmetine ulaşılamadı. Yenilemeyi deneyin.",
   "Couldn't read that font file.": "Bu yazı tipi dosyası okunamadı.",
@@ -1421,8 +1421,8 @@ const miscA: Record<string, string> = {
   "Follow them out?": "Sen de videodan ayrılmak ister misin?",
   Font: "Yazı tipi",
   "Font tokens": "Yazı tipi tokenları",
-  "For Application URL anything works, for example https://compass.site. TMDB never visits it.":
-    "Uygulama URL'si için herhangi bir adres kullanabilirsiniz, örneğin https://compass.site. TMDB bu adresi hiçbir zaman ziyaret etmez.",
+  "For Application URL anything works, for example https://compass.sarl. TMDB never visits it.":
+    "Uygulama URL'si için herhangi bir adres kullanabilirsiniz, örneğin https://compass.sarl. TMDB bu adresi hiçbir zaman ziyaret etmez.",
   "For now, please open this site on a desktop, or build Compass from source.":
     "Şimdilik lütfen bu siteyi masaüstünde açın veya Compass'ı kaynak koddan derleyin.",
   "For series and anime, keep playing the rest of the season from the release you first picked. Applies whether Play is instant or manual.":
@@ -1647,7 +1647,7 @@ const miscA: Record<string, string> = {
     "Compass'ın kendi menüleri ve etiketleri. Altyazı dillerini daha sonra seçebilirsiniz; ikisini de Ayarlar'dan değiştirebilirsiniz.",
   "Compass's public relay": "Compass'ın herkese açık aktarıcısı",
   "Compass, from a public domain frame": "Kamu malı bir kareden alınan Compass",
-  "Compasses on your network": "Ağınızdaki Compass'lar",
+  "Compasss on your network": "Ağınızdaki Compass'lar",
   "Hard outline": "Keskin kontur",
   "Hardware acceleration (hwdec)": "Donanım hızlandırma (hwdec)",
   "Harvey Award Winners": "Harvey Ödülü Kazananlar",

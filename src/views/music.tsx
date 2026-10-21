@@ -13,6 +13,7 @@ import { MusicSpeakers } from "@/components/music/music-speakers";
 import { lazy, Suspense, useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { ChevronLeft, LoaderCircle, Music2, X } from "@/components/icons/music-icons";
 import { BackToTop } from "@/components/back-to-top";
+import { MediaStartPage } from "@/components/media-start-page";
 import { MusicGlyph } from "@/components/icons/music-glyph";
 import { CatalogCustomizeBar } from "@/components/catalog/customize-bar";
 import { errorText } from "@/components/music/music-connections/connection-row";
@@ -88,6 +89,7 @@ import {
   stopMusicCasting,
 } from "@/lib/music/player";
 import { useMusicPlayback } from "@/lib/music/use-music-playback";
+import { hasUsableMusicSource } from "@/lib/music/source-consent";
 import type { MusicCatalogItem, MusicSearchResults, MusicTrack } from "@/lib/music/types";
 import { hasPageRowChanges, resetPageRows, usePageRows } from "@/lib/page-rows";
 import { useScrollMemory } from "@/lib/view";
@@ -1166,6 +1168,16 @@ function MusicViewContent({ active }: { active: boolean }) {
     data.libraryStatus === "error" &&
     player.recents.length === 0 &&
     player.likedTracks.length === 0;
+
+  // First run has nothing to play from, so the music home would be an empty shell.
+  // Opening connections keeps the full page mounted while a source is being added.
+  if (connectionsStatus === "ready" && !connectionsPage && !hasUsableMusicSource(connections)) {
+    return (
+      <main className="media-start-scroll pt-24">
+        <MediaStartPage kind="music" onSetup={() => openConnections()} />
+      </main>
+    );
+  }
 
   return (
     <MusicNavigateProvider value={navigate}>

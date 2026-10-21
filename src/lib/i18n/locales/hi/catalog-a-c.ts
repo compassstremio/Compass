@@ -1429,7 +1429,7 @@ const catalogAC: Record<string, string> = {
   Checking: "जाँच हो रही है",
   "Checking SVP installation...": "SVP इंस्टॉलेशन की जाँच हो रही है...",
   "Checking availability": "उपलब्धता जाँची जा रही है",
-  "Checking compass.site for a newer build.": "नए बिल्ड के लिए compass.site की जाँच हो रही है।",
+  "Checking compass.sarl for a newer build.": "नए बिल्ड के लिए compass.sarl की जाँच हो रही है।",
   "Checking plots, cast, and scenes": "कथानक, कलाकारों और दृश्यों की जाँच हो रही है",
   "Checking sources and audio": "स्रोतों और ऑडियो की जाँच हो रही है",
   "Checking the local SVP and VapourSynth installation...":
@@ -2103,8 +2103,8 @@ const catalogAC: Record<string, string> = {
   "Couldn't reach Trakt. Check your connection and try again.":
     "Trakt से संपर्क नहीं हो सका। अपना कनेक्शन जाँचें और फिर कोशिश करें।",
   "Couldn't reach Trakt. Try refreshing.": "Trakt से संपर्क नहीं हो सका। रीफ़्रेश करके देखें।",
-  "Couldn't reach compass.site to load earlier builds. Check your connection and try again.":
-    "पहले के बिल्ड लोड करने के लिए compass.site से कनेक्ट नहीं हो सका। अपना कनेक्शन जाँचें और फिर कोशिश करें।",
+  "Couldn't reach compass.sarl to load earlier builds. Check your connection and try again.":
+    "पहले के बिल्ड लोड करने के लिए compass.sarl से कनेक्ट नहीं हो सका। अपना कनेक्शन जाँचें और फिर कोशिश करें।",
   "Couldn't reach that pack": "उस पैक तक पहुँचा नहीं जा सका",
   "Couldn't reach that pack (HTTP {n})": "उस पैक से कनेक्ट नहीं हो सका (HTTP {n})",
   "Couldn't reach the update server. Try again in a moment.":

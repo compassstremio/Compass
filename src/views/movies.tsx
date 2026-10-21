@@ -25,6 +25,9 @@ import { buildMovieHero, HERO_POOL_TARGET, movieSpecs, rotateDaily } from "./mov
 
 const MAX_PER_ROW = 30;
 
+// A stable array so memoizing CatalogRows is not defeated by a fresh literal on every render.
+const MOVIE_RERUN_KEYS = ["coming-soon"];
+
 type MovieRow = {
   key: string;
   title: string;
@@ -349,7 +352,7 @@ export function Movies({ active = true }: { active?: boolean }) {
             onPersist={pageRows.persist}
             scrollPrefix="movies"
             onLoadMore={loadMore}
-            flagRerunKeys={["coming-soon"]}
+            flagRerunKeys={MOVIE_RERUN_KEYS}
           />
         </div>
         <BackToTop scrollRef={scrollRef} />

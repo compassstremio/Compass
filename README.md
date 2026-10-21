@@ -2,14 +2,14 @@
 <a name="readme-top"></a>
 
 <picture>
-  <source media="(prefers-color-scheme: dark)" srcset="https://compass.site/readme-media/compass-wordmark-dark.svg">
-  <source media="(prefers-color-scheme: light)" srcset="https://compass.site/readme-media/compass-wordmark-light.svg">
-  <img src="https://compass.site/readme-media/compass-wordmark-light.svg" width="320">
+  <source media="(prefers-color-scheme: dark)" srcset="https://compass.sarl/readme-media/compass-wordmark-dark.svg">
+  <source media="(prefers-color-scheme: light)" srcset="https://compass.sarl/readme-media/compass-wordmark-light.svg">
+  <img src="https://compass.sarl/readme-media/compass-wordmark-light.svg" width="320">
 </picture>
 
 ### A Stremio Client Built for Adventure!
 
-Offering things like a native player, a stream ranking engine, Wikidata, watch parties, PiP, DVR, Live TV, anime, a theme engine, and much more. Check out our website at www.compass.site for an immersive experience.
+Offering things like a native player, a stream ranking engine, Wikidata, watch parties, PiP, DVR, Live TV, anime, a theme engine, and much more. Check out our website at www.compass.sarl for an immersive experience.
 
 <br/>
 
@@ -28,9 +28,9 @@ Offering things like a native player, a stream ranking engine, Wikidata, watch p
 </div>
 
 <br/>
-<h4 align="center">💬 New: By popular demand, join our community discord for support and help (https://discord.gg/mrVypwv3pU)!</h4>
+<h4 align="center">💬 New: By popular demand, join our community discord for support and help (https://discord.gg/pQBRmN9XdD)!</h4>
 <p align="center">
-  <img src="https://compass.site/readme-media/hero.png" width="900">
+  <img src="https://compass.sarl/readme-media/compass-home.webp" width="900">
   <br/>
   <sub>Compass on launch: a rotating hero, Continue Watching, and full width rails. Works on Cinemeta out of the box; richer with a free TMDB key.</sub>
 </p>
@@ -42,7 +42,7 @@ Offering things like a native player, a stream ranking engine, Wikidata, watch p
 > <br/>
 
 > [!NOTE]
-> Unofficial Linux `.deb`, `.rpm`, and Flatpak packages are maintained at [AdityaHebballe/harbor-linux-builds](https://github.com/AdityaHebballe/harbor-linux-builds). Official Linux packages are coming soon.
+> Unofficial Linux `.deb`, `.rpm`, and Flatpak packages are maintained at [AdityaHebballe/compass-linux-builds](https://github.com/AdityaHebballe/compass-linux-builds). Official Linux packages are coming soon.
 
 ATTENTION: COMPASS DOES NOT AND WILL NOT ASK YOU FOR DONATIONS! If someone claims to be us and asks you for donations, IT IS NOT US. Have an issue? Open it on GitHub so everyone can see the report and follow its resolution. Want to donate to a good cause? Consider the National Pediatric Cancer Foundation (https://nationalpcf.org/), Electronic Frontier Foundation (https://www.eff.org/), or St. Jude's (https://www.stjude.org/). You can also find a charity at https://www.charitynavigator.org/.
 <br/>
@@ -139,37 +139,37 @@ Eleven themes and seven font pairings, a live theme studio for every token, cust
 <table>
 <tr>
 <td width="50%" align="center">
-<img src="https://compass.site/readme-media/detail.png" width="100%"><br/>
+<img src="https://compass.sarl/readme-media/detail.png?v=2" width="100%"><br/>
 <sub><b>Detail page</b> &middot; ratings from IMDb, Rotten Tomatoes, and MAL, award laurels, cast and crew, episodes, and region aware Watch on chips.</sub>
 </td>
 <td width="50%" align="center">
-<img src="https://compass.site/readme-media/discover.png" width="100%"><br/>
+<img src="https://compass.sarl/readme-media/discover.png?v=2" width="100%"><br/>
 <sub><b>Discover</b> &middot; up to 14 rotating daily rails tuned by what you open, play, and save, plus a daily Critics Pick.</sub>
 </td>
 </tr>
 <tr>
 <td width="50%" align="center">
-<img src="https://compass.site/readme-media/player.png" width="100%"><br/>
+<img src="https://compass.sarl/readme-media/player.png" width="100%"><br/>
 <sub><b>Player</b> &middot; native libmpv, trickplay seek previews, skip intro/outro, and a customizable seek bar.</sub>
 </td>
 <td width="50%" align="center">
-<img src="https://compass.site/readme-media/live-tv.png" width="100%"><br/>
+<img src="https://compass.sarl/readme-media/live-tv.png?v=2" width="100%"><br/>
 <sub><b>Live TV</b> &middot; M3U and Xtream playlists rendered as a real EPG grid guide with favorites and catchup.</sub>
 </td>
 </tr>
 <tr>
 <td width="50%" align="center">
-<img src="https://compass.site/readme-media/multiview.png" width="100%"><br/>
+<img src="https://compass.sarl/readme-media/multiview.png?v=2" width="100%"><br/>
 <sub><b>Multiview</b> &middot; one, two, three, or 2x2 streams at once, with independent audio focus per tile.</sub>
 </td>
 <td width="50%" align="center">
-<img src="https://compass.site/readme-media/together.jpg" width="100%"><br/>
+<img src="https://compass.sarl/readme-media/together.jpg?v=2" width="100%"><br/>
 <sub><b>Together</b> &middot; synced playback, a live chat overlay, on screen cursors, and collaborative drawing.</sub>
 </td>
 </tr>
 <tr>
 <td colspan="2" align="center">
-<img src="https://compass.site/readme-media/themes.png" width="80%"><br/>
+<img src="https://compass.sarl/readme-media/themes.png?v=2" width="80%"><br/>
 <sub><b>Themes</b> &middot; eleven presets and a full visual studio. Colors, fonts, card and button shapes, backgrounds, and the entire nav layout.</sub>
 </td>
 </tr>
@@ -265,7 +265,7 @@ A native libmpv player, with HLS and MPEG-TS engines for live and broadcast sour
 
 Send any playback across the room through a bundled Rust cast server and a web cast receiver.
 
-- **Chromecast** via Compass's own CAF receiver (HLS, MP4, and unknown formats). (Visit Compasssio/cast-receiver-chrome)
+- **Chromecast** via Compass's own CAF receiver (HLS, MP4, and unknown formats). (Visit compassstremio/cast-receiver-chrome)
 - **DLNA / UPnP** with vendor aware handling for Samsung, Sony, LG, Panasonic, and Hisense.
 - **AirPlay** discovery and playback.
 - **Roku** via the ECP protocol, with guidance for network access and Media Assistant. (Pre and post roku update) Does require Roku tv addons
@@ -375,13 +375,13 @@ Awards laurels surface across detail pages, covering Oscar, Emmy, BAFTA, Golden 
 - **Trickplay scrub previews** decoded on the fly for torrents and local files, so the seek bar shows the exact frame you are hovering.
 
 <p align="left">
-  <img src="https://compass.site/readme-media/trickplay.jpg" width="720">
+  <img src="https://compass.sarl/readme-media/trickplay.jpg" width="720">
   <br/>
   <sub>Trickplay seek previews, generated live for torrents and local files.</sub>
 </p>
 
 <p align="left">
-  <img src="https://compass.site/readme-media/richactivity.gif" width="320">
+  <img src="https://compass.sarl/readme-media/richactivity.gif?v=2" width="320">
   <br/>
   <sub>Discord Rich Presence, cycling live as you browse and watch.</sub>
 </p>
@@ -402,14 +402,14 @@ Compass is built to keep your data on your machine.
 
 ## Install
 
-Download the latest build for macOS or Windows from the [Releases page][releases], use the [unofficial Linux packages](https://github.com/AdityaHebballe/harbor-linux-builds), or open Compass in your browser.
+Download the latest build for macOS or Windows from the [Releases page][releases], use the [unofficial Linux packages](https://github.com/AdityaHebballe/compass-linux-builds), or open Compass in your browser.
 
 | Platform    | Format                                                                                                   |
 | ----------- | -------------------------------------------------------------------------------------------------------- |
 | **macOS**   | `.dmg` (macOS 15.0 or newer, Apple silicon)                                                              |
-| **Windows** | `.exe` NSIS installer (current user install), or `winget install Compasssio.Compass`                   |
+| **Windows** | `.exe` NSIS installer (current user install), or `winget install CompassStremio.Compass`                   |
 | **Web**     | Open in any modern browser, nothing to install                                                           |
-| **Linux**   | [Unofficial `.deb`, `.rpm`, and Flatpak packages](https://github.com/AdityaHebballe/harbor-linux-builds) |
+| **Linux**   | [Unofficial `.deb`, `.rpm`, and Flatpak packages](https://github.com/AdityaHebballe/compass-linux-builds) |
 
 > [!NOTE]
 > Linux packages above are community-maintained. Official Compass Linux packages are coming soon.
@@ -654,8 +654,8 @@ Thank you to everyone, named and unnamed, whose open work Compass builds upon.
 
 <div align="center">
 <picture>
-  <source media="(prefers-color-scheme: dark)" srcset="https://compass.site/readme-media/compass-mark.svg">
-  <img src="https://compass.site/readme-media/compass-mark.svg" width="48">
+  <source media="(prefers-color-scheme: dark)" srcset="https://compass.sarl/readme-media/compass-mark.svg">
+  <img src="https://compass.sarl/readme-media/compass-mark.svg" width="48">
 </picture>
 <br/><br/>
 <sub>Built with care for the people who love good cinema and an open web. <a href="#readme-top">&#9650; back to top</a></sub>
@@ -663,10 +663,10 @@ Thank you to everyone, named and unnamed, whose open work Compass builds upon.
 
 <!-- reference links -->
 
-[releases]: https://github.com/Compasssio/Compass/releases
-[linux-packages]: https://github.com/AdityaHebballe/harbor-linux-builds
-[issues]: https://github.com/Compasssio/Compass/issues
-[discussions]: https://github.com/Compasssio/Compass/discussions
+[releases]: https://github.com/compassstremio/compass/releases
+[linux-packages]: https://github.com/AdityaHebballe/compass-linux-builds
+[issues]: https://github.com/compassstremio/compass/issues
+[discussions]: https://github.com/compassstremio/compass/discussions
 [license]: ./LICENSE
 [tauri]: https://v2.tauri.app/
 [react]: https://react.dev/

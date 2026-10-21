@@ -22,18 +22,13 @@ function stringConstant(name: string): string {
   return match[1];
 }
 
-test("the frontend waits beyond the native metadata plus two-attempt worst case", () => {
+test("the frontend waits beyond the native two-attempt worst case", () => {
   const frontendTimeoutMs = numericConstant(frontend, "TRAILER_FETCH_TIMEOUT_MS");
-  const metadataSeconds = numericConstant(backend, "METADATA_TIMEOUT");
+  const adaptiveSeconds = numericConstant(backend, "MERGED_DOWNLOAD_TIMEOUT");
   const progressiveSeconds = numericConstant(backend, "DOWNLOAD_TIMEOUT");
-  const fetchBody = backend.slice(backend.indexOf("pub async fn fetch_trailer"));
-  const inlineTimeouts = [...fetchBody.matchAll(/Duration::from_secs\(([0-9_]+)\)/g)].map((match) =>
-    Number(match[1].replaceAll("_", "")),
-  );
-  const adaptiveSeconds = Math.max(...inlineTimeouts);
-  const nativeWorstCaseMs = (metadataSeconds + progressiveSeconds + adaptiveSeconds) * 1_000;
+  const nativeWorstCaseMs = (progressiveSeconds + adaptiveSeconds) * 1_000;
 
-  assert.equal(nativeWorstCaseMs, 375_000, "the contract should track the current native budget");
+  assert.equal(nativeWorstCaseMs, 360_000, "the contract should track the current native budget");
   assert.ok(
     frontendTimeoutMs > nativeWorstCaseMs,
     `frontend ${frontendTimeoutMs}ms must exceed native ${nativeWorstCaseMs}ms`,
@@ -54,27 +49,25 @@ test("progressive selectors cannot choose video-only or audio-only formats", () 
   }
 });
 
-test("adaptive fallback selectors stay height-bounded and cannot silently select progressive best", () => {
+test("adaptive selectors stay height-bounded and require both video and audio", () => {
   for (const name of ["FORMAT_LOW_MERGED", "FORMAT_HIGH_MERGED"]) {
     const alternatives = stringConstant(name).split("/");
     for (const selector of alternatives) {
       assert.match(selector, /height<=/);
-      assert.match(selector, /\+/);
-      assert.doesNotMatch(selector, /^best\[/);
+      assert.ok(
+        selector.includes("+") ||
+          (selector.includes("vcodec!=none") && selector.includes("acodec!=none")),
+      );
     }
   }
 });
 
-test("selector routing only merges high-quality primaries and uses a genuinely different fallback", () => {
-  assert.match(
-    backend,
-    /fn should_merge[\s\S]*ffmpeg_available && matches!\(quality, "1080p" \| "best"\)/,
-  );
+test("all resolutions use adaptive selection when ffmpeg is available", () => {
   assert.match(backend, /\("1080p", true\) => FORMAT_1080/);
   assert.match(backend, /\("best", true\) => FORMAT_BEST/);
-  assert.match(backend, /\("360p", _\) => FORMAT_LOW/);
-  assert.match(backend, /if primary_merged \{[\s\S]*Some\(\(FORMAT_HIGH, false\)\)/);
-  assert.match(backend, /if !ffmpeg_available \{[\s\S]*return None;/);
-  assert.match(backend, /"360p" => Some\(\(FORMAT_LOW_MERGED, true\)\)/);
-  assert.match(backend, /"720p" => Some\(\(FORMAT_HIGH_MERGED, true\)\)/);
+  assert.match(backend, /\("360p", true\) => FORMAT_LOW_MERGED/);
+  assert.match(backend, /\("720p", true\) => FORMAT_HIGH_MERGED/);
+  assert.doesNotMatch(stringConstant("FORMAT_HIGH"), /(?:^|\/)18(?:\/|$)/);
+  assert.doesNotMatch(backend, /--skip-download/);
+  assert.match(backend, /after_move:COMPASS_TRAILER:/);
 });

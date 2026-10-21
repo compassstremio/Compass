@@ -146,7 +146,7 @@ let proxyOriginCache: boolean | null = null;
 function webProxyAvailable(): boolean {
   if (proxyOriginCache !== null) return proxyOriginCache;
   try {
-    proxyOriginCache = /(^|\.)compass\.site$/i.test(window.location.hostname);
+    proxyOriginCache = /(^|\.)compass\.sarl$/i.test(window.location.hostname);
   } catch {
     proxyOriginCache = false;
   }
@@ -582,6 +582,7 @@ export function safeFetchBytes(
   init?: RequestInit,
   timeoutMs = 30000,
   maxResponseBytes?: number,
+  allowLocalNetwork = false,
 ): Promise<Response> {
   const target = typeof input === "string" ? input : input instanceof URL ? input.href : null;
   const policyHeaders = new Headers(init?.headers as HeadersInit | undefined);
@@ -611,7 +612,7 @@ export function safeFetchBytes(
     return Promise.reject(new TrackerBlockedError(new URL(target).hostname));
   }
   return withDeadline(
-    tauriCompassFetch(target, init, "base64", timeoutMs, maxResponseBytes),
+    tauriCompassFetch(target, init, "base64", timeoutMs, maxResponseBytes, allowLocalNetwork),
     init?.signal,
     timeoutMs + 5_000,
   );

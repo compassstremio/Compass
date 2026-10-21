@@ -128,12 +128,10 @@ const LOTTIE_LAST_FRAME = 146;
 // viewer is not shown the logo assembling itself a second time.
 function BpIntroStaticMark() {
   return (
-    <svg viewBox="0 0 700 642.88" fill="currentColor" aria-hidden className="h-full w-full text-ink">
-      <g>
-          <path d="M50,321.44 a300,300 0 1,1 600,0 a300,300 0 1,1 -600,0 Z M88,321.44 a262,262 0 1,0 524,0 a262,262 0 1,0 -524,0 Z M338,73.44 h24 v48 h-24 Z M338,521.44 h24 v48 h-24 Z M102,309.44 h48 v24 h-48 Z M550,309.44 h48 v24 h-48 Z M330,321.44 a20,20 0 1,1 40,0 a20,20 0 1,1 -40,0 Z" />
-          <path d="M494.96,176.48 L386.77,358.21 L313.23,284.67 Z" />
-          <path d="M313.23,284.67 L386.77,358.21 L205.04,466.4 Z" />
-        </g>
+    <svg viewBox="0 0 864 864" fill="currentColor" aria-hidden className="h-full w-full text-ink">
+      <path fillRule="evenodd" d="M432 5a431 426.5 0 1 0 0 853a431 426.5 0 1 0 0-853Zm0 41a390 385.5 0 1 1 0 771a390 385.5 0 1 1 0-771Z" />
+      <path d="M412 30h44v106h-44ZM412 725h44v110h-44ZM26 415h95v40H26ZM744 415h95v40h-95Z" />
+      <path fillRule="evenodd" d="M674 206 485 487 202 651 381 382ZM432 400a37 37 0 1 0 0 74a37 37 0 1 0 0-74Z" />
     </svg>
   );
 }

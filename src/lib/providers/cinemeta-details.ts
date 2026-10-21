@@ -93,6 +93,7 @@ function toDetail(m: CinemetaMeta, kind: "movie" | "tv", related: Meta[]): TmdbD
     logo: m.logo,
     year,
     rating: m.imdbRating,
+    ratingSource: "imdb",
     voteCount: 0,
     runtime: m.runtime,
     status: "",

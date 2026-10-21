@@ -197,7 +197,7 @@ const settingsFill: Record<string, string> = {
   "How episodes are grouped for shows and anime. TVDB is the default: it gives the arc, DVD, and absolute orderings anime fans expect, with no key needed. TMDB keeps the plain aired order. Either way, every episode still plays and marks watched the same.":
     "Comment les épisodes sont regroupés pour les séries et les anime. TVDB est le choix par défaut : il propose les classements par arc, DVD et ordre absolu attendus par les fans d’anime, sans nécessiter de clé. TMDB conserve l’ordre de diffusion simple. Dans les deux cas, chaque épisode se lit et est marqué comme vu de la même manière.",
   "How long to wait first": "Délai d’attente initial",
-  "https://sync.compass.site": "https://sync.compass.site",
+  "https://sync.compass.sarl": "https://sync.compass.sarl",
   "Icon packs and single-award art from the community":
     "Packs d’icônes et illustrations de récompenses individuelles créés par la communauté",
   "Identity matches from content hashing and the community database always apply on their own. Timing worked out from the audio only offers a fix until it has earned trust. Turn this on to let those audio-derived fixes apply automatically too.":

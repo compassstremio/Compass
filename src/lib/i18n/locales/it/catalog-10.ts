@@ -181,7 +181,7 @@ const catalog10: Record<string, string> = {
   "https://...manifest.json or stremio://...": "https://...manifest.json o stremio://...",
   "https://posters.example.com or a pattern with {id}":
     "https://posters.example.com o un pattern con {id}",
-  "https://sync.compass.site": "https://sync.compass.site",
+  "https://sync.compass.sarl": "https://sync.compass.sarl",
   "huge ({width}×{height}px)": "enorme ({width}×{height}px)",
   "if the first page is 0. Use this when the URL counts pages.":
     "se la prima pagina è 0. Usalo quando l'URL usa i numeri di pagina.",
@@ -784,7 +784,7 @@ const catalog10: Record<string, string> = {
   "{n} options active": "{n} opzioni attive",
   "{n} options#few": "{n} opzioni#few",
   "{n} options#one": "{n} opzione#one",
-  "{n} other Compasses": "{n} altri Compass",
+  "{n} other Compasss": "{n} altri Compass",
   "{n} pages": "{n} pagine",
   "{n} pages#few": "{n} pagine#few",
   "{n} pages#one": "{n} pagina#one",

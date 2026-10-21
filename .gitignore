@@ -95,14 +95,18 @@ audit-routing.txt
 docs/TV-OPEN-BACKLOG.md
 audit-rest.txt
 *.md
+# Imported as ?raw by the ebook translator, so a checkout without it cannot build.
+!src/lib/ebook/translation-instructions.md
 
 installer/src-tauri/payload/
 installer/payload-stage/
 !installer/**/*.md
+# build.mjs copies this into the engine's corresponding source bundle
+!tools/pokemon-engine/README.md
 # local design references and perf captures, not for distribution
 tools/tv-refs/
 docs/tv-perf/
-# tauri-generated scaffolding (mobile support is disabled)
+# tauri-generated scaffolding, recreate with: pnpm android:init
 src-tauri/gen/
 installer/src-tauri/gen/
 

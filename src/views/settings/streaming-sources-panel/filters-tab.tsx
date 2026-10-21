@@ -1,7 +1,7 @@
 import { useId } from "react";
 import { useSettings } from "@/lib/settings";
 import { tvHover } from "@/lib/keyboard-navigation";
-import { Section } from "../shared";
+import { Section, ToggleRow } from "../shared";
 import { AddonTimeoutSetting } from "../addon-timeout-setting";
 import { useT } from "@/lib/i18n";
 
@@ -17,6 +17,14 @@ export function FiltersTab() {
         <StreamFilterPicker
           value={settings.streamFilterLevel}
           onChange={(value) => update({ streamFilterLevel: value })}
+        />
+      </Section>
+      <Section title={t("Prefer IMDb IDs for anime")}>
+        <ToggleRow
+          label={t("Prefer IMDb IDs for anime")}
+          sub={t("Use IMDb IDs for anime stream searches when a verified mapping is available. Otherwise, use the usual anime IDs.")}
+          value={settings.animePreferImdbStreams}
+          onChange={(value) => update({ animePreferImdbStreams: value })}
         />
       </Section>
       <AddonTimeoutSetting />

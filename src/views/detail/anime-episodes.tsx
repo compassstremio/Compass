@@ -3,6 +3,7 @@ import type { Meta } from "@/lib/cinemeta";
 import { scrollToDataEp } from "@/lib/episode-scroll";
 import { type FranchiseEntry } from "@/lib/providers/anime-detail";
 import type { KitsuEpisode } from "@/lib/providers/kitsu";
+import { isUpcomingDate } from "@/lib/dates";
 import { useSettings } from "@/lib/settings";
 import { effectiveOrderProvider, tvdbPanelEnabled } from "@/lib/settings/episode-order";
 import { useView } from "@/lib/view";
@@ -10,6 +11,9 @@ import { fetchWatchedKeySet } from "@/lib/trakt/history";
 import { useTrakt } from "@/lib/trakt/provider";
 import { useAnilistWatched } from "@/lib/anilist/use-anilist-watched";
 import { useMalWatched } from "@/lib/mal/use-mal-watched";
+import { usePublicMetaDb } from "@/lib/publicmetadb/provider";
+import { fetchPmdbWatchedKeySet } from "@/lib/publicmetadb/history";
+import { resolvePmdbTarget } from "@/lib/publicmetadb/ids";
 import { EpisodeWatchedMenu, type WatchedMenuTarget } from "@/components/episode-watched-menu";
 import { manualWatchedVersion, subscribeManualWatched } from "@/lib/manual-watched";
 import { useT } from "@/lib/i18n";
@@ -43,11 +47,58 @@ import { useAnimeWatchedRouting } from "./anime-episodes/use-anime-watched-routi
 import { useAnimeFranchiseNav } from "./anime-episodes/use-anime-franchise-nav";
 import { useTvdbProxyImages } from "./anime-episodes/use-tvdb-proxy-images";
 import { pickTvdbImage } from "@/lib/providers/tvdb-proxy";
+import {
+  fillAiredPlaceholderTitles,
+  isPlaceholderEpisodeText,
+} from "@/lib/providers/episode-placeholder";
+import { tmdbLanguageIso } from "@/lib/providers/tmdb/tmdb-client";
+import {
+  episodeArtworkFor,
+  unairedIndexes,
+  type EpisodeArtwork,
+} from "@/lib/providers/anime-episode-enrich";
 import { TvdbOrderPanel } from "./series-episodes/tvdb-order-panel";
 import { parseKitsuId } from "@/lib/providers/kitsu";
 import { aiIsGroq, aiKey, providerForModel } from "@/lib/ai-models";
 
 const WINDOW_STEP = 60;
+
+function parseTmdbTvId(id: string): number | null {
+  const m = /^tmdb:tv:(\d+)$/.exec(id);
+  return m ? Number(m[1]) : null;
+}
+
+// TVDB often lacks a still and description for an episode right after it airs;
+// the order rows then fall back to the series backdrop and show no synopsis.
+// TMDB (stills + overviews) and Cinemeta (stills) fill the gaps.
+function useEpisodeArtwork(
+  metaId: string,
+  imdbId: string | null,
+  tmdbKey: string,
+  seasons: number[],
+  enabled: boolean,
+): Map<string, EpisodeArtwork> {
+  const sig = seasons.join(",");
+  const [art, setArt] = useState<Map<string, EpisodeArtwork>>(() => new Map());
+  useEffect(() => {
+    if (!enabled) return;
+    const list = sig ? sig.split(",").map(Number) : [];
+    if (!imdbId?.startsWith("tt") && parseTmdbTvId(metaId) == null) return;
+    let cancelled = false;
+    void episodeArtworkFor({
+      imdbId,
+      tmdbId: parseTmdbTvId(metaId),
+      tmdbKey,
+      seasons: list,
+    }).then((map) => {
+      if (!cancelled) setArt(map);
+    });
+    return () => {
+      cancelled = true;
+    };
+  }, [enabled, metaId, imdbId, tmdbKey, sig]);
+  return art;
+}
 
 export function AnimeEpisodes({
   meta,
@@ -110,6 +161,29 @@ export function AnimeEpisodes({
     trackId ?? meta.id,
     episodes,
   );
+  const { isConnected: pmdbConnected } = usePublicMetaDb();
+  const [pmdbWatched, setPmdbWatched] = useState<Set<string>>(() => new Set());
+
+  useEffect(() => {
+    if (!pmdbConnected) {
+      setPmdbWatched(new Set());
+      return;
+    }
+    let cancelled = false;
+    resolvePmdbTarget(meta.id, "series")
+      .then((target) => target ?? (trackId ? resolvePmdbTarget(trackId, "series") : null))
+      .then((target) => {
+        if (cancelled) return;
+        return fetchPmdbWatchedKeySet(target ?? undefined);
+      })
+      .then((set) => {
+        if (!cancelled && set) setPmdbWatched(set);
+      })
+      .catch(() => {});
+    return () => {
+      cancelled = true;
+    };
+  }, [pmdbConnected, meta.id, trackId]);
   // Split-franchise sequels (TYBW, Stone Wars, …) render standalone: only the
   // opened entry's episodes, no sibling pooling, no whole-series TVDB buckets.
   const [rootEntryId, setRootEntryId] = useState<string | null>(() => franchiseRootSync(meta.id));
@@ -157,6 +231,7 @@ export function AnimeEpisodes({
     traktWatched,
     anilistWatched,
     malWatched,
+    pmdbWatched,
     mwVersion,
   });
   // Preferred season must stay reactive to watched-data arrival (trakt/AniList/MAL
@@ -299,13 +374,85 @@ export function AnimeEpisodes({
       : effectiveOrder
         ? effectiveOrder.visibleEpisodes
         : episodes;
-  const displayEpisodes = useMemo(() => {
-    if (Object.keys(proxyImages).length === 0) return baseDisplay;
-    return baseDisplay.map((ep) => {
-      const img = pickTvdbImage(proxyImages, ep);
-      return img ? { ...ep, thumbnail: img } : ep;
+  const artworkSeasons = useMemo(
+    () => [
+      ...new Set(
+        baseDisplay
+          .map((e) => e.imdbSeason ?? e.seasonNumber)
+          .filter((s): s is number => s != null && s > 0),
+      ),
+    ],
+    [baseDisplay],
+  );
+  const artworkNeeded = useMemo(
+    () =>
+      baseDisplay.some(
+        (e) => !e.thumbnail || !e.synopsis?.trim() || isPlaceholderEpisodeText(e.synopsis),
+      ),
+    [baseDisplay],
+  );
+  const artwork = useEpisodeArtwork(
+    meta.id,
+    imdbId ?? null,
+    settings.tmdbKey,
+    artworkSeasons,
+    artworkNeeded,
+  );
+  // Only rows with a known future date are provably unaired and skip artwork /
+  // badge as upcoming. A merely undated row past the aired frontier may have
+  // aired, so it keeps its still and is not marked upcoming.
+  const unairedIds = useMemo(() => {
+    const ids = new Set<number>();
+    unairedIndexes(baseDisplay).forEach((i) => {
+      const ep = baseDisplay[i];
+      if (ep.airdate && isUpcomingDate(ep.airdate)) ids.add(ep.id);
     });
-  }, [baseDisplay, proxyImages]);
+    return ids;
+  }, [baseDisplay]);
+  const displayEpisodes = useMemo(() => {
+    // The TVDB order can still say "TBA" for an episode that already aired while
+    // the entry's own episodes know the real title; fill those in, keep TBA for
+    // episodes that have not aired. Missing stills and descriptions come from
+    // the artwork map (TMDB first, then Cinemeta).
+    const filled = fillAiredPlaceholderTitles(
+      baseDisplay,
+      franchiseEpisodes,
+      Date.now(),
+      tmdbLanguageIso(),
+    );
+    let changed = false;
+    const out = filled.map((ep) => {
+      // An episode that has not aired has no real still or description
+      // anywhere yet, so any artwork-map hit would be another season's data
+      // borrowed through a differently-numbered provider season.
+      if (unairedIds.has(ep.id)) return ep;
+      const img = pickTvdbImage(proxyImages, ep);
+      if (img) {
+        changed = true;
+        return { ...ep, thumbnail: img };
+      }
+      const pair =
+        ep.imdbSeason != null && ep.imdbEpisode != null
+          ? `${ep.imdbSeason}:${ep.imdbEpisode}`
+          : null;
+      const art = pair ? artwork.get(pair) : undefined;
+      let next = ep;
+      if (!next.thumbnail && art?.thumbnail) {
+        next = { ...next, thumbnail: art.thumbnail };
+        changed = true;
+      }
+      if ((!next.synopsis?.trim() || isPlaceholderEpisodeText(next.synopsis)) && art?.synopsis) {
+        next = { ...next, synopsis: art.synopsis };
+        changed = true;
+      }
+      if (!next.length && art?.runtime) {
+        next = { ...next, length: art.runtime };
+        changed = true;
+      }
+      return next;
+    });
+    return changed ? out : filled;
+  }, [baseDisplay, proxyImages, franchiseEpisodes, artwork, unairedIds]);
   const displaySourceId = useMemo(() => {
     const ids = new Set<string>();
     for (const e of displayEpisodes) if (e.sourceMetaId != null) ids.add(e.sourceMetaId);
@@ -352,9 +499,19 @@ export function AnimeEpisodes({
     episode: number,
     watched: boolean,
     sourceMetaId?: string,
+    absoluteNumber?: number,
   ) => {
     e.preventDefault();
-    setWatchedMenu({ x: e.clientX, y: e.clientY, season, episode, watched, metaId: sourceMetaId });
+    setWatchedMenu({
+      x: e.clientX,
+      y: e.clientY,
+      season,
+      episode,
+      watched,
+      metaId: sourceMetaId,
+      absoluteNumber,
+      origin: e.currentTarget instanceof HTMLElement ? e.currentTarget : null,
+    });
   };
 
   const { progressFor, nextUpNum, nextUpId, spoilerFor, allWatched } = useAnimeProgressMap({
@@ -365,6 +522,7 @@ export function AnimeEpisodes({
     traktWatched,
     anilistWatched,
     malWatched,
+    pmdbWatched,
     entrySourceId: displaySourceId,
     entryAnilistWatched,
     entryMalWatched,
@@ -610,6 +768,7 @@ export function AnimeEpisodes({
                   onContextMenu={openWatchedMenu}
                   metaForEp={routing.metaForEp}
                   showSeason={showSeason}
+                  forceUpcoming={unairedIds.has(ep.id)}
                 />
               ))}
               {hasMore && !filteredEpisodes && (
@@ -627,6 +786,7 @@ export function AnimeEpisodes({
               onReachEnd={settings.episodeLayout === "grid" ? undefined : grow}
               metaForEp={routing.metaForEp}
               showSeason={showSeason}
+              unairedIds={unairedIds}
             />
           )}
         </div>
@@ -634,6 +794,14 @@ export function AnimeEpisodes({
       {watchedMenu && (
         <EpisodeWatchedMenu
           metaId={watchedMenu.metaId ?? meta.id}
+          syncMetaId={
+            (watchedMenu.metaId ?? meta.id) === meta.id &&
+            trackId &&
+            /^(kitsu|mal|anilist|anidb):/.test(trackId) &&
+            !/^(kitsu|mal|anilist|anidb):/.test(meta.id)
+              ? trackId
+              : undefined
+          }
           meta={
             watchedMenu.metaId
               ? routing.manualMetaFor(watchedMenu.metaId)
@@ -651,6 +819,7 @@ export function AnimeEpisodes({
               season: ep.seasonNumber ?? 1,
               episode: ep.number,
               released: ep.airdate ?? null,
+              absoluteNumber: ep.absoluteNumber,
             }))}
           onClose={() => setWatchedMenu(null)}
         />

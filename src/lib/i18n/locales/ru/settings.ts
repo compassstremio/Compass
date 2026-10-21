@@ -421,8 +421,8 @@ const settings: Record<string, string> = {
     "Используется для доступности на стриминговых сервисах и окна премьер «Сейчас в прокате». Выберите страну, и Compass подберёт под неё языки интерфейса, метаданных и субтитров.",
   "A free TMDB key is highly recommended. It unlocks the full Compass experience. The rest are optional, and Cinemeta works out of the box without any.":
     "Бесплатный ключ TMDB настоятельно рекомендуется: он раскрывает все возможности Compass. Остальные необязательны, а Cinemeta работает сразу и без ключей.",
-  "TMDB asks for an app URL when you create the key. Put any URL at all, like https://compass.app. The only thing you need back is the API key.":
-    "При создании ключа TMDB запросит URL приложения. Укажите любой URL, например https://compass.app. Вам нужен только сам API-ключ.",
+  "TMDB asks for an app URL when you create the key. Put any URL at all, like https://compass.sarl. The only thing you need back is the API key.":
+    "При создании ключа TMDB запросит URL приложения. Укажите любой URL, например https://compass.sarl. Вам нужен только сам API-ключ.",
   "RPDB already paints scores onto the poster. Toggle to override.":
     "RPDB уже наносит оценки на постер. Переключите, чтобы переопределить.",
   "MyAnimeList scores for anime titles. RPDB doesn't cover anime, so this stays optional.":
@@ -585,8 +585,8 @@ const settings: Record<string, string> = {
   "Hero carousel, Top 10, Trending, In Theaters, per-service rails.":
     "Главная карусель, Топ-10, «В тренде», «В кинотеатрах», ряды по сервисам.",
   Updates: "Обновления",
-  "Compass checks compass.site for new versions and installs them in place.":
-    "Compass проверяет новые версии на compass.site и устанавливает их на месте.",
+  "Compass checks compass.sarl for new versions and installs them in place.":
+    "Compass проверяет новые версии на compass.sarl и устанавливает их на месте.",
   "Backup & restore": "Резервная копия и восстановление",
   "Export your entire Compass setup to a single file, then restore it on a new computer or keep it as a backup.":
     "Экспортируйте все настройки Compass в один файл, чтобы восстановить их на новом компьютере или сохранить как резервную копию.",
@@ -1455,8 +1455,8 @@ const settings: Record<string, string> = {
   "My library": "Моя библиотека",
   Anticipated: "Ожидаемое",
   "Custom calendar": "Свой календарь",
-  "Compass checks compass.site for new versions and installs them in place. Nothing installs until you choose to, and a dismissed update never nags you again.":
-    "Compass проверяет compass.site на наличие новых версий и устанавливает их на месте. Ничего не устанавливается без вашего согласия, а отклонённое обновление больше не напоминает о себе.",
+  "Compass checks compass.sarl for new versions and installs them in place. Nothing installs until you choose to, and a dismissed update never nags you again.":
+    "Compass проверяет compass.sarl на наличие новых версий и устанавливает их на месте. Ничего не устанавливается без вашего согласия, а отклонённое обновление больше не напоминает о себе.",
   "Library, watch progress, and addon collection sync from this account.":
     "Библиотека, прогресс просмотра и набор Дополнений синхронизируются с этим аккаунтом.",
   "Export your entire Compass setup to a single file, then restore it on a new computer or keep it as a backup. Everything is included except your Stremio sign-in.":
@@ -1813,7 +1813,7 @@ const settings: Record<string, string> = {
     "Обратите внимание: если Stremio тоже установлен, Windows может спросить, каким приложением открыть ссылку stremio:// в первый раз. Выберите Compass, чтобы выбор запомнился.",
   "stremio:// links now open in the Stremio app. Compass will only install when you trigger it from inside Compass.":
     "Ссылки stremio:// теперь открываются в приложении Stremio. Compass устанавливает только то, что запущено изнутри Compass.",
-  "Checking compass.site for a newer build.": "Проверка compass.site на наличие новой сборки.",
+  "Checking compass.sarl for a newer build.": "Проверка compass.sarl на наличие новой сборки.",
   "Downloading {pct}%": "Загрузка {pct}%",
   "Downloaded. Ready to install and restart.": "Загружено. Готово к установке и перезапуску.",
   "Installing. Compass will restart.": "Установка. Compass перезапустится.",

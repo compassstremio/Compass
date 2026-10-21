@@ -660,7 +660,7 @@ const sweep: Record<string, string> = {
   "Compass's own bar": "Thanh riêng của Compass",
   "Compass's own community server": "Máy chủ cộng đồng riêng của Compass",
   "Compass's public relay": "Relay công khai của Compass",
-  "Compasses on your network": "Các Compass trên mạng của bạn",
+  "Compasss on your network": "Các Compass trên mạng của bạn",
   "Hard outline": "Viền đậm",
   "Hardware acceleration (hwdec)": "Tăng tốc phần cứng (hwdec)",
   Head: "Đầu",
@@ -807,7 +807,7 @@ const sweep: Record<string, string> = {
   "Link a title": "Liên kết một tựa phim",
   "Linked as {username}": "Đã liên kết với tên {username}",
   "Linked to your Compass account.": "Đã liên kết với tài khoản Compass của bạn.",
-  "Listening for Compasses": "Đang tìm Compass",
+  "Listening for Compasss": "Đang tìm Compass",
   "Live TV source": "Nguồn TV trực tiếp",
   "Live TV sources": "Nguồn TV trực tiếp",
   "Live action": "Người đóng",
@@ -1168,9 +1168,9 @@ const sweep: Record<string, string> = {
   "Remember your place on show pages": "Ghi nhớ vị trí trên trang phim bộ",
   "Remote control is off on that Compass, so it cannot be driven from here.":
     "Điều khiển từ xa đang tắt trên Compass đó nên không thể điều khiển từ đây.",
-  "Remote control is off, so other Compasses can see this one but cannot drive it.":
+  "Remote control is off, so other Compasss can see this one but cannot drive it.":
     "Điều khiển từ xa đang tắt nên các Compass khác có thể thấy Compass này nhưng không thể điều khiển.",
-  "Remote control is on, so other Compasses on this network can drive this one.":
+  "Remote control is on, so other Compasss on this network can drive this one.":
     "Điều khiển từ xa đang bật nên các Compass khác trên mạng này có thể điều khiển Compass này.",
   "Remote off": "Điều khiển từ xa tắt",
   Remotes: "Thiết bị điều khiển từ xa",
@@ -1813,7 +1813,7 @@ const sweep: Record<string, string> = {
   "{n} of {total} chosen": "Đã chọn {n} trên {total}",
   "{n} of {total} connected": "Đã kết nối {n} trên {total}",
   "{n} on": "Bật {n}",
-  "{n} other Compasses": "{n} Compass khác",
+  "{n} other Compasss": "{n} Compass khác",
   "{n} picks, refreshed daily": "{n} lựa chọn, làm mới hằng ngày",
   "{n} recorded winners": "{n} người thắng giải được ghi nhận",
   "{n} seeders": "{n} seeder",
@@ -1905,8 +1905,8 @@ const sweep: Record<string, string> = {
   "Fill in the details, then Subscribe": "Điền thông tin, rồi nhấn Đăng ký",
   "This is the part people get stuck on. None of it is checked and nothing is billed. Give the app any name, any URL, pick a type of use, and write a sentence for the summary. The contact fields can be anything real enough to look sensible. Tick the agreement and press Subscribe.":
     "Đây là phần mọi người thường gặp khó khăn. Không có thông tin nào được kiểm tra và bạn không bị tính phí. Đặt tên bất kỳ cho ứng dụng, nhập URL bất kỳ, chọn loại hình sử dụng và viết một câu tóm tắt. Các trường liên hệ chỉ cần điền thông tin trông hợp lý. Đánh dấu vào thỏa thuận rồi nhấn Đăng ký.",
-  "For Application URL anything works, for example https://compass.site. TMDB never visits it.":
-    "Bạn có thể nhập bất cứ gì vào URL ứng dụng, chẳng hạn https://compass.site. TMDB sẽ không bao giờ truy cập URL đó.",
+  "For Application URL anything works, for example https://compass.sarl. TMDB never visits it.":
+    "Bạn có thể nhập bất cứ gì vào URL ứng dụng, chẳng hạn https://compass.sarl. TMDB sẽ không bao giờ truy cập URL đó.",
   "That was the hard part": "Phần khó nhất đã xong",
   "TMDB confirms the key is created. Follow the link it gives you to see your API key details.":
     "TMDB xác nhận khóa đã được tạo. Mở liên kết được cung cấp để xem thông tin chi tiết về khóa API của bạn.",

@@ -748,6 +748,15 @@ const coverage: Record<string, string> = {
     "Pilih apakah Compass mengutamakan sumber langsung dan debrid, torrent peer-to-peer, atau menampilkan keduanya.",
   "Linking your Discord account also joins you to Compass's Discord server, so the bot can send your Backup keys privately.":
     "Linking your Discord account also joins you to Compass's Discord server, so the bot can send your Backup keys privately.",
+  "Import from Harbor": "Impor dari Harbor",
+  "Your Harbor data was already brought over. Import it again to replace what Compass has now.": "Data Harbor kamu sudah dipindahkan. Impor lagi untuk mengganti data Compass saat ini.",
+  "Harbor is Compass's former name. Bring over its profiles, settings, lists, keys and connected accounts.": "Harbor adalah nama lama Compass. Pindahkan profil, pengaturan, daftar, kunci, dan akun terhubungnya.",
+  "Import your Harbor data?": "Impor data Harbor kamu?",
+  "Compass restarts and replaces its current data with your Harbor setup. Close Harbor first.": "Compass akan dimulai ulang dan mengganti datanya saat ini dengan pengaturan Harbor kamu. Tutup Harbor terlebih dahulu.",
+  "Restarting...": "Memulai ulang...",
+  "Import and restart": "Impor dan mulai ulang",
+  "Compass could not start the import. Try again.": "Compass tidak dapat memulai impor. Coba lagi.",
+  "Nothing is deleted: Compass keeps its current data in a backup folder next to its own, and Harbor stays as it is.": "Tidak ada yang dihapus: Compass menyimpan datanya saat ini di folder cadangan di samping foldernya sendiri, dan Harbor tetap seperti semula.",
 };
 
 export default coverage;

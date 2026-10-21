@@ -1,3 +1,4 @@
+import { badgeLabel } from "@/lib/social/badge-label";
 import { Award } from "lucide-react";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { useT } from "@/lib/i18n";
@@ -9,7 +10,7 @@ import type { Badge } from "./profile-types";
 function BadgeChip({ b }: { b: Badge }) {
   return (
     <HoverTooltip
-      label={b.name}
+      label={badgeLabel(b.name)}
       sublabel={b.description || null}
       side="top"
       align="center"
@@ -27,7 +28,7 @@ function BadgeChip({ b }: { b: Badge }) {
           <Award size={40} className="text-ink-muted" />
         )}
       </div>
-      <span className="line-clamp-2 text-center text-[11px] leading-tight text-ink-muted">{b.name}</span>
+      <span className="line-clamp-2 text-center text-[11px] leading-tight text-ink-muted">{badgeLabel(b.name)}</span>
     </HoverTooltip>
   );
 }

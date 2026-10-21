@@ -34,7 +34,7 @@ fn start_with(profile: &str, id: &str, cancel: Option<Arc<AtomicBool>>) -> Resul
 pub fn cancel(profile: &str, id: &str) { if let Ok(job) = jobs().lock() { if let Some(job) = job.as_ref().filter(|j| j.profile == profile && j.id == id) { job.cancel.store(true, Ordering::Relaxed); } } }
 pub fn discard(profile: &str, token: &str) { if let Ok(mut plans) = plans().lock() { if plans.get(token).is_some_and(|p| p.profile == profile) { plans.remove(token); } } }
 pub(super) fn client() -> Result<reqwest::Client> {
-    reqwest::Client::builder().user_agent("Compass-Games/0.9 (https://compass.site)").connect_timeout(Duration::from_secs(10)).read_timeout(Duration::from_secs(25)).timeout(Duration::from_secs(300))
+    reqwest::Client::builder().user_agent("Compass-Games/0.9 (https://compass.sarl)").connect_timeout(Duration::from_secs(10)).read_timeout(Duration::from_secs(25)).timeout(Duration::from_secs(300))
         .redirect(reqwest::redirect::Policy::custom(|attempt| { if attempt.previous().len() >= 4 || pack::download_url(attempt.url().as_str()).is_err() { attempt.error("unsupported pack redirect") } else { attempt.follow() } }))
         .build().map_err(|_| "instance_network")
 }

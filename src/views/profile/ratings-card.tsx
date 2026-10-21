@@ -5,6 +5,7 @@ import { useT } from "@/lib/i18n";
 import { ArrowedScrollRow } from "@/components/arrowed-scroll-row";
 import { RatingPoster } from "@/components/ratings/rating-poster";
 import type { RatingsSummary } from "@/lib/ratings/types";
+import { profileMediaMeta } from "@/lib/social/profile-media-meta";
 
 export function RatingsCard({
   ratings,
@@ -66,7 +67,9 @@ export function RatingsCard({
           <div className="mb-4 flex items-center gap-4">
             <div className="flex items-baseline gap-1.5">
               <Star size={18} className="translate-y-[3px] fill-current text-ink" />
-              <span className="text-[22px] font-bold tabular-nums text-ink">{ratings.avg.toFixed(1)}</span>
+              <span className="text-[22px] font-bold tabular-nums text-ink">
+                {ratings.avg.toFixed(1)}
+              </span>
               <span className="text-[12px] text-ink-subtle">{t("avg")}</span>
             </div>
             <span className="text-[13px] text-ink-muted">
@@ -97,10 +100,15 @@ function RatingTile({
   return (
     <div ref={media.ref} className="w-[104px] shrink-0">
       <RatingPoster
+        meta={profileMediaMeta(r.itemKey, r.mediaType, { name: media.title, poster: media.poster })}
         title={media.title || r.title}
         posterUrl={media.poster}
         score={r.score}
-        onOpen={onOpenMeta ? () => onOpenMeta(r.itemKey, r.mediaType, { name: media.title, poster: media.poster }) : undefined}
+        onOpen={
+          onOpenMeta
+            ? () => onOpenMeta(r.itemKey, r.mediaType, { name: media.title, poster: media.poster })
+            : undefined
+        }
       />
     </div>
   );

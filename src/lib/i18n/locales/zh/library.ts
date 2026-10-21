@@ -161,7 +161,7 @@ const library: Record<string, string> = {
   "Auto-sync subtitles": "自动同步字幕",
   "Community sync": "社区同步",
   "Community sync server": "社区同步服务器",
-  "https://sync.compass.site": "https://sync.compass.site",
+  "https://sync.compass.sarl": "https://sync.compass.sarl",
   'Posters, logos, and title art load in the first available language from this list, falling back down the order. "Original" uses the title\'s own language. Put your main language first. Needs a TMDB key.':
     "海报、徽标和标题图将按此列表中的语言顺序，使用首个可用语言加载，并依次回退。“原始语言”会使用作品标题本身的语言。请将你的主要语言放在首位。需要 TMDB 密钥。",
   "When you reopen a show you were already browsing, jump straight back to your spot (usually the episode list) instead of starting at the top. The jump happens before the page shows, so there is no flash.":

@@ -4,11 +4,13 @@ import {
   useContext,
   useEffect,
   useMemo,
+  useRef,
   useState,
   type ReactNode,
 } from "react";
 import { openUrl } from "@/lib/window";
-import { buildAuthorizeUrl, completeAuthorization } from "./auth";
+import { buildAuthorizeUrl, cancelAuthorization, completeAuthorization } from "./auth";
+import { onMalCallback } from "./callback";
 import { getSession, isAuthenticated, setSession, subscribeSession } from "./session";
 import { validateMalSession } from "./validate";
 import type { MalSession } from "./types";
@@ -35,6 +37,7 @@ const Ctx = createContext<Value | null>(null);
 export function MalProvider({ children }: { children: ReactNode }) {
   const [session, setLocalSession] = useState<MalSession | null>(() => getSession());
   const [connectState, setConnectState] = useState<ConnectState>({ kind: "idle" });
+  const verifying = useRef(false);
 
   useEffect(() => subscribeSession(() => setLocalSession(getSession())), []);
 
@@ -55,16 +58,25 @@ export function MalProvider({ children }: { children: ReactNode }) {
     }
   }, []);
 
-  const submitCode = useCallback((code: string) => {
+  const verifyCode = useCallback((code: string, requireState = false) => {
+    if (verifying.current) return;
+    verifying.current = true;
     setConnectState({ kind: "verifying" });
-    completeAuthorization(code)
+    completeAuthorization(code, requireState)
       .then((final) => setConnectState({ kind: "success", session: final }))
-      .catch((e: Error) => setConnectState({ kind: "error", message: e.message }));
+      .catch((e: Error) => setConnectState({ kind: "error", message: e.message }))
+      .finally(() => { verifying.current = false; });
+  }, []);
+  const submitCode = useCallback((code: string) => verifyCode(code), [verifyCode]);
+  useEffect(() => onMalCallback((url) => verifyCode(url, true)), [verifyCode]);
+
+  const cancelConnect = useCallback(() => {
+    cancelAuthorization();
+    setConnectState({ kind: "idle" });
   }, []);
 
-  const cancelConnect = useCallback(() => setConnectState({ kind: "idle" }), []);
-
   const disconnect = useCallback(() => {
+    cancelAuthorization();
     setSession(null);
     setConnectState({ kind: "idle" });
   }, []);

@@ -188,9 +188,9 @@ const live: Record<string, string> = {
     "在顶栏中添加“大屏模式”按钮，让你一键切换到客厅大屏布局。无论是否显示此按钮，键盘快捷键都仍然有效。",
   "Remote control is off on that Compass, so it cannot be driven from here.":
     "该 Compass 已关闭远程控制，因此无法从这里操控。",
-  "Remote control is off, so other Compasses can see this one but cannot drive it.":
+  "Remote control is off, so other Compasss can see this one but cannot drive it.":
     "远程控制已关闭，因此其他 Compass 可以发现此设备，但无法操控。",
-  "Remote control is on, so other Compasses on this network can drive this one.":
+  "Remote control is on, so other Compasss on this network can drive this one.":
     "远程控制已开启，因此此网络中的其他 Compass 可以操控此设备。",
   "Remote off": "远程控制已关闭",
   "Saved on that device. You can close this page, or use this phone as a remote.":

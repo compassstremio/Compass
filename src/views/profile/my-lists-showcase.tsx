@@ -8,6 +8,8 @@ import { ListShareButton } from "./list-share-button";
 import { SaveListButton } from "./save-list-button";
 import type { FeaturedItem, FeaturedList } from "@/lib/social/featured-lists";
 import { useProfileTitle } from "./use-profile-title";
+import { profileMediaMeta } from "@/lib/social/profile-media-meta";
+import { useTitleContext } from "@/components/context-menu/use-title-context";
 
 function ListPoster({
   item,
@@ -17,9 +19,14 @@ function ListPoster({
   onOpenMeta?: (id: string, kind?: string, hint?: { name?: string; poster?: string }) => void;
 }) {
   const media = useProfileTitle(item.id, item.name, item.poster, item.type);
+  const onContextMenu = useTitleContext(
+    profileMediaMeta(item.id, item.type, { name: media.title, poster: media.poster }),
+    media.poster,
+  );
   return (
     <button
       ref={media.ref}
+      onContextMenu={onContextMenu}
       onClick={() => onOpenMeta?.(item.id, item.type, { name: media.title, poster: media.poster })}
       disabled={!onOpenMeta}
       className="group w-full text-start disabled:cursor-default"
@@ -31,7 +38,9 @@ function ListPoster({
         className="rounded-md ring-1 ring-edge-soft shadow-[0_2px_8px_-2px_rgba(0,0,0,0.35)] transition-[transform,box-shadow] duration-300 ease-[cubic-bezier(0.32,0.72,0.24,1)] motion-safe:group-hover:will-change-transform group-hover:shadow-[0_18px_36px_-14px_rgba(0,0,0,0.6)] motion-safe:group-hover:[transform:translate3d(0,-0.5rem,0)_scale(1.03)]"
         lazy
       />
-      {media.title && <div className="mt-1.5 truncate text-[12px] text-ink-muted">{media.title}</div>}
+      {media.title && (
+        <div className="mt-1.5 truncate text-[12px] text-ink-muted">{media.title}</div>
+      )}
     </button>
   );
 }

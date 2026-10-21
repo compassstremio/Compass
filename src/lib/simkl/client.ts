@@ -7,6 +7,7 @@ import {
   SIMKL_CLIENT_ID,
   SIMKL_USER_AGENT,
 } from "./config";
+import { refreshSimklSession, sessionNeedsRefresh } from "./refresh";
 import { getSession, setSession } from "./session";
 import { simklRetryPolicy } from "./retry-policy";
 
@@ -175,7 +176,7 @@ async function acquireSlot(method: string): Promise<void> {
   }
 }
 
-export function simklRequest<T>(path: string, opts: SimklRequestOptions = {}): Promise<T> {
+function simklRequestNow<T>(path: string, opts: SimklRequestOptions): Promise<T> {
   const profile = activeProfileId();
   const usesSession = !opts.token && opts.authed !== false;
   const session = usesSession ? getSession() : null;
@@ -203,4 +204,16 @@ export function simklRequest<T>(path: string, opts: SimklRequestOptions = {}): P
     () => undefined,
   );
   return result;
+}
+
+export function simklRequest<T>(path: string, opts: SimklRequestOptions = {}): Promise<T> {
+  const usesSession = !opts.token && opts.authed !== false;
+  if (usesSession && sessionNeedsRefresh(getSession())) {
+    // Refresh first, so the request below captures the new session instead of being cancelled by the swap.
+    return refreshSimklSession().then(
+      () => simklRequestNow<T>(path, opts),
+      () => simklRequestNow<T>(path, opts),
+    );
+  }
+  return simklRequestNow<T>(path, opts);
 }

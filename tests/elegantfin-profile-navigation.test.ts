@@ -223,12 +223,14 @@ function mountElegantFin(api?: ImmediateApi, collapsed = false) {
       <div><button data-compass-search class="compass-search-pill">Search</button></div>
       <div data-compass-topbar-actions><div class="ms-1"></div></div>
     </div></header>
-    <aside data-compass-sidebar data-collapsed="${collapsed}" aria-hidden="false">
-      <div>Compass</div><nav><button data-compass-nav="home">Home</button></nav>
-      <div><div><button data-compass-sidebar-toggle><svg><path></path></svg></button></div>
-        <div class="relative"><div class="h-12 w-12 rounded-full"><img src="/avatar.png"></div></div>
-      </div>
-    </aside>
+    <div data-compass-shell>
+      <aside data-compass-sidebar data-collapsed="${collapsed}" aria-hidden="false">
+        <div>Compass</div><nav><button data-compass-nav="home">Home</button></nav>
+        <div><div><button data-compass-sidebar-toggle><svg><path></path></svg></button></div>
+          <div class="relative"><div class="h-12 w-12 rounded-full"><img src="/avatar.png"></div></div>
+        </div>
+      </aside>
+    </div>
     <div id="ef-topleft"><button id="ef-menu">Menu</button></div><div id="ef-scrim"></div>
   `);
   const themeWindow = dom.window as typeof dom.window & {
@@ -356,6 +358,36 @@ test("ElegantFin keeps collapsed navigation focusable without an open drawer", (
   assert.equal(harness.sidebar.inert, false);
   assert.equal(harness.drawerOpen(), false);
   harness.cleanup();
+});
+
+test("ElegantFin hands the revealed Games navigation back to the shell", () => {
+  const harness = mountElegantFin({});
+  const shell = harness.document.querySelector("[data-compass-shell]")!;
+  assert.equal(harness.sidebar.inert, true);
+  shell.setAttribute("data-games-navigation", "");
+  harness.flush();
+  assert.equal(harness.sidebar.inert, false);
+  assert.equal(harness.drawerOpen(), false);
+  shell.removeAttribute("data-games-navigation");
+  harness.flush();
+  assert.equal(harness.sidebar.inert, true);
+  harness.cleanup();
+});
+
+test("ElegantFin yields its corner menu and drawer to the Games workspace", () => {
+  const themeSource = readFileSync(new URL("../src/lib/theme.ts", import.meta.url), "utf8");
+  assert.match(
+    themeSource,
+    /html:has\(\[data-games-library\]\) #ef-topleft \{\s*display: none !important;/,
+  );
+  assert.match(
+    themeSource,
+    /\[data-games-library\]\[data-games-navigation\][\s\S]{0,200}aside\[data-compass-sidebar\] \{\s*transform: translateX\(0\) !important;[\s\S]{0,200}visibility: visible !important;/,
+  );
+  assert.match(
+    themeSource,
+    /html\.ef-drawer-open \[data-games-library\]:not\(\[data-games-navigation\]\)[\s\S]{0,160}aside\[data-compass-sidebar\] \{\s*translate: 0 !important;[\s\S]{0,200}visibility: visible !important;/,
+  );
 });
 
 test("ElegantFin Escape returns focus from the closed drawer to its menu button", () => {

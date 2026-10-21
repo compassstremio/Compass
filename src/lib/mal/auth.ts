@@ -1,6 +1,7 @@
 import { MAL_AUTHORIZE_URL, MAL_CLIENT_ID, MAL_TOKEN_PROXY } from "./config";
 import { getSession, setSession } from "./session";
 import type { MalSession } from "./types";
+import { activeProfileId } from "@/lib/active-profile-id";
 
 function generateVerifier(): string {
   const chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789-._~";
@@ -11,18 +12,38 @@ function generateVerifier(): string {
   return result;
 }
 
-let storedVerifier: string | null = null;
+type PendingAuthorization = { verifier: string; state: string; profileId: string; createdAt: number };
+const PENDING_KEY = "compass.mal.authorization.v1";
+let pendingAuthorization: PendingAuthorization | null = null;
+
+export function cancelAuthorization(): void {
+  pendingAuthorization = null;
+  try { sessionStorage.removeItem(PENDING_KEY); } catch {}
+}
+
+function getPendingAuthorization(): PendingAuthorization | null {
+  try {
+    pendingAuthorization ??= JSON.parse(sessionStorage.getItem(PENDING_KEY) || "null");
+  } catch {}
+  const pending = pendingAuthorization;
+  if (!pending || typeof pending.verifier !== "string" || typeof pending.state !== "string" ||
+    pending.profileId !== activeProfileId() || !Number.isFinite(pending.createdAt) ||
+    Date.now() - pending.createdAt > 15 * 60 * 1000) return null;
+  return pending;
+}
 
 export function buildAuthorizeUrl(): string {
-  if (!MAL_CLIENT_ID) throw new Error("MAL_CLIENT_ID not configured. Set VITE_MAL_CLIENT_ID in your .env or register an app at https://myanimelist.net/apiconfig.");
   const verifier = generateVerifier();
-  storedVerifier = verifier;
+  const state = generateVerifier();
+  pendingAuthorization = { verifier, state, profileId: activeProfileId(), createdAt: Date.now() };
+  try { sessionStorage.setItem(PENDING_KEY, JSON.stringify(pendingAuthorization)); } catch {}
 
   const params = new URLSearchParams({
     response_type: "code",
     client_id: MAL_CLIENT_ID,
     code_challenge: verifier,
     code_challenge_method: "plain",
+    state,
   });
   return `${MAL_AUTHORIZE_URL}?${params.toString()}`;
 }
@@ -49,14 +70,20 @@ async function tauriFetch(input: string, init?: RequestInit): Promise<Response> 
   return fetch(input, init);
 }
 
-export async function completeAuthorization(pastedCode: string): Promise<MalSession> {
+export async function completeAuthorization(pastedCode: string, requireState = false): Promise<MalSession> {
   const code = extractMalCode(pastedCode);
   if (!code) throw new Error("Paste the code from MyAnimeList to continue");
-  if (!storedVerifier) throw new Error("Session expired. Start over and authorize again.");
-  const tokenData = await exchangeCode(code, storedVerifier);
-  storedVerifier = null;
+  const pending = getPendingAuthorization();
+  if (!pending) throw new Error("Session expired. Start over and authorize again.");
+  if (requireState) {
+    const params = new URL(pastedCode).searchParams;
+    if (params.get("state") !== pending.state) throw new Error("This authorization belongs to another attempt. Authorize again.");
+  }
+  const tokenData = await exchangeCode(code, pending.verifier);
 
   const userName = await fetchUserName(tokenData.access_token);
+  if (getPendingAuthorization() !== pending) throw new Error("Authorization was cancelled. Start over and authorize again.");
+  cancelAuthorization();
 
   const now = Date.now();
   const session: MalSession = {

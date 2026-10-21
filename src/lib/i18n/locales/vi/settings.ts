@@ -417,8 +417,8 @@ const settings: Record<string, string> = {
     "Dùng cho tình trạng có thể phát trực tuyến và khung thời gian phát hành Đang chiếu. Chọn một quốc gia để Compass đồng bộ ngôn ngữ giao diện, siêu dữ liệu và phụ đề tương ứng.",
   "A free TMDB key is highly recommended. It unlocks the full Compass experience. The rest are optional, and Cinemeta works out of the box without any.":
     "Rất nên dùng khóa TMDB miễn phí. Khóa này mở khóa đầy đủ trải nghiệm Compass. Các khóa còn lại là tùy chọn, còn Cinemeta hoạt động ngay mà không cần khóa nào.",
-  "TMDB asks for an app URL when you create the key. Put any URL at all, like https://compass.app. The only thing you need back is the API key.":
-    "TMDB yêu cầu URL ứng dụng khi bạn tạo khóa. Nhập URL bất kỳ, chẳng hạn https://compass.app. Thứ duy nhất bạn cần nhận lại là khóa API.",
+  "TMDB asks for an app URL when you create the key. Put any URL at all, like https://compass.sarl. The only thing you need back is the API key.":
+    "TMDB yêu cầu URL ứng dụng khi bạn tạo khóa. Nhập URL bất kỳ, chẳng hạn https://compass.sarl. Thứ duy nhất bạn cần nhận lại là khóa API.",
   "RPDB already paints scores onto the poster. Toggle to override.":
     "RPDB đã hiển thị điểm số trên áp phích. Bật để ghi đè.",
   "MyAnimeList scores for anime titles. RPDB doesn't cover anime, so this stays optional.":
@@ -572,8 +572,8 @@ const settings: Record<string, string> = {
   "Hero carousel, Top 10, Trending, In Theaters, per-service rails.":
     "Băng chuyền nổi bật, Top 10, Thịnh hành, Đang chiếu tại rạp, các hàng theo từng dịch vụ.",
   Updates: "Cập nhật",
-  "Compass checks compass.site for new versions and installs them in place.":
-    "Compass kiểm tra phiên bản mới trên compass.site và cài đặt trực tiếp.",
+  "Compass checks compass.sarl for new versions and installs them in place.":
+    "Compass kiểm tra phiên bản mới trên compass.sarl và cài đặt trực tiếp.",
   "Backup & restore": "Sao lưu và khôi phục",
   "Export your entire Compass setup to a single file, then restore it on a new computer or keep it as a backup.":
     "Xuất toàn bộ thiết lập Compass thành một tệp duy nhất, sau đó khôi phục trên máy tính mới hoặc lưu làm bản sao lưu.",
@@ -1379,8 +1379,8 @@ const settings: Record<string, string> = {
   "My library": "Thư viện của tôi",
   Anticipated: "Được mong đợi",
   "Custom calendar": "Lịch tùy chỉnh",
-  "Compass checks compass.site for new versions and installs them in place. Nothing installs until you choose to, and a dismissed update never nags you again.":
-    "Compass kiểm tra phiên bản mới trên compass.site và cài đặt trực tiếp. Không có gì được cài đặt cho đến khi bạn chọn, và bản cập nhật đã bỏ qua sẽ không nhắc lại.",
+  "Compass checks compass.sarl for new versions and installs them in place. Nothing installs until you choose to, and a dismissed update never nags you again.":
+    "Compass kiểm tra phiên bản mới trên compass.sarl và cài đặt trực tiếp. Không có gì được cài đặt cho đến khi bạn chọn, và bản cập nhật đã bỏ qua sẽ không nhắc lại.",
   "Library, watch progress, and addon collection sync from this account.":
     "Thư viện, tiến độ xem và bộ sưu tập tiện ích bổ sung được đồng bộ từ tài khoản này.",
   "Export your entire Compass setup to a single file, then restore it on a new computer or keep it as a backup. Everything is included except your Stremio sign-in.":
@@ -1710,7 +1710,7 @@ const settings: Record<string, string> = {
     "Lưu ý: nếu Stremio cũng được cài đặt, Windows có thể hỏi ứng dụng cần dùng trong lần đầu mở liên kết stremio://. Chọn Compass để đặt làm mặc định.",
   "stremio:// links now open in the Stremio app. Compass will only install when you trigger it from inside Compass.":
     "Liên kết stremio:// hiện sẽ mở trong ứng dụng Stremio. Compass chỉ cài đặt khi bạn kích hoạt từ trong Compass.",
-  "Checking compass.site for a newer build.": "Đang kiểm tra bản dựng mới hơn trên compass.site.",
+  "Checking compass.sarl for a newer build.": "Đang kiểm tra bản dựng mới hơn trên compass.sarl.",
   "Downloading {pct}%": "Đang tải xuống {pct}%",
   "Downloaded. Ready to install and restart.": "Đã tải xuống. Sẵn sàng cài đặt và khởi động lại.",
   "Installing. Compass will restart.": "Đang cài đặt. Compass sẽ khởi động lại.",

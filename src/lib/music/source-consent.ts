@@ -1,4 +1,5 @@
 import { useSyncExternalStore } from "react";
+import type { MusicConnection, MusicSourceCandidate, MusicTrack } from "./types";
 import { hydrateJsonStore, readJsonStore, writeLocalJson } from "./local-store";
 
 export const MUSIC_SOURCE_CONSENT_VERSION = 1;
@@ -6,7 +7,7 @@ export const MUSIC_SOURCE_CONSENT_KEY = "compass.music.source-consent.v1";
 export const MUSIC_SOURCE_CONSENT_EVENT = "compass:music-source-consent";
 const CONSENT_STORE = "source-consent";
 
-export const GATED_MUSIC_SOURCES = ["youtube", "soundcloud"] as const;
+export const GATED_MUSIC_SOURCES = ["youtube", "soundcloud", "spotify"] as const;
 export type GatedMusicSource = (typeof GATED_MUSIC_SOURCES)[number];
 
 export type MusicSourceConsent = Readonly<{
@@ -18,7 +19,7 @@ export type MusicSourceConsent = Readonly<{
 const BLANK: MusicSourceConsent = Object.freeze({
   version: MUSIC_SOURCE_CONSENT_VERSION,
   acceptedAt: null,
-  sources: Object.freeze({ youtube: false, soundcloud: false }),
+  sources: Object.freeze({ youtube: false, soundcloud: false, spotify: false }),
 });
 
 function dated(value: unknown): value is string {
@@ -108,10 +109,69 @@ export function isGatedMusicSource(
   return GATED_MUSIC_SOURCES.includes(connectorId as GatedMusicSource);
 }
 
+/** Legacy tracks spell the YouTube connector several ways; they all share one consent switch. */
+function gatedSourceOf(connectorId: string | null | undefined): GatedMusicSource | null {
+  const id = connectorId?.trim().toLowerCase();
+  if (
+    id === "youtube" ||
+    id === "youtube_music" ||
+    id === "youtubemusic" ||
+    id === "youtube-music"
+  )
+    return "youtube";
+  if (id === "soundcloud") return "soundcloud";
+  if (id === "spotify") return "spotify";
+  return null;
+}
+
 /** Ungated sources are the listener's own media or their own signed-in account; never blocked. */
 export function musicSourceAllowed(connectorId: string | null | undefined): boolean {
-  if (!isGatedMusicSource(connectorId)) return true;
-  return !!consent.acceptedAt && consent.sources[connectorId];
+  const source = gatedSourceOf(connectorId);
+  if (!source) return true;
+  return !!consent.acceptedAt && consent.sources[source];
+}
+
+/**
+ * Configured sources keep the music home open even while they report an error, so a
+ * temporary outage does not replace the listener's library with the first-run page.
+ */
+export function isMusicSourceUsable(connection: MusicConnection): boolean {
+  const configured = connection.status === "connected" || connection.status === "error";
+  return (
+    configured &&
+    connection.capabilities.includes("play") &&
+    (!connection.anonymous || musicSourceAllowed(connection.id))
+  );
+}
+
+export function hasUsableMusicSource(connections: readonly MusicConnection[]): boolean {
+  return connections.some(isMusicSourceUsable);
+}
+
+/** Playback may only resolve through sources the listener has turned on. */
+export function filterMusicSourceCandidates(
+  candidates: readonly MusicSourceCandidate[],
+): MusicSourceCandidate[] {
+  return candidates.filter(
+    (candidate) =>
+      musicSourceAllowed(candidate.connectorId) &&
+      musicSourceAllowed(candidate.track.connectorId),
+  );
+}
+
+/** Mirrors the backend fallback: a track with no provider and no direct URL resolves via YouTube. */
+export function musicPlaybackSourceAllowed(
+  track: Pick<MusicTrack, "connectorId" | "playbackUrl">,
+): boolean {
+  const connectorId = track.connectorId ?? (track.playbackUrl ? "direct" : "youtube");
+  return musicSourceAllowed(connectorId);
+}
+
+/** Runs the action now when the source is allowed, otherwise asks for consent and retries it after. */
+export function guardMusicSource(id: GatedMusicSource, retry?: () => void): boolean {
+  if (musicSourceAllowed(id)) return true;
+  requestMusicSourceConsent(retry, id);
+  return false;
 }
 
 export function acceptMusicSources(enabled: readonly GatedMusicSource[]): MusicSourceConsent {

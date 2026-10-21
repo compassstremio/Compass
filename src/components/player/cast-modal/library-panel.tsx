@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useT } from "@/lib/i18n";
 import { useAnilist } from "@/lib/anilist/provider";
 import { useLetterboxd } from "@/lib/stremboxd/provider";
@@ -43,6 +43,10 @@ function readSavedTab(): Tab {
 export function LibraryPanel() {
   const t = useT();
   const [tab, setTab] = useState<Tab>(readSavedTab);
+  // This panel renders a subset of the library tabs, so readSavedTab falls back to "library" for a
+  // tab it cannot show (torbox, media-servers). Persisting that fallback would overwrite the tab
+  // the full Library view saved, so only write back a value that actually changed here.
+  const savedTab = useRef(tab);
   const { isConnected: traktConnected } = useTrakt();
   const { isConnected: anilistConnected } = useAnilist();
   const { isConnected: malConnected } = useMal();
@@ -50,6 +54,7 @@ export function LibraryPanel() {
   const lb = useLetterboxd();
 
   useEffect(() => {
+    if (tab === savedTab.current) return;
     try {
       localStorage.setItem(TAB_KEY, tab);
     } catch {}

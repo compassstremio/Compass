@@ -16,7 +16,7 @@ import {
   type SaveStep,
 } from "@/lib/addons-store/reorder";
 import { pushOverlayPin } from "@/lib/overlay-pin";
-import { useSearch } from "@/lib/search-context";
+import { useSearchOpen } from "@/lib/search-context";
 import { useT } from "@/lib/i18n";
 import { BackupsPanel } from "./backups-card";
 import { OrganizeList, SectionCard, SkeletonRows } from "./section-card";
@@ -91,13 +91,13 @@ export function OrganizeAddonsPage({
     setWorkingDevice((l) => moveItem(l, from, to)),
   );
 
-  const search = useSearch();
+  const searchOpen = useSearchOpen();
   const escBlockRef = useRef(false);
   const backupsOpenRef = useRef(false);
   const onCloseRef = useRef(onClose);
   useEffect(() => {
     escBlockRef.current =
-      search.open ||
+      searchOpen ||
       phase.kind === "saving" ||
       moving != null ||
       cloudDrag.dragIndex != null ||

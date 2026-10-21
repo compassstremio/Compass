@@ -73,7 +73,7 @@ export function MalConnectModal({ onClose }: { onClose: () => void }) {
           {connectState.kind === "needs-code" && (
             <>
               <p className="text-[13px] leading-relaxed text-ink-muted">
-                {t("A browser tab opened on MyAnimeList. Approve Compass there, then copy the code or the page URL and paste it below.")}
+                {t("Approve Compass in your browser, then return here. If Compass does not open automatically, use Open Compass on the confirmation page or paste the code below.")}
               </p>
               <textarea
                 value={draftCode}

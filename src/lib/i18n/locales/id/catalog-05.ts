@@ -447,7 +447,7 @@ const catalog: Record<string, string> = {
     "Koleksi yang dicantumkan akan muncul di penelusuran komunitas saat fitur tersebut diluncurkan.",
   Listen: "Dengarkan",
   Listening: "Sedang mendengarkan",
-  "Listening for Compasses": "Mencari Compass",
+  "Listening for Compasss": "Mencari Compass",
   "Listening…": "Mendengarkan…",
   Lists: "Daftar",
   Literary: "Sastra",

@@ -2,7 +2,7 @@
 import assert from "node:assert/strict";
 // @ts-expect-error Node test types are intentionally outside the browser-only tsconfig.
 import test from "node:test";
-import { isLocalNetworkUrl } from "../src/lib/local-network.ts";
+import { isLocalNetworkHostName, isLocalNetworkUrl } from "../src/lib/local-network.ts";
 
 test("loopback and link-local targets count as local network", () => {
   for (const url of [
@@ -40,5 +40,39 @@ test("public and unrelated targets are left to the guarded fetch", () => {
     "",
   ]) {
     assert.equal(isLocalNetworkUrl(url), false, url);
+  }
+});
+
+test("local hosts need an unambiguous address, not a name shape", () => {
+  for (const host of [
+    "localhost",
+    "sub.localhost",
+    "127.0.0.1",
+    "127.9.9.9",
+    "::1",
+    "169.254.1.1",
+    "10.0.0.5",
+    "172.16.4.2",
+    "172.31.255.254",
+    "192.168.1.5",
+    "fd00::1",
+  ]) {
+    assert.equal(isLocalNetworkHostName(host), true, host);
+  }
+  for (const host of [
+    "example.com",
+    "myaddon.local",
+    "media.home.arpa",
+    "subs.lan",
+    "addon.internal",
+    "100.64.0.5",
+    "198.18.0.1",
+    "8.8.8.8",
+    "172.32.0.1",
+    "2001:db8::1",
+    "not a url",
+    "",
+  ]) {
+    assert.equal(isLocalNetworkHostName(host), false, host);
   }
 });

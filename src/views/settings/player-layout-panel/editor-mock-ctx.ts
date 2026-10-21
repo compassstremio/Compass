@@ -23,6 +23,12 @@ const MOCK_SNAP = {
   positionSec: 1342,
   durationSec: 6420,
   volume: 0.7,
+  chapters: [
+    { title: "Cold open", startSec: 0 },
+    { title: "The deal", startSec: 900 },
+    { title: "", startSec: 2400 },
+    { title: "Ending", startSec: 5400 },
+  ],
 };
 
 export type PlayerMode = "normal" | "live" | "together";
@@ -82,6 +88,7 @@ export function buildDefaultCtx(opts: MockOptions): ControlContext {
     episode: isLive ? null : 1,
     download: { kind: "idle" },
     onPlayPause: NOOP,
+    onSeek: NOOP_NUM,
     onSeekStep: NOOP_NUM,
     onMute: NOOP,
     onVolume: NOOP_NUM,
@@ -110,6 +117,7 @@ export function buildDefaultCtx(opts: MockOptions): ControlContext {
     setSubtitleMenuOpen: NOOP_BOOL,
     setSpeedMenuOpen: NOOP_BOOL,
     setAspectMenuOpen: NOOP_BOOL,
+    setChapterMenuOpen: NOOP_BOOL,
     setAnime4kMenuOpen: NOOP_BOOL,
     cropMode: "fit",
     onCropMode: NOOP_STR,

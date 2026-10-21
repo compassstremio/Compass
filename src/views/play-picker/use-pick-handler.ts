@@ -1,8 +1,13 @@
+import { isLivePlaybackSrc } from "@/lib/player/live-src";
 import { useEffect, useRef, useState, type Dispatch, type SetStateAction } from "react";
 import type { Meta } from "@/lib/cinemeta";
 import type { DebridStore } from "@/lib/debrid/types";
 import { invalidatePreparedDebridLink } from "@/lib/debrid/playback-preparation";
-import { savePlayback } from "@/lib/playback-history";
+import {
+  savePlayback,
+  isPlaybackActorCurrent,
+  type PlaybackContinuation,
+} from "@/lib/playback-history";
 import { saveSeasonLock } from "@/lib/season-lock";
 import { markStreamDead, recordStubEvent } from "@/lib/dead-streams";
 
@@ -73,6 +78,7 @@ export function usePickHandler({
   absoluteEpisode,
   attempt,
   resume,
+  continuation,
   debrids,
   isCached,
   seasonLock,
@@ -103,6 +109,7 @@ export function usePickHandler({
   absoluteEpisode?: number | null;
   attempt?: number;
   resume?: boolean;
+  continuation?: PlaybackContinuation;
   debrids: DebridStore[];
   isCached: (s: ScoredStream) => boolean;
   seasonLock: boolean;
@@ -167,6 +174,10 @@ export function usePickHandler({
   };
 
   const resolveAndOpen = async (stream: ScoredStream, userCommitted: boolean, forceP2p = false) => {
+    if (continuation && !isPlaybackActorCurrent(continuation.actor)) {
+      setResolveError(playError("The active profile changed. Open the menu again."));
+      return;
+    }
     const ac = new AbortController();
     resolveAcRef.current?.abort();
     resolveAcRef.current = ac;
@@ -241,6 +252,10 @@ export function usePickHandler({
         intent !== "download",
       );
       if (ac.signal.aborted) return;
+      if (continuation && !isPlaybackActorCurrent(continuation.actor)) {
+        setResolveError(playError("The active profile changed. Open the menu again."));
+        return;
+      }
       if (!r.ok) {
         if (r.code === "web-page" && r.webUrl) {
           openInAppBrowser(r.webUrl, stream.title ?? stream.name ?? meta.name);
@@ -358,6 +373,10 @@ export function usePickHandler({
         setResolving(null);
         return;
       }
+      if (continuation && !isPlaybackActorCurrent(continuation.actor)) {
+        setResolveError(playError("The active profile changed. Open the menu again."));
+        return;
+      }
       if (inSession && canInvite && inviteSentRef.current == null) {
         claimHost(true);
         sendInvite(buildPlayInvite(meta, episode));
@@ -388,11 +407,15 @@ export function usePickHandler({
             ? `${meta.name} · E${absoluteEpisode}`
             : mediaSubtitle(meta, episode)
           : meta.releaseInfo,
+        isLive: isLivePlaybackSrc({ meta, streamRef: { addonId: stream.addonId } }),
         notWebReady: r.data.notWebReady,
         subtitles: r.data.subtitles,
         attempt: attempt ?? 0,
         autoFired: autoPickRef.current,
         resume: !!resume,
+        continuation,
+        startPositionMs: continuation?.positionMs,
+        startFromZero: continuation?.restart,
         playbackTraceId,
         proxySessionId,
         historyUrl: r.data.url,
@@ -481,6 +504,10 @@ export function usePickHandler({
   };
 
   const onPlay = (stream: ScoredStream, committed = true, skipP2pConfirm = false, auto = false) => {
+    if (continuation && !isPlaybackActorCurrent(continuation.actor)) {
+      setResolveError(playError("The active profile changed. Open the menu again."));
+      return;
+    }
     autoPickRef.current = auto;
     if (!stream.url && stream.externalUrl) {
       openUrl(stream.externalUrl);

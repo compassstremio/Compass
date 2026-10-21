@@ -3,6 +3,7 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import whiteBoat from "@/assets/lottie/addons-boat-white.json";
 import darkBoat from "@/assets/lottie/addons-boat-dark.json";
 import compassBoat from "@/assets/lottie/compass-loader.json";
+import { CompassMark } from "./icons/compass-mark";
 import { CustomArtwork } from "./custom-artwork";
 import { prefetchTopAddonLogos, prefetchedTopAddonLogos } from "@/lib/providers/addon-logo-prefetch";
 
@@ -62,10 +63,14 @@ export function CompassLoader({
 }) {
   return (
     <div className={`flex flex-col items-center justify-center gap-2 ${className}`}>
-      {original ? <Boat size={size} keyed={keyed} logos={logos} /> : <CustomArtwork role="loading" className={`compass-loader-art ${SIZE_CLASS[size]}`} fallback={<Boat size={size} keyed={keyed} logos={logos} />} />}
+      {original ? <Boat size={size} keyed={keyed} logos={logos} /> : <CustomArtwork role="loading" className={`compass-loader-art ${SIZE_CLASS[size]}`} fallback={<MarkLoader size={size} />} />}
       {caption && <p className="compass-loader-cap mt-1 text-[12.5px] font-medium uppercase tracking-[0.18em] text-white/70">{caption}</p>}
     </div>
   );
+}
+
+function MarkLoader({ size }: { size: Size }) {
+  return <CompassMark className={`compass-loader-art animate-loader-pulse object-contain ${SIZE_CLASS[size]}`} />;
 }
 
 function Boat({size, keyed, logos}: {size:Size;keyed:boolean;logos?:string[]}) {

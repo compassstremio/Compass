@@ -1,7 +1,7 @@
 import { Check, Laptop, Monitor, Smartphone, Tv } from "lucide-react";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { useT } from "@/lib/i18n";
-import { usePairedCompasses } from "@/lib/lan-trust";
+import { usePairedCompasss } from "@/lib/lan-trust";
 import {
   themeSwatch,
   type CompassDeviceState,
@@ -10,7 +10,7 @@ import {
 } from "./play-on-lan";
 
 export function usePairedIds(): ReadonlySet<string> {
-  const rows = usePairedCompasses();
+  const rows = usePairedCompasss();
   return useMemo(() => new Set(rows.map((row) => row.peerId)), [rows]);
 }
 

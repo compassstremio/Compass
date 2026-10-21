@@ -17,6 +17,7 @@ import type {
   RemoteCursor,
 } from "./provider-types";
 import { createCommandSender } from "./seek-coalesce";
+import { clearInviteParams, onTogetherInvite, parseInviteFromLocation, type ParsedInvite } from "./invite";
 import {
   WT_PROTO,
   generateRoomCode,
@@ -266,31 +267,31 @@ export function TogetherProvider({ children }: { children: ReactNode }) {
     clientRef.current?.join(norm);
   }, []);
 
-  const pendingInviteRef = useRef<{ relayUrl: string; roomCode: string } | null>(null);
+  const [pendingInvite, setPendingInvite] = useState<ParsedInvite | null>(null);
   useEffect(() => {
-    void (async () => {
-      const { parseInviteFromLocation, clearInviteParams } = await import("./invite");
-      const invite = parseInviteFromLocation();
-      if (!invite) return;
-      pendingInviteRef.current = invite;
-      clearInviteParams();
-      if (settings.togetherRelayUrl !== invite.relayUrl) {
-        update({ togetherRelayUrl: invite.relayUrl });
-      }
+    const acceptInvite = (invite: ParsedInvite) => {
+      setPendingInvite(invite);
+      update({ togetherRelayUrl: invite.relayUrl });
       setModalOwner("auto");
-    })();
-  }, []);
+    };
+    const stop = onTogetherInvite(acceptInvite);
+    const invite = parseInviteFromLocation();
+    if (invite) {
+      clearInviteParams();
+      acceptInvite(invite);
+    }
+    return stop;
+  }, [update]);
 
   useEffect(() => {
-    const pending = pendingInviteRef.current;
+    const pending = pendingInvite;
     if (!pending) return;
     if (relayUrl !== pending.relayUrl) return;
     if (!clientRef.current) return;
-    if (snapshot.state !== "disconnected" && snapshot.state !== "error") return;
-    pendingInviteRef.current = null;
+    setPendingInvite(null);
     setChat([]);
     clientRef.current.join(pending.roomCode);
-  }, [relayUrl, snapshot.state]);
+  }, [pendingInvite, relayUrl]);
 
   const leaveSession = useCallback(() => {
     setChat([]);

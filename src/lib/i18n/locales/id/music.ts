@@ -339,11 +339,11 @@ const music: Record<string, string> = {
   "music.source.preferred": "Diutamakan",
   "music.source.loading": "Mencari sumber musik",
   "music.source.none": "Tidak ada sumber yang cocok saat ini.",
-  "music.consent.title": "Sebelum mengaktifkan YouTube atau SoundCloud",
+  "music.consent.title": "Sebelum mengaktifkan YouTube, SoundCloud, atau Spotify",
   "music.consent.hosting":
     "Compass tidak menyimpan musik apa pun. Ini adalah kode sumber terbuka yang ditulis kontributor dari seluruh dunia, yang membuka halaman publik pada layanan yang Anda aktifkan. Compass maupun para kontributornya tidak menyimpan, mengunggah, atau menyajikan konten.",
   "music.consent.terms":
-    "YouTube dan SoundCloud adalah layanan independen dengan ketentuan layanannya sendiri. Mengaktifkan salah satunya di sini berarti Anda setuju mematuhi ketentuan layanan tersebut dan berhenti menggunakannya jika Anda tidak lagi menerimanya. Compass tidak berafiliasi, tidak didukung, dan tidak terhubung dengan layanan mana pun.",
+    "YouTube, SoundCloud, dan Spotify adalah layanan independen dengan ketentuan layanannya sendiri. Mengaktifkan salah satunya di sini berarti Anda setuju mematuhi ketentuan layanan tersebut dan berhenti menggunakannya jika Anda tidak lagi menerimanya. Compass tidak berafiliasi, tidak didukung, dan tidak terhubung dengan layanan mana pun.",
   "music.consent.responsibility":
     "Anda bertanggung jawab atas cara Anda menggunakan sumber ini dan atas kepatuhan pada hukum di tempat Anda. Kontributor Compass tidak menerima tanggung jawab apa pun atas apa yang Anda putar, unduh, atau bagikan.",
   "music.consent.rights":

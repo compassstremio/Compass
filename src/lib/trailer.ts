@@ -16,8 +16,8 @@ export type Quality = "360p" | "720p" | "1080p" | "best";
 export type TrailerQualityPref = "auto" | Quality;
 
 const isTauri = typeof window !== "undefined" && "__TAURI_INTERNALS__" in window;
-// Native retrieval may use 15s for metadata, then a 240s merged attempt and a
-// 120s progressive fallback. Keep the UI deadline beyond that complete retry path.
+// Native retrieval may use a 240s merged attempt and a 120s progressive
+// fallback. Keep the UI deadline beyond that complete retry path.
 export const TRAILER_FETCH_TIMEOUT_MS = 400_000;
 const CACHE_MAX = 64;
 
@@ -99,6 +99,20 @@ export function fetchTrailer(
     cache.delete(first);
   }
   return p;
+}
+
+export async function fetchFirstTrailer(
+  videoIds: readonly string[],
+  quality: Quality,
+  isCurrent: () => boolean = () => true,
+): Promise<TrailerInfo | null> {
+  for (const videoId of new Set(videoIds.filter(Boolean))) {
+    if (!isCurrent()) return null;
+    const info = await fetchTrailer(videoId, quality);
+    if (!isCurrent()) return null;
+    if (info) return info;
+  }
+  return null;
 }
 
 function drainPrefetch() {

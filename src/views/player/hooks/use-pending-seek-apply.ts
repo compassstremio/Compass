@@ -4,6 +4,7 @@ import { notifyMediaSeeked } from "@/lib/media-session";
 
 export function usePendingSeekApply(params: {
   pendingSeekSec: number | null;
+  preserveExactPosition?: boolean;
   clearPendingSeek: () => void;
   durationSec: number;
   bridgeRef: RefObject<PlayerBridge | null>;
@@ -28,7 +29,10 @@ export function usePendingSeekApply(params: {
     const b = bridgeRef.current;
     if (!b) return;
     const target = pendingSeekSec;
-    const t = target <= 5 || target >= durationSec - 20 ? 0 : Math.min(target, durationSec - 1);
+    const t =
+      !params.preserveExactPosition && (target <= 5 || target >= durationSec - 20)
+        ? 0
+        : Math.max(0, Math.min(target, durationSec - 1));
     let issued = false;
     let applied = false;
     const off = b.subscribe((snap) => {
@@ -51,5 +55,13 @@ export function usePendingSeekApply(params: {
     issued = true;
     b.seek(t);
     return off;
-  }, [pendingSeekSec, durationSec, bridgeRef, inRoomRef, sourceKey, startPaused]);
+  }, [
+    pendingSeekSec,
+    durationSec,
+    bridgeRef,
+    inRoomRef,
+    sourceKey,
+    startPaused,
+    params.preserveExactPosition,
+  ]);
 }

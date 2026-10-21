@@ -105,7 +105,7 @@ export function validToken(token: string): boolean {
   return TOKEN_RE.test(token);
 }
 
-export function pairedCompasses(): PairedCompass[] {
+export function pairedCompasss(): PairedCompass[] {
   load();
   return snapshot;
 }
@@ -141,12 +141,12 @@ function subscribe(fn: () => void): () => void {
   };
 }
 
-export function usePairedCompasses(): PairedCompass[] {
-  return useSyncExternalStore(subscribe, pairedCompasses, () => snapshot);
+export function usePairedCompasss(): PairedCompass[] {
+  return useSyncExternalStore(subscribe, pairedCompasss, () => snapshot);
 }
 
 export function useIsPaired(peerId: string): boolean {
-  const rows = usePairedCompasses();
+  const rows = usePairedCompasss();
   return rows.some((row) => row.peerId === peerId);
 }
 

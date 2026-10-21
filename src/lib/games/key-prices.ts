@@ -13,7 +13,7 @@ async function request(path: string, signal: AbortSignal, ttl = TTL) {
   return pool.run(async () => {
     if (Date.now() < retryAt) throw Error("Price service rate limited");
     const response = await safeFetchBytes(`https://www.cheapshark.com/api/1.0/${path}`, {
-      headers: { "User-Agent": "CompassGames/1.0 (+https://compass.site)" },
+      headers: { "User-Agent": "CompassGames/1.0 (+https://compass.sarl)" },
       signal: AbortSignal.any([signal, AbortSignal.timeout(12_000)]),
     }, 12_000, LIMIT);
     if (response.status === 429) {

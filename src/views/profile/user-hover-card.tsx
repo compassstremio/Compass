@@ -1,3 +1,4 @@
+import { badgeLabel } from "@/lib/social/badge-label";
 import {
   cloneElement,
   useEffect,
@@ -13,6 +14,8 @@ import { requestOpenProfile } from "@/lib/social/open-profile";
 import { regionFlagSrc } from "@/lib/region-flags";
 import { useReducedMotion } from "@/lib/use-reduced-motion";
 import { useT } from "@/lib/i18n";
+import { useContextMenuActions } from "@/lib/context-menu";
+import { userContextTarget } from "./context-targets";
 import {
   PRESENCE_META,
   presenceStatusLabel,
@@ -65,6 +68,7 @@ export function UserHoverCard({
   children: ReactElement<any>;
 }) {
   const [anchor, setAnchor] = useState<DOMRect | null>(null);
+  const { open } = useContextMenuActions();
   const ref = useRef<HTMLElement>(null);
   const openTimer = useRef<number | null>(null);
   const closeTimer = useRef<number | null>(null);
@@ -116,10 +120,19 @@ export function UserHoverCard({
     onFocus?: (e: unknown) => void;
     onBlur?: (e: unknown) => void;
     onClick?: (e: unknown) => void;
+    onContextMenu?: (e: ReactMouseEvent) => void;
   };
 
   const trigger = cloneElement(children, {
     ref,
+    onContextMenu: (event: ReactMouseEvent) => {
+      childProps.onContextMenu?.(event);
+      if (event.defaultPrevented) return;
+      clearOpen();
+      clearClose();
+      setAnchor(null);
+      open(event, userContextTarget(handle));
+    },
     onMouseEnter: (e: ReactMouseEvent) => {
       childProps.onMouseEnter?.(e);
       scheduleOpen();
@@ -177,6 +190,7 @@ export function ProfileHoverCard({
   onLeave: () => void;
 }) {
   const t = useT();
+  const { open } = useContextMenuActions();
   const reduced = useReducedMotion();
   const self = useSelfAvatar();
   const key = handle.toLowerCase();
@@ -220,6 +234,7 @@ export function ProfileHoverCard({
   return createPortal(
     <div
       ref={cardRef}
+      onContextMenu={(event) => open(event, userContextTarget(handle))}
       role="button"
       tabIndex={-1}
       aria-label={t("Open @{handle} profile", { handle: summary?.handle ?? handle })}
@@ -345,7 +360,7 @@ export function ProfileHoverCard({
 function BadgeDot({ badge }: { badge: Badge }) {
   return (
     <HoverTooltip
-      label={badge.name}
+      label={badgeLabel(badge.name)}
       sublabel={badge.description || null}
       side="top"
       align="center"

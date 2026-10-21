@@ -1,5 +1,5 @@
 import { ChevronRight } from "lucide-react";
-import { useMemo } from "react";
+import { memo, useMemo } from "react";
 import { LazyMount } from "@/components/lazy-mount";
 import { PickCard } from "@/components/pick-card";
 import { TopRankCard } from "@/components/top-rank-card";
@@ -112,7 +112,10 @@ function RowTitle({
   );
 }
 
-export function CatalogRows({
+// Memoized for the same reason as the home rows: these views re-render while their rows load, and
+// rebuilding the whole row tree each time cascades into every card. Callers pass stable props
+// (memoized rows, useCallback handlers, string prefixes).
+export const CatalogRows = memo(function CatalogRows({
   rows,
   editMode,
   custom,
@@ -225,4 +228,4 @@ export function CatalogRows({
       })}
     </>
   );
-}
+});

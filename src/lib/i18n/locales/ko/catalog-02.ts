@@ -389,7 +389,7 @@ const catalog02: Record<string, string> = {
   Checking: "확인 중",
   "Checking SVP installation...": "SVP 설치 확인 중...",
   "Checking availability": "사용 가능 여부 확인 중",
-  "Checking compass.site for a newer build.": "compass.site에서 새 빌드를 확인하는 중입니다.",
+  "Checking compass.sarl for a newer build.": "compass.sarl에서 새 빌드를 확인하는 중입니다.",
   "Checking plots, cast, and scenes": "줄거리, 출연진, 장면 확인 중",
   "Checking sources and audio": "소스 및 오디오 확인 중",
   "Checking the local SVP and VapourSynth installation...":

@@ -1,5 +1,5 @@
 import { t } from '../i18n.js';
-import { installFacts, pickFolder, freeSpaceAt, existingInstall } from '../bridge.js';
+import { installFacts, pickFolder, freeSpaceAt, existingInstall, installedFeatures } from '../bridge.js';
 
 export const id = 'welcome';
 export const title = 'What gets installed';
@@ -15,6 +15,29 @@ const ROWS = [
   { key: 'webview2', name: 'WebView2 runtime', note: 'Supplied by Windows' },
   { key: 'shortcuts', name: 'Shortcuts', note: 'Start Menu and desktop' }
 ];
+
+// The optional features. A component with a bucket has payload bytes behind it; a tab only
+// hides, because its code travels inside compass.exe either way. The keys are the contract with
+// the app: it reads the same names out of the install marker.
+const OPTIONAL_GROUPS = [
+  {
+    heading: 'Optional components',
+    items: [
+      { key: 'plugins', bucket: 'plugins', name: 'Extension support', note: 'Android extensions and the Plugins tab' },
+      { key: 'games', bucket: 'games', name: 'Games', note: 'Games tab and the local Pokémon engine' }
+    ]
+  },
+  {
+    heading: 'Optional tabs',
+    items: [
+      { key: 'music', bucket: null, name: 'Music', note: 'Music tab, dock and playback' },
+      { key: 'ebook', bucket: null, name: 'eBook', note: 'eBook tab' },
+      { key: 'manga', bucket: null, name: 'Manga', note: 'Manga tab' }
+    ]
+  }
+];
+
+const OPTIONAL = OPTIONAL_GROUPS.flatMap((group) => group.items);
 
 function mb(bytes) {
   if (!bytes) return '0 MB';
@@ -98,6 +121,64 @@ export function render(mount, ctx) {
     grid.appendChild(row);
   });
 
+  const toggles = {};
+
+  function groupHeading(text) {
+    const li = document.createElement('li');
+    li.className = 'hb-welcome-group t-label';
+    li.textContent = t(text);
+    grid.appendChild(li);
+  }
+
+  function addToggle(item, index) {
+    const row = document.createElement('li');
+    row.className = 'hb-welcome-row hb-welcome-toggle hb-anim-row-in';
+    row.style.setProperty('--i', String(index + ROWS.length));
+
+    const mark = document.createElement('span');
+    mark.className = 'hb-welcome-mark hb-welcome-check';
+    mark.appendChild(strokeIcon('M4 8.4 L6.8 11 L12 5', '2'));
+
+    const text = document.createElement('span');
+    text.className = 'hb-welcome-text';
+    const name = document.createElement('span');
+    name.className = 'hb-welcome-name t-label';
+    name.textContent = t(item.name);
+    const note = document.createElement('span');
+    note.className = 'hb-welcome-note t-sub';
+    note.textContent = t(item.note);
+    text.append(name, note);
+
+    const size = document.createElement('span');
+    size.className = 'hb-welcome-size t-meta hb-skeleton';
+
+    const button = document.createElement('button');
+    button.type = 'button';
+    button.className = 'hb-welcome-toggle-hit';
+    button.setAttribute('role', 'switch');
+    button.setAttribute('aria-label', t(item.name));
+    button.append(mark, text, size);
+
+    row.appendChild(button);
+    grid.appendChild(row);
+    toggles[item.key] = { row, button, size, note };
+
+    button.addEventListener('click', () => {
+      const list = (ctx.state.disabledFeatures || []).slice();
+      const at = list.indexOf(item.key);
+      if (at >= 0) list.splice(at, 1);
+      else list.push(item.key);
+      ctx.setState({ disabledFeatures: list });
+      paintToggles();
+      paintAction();
+    });
+  }
+
+  OPTIONAL_GROUPS.forEach((group, groupIndex) => {
+    groupHeading(group.heading);
+    group.items.forEach((item, i) => addToggle(item, groupIndex * 10 + i));
+  });
+
   const loc = document.createElement('div');
   loc.className = 'hb-welcome-loc hb-well';
   const path = document.createElement('span');
@@ -112,13 +193,39 @@ export function render(mount, ctx) {
   change.textContent = t('Change');
   loc.append(path, total, change);
 
-  let needed = 0;
   let facts = null;
   let prior = null;
 
+  function disabled() {
+    return ctx.state.disabledFeatures || [];
+  }
+
+  function paintToggles() {
+    OPTIONAL.forEach((item) => {
+      const cell = toggles[item.key];
+      const on = !disabled().includes(item.key);
+      cell.row.classList.toggle('is-off', !on);
+      cell.button.setAttribute('aria-checked', String(on));
+    });
+  }
+
+  function componentBytes() {
+    const byKey = {};
+    if (facts) (facts.components || []).forEach((c) => { byKey[c.key] = c.bytes; });
+    return byKey;
+  }
+
+  function neededNow() {
+    if (!facts) return 0;
+    const bytes = componentBytes();
+    let sum = facts.installed_bytes + (facts.webview2_present ? 0 : facts.webview2_bytes || 0);
+    disabled().forEach((key) => { sum -= bytes[key] || 0; });
+    return Math.max(0, sum);
+  }
+
   function setFree(bytes) {
     total.textContent = bytes ? t('{size} free', { size: mb(bytes) }) : t('Free space unknown');
-    total.classList.toggle('is-tight', Boolean(bytes) && bytes < needed);
+    total.classList.toggle('is-tight', Boolean(bytes) && bytes < neededNow());
   }
 
   function paintAction() {
@@ -129,7 +236,7 @@ export function render(mount, ctx) {
     const detail =
       verb.mode === 'repair'
         ? [verb.lead, t('Only broken files are replaced'), t('Your data is left alone')]
-        : [verb.lead, t('{size} on disk', { size: mb(needed) }), t('Nothing to download')];
+        : [verb.lead, t('{size} on disk', { size: mb(neededNow()) }), t('Nothing to download')];
     line.textContent = detail.filter(Boolean).join(' · ');
   }
 
@@ -146,7 +253,10 @@ export function render(mount, ctx) {
   });
 
 
-  mount.append(grid, loc);
+  const scroll = document.createElement('div');
+  scroll.className = 'hb-welcome-scroll';
+  scroll.append(grid, loc);
+  mount.append(scroll);
 
   const zone = document.getElementById('hb-consequence');
   const line = document.createElement('p');
@@ -161,14 +271,30 @@ export function render(mount, ctx) {
     path.classList.remove('hb-skeleton');
     total.classList.remove('hb-skeleton');
     line.classList.remove('hb-skeleton');
-    const byKey = {};
-    (f.components || []).forEach((c) => { byKey[c.key] = c.bytes; });
+    const byKey = componentBytes();
 
     cells.compass.size.textContent = mb((byKey.compass || 0) + (byKey.support || 0));
     cells.mpv.size.textContent = mb(byKey.mpv || 0);
     cells.ffmpeg.size.textContent = mb(byKey.ffmpeg || 0);
     cells.ytdlp.size.textContent = mb(byKey.ytdlp || 0);
     cells.shortcuts.size.textContent = t('No space');
+
+    const pluginsBytes = byKey.plugins || 0;
+    const gamesBytes = byKey.games || 0;
+    toggles.plugins.size.classList.remove('hb-skeleton');
+    toggles.games.size.classList.remove('hb-skeleton');
+    toggles.plugins.size.textContent = pluginsBytes ? mb(pluginsBytes) : t('Not in this build');
+    toggles.games.size.textContent = gamesBytes ? mb(gamesBytes) : t('Not in this build');
+    if (!pluginsBytes) {
+      toggles.plugins.note.textContent = t('Plugins tab only; the extension runtime is not part of this build');
+    }
+    if (!gamesBytes) {
+      toggles.games.note.textContent = t('Games tab only; the engine is not part of this build');
+    }
+    OPTIONAL_GROUPS[1].items.forEach((item) => {
+      toggles[item.key].size.classList.remove('hb-skeleton');
+      toggles[item.key].size.textContent = t('Tab only');
+    });
 
     const wv = cells.webview2;
     if (f.webview2_present) {
@@ -184,8 +310,17 @@ export function render(mount, ctx) {
     const dest = prior ? prior.path : f.dest;
     path.textContent = dest;
     ctx.setState({ dest: dest });
+    paintToggles();
 
-    needed = f.installed_bytes + (f.webview2_present ? 0 : f.webview2_bytes);
+    if (prior) {
+      installedFeatures(dest).then((list) => {
+        if (!live.on) return;
+        ctx.setState({ disabledFeatures: Array.isArray(list) ? list : [] });
+        paintToggles();
+        paintAction();
+      });
+    }
+
     ctx.setState({ installedSize: mb(f.installed_bytes) });
     setFree(prior ? 0 : f.free_bytes || 0);
     if (prior) freeSpaceAt(dest).then((b) => { if (live.on) setFree(b); });
@@ -202,6 +337,8 @@ export function render(mount, ctx) {
     onBack: () => ctx.back(),
     onNext: () => ctx.next()
   });
+
+  paintToggles();
 
   return () => {
     live.on = false;

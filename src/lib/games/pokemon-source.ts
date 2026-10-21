@@ -61,7 +61,7 @@ export function createPokemonSource(fetchBytes: BoundedFetch, now = Date.now) {
     if (now() < (cooldown.get(host) ?? 0)) throw Error("Pokémon data cooling down");
     const headers = new Headers({ Accept: "application/json" });
     if (typeof window !== "undefined" && "__TAURI_INTERNALS__" in window)
-      headers.set("User-Agent", `Compass/${APP_VERSION} (+https://compass.site)`);
+      headers.set("User-Agent", `Compass/${APP_VERSION} (+https://compass.sarl)`);
     // Opening a game or chapter must never launch the interactive CF solver.
     // The bounded byte bridge returns provider failures inline and preserves JSON.
     const init = { signal, credentials: "omit" as const, headers };

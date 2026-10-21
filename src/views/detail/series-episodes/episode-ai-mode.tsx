@@ -18,11 +18,15 @@ type Status = "idle" | "loading" | "done";
 export function EpisodeAiMode({
   meta,
   videos,
+  playbackVideos,
+  catalogLoading = false,
   imdbId,
   onExit,
 }: {
   meta: Meta;
   videos?: Meta["videos"];
+  playbackVideos?: Meta["videos"];
+  catalogLoading?: boolean;
   imdbId?: string | null;
   onExit: () => void;
 }) {
@@ -53,7 +57,7 @@ export function EpisodeAiMode({
   const submit = async (e: React.FormEvent) => {
     e.preventDefault();
     const q = input.trim();
-    if (!q || status === "loading") return;
+    if (!q || status === "loading" || catalogLoading) return;
     setStatus("loading");
     setFellBack(false);
     setRanQuery(q);
@@ -92,7 +96,7 @@ export function EpisodeAiMode({
       },
       opts: { autoPlay: settings.instantPlay || settings.seasonSourceLock },
       imdbId,
-      videos,
+      videos: playbackVideos ?? videos,
     });
 
   return (
@@ -123,6 +127,8 @@ export function EpisodeAiMode({
           <X size={16} />
         </button>
       </form>
+
+      {catalogLoading && <p className="text-[13px] text-ink-muted">{t("Loading episodes...")}</p>}
 
       {status === "idle" && (
         <p className="animate-ai-entrance text-[13px] text-ink-subtle [animation-delay:80ms]">
@@ -157,7 +163,13 @@ export function EpisodeAiMode({
           <p className="animate-ai-entrance text-[13px] text-ink-muted">
             {t("Showing keyword matches instead")}
           </p>
-          <CrossSeasonResults meta={meta} videos={videos} query={ranQuery} imdbId={imdbId} />
+          <CrossSeasonResults
+            meta={meta}
+            videos={videos}
+            playbackVideos={playbackVideos}
+            query={ranQuery}
+            imdbId={imdbId}
+          />
         </div>
       )}
     </div>

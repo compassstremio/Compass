@@ -1,7 +1,7 @@
 import { writeFileSync } from "node:fs";
 
 const ENDPOINT = "https://query.wikidata.org/sparql";
-const UA = "CompassBlackAndWhiteIndex/1.0 (https://compass.site)";
+const UA = "CompassBlackAndWhiteIndex/1.0 (https://compass.sarl)";
 const OUT = process.argv[2] || "src/data/black-and-white.json";
 const MIN_SITELINKS = Number(process.env.MIN_SITELINKS || 16);
 const MIN_ROWS = Number(process.env.MIN_ROWS || 1200);

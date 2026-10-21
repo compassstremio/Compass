@@ -995,8 +995,8 @@ const catalogDF: Record<string, string> = {
   "Font name can only use letters, numbers, and spaces.":
     "फ़ॉन्ट नाम में केवल अक्षर, संख्याएँ और स्पेस हो सकते हैं।",
   "Font tokens": "फ़ॉन्ट टोकन",
-  "For Application URL anything works, for example https://compass.site. TMDB never visits it.":
-    "Application URL में कोई भी URL डाल सकते हैं, जैसे https://compass.site। TMDB उस URL पर कभी नहीं जाता।",
+  "For Application URL anything works, for example https://compass.sarl. TMDB never visits it.":
+    "Application URL में कोई भी URL डाल सकते हैं, जैसे https://compass.sarl। TMDB उस URL पर कभी नहीं जाता।",
   "For Everyone": "सभी के लिए",
   "For a link or image you usually want an attribute:":
     "किसी लिंक या इमेज के लिए आम तौर पर आपको एक एट्रिब्यूट चाहिए:",

@@ -64,7 +64,7 @@ export function railFixture(source, active = true) {
     active,
     railId: "fixture",
     allRails: [{ id: "fixture", shelf: { title: "Fixture" }, fetch: async () => [] }],
-    deduped: {},
+    items: null,
     ensureLoaded: (id) => requests.push(id),
     loadMore: () => requests.push("more"),
   };
@@ -73,6 +73,7 @@ export function railFixture(source, active = true) {
     source,
     {
       react: {
+        memo: (fn) => fn,
         useContext: () => root,
         useRef: () => ({ current: {} }),
         useState: (initial) => {

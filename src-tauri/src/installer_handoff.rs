@@ -320,6 +320,9 @@ pub async fn handoff_stage(
         let _ = std::fs::remove_dir_all(&dir);
         return Err(e);
     }
+    // Keep the signature beside the setup so a later modify-installation can verify this copy
+    // again instead of downloading the whole installer when the user wants to change features.
+    let _ = std::fs::write(dest.with_file_name(format!("{SETUP_NAME}.sig")), signature.trim());
     if let Ok(mut slot) = STAGED.lock() {
         *slot = Some(Staged {
             path: dest,
@@ -397,6 +400,156 @@ fn spawn_setup(
     _recoverable: bool,
 ) -> Result<(), String> {
     Err("the installer handoff only exists on Windows".to_string())
+}
+
+/*
+ * Modify installation. An update leaves the setup it ran in a temp folder; when its signature is
+ * still there the copy can be verified and used again, so changing features stays offline.
+ * Without a usable copy the app asks before downloading the full installer once more.
+ */
+
+/// Parses "compass-update-<version>-<uuid>" back to the version it was staged for. The uuid is a
+/// fixed 36 characters, so the version is everything before the last 37 characters.
+fn staged_version(name: &str) -> Option<String> {
+    let rest = name.strip_prefix(STAGE_PREFIX)?;
+    if rest.len() <= 37 {
+        return None;
+    }
+    Some(rest[..rest.len() - 37].to_string())
+}
+
+#[derive(Serialize)]
+pub struct ModifyProbe {
+    found: bool,
+    version: String,
+    path: String,
+}
+
+/// The newest staged setup whose .sig verifies. Copies without a signature are not offered:
+/// only something that passed verification may be run.
+fn find_staged_setup(app: &tauri::AppHandle) -> Option<(PathBuf, String)> {
+    let pubkey = updater_pubkey(app).ok()?;
+    let root = std::env::temp_dir();
+    let mut best: Option<(std::time::SystemTime, PathBuf, String)> = None;
+    for entry in std::fs::read_dir(&root).ok()?.flatten() {
+        let name = entry.file_name().to_string_lossy().to_string();
+        if !name.starts_with(STAGE_PREFIX) || !entry.path().is_dir() {
+            continue;
+        }
+        let path = entry.path().join(SETUP_NAME);
+        let sig_path = entry.path().join(format!("{SETUP_NAME}.sig"));
+        let (Some(version), true, true) = (staged_version(&name), path.is_file(), sig_path.is_file()) else {
+            continue;
+        };
+        let Ok(signature) = std::fs::read_to_string(&sig_path) else {
+            continue;
+        };
+        let signature = signature.trim().to_string();
+        if signature.is_empty() || verify_setup(&path, &signature, &pubkey).is_err() {
+            continue;
+        }
+        let modified = entry
+            .metadata()
+            .and_then(|m| m.modified())
+            .unwrap_or(std::time::SystemTime::UNIX_EPOCH);
+        if best.as_ref().map(|(when, _, _)| modified > *when).unwrap_or(true) {
+            best = Some((modified, path, version));
+        }
+    }
+    best.map(|(_, path, version)| (path, version))
+}
+
+/// A path the modify flow is allowed to run: inside the staged update folders under the temp
+/// directory, named like the setup, and carrying a signature that verifies against the same
+/// key updates use.
+fn verified_staged_setup(app: &tauri::AppHandle, requested: Option<&str>) -> Result<(PathBuf, String), String> {
+    let pubkey = updater_pubkey(app)?;
+    match requested {
+        Some(raw) if !raw.trim().is_empty() => {
+            let path = dunce::canonicalize(raw).map_err(|e| format!("the staged installer is gone: {e}"))?;
+            let temp = dunce::canonicalize(std::env::temp_dir()).map_err(|e| e.to_string())?;
+            let dir = path.parent().ok_or("the staged installer has no folder")?;
+            let in_temp = dir.parent() == Some(temp.as_path())
+                && dir
+                    .file_name()
+                    .map(|n| n.to_string_lossy().starts_with(STAGE_PREFIX))
+                    .unwrap_or(false);
+            if !in_temp || path.file_name().map(|n| n != SETUP_NAME).unwrap_or(true) {
+                return Err("refusing to run an installer outside the staged update folders".into());
+            }
+            let signature = std::fs::read_to_string(path.with_file_name(format!("{SETUP_NAME}.sig")))
+                .map_err(|_| "the staged installer carries no signature and was not run".to_string())?;
+            verify_setup(&path, signature.trim(), &pubkey)?;
+            let version = dir
+                .file_name()
+                .and_then(|n| staged_version(&n.to_string_lossy()))
+                .unwrap_or_default();
+            Ok((path, version))
+        }
+        _ => find_staged_setup(app).ok_or_else(|| "no verified Compass Setup was found on this PC".to_string()),
+    }
+}
+
+#[cfg(windows)]
+fn spawn_interactive(setup: &Path) -> Result<(), String> {
+    use std::os::windows::process::CommandExt;
+    const DETACHED_PROCESS: u32 = 0x0000_0008;
+    const CREATE_NEW_PROCESS_GROUP: u32 = 0x0000_0200;
+    std::process::Command::new(setup)
+        .current_dir(std::env::temp_dir())
+        .creation_flags(DETACHED_PROCESS | CREATE_NEW_PROCESS_GROUP)
+        .stdin(std::process::Stdio::null())
+        .stdout(std::process::Stdio::null())
+        .stderr(std::process::Stdio::null())
+        .spawn()
+        .map(|_| ())
+        .map_err(|e| format!("could not start Compass Setup: {e}"))
+}
+
+#[cfg(not(windows))]
+fn spawn_interactive(_setup: &Path) -> Result<(), String> {
+    Err("the installer handoff only exists on Windows".to_string())
+}
+
+#[tauri::command]
+pub async fn modify_probe(app: tauri::AppHandle) -> Result<ModifyProbe, String> {
+    if !cfg!(target_os = "windows") {
+        return Ok(ModifyProbe { found: false, version: String::new(), path: String::new() });
+    }
+    let found = tauri::async_runtime::spawn_blocking({
+        let app = app.clone();
+        move || find_staged_setup(&app)
+    })
+    .await
+    .map_err(|e| e.to_string())?;
+    Ok(match found {
+        Some((path, version)) => ModifyProbe {
+            found: true,
+            version,
+            path: path.to_string_lossy().to_string(),
+        },
+        None => ModifyProbe { found: false, version: String::new(), path: String::new() },
+    })
+}
+
+/// Opens the staged Compass Setup interactively so its Components screen can change which
+/// features are installed. Unlike an update handoff nothing is applied automatically: the user
+/// walks the normal installer and can cancel at any step. Compass closes first with the same
+/// graceful flush an update uses, so nothing is lost while the installer works.
+#[tauri::command]
+pub async fn modify_open(app: tauri::AppHandle, path: Option<String>) -> Result<(), String> {
+    if !cfg!(target_os = "windows") {
+        return Err("the installer handoff only exists on Windows".to_string());
+    }
+    let (setup, _version) = {
+        let app = app.clone();
+        tauri::async_runtime::spawn_blocking(move || verified_staged_setup(&app, path.as_deref()))
+            .await
+            .map_err(|e| e.to_string())?
+    }?;
+    spawn_interactive(&setup)?;
+    quit_for_handoff(app);
+    Ok(())
 }
 
 fn quit_for_handoff(app: tauri::AppHandle) {
@@ -542,5 +695,14 @@ mod tests {
         assert!(ensure_recovery_marker(&dest, "0.9.124").is_err());
         assert_eq!(std::fs::read(dest.join(MARKER)).unwrap(), b"not json");
         std::fs::remove_dir_all(dest).unwrap();
+    }
+
+    #[test]
+    fn staged_versions_parse_back_from_folder_names() {
+        let name = format!("{STAGE_PREFIX}0.9.132-7f8b3c2a-1a2b-4c5d-8e9f-0a1b2c3d4e5f");
+        assert_eq!(staged_version(&name).as_deref(), Some("0.9.132"));
+        // Too short to carry a uuid; refuse rather than guess.
+        assert_eq!(staged_version(&format!("{STAGE_PREFIX}1.0.0-abc")), None);
+        assert_eq!(staged_version("somewhere-else"), None);
     }
 }

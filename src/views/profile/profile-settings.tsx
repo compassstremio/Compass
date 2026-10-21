@@ -531,7 +531,7 @@ export function ProfileSettings({
                       </Field>
                     </div>
 
-                    <Field label={t("Custom url")} hint="compass.site/u/">
+                    <Field label={t("Custom url")} hint="compass.sarl/u/">
                       <div className="relative">
                         <input
                           value={form.customUrl}

@@ -1,5 +1,5 @@
 const ENDPOINT = "https://query.wikidata.org/sparql";
-const UA = "CompassListSnapshot/1.0 (https://compass.site) build-time list snapshot";
+const UA = "CompassListSnapshot/1.0 (https://compass.sarl) build-time list snapshot";
 const LABELS = "en,mul,fr,de,it,es,pt,ja,ko,zh,ru";
 const TIMEOUT_MS = 70000;
 const MAX_RETRIES = 3;

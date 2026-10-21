@@ -41,6 +41,8 @@ import { DEFAULT, STORAGE_KEY } from "./defaults";
 import type { Settings } from "./types";
 import { adoptLegacyPlaylists, readPlaylists } from "@/lib/iptv/playlists-store";
 import { sanitizeDisplaySelection } from "@/lib/monitors";
+import { migratePublicRelayUrl } from "@/lib/together/relay-version";
+import { adoptHarborSettingsFields } from "@/lib/harbor-migration";
 
 const HEX_RE = /^#[0-9a-f]{6}$/i;
 
@@ -131,19 +133,22 @@ let cachedSettings: Settings | null = null;
 export function loadStoredSettings(rawKey: string = STORAGE_KEY): Settings {
   const raw = localStorage.getItem(rawKey);
   if (cachedSettings && cachedKey === rawKey && cachedRaw === raw) return cachedSettings;
-  const settings = parseStoredSettings(raw);
+  const { settings, cacheable } = parseStoredSettings(raw);
   cachedKey = rawKey;
   cachedRaw = raw;
-  cachedSettings = settings;
+  cachedSettings = cacheable ? settings : null;
   return settings;
 }
 
-function parseStoredSettings(raw: string | null): Settings {
+function parseStoredSettings(raw: string | null): { settings: Settings; cacheable: boolean } {
   if (!raw) {
     return {
-      ...DEFAULT,
-      seekBackStepSec: sanitizeSeekStep(legacySeekStep("back"), DEFAULT.seekBackStepSec),
-      seekForwardStepSec: sanitizeSeekStep(legacySeekStep("forward"), DEFAULT.seekForwardStepSec),
+      settings: {
+        ...DEFAULT,
+        seekBackStepSec: sanitizeSeekStep(legacySeekStep("back"), DEFAULT.seekBackStepSec),
+        seekForwardStepSec: sanitizeSeekStep(legacySeekStep("forward"), DEFAULT.seekForwardStepSec),
+      },
+      cacheable: false,
     };
   }
   try {
@@ -162,6 +167,9 @@ function parseStoredSettings(raw: string | null): Settings {
       _stremioDeeplinkOnByDefault?: boolean;
       _skipButtonHideSecV2?: boolean;
       _anilistSyncOnV1?: boolean;
+      _animeTitleLanguageV1?: boolean;
+      /** Legacy: the preference used to live in the Simkl panel. */
+      simklAnimeTitleLanguage?: "english" | "romaji" | "native";
       _musicSeekThumbV1?: boolean;
       _rememberLastStreamOnV1?: boolean;
       _streamSortAddonV1?: boolean;
@@ -179,6 +187,14 @@ function parseStoredSettings(raw: string | null): Settings {
       _playbackSourcePreferenceV1?: boolean;
       _playbackSourcePreferenceV2?: boolean;
     };
+    adoptHarborSettingsFields(parsed as Record<string, unknown>);
+    // Legacy defaults and playlist adoption depend on other stores. Re-read them
+    // until a self-contained settings blob has been persisted by the normal flow.
+    const cacheable =
+      parsed.seekBackStepSec != null &&
+      parsed.seekForwardStepSec != null &&
+      parsed._playlistsTabV1 === true &&
+      (!Array.isArray(parsed.iptvPlaylists) || parsed.iptvPlaylists.length === 0);
     if (!parsed._playbackSourcePreferenceV1) {
       parsed.playbackSourcePreference = parsed.localPlaybackMode === "local" ? "local" : "online";
       parsed.preferredMediaServerId = null;
@@ -264,11 +280,16 @@ function parseStoredSettings(raw: string | null): Settings {
       parsed.songIdAiModel = DEFAULT.songIdAiModel;
     }
     if (parsed.aiSearchModel) parsed.aiSearchModel = migrateModelId(parsed.aiSearchModel);
-    if (typeof parsed.steamSearchShortcut !== "boolean") parsed.steamSearchShortcut = DEFAULT.steamSearchShortcut;
-    if (!["first", "random", "manual"].includes(parsed.gameArtworkSelection as string)) parsed.gameArtworkSelection = DEFAULT.gameArtworkSelection;
-    if (typeof parsed.gameArtworkScreenshots !== "boolean") parsed.gameArtworkScreenshots = DEFAULT.gameArtworkScreenshots;
-    if (typeof parsed.gameArtworkCoverIcon !== "boolean") parsed.gameArtworkCoverIcon = DEFAULT.gameArtworkCoverIcon;
-    if (parsed.gameAgeRatingAgency !== "ESRB" && parsed.gameAgeRatingAgency !== "PEGI") parsed.gameAgeRatingAgency = DEFAULT.gameAgeRatingAgency;
+    if (typeof parsed.steamSearchShortcut !== "boolean")
+      parsed.steamSearchShortcut = DEFAULT.steamSearchShortcut;
+    if (!["first", "random", "manual"].includes(parsed.gameArtworkSelection as string))
+      parsed.gameArtworkSelection = DEFAULT.gameArtworkSelection;
+    if (typeof parsed.gameArtworkScreenshots !== "boolean")
+      parsed.gameArtworkScreenshots = DEFAULT.gameArtworkScreenshots;
+    if (typeof parsed.gameArtworkCoverIcon !== "boolean")
+      parsed.gameArtworkCoverIcon = DEFAULT.gameArtworkCoverIcon;
+    if (parsed.gameAgeRatingAgency !== "ESRB" && parsed.gameAgeRatingAgency !== "PEGI")
+      parsed.gameAgeRatingAgency = DEFAULT.gameAgeRatingAgency;
     if (parsed.aiSearchProvider !== "groq" && parsed.aiSearchProvider !== "openrouter") {
       parsed.aiSearchProvider = parsed.aiSearchModel
         ? providerTabFor(parsed.aiSearchModel)
@@ -290,6 +311,16 @@ function parseStoredSettings(raw: string | null): Settings {
     if (!parsed._anime4kIndicatorOffV1) {
       parsed.playerAnime4kIndicator = false;
       parsed._anime4kIndicatorOffV1 = true;
+    }
+    if (!parsed._animeTitleLanguageV1) {
+      // The anime title language preference used to live in the Simkl panel and
+      // only there, so a user without Simkl could never reach it. It governs
+      // cards, the picker and presence, so it moved to Language → App.
+      if (parsed.simklAnimeTitleLanguage) {
+        parsed.animeTitleLanguage = parsed.simklAnimeTitleLanguage;
+      }
+      delete parsed.simklAnimeTitleLanguage;
+      parsed._animeTitleLanguageV1 = true;
     }
     if (!parsed._subStyleV2) {
       if (parsed.subFontSize === 55) parsed.subFontSize = DEFAULT.subFontSize;
@@ -355,13 +386,23 @@ function parseStoredSettings(raw: string | null): Settings {
     }
     if (parsed.cwSources == null) {
       const ext = parsed.externalContinueWatching === true;
-      parsed.cwSources = { library: true, trakt: ext, simkl: ext, local: true };
+      parsed.cwSources = {
+        library: true,
+        trakt: ext,
+        simkl: ext,
+        local: true,
+        publicmetadb: false,
+      };
     }
     const posterCards = normalizePosterCardSettings(parsed);
-    return {
+    const settings: Settings = {
       ...DEFAULT,
       ...parsed,
+      togetherRelayUrl: migratePublicRelayUrl(
+        typeof parsed.togetherRelayUrl === "string" ? parsed.togetherRelayUrl : DEFAULT.togetherRelayUrl,
+      ),
       ...posterCards,
+      animePreferImdbStreams: parsed.animePreferImdbStreams === true,
       showQuickGameLibrary: parsed.showQuickGameLibrary === true,
       topbarAppearance: sanitizeTopbarAppearance(
         parsed.topbarAppearance,
@@ -414,6 +455,10 @@ function parseStoredSettings(raw: string | null): Settings {
           : DEFAULT.subOffsetIndicatorEnabled,
       subOffsetIndicatorPosition: sanitizeSubtitleOffsetPosition(parsed.subOffsetIndicatorPosition),
       subOffsetIndicatorSize: sanitizeSubtitleOffsetSize(parsed.subOffsetIndicatorSize),
+      cwSources: {
+        ...DEFAULT.cwSources,
+        ...parsed.cwSources,
+      },
       subProvidersEnabled: {
         ...DEFAULT.subProvidersEnabled,
         ...parsed.subProvidersEnabled,
@@ -475,6 +520,10 @@ function parseStoredSettings(raw: string | null): Settings {
         DEFAULT.seekForwardStepShortSec,
       ),
       theme: sanitizeTheme(parsed.theme),
+      animeTitleLanguage:
+        parsed.animeTitleLanguage === "romaji" || parsed.animeTitleLanguage === "native"
+          ? parsed.animeTitleLanguage
+          : DEFAULT.animeTitleLanguage,
       webhooks: {
         ...DEFAULT.webhooks,
         ...parsed.webhooks,
@@ -536,7 +585,8 @@ function parseStoredSettings(raw: string | null): Settings {
         ? parsed.tmdbImageLangs.filter((l): l is string => typeof l === "string")
         : DEFAULT.tmdbImageLangs,
     };
+    return { settings, cacheable };
   } catch {
-    return DEFAULT;
+    return { settings: DEFAULT, cacheable: false };
   }
 }

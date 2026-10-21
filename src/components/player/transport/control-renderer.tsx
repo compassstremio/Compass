@@ -61,6 +61,7 @@ import { BigButton } from "./big-button";
 import { DvrButton } from "./dvr-button";
 import { VolumeControl } from "./volume-control";
 import { SpeedMenu } from "./speed-menu";
+import { ChapterMenu } from "./chapter-menu";
 import { AspectMenu } from "./aspect-menu";
 import { Anime4kMenu } from "./anime4k-menu";
 import { ShaderMenu } from "./shader-menu";
@@ -123,6 +124,7 @@ export type ControlContext = {
   sleep?: import("@/views/player/hooks/use-sleep-timer").SleepTimerState;
   onPlayPause: () => void;
   onSeekStep: (delta: number) => void;
+  onSeek: (sec: number) => void;
   onMute: () => void;
   onVolume: (v: number) => void;
   onAudio: (id: string) => void;
@@ -151,6 +153,7 @@ export type ControlContext = {
   setSubtitleMenuOpen: (v: boolean) => void;
   setSpeedMenuOpen: (v: boolean) => void;
   setAspectMenuOpen: (v: boolean) => void;
+  setChapterMenuOpen: (v: boolean) => void;
   cropMode?: string;
   onCropMode?: (id: string) => void;
   setAnime4kMenuOpen: (v: boolean) => void;
@@ -502,6 +505,18 @@ export function renderControl(id: PlayerControlId, ctx: ControlContext): ReactNo
           onRate={ctx.onRate}
           sleep={ctx.sleep}
           onOpenChange={ctx.setSpeedMenuOpen}
+          iconUrl={iconUrl}
+        />
+      );
+    }
+    case "chapter-menu": {
+      if (ctx.snap.chapters.length === 0) return null;
+      return (
+        <ChapterMenu
+          chapters={ctx.snap.chapters}
+          positionSec={ctx.snap.positionSec}
+          onSeek={ctx.onSeek}
+          onOpenChange={ctx.setChapterMenuOpen}
           iconUrl={iconUrl}
         />
       );

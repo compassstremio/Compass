@@ -36,6 +36,9 @@ function fixture(failImmediately = false) {
     initializeMusic: async () => {}, cancelMusicQueueAutomation: () => {},
     publish: (patch: unknown) => Object.assign(state, patch),
     beginMusicQueue: () => {}, resetMusicOrder: () => {},
+    pinSourceFor: () => {}, peekPinnedSource: () => null,
+    rankByExplicitness: (candidates: unknown[]) => candidates, explicitnessOf: () => 0,
+    musicPlaybackSourceAllowed: () => true,
     readMusicPreference: () => null, clampMusicVolume: (volume: number) => volume,
     sourcesFor: async () => {
       lookups++;

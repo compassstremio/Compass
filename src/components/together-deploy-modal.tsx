@@ -16,10 +16,6 @@ export function TogetherDeployModal({ onClose, inline = false }: { onClose: () =
   const [token, setToken] = useState(settings.togetherCfToken);
   const [accounts, setAccounts] = useState<CfAccount[]>([]);
   const [accountId, setAccountId] = useState(settings.togetherCfAccountId);
-  // The modal renders inline inside the always-mounted settings panel, which
-  // can exist before settings finish loading. Keep the drafts honest.
-  useEffect(() => { setToken(settings.togetherCfToken); }, [settings.togetherCfToken]);
-  useEffect(() => { setAccountId(settings.togetherCfAccountId); }, [settings.togetherCfAccountId]);
   const [error, setError] = useState<string | null>(null);
   const [triedAccountId, setTriedAccountId] = useState<string>("");
   const [result, setResult] = useState<{ url: string } | null>(null);

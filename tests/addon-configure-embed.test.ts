@@ -22,7 +22,7 @@ test("configure pages that forbid framing are detected from their headers", () =
   assert.equal(framesAllowedByHeaders({ xFrameOptions: "sameorigin" }), false);
   assert.equal(framesAllowedByHeaders({ contentSecurityPolicy: "frame-ancestors 'self'" }), false);
   assert.equal(
-    framesAllowedByHeaders({ contentSecurityPolicy: "frame-ancestors https://compass.site" }),
+    framesAllowedByHeaders({ contentSecurityPolicy: "frame-ancestors https://compass.sarl" }),
     false,
   );
   assert.equal(framesAllowedByHeaders({ contentSecurityPolicy: "frame-ancestors *" }), true);

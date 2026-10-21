@@ -45,7 +45,7 @@ const settingsFill: Record<string, string> = {
   "Check the shared database first. When this exact subtitle has already been synced by someone else, yours snaps into place with no analysis.":
     "يتحقّق أولًا من قاعدة البيانات المشتركة. وعندما تكون هذه الترجمة بالتحديد قد تمّت مزامنتها من قِبل شخص آخر، تنضبط ترجمتك في مكانها دون أي تحليل.",
   "Community sync server": "خادم مزامنة المجتمع",
-  "https://sync.compass.site": "https://sync.compass.site",
+  "https://sync.compass.sarl": "https://sync.compass.sarl",
   "Leave blank to use Compass's own community server. Enter a URL to point at your own server instead. Private mode below stops all contact either way.":
     "اتركه فارغًا لاستخدام خادم المجتمع الخاص بـ Compass. أدخِل عنوان URL للإشارة إلى خادمك الخاص بدلًا من ذلك. ويوقف الوضع الخاص أدناه كل اتصال في كلتا الحالتين.",
   "Private mode": "الوضع الخاص",
@@ -352,6 +352,13 @@ const settingsFill: Record<string, string> = {
     "شهرياً، وتلغي في أي وقت، ويمكنك تجربة كل ذلك مقابل 1$ لمدة أسبوع.",
   "See what you get": "شاهد ما ستحصل عليه",
   "Short version: don't. Compass takes no donations.": "باختصار: لا تفعل. Compass لا يقبل التبرعات.",
+  "Donations are optional. Compass is free to use either way.":
+    "التبرع اختياري. Compass مجاني للاستخدام في كل الأحوال.",
+  "If you would like to support Compass directly, you can do it on Ko-fi. If you would rather give elsewhere, send it to Stremio above, or to one of the charities below. They all do more good with it.":
+    "إن أردت دعم Compass مباشرةً، يمكنك ذلك عبر Ko-fi. وإن فضّلت العطاء في مكان آخر، فأرسله إلى Stremio أعلاه أو إلى إحدى الجمعيات الخيرية أدناه. كلها تصنع خيراً أكبر به.",
+  "Saudi Arabia's national platform for charitable giving, with licensed charities and projects.":
+    "المنصة الوطنية للعمل الخيري في المملكة العربية السعودية، بجمعيات ومشاريع مرخّصة.",
+  "Opens the Compass Ko-fi page in your browser.": "يفتح صفحة Compass على Ko-fi في متصفحك.",
   "If you were going to send something, send it to ElfHosted above so the servers stay paid for, or to one of the charities below. Both do more good with it.":
     "إن كنت تنوي إرسال شيء، فأرسله إلى ElfHosted أعلاه لإبقاء الخوادم مدفوعة، أو إلى إحدى الجمعيات الخيرية أدناه. كلاهما يصنع خيراً أكبر به.",
   "Badges for giving": "شارات مقابل العطاء",

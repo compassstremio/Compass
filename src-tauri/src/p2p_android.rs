@@ -26,7 +26,7 @@ use librqbit::{PeerConnectionOptions, SessionOptions, SessionPersistenceConfig};
 /// Matches the directory name desktop uses under its own root.
 pub const ENGINE_SUBDIR: &str = "engine";
 
-/// Inbound listen range, identical to desktop on purpose. Two Compasses on one
+/// Inbound listen range, identical to desktop on purpose. Two Compasss on one
 /// LAN both asking a router to forward 16881 is survivable: the second UPnP
 /// request is refused, tier 1 fails, and the tier ladder drops to no-inbound.
 /// A separate Android range would buy nothing and add a number to explain.

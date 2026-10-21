@@ -22,7 +22,7 @@ jobs:
     name: Publish
     # Only the upstream repository has the winget-pkgs fork and the WINGET_TOKEN
     # secret, so forks skip instead of failing on a missing credential.
-    if: github.repository == 'Compasssio/Compass'
+    if: github.repository == 'compassstremio/compass'
     runs-on: ubuntu-24.04
     timeout-minutes: 20
     steps:
@@ -64,9 +64,9 @@ jobs:
         if: steps.release.outputs.found == 'true'
         uses: vedantmgoyal9/winget-releaser@v2
         with:
-          identifier: Compasssio.Compass
+          identifier: CompassStremio.Compass
           version: ${{ steps.release.outputs.version }}
           release-tag: ${{ steps.release.outputs.tag }}
           installers-regex: '_x64-setup\.exe$'
-          fork-user: Compasssio
+          fork-user: compassstremio
           token: ${{ secrets.WINGET_TOKEN }}

@@ -18,7 +18,7 @@ pub fn route_for(kind: &str, game: &str, loader: Option<&str>) -> Result<reqwest
 fn route(game: &str, loader: Option<&str>) -> Result<reqwest::Url> { route_for("fabric", game, loader) }
 
 async fn metadata(kind: &str, game: &str, loader: Option<&str>, cancel: &AtomicBool) -> Result<Value> {
-    let client = reqwest::Client::builder().user_agent("Compass-Games/0.9 (https://compass.site)").redirect(reqwest::redirect::Policy::none()).connect_timeout(Duration::from_secs(10)).timeout(Duration::from_secs(25)).build().map_err(|_| "instance_network")?;
+    let client = reqwest::Client::builder().user_agent("Compass-Games/0.9 (https://compass.sarl)").redirect(reqwest::redirect::Policy::none()).connect_timeout(Duration::from_secs(10)).timeout(Duration::from_secs(25)).build().map_err(|_| "instance_network")?;
     let mut response = runtime::cancellable(cancel, client.get(route_for(kind, game, loader)?).send()).await?.map_err(|_| "instance_network")?;
     // Fabric uses 400 (including an empty array) for unsupported game/loader pairs.
     if matches!(response.status().as_u16(), 400 | 404) { return if loader.is_none() { Ok(Value::Array(vec![])) } else { Err("instance_loader_version") }; }

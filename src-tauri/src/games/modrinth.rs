@@ -25,7 +25,7 @@ pub fn environment(loader: &str, game: &str) -> Result<()> {
 }
 pub fn client() -> Result<reqwest::Client> {
     reqwest::Client::builder()
-        .user_agent("Compass-Games/0.9 (https://compass.site)")
+        .user_agent("Compass-Games/0.9 (https://compass.sarl)")
         .timeout(Duration::from_secs(20))
         .redirect(reqwest::redirect::Policy::none())
         .build()

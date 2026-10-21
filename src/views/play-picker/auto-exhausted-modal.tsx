@@ -39,7 +39,7 @@ export function AutoExhaustedModal({
     `Streams tried: ${triedCount}\n` +
     `\nWhat happened: Compass could not find a working stream automatically.\n` +
     `\n(Add any extra detail here)`;
-  const reportUrl = `https://github.com/Compasssio/Compass/issues/new?title=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
+  const reportUrl = `https://github.com/compassstremio/compass/issues/new?title=${encodeURIComponent(subject)}&body=${encodeURIComponent(body)}`;
   return (
     <main className="fixed inset-0 z-[120] flex items-center justify-center overflow-hidden bg-black px-6">
       <div className="w-full max-w-md rounded-2xl bg-elevated p-8 ring-1 ring-edge-soft">

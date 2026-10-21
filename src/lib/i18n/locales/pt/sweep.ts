@@ -741,7 +741,7 @@ const sweep: Record<string, string> = {
   "Compass's own bar": "Barra própria do Compass",
   "Compass's own community server": "Servidor da comunidade do Compass",
   "Compass's public relay": "Retransmissor público do Compass",
-  "Compasses on your network": "Compasses na sua rede",
+  "Compasss on your network": "Compasss na sua rede",
   "Hard outline": "Contorno forte",
   "Hardware acceleration (hwdec)": "Aceleração de hardware (hwdec)",
   Head: "Cabeça",
@@ -900,7 +900,7 @@ const sweep: Record<string, string> = {
   "Link a title": "Vincular um título",
   "Linked as {username}": "Vinculado como {username}",
   "Linked to your Compass account.": "Vinculado à sua conta Compass.",
-  "Listening for Compasses": "Procurando Compasses",
+  "Listening for Compasss": "Procurando Compasss",
   Lists: "Listas",
   "Live TV source": "Fonte de TV ao vivo",
   "Live TV sources": "Fontes de TV ao vivo",
@@ -1312,10 +1312,10 @@ const sweep: Record<string, string> = {
   "Remember your place on show pages": "Lembrar onde você parou nas páginas de séries",
   "Remote control is off on that Compass, so it cannot be driven from here.":
     "O controle remoto está desligado naquele Compass, então não dá para comandá-lo daqui.",
-  "Remote control is off, so other Compasses can see this one but cannot drive it.":
-    "O controle remoto está desligado, então outros Compasses veem este, mas não podem comandá-lo.",
-  "Remote control is on, so other Compasses on this network can drive this one.":
-    "O controle remoto está ligado, então outros Compasses nesta rede podem comandá-lo.",
+  "Remote control is off, so other Compasss can see this one but cannot drive it.":
+    "O controle remoto está desligado, então outros Compasss veem este, mas não podem comandá-lo.",
+  "Remote control is on, so other Compasss on this network can drive this one.":
+    "O controle remoto está ligado, então outros Compasss nesta rede podem comandá-lo.",
   "Remote off": "Remoto desligado",
   Remotes: "Controles remotos",
   "Reopening a title within this window resumes instead of re-downloading.":
@@ -2022,7 +2022,7 @@ const sweep: Record<string, string> = {
   "{n} of {total} chosen": "{n} de {total} selecionados",
   "{n} of {total} connected": "{n} de {total} conectados",
   "{n} on": "{n} ativos",
-  "{n} other Compasses": "{n} outros Compasses",
+  "{n} other Compasss": "{n} outros Compasss",
   "{n} picks, refreshed daily": "{n} seleções, atualizadas diariamente",
   "{n} recorded winners": "{n} vencedores registrados",
   "{n} seeders": "{n} seeders",

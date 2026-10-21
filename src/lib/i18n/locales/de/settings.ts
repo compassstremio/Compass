@@ -356,8 +356,8 @@ const settings: Record<string, string> = {
     "Prüfe die Protokolle im Cloudflare-Dashboard und stelle die Anwendung dann erneut bereit.",
   "Check relay": "Relay prüfen",
   Checking: "Wird geprüft",
-  "Checking compass.site for a newer build.":
-    "Auf compass.site wird nach einer neueren Version gesucht.",
+  "Checking compass.sarl for a newer build.":
+    "Auf compass.sarl wird nach einer neueren Version gesucht.",
   "Checking {n} items…": "{n} Elemente werden geprüft…",
   "Checking…": "Wird geprüft…",
   "Choose a model": "Modell auswählen",
@@ -375,7 +375,7 @@ const settings: Record<string, string> = {
   "Cinematic overlay": "Filmische Einblendung",
   "Claim your handle": "Sichere dir deinen Benutzernamen",
   "Classic Stremio": "Klassisches Stremio",
-  "Classic. Was Compass's original pair.": "Klassisch. War Compasses ursprüngliche Kombination.",
+  "Classic. Was Compass's original pair.": "Klassisch. War Compasss ursprüngliche Kombination.",
   "Clean modern. Sans across the board.": "Klar und modern. Durchgehend serifenlos.",
   "Cleaner grid for when your poster service already prints the title onto the artwork.":
     "Übersichtlicheres Raster, wenn dein Posterdienst den Titel bereits in das Bild einfügt.",
@@ -509,8 +509,8 @@ const settings: Record<string, string> = {
     "Installation fehlgeschlagen. Überprüfe die URL und versuche es erneut.",
   "Couldn't reach Trakt. Check your connection and try again.":
     "Trakt konnte nicht erreicht werden. Prüfe deine Verbindung und versuche es erneut.",
-  "Couldn't reach compass.site to load earlier builds. Check your connection and try again.":
-    "Frühere Builds konnten nicht von compass.site geladen werden. Prüfe deine Verbindung und versuche es erneut.",
+  "Couldn't reach compass.sarl to load earlier builds. Check your connection and try again.":
+    "Frühere Builds konnten nicht von compass.sarl geladen werden. Prüfe deine Verbindung und versuche es erneut.",
   "Couldn't reach that pack": "Dieses Paket war nicht erreichbar",
   "Couldn't reach that pack (HTTP {n})": "Dieses Paket war nicht erreichbar (HTTP {n})",
   "Couldn't reach the update server. Try again in a moment.":
@@ -923,10 +923,10 @@ const settings: Record<string, string> = {
     "Compass fängt stremio://-Installationslinks ab, damit Konfiguration und Installation innerhalb der App bleiben. Jede Installation wird außerdem mit deinem Stremio-Konto synchronisiert, sodass die offizielle App die maßgebliche Zentrale für deine Mediathek bleibt.",
   "Compass checks automatically every few hours.":
     "Compass sucht automatisch alle paar Stunden nach Aktualisierungen.",
-  "Compass checks compass.site for new versions and installs them in place.":
-    "Compass sucht auf compass.site nach neuen Versionen und installiert sie direkt als Aktualisierung.",
-  "Compass checks compass.site for new versions and installs them in place. Nothing installs until you choose to, and a dismissed update never nags you again.":
-    "Compass sucht auf compass.site nach neuen Versionen und installiert sie direkt über die vorhandene Version. Es wird nichts installiert, bevor du dich dafür entscheidest, und ein abgelehntes Update wird dir nie wieder angeboten.",
+  "Compass checks compass.sarl for new versions and installs them in place.":
+    "Compass sucht auf compass.sarl nach neuen Versionen und installiert sie direkt als Aktualisierung.",
+  "Compass checks compass.sarl for new versions and installs them in place. Nothing installs until you choose to, and a dismissed update never nags you again.":
+    "Compass sucht auf compass.sarl nach neuen Versionen und installiert sie direkt über die vorhandene Version. Es wird nichts installiert, bevor du dich dafür entscheidest, und ein abgelehntes Update wird dir nie wieder angeboten.",
   "Compass curated": "Von Compass kuratiert",
   "Compass finds intro and credits timing from AniSkip, TheIntroDB, and the file's own chapters, then shows a Skip button at the right moment.":
     "Compass ermittelt die Zeitpunkte von Intro und Abspann aus AniSkip, TheIntroDB und den Kapiteln der Datei und zeigt dann im richtigen Moment eine Schaltfläche zum Überspringen an.",
@@ -966,12 +966,12 @@ const settings: Record<string, string> = {
     "Compass scrobbelt deine Wiedergabe an Trakt und synchronisiert deine Merkliste.",
   "Compass {version} available": "Compass {version} verfügbar",
   "Compass's built-in frame interpolation. Smooths panning, best on anime. Needs a display refresh rate above the video's frame rate, and can stutter on weak GPUs. Lighter than SVP.":
-    "Compasses integrierte Zwischenbildberechnung. Sie glättet Kameraschwenks und eignet sich besonders für Anime. Erfordert eine Bildschirmaktualisierungsrate über der Bildrate des Videos und kann auf schwachen GPUs ruckeln. Ressourcenschonender als SVP.",
+    "Compasss integrierte Zwischenbildberechnung. Sie glättet Kameraschwenks und eignet sich besonders für Anime. Erfordert eine Bildschirmaktualisierungsrate über der Bildrate des Videos und kann auf schwachen GPUs ruckeln. Ressourcenschonender als SVP.",
   "Compass's in-app installer animates the manifest install and keeps you in context. Anything Compass installs is also synced to your Stremio account, so the official app stays the canonical library. Turn this off and Stremio becomes the only handler for stremio:// links; Compass still installs anything you trigger from inside the app (Configure & install, paste, drag-and-drop).":
     "Das Compass-interne Installationsprogramm zeigt die Manifest-Installation animiert an und lässt dich im aktuellen Kontext bleiben. Alles, was Compass installiert, wird außerdem mit deinem Stremio-Konto synchronisiert, sodass die Mediathek der offiziellen App maßgeblich bleibt. Schalte dies aus, damit nur noch Stremio stremio://-Links verarbeitet; Compass installiert weiterhin alles, dessen Installation du innerhalb der App auslöst (Konfigurieren und installieren, Einfügen, Drag-and-drop).",
-  "Compass's native player chrome.": "Compasses native Player-Bedienelemente.",
+  "Compass's native player chrome.": "Compasss native Player-Bedienelemente.",
   "Compass's player applies the interpolation itself, embedded like normal playback, and starts SVP Manager in the tray for licensing. Restart playback to apply. If video goes black or won't start, turn this off.":
-    "Compasses Player wendet die Interpolation direkt wie bei der normalen Wiedergabe an und startet zur Lizenzierung den SVP Manager im Infobereich. Starte die Wiedergabe neu, um die Änderung anzuwenden. Wenn das Video schwarz bleibt oder nicht startet, deaktiviere diese Option.",
+    "Compasss Player wendet die Interpolation direkt wie bei der normalen Wiedergabe an und startet zur Lizenzierung den SVP Manager im Infobereich. Starte die Wiedergabe neu, um die Änderung anzuwenden. Wenn das Video schwarz bleibt oder nicht startet, deaktiviere diese Option.",
   "Compass's public relay updates automatically; nothing to do.":
     "Das öffentliche Relay von Compass wird automatisch aktualisiert. Du musst nichts tun.",
   "Hard stroke around each letter. High contrast.":
@@ -979,7 +979,7 @@ const settings: Record<string, string> = {
   "Hardware acceleration": "Hardwarebeschleunigung",
   "Heads up": "Hinweis",
   "Heads up: Compass was built in English. Multi-language support is partial, so your addons usually catch what Compass's own filters miss. If you speak another language and want to help fill the gaps, the source is open.":
-    "Hinweis: Compass wurde auf Englisch entwickelt. Die Unterstützung mehrerer Sprachen ist unvollständig, daher finden deine Add-ons meist das, was Compasses eigene Filter übersehen. Wenn du eine andere Sprache sprichst und helfen möchtest, die Lücken zu schließen, ist der Quellcode offen.",
+    "Hinweis: Compass wurde auf Englisch entwickelt. Die Unterstützung mehrerer Sprachen ist unvollständig, daher finden deine Add-ons meist das, was Compasss eigene Filter übersehen. Wenn du eine andere Sprache sprichst und helfen möchtest, die Lücken zu schließen, ist der Quellcode offen.",
   "Heads up: if Stremio is also installed, Windows may ask which app to use the first time a stremio:// link fires. Pick Compass to make it stick.":
     "Hinweis: Wenn Stremio ebenfalls installiert ist, fragt Windows beim ersten Öffnen eines stremio://-Links möglicherweise, welche App verwendet werden soll. Wähle Compass, um diese Auswahl beizubehalten.",
   "Heads up: {keys} can load outside scripts or open your player to the network. Only keep these if you know exactly what they do.":
@@ -1022,13 +1022,13 @@ const settings: Record<string, string> = {
   "High-quality episode images": "Hochwertige Episodenbilder",
   Hit: "Treffer",
   "Hit your daily quota? Use Compass's public relay, or host your own.":
-    "Tageskontingent erreicht? Nutze Compasses öffentliches Relay oder hoste dein eigenes.",
+    "Tageskontingent erreicht? Nutze Compasss öffentliches Relay oder hoste dein eigenes.",
   "Hitting Play jumps straight into playback with the best stream Compass finds.":
     "Wenn du auf „Wiedergeben“ drückst, startet sofort die Wiedergabe mit dem besten von Compass gefundenen Stream.",
   "Hitting Play opens the source list so you can choose quality, debrid, and audio yourself.":
     "Beim Starten der Wiedergabe wird die Quellenliste geöffnet, damit du Qualität, Debrid und Tonspur selbst auswählen kannst.",
   "Hold Ctrl or Cmd and scroll to resize Compass's interface smoothly.":
-    "Halte Ctrl oder Cmd gedrückt und scrolle, um Compasses Oberfläche stufenlos zu skalieren.",
+    "Halte Ctrl oder Cmd gedrückt und scrolle, um Compasss Oberfläche stufenlos zu skalieren.",
   "Holds up to {size} in memory while a video plays.":
     "Belegt während der Videowiedergabe bis zu {size} Arbeitsspeicher.",
   "Home Rail Settings": "Einstellungen für Startseitenreihen",
@@ -1756,7 +1756,7 @@ const settings: Record<string, string> = {
   "Rest the cursor on a poster to peek at the rating, story, and quick actions without opening it.":
     "Bewege den Mauszeiger über ein Poster, um Bewertung, Handlung und Schnellaktionen zu sehen, ohne es zu öffnen.",
   "Restart Compass's own streaming server, then reload the stream once it is back. Desktop only.":
-    "Compasses eigenen Streaming-Server neu starten und den Stream neu laden, sobald er wieder läuft. Nur Desktop.",
+    "Compasss eigenen Streaming-Server neu starten und den Stream neu laden, sobald er wieder läuft. Nur Desktop.",
   "Restart engine": "Engine neu starten",
   "Restart streaming server": "Streaming-Server neu starten",
   Restarting: "Wird neu gestartet",
@@ -2137,7 +2137,7 @@ const settings: Record<string, string> = {
   "Stream torrents straight from Compass's built-in engine when you have no debrid set up, or a torrent isn't cached. This connects to peers over your own connection. Turn off to only ever play debrid and direct links.":
     "Streame Torrents direkt mit der integrierten Engine von Compass, wenn du keinen Debrid-Dienst eingerichtet hast oder ein Torrent nicht zwischengespeichert ist. Dabei verbindest du dich über deine eigene Internetverbindung mit Peers. Deaktiviere diese Option, um ausschließlich Debrid- und Direktlinks abzuspielen.",
   "Stream torrents through Compass's own Rust peer-to-peer engine instead of the bundled Stremio Server. Falls back automatically if it can't connect. Status and a self-test live in the Local engine card below.":
-    "Streame Torrents über Compasses eigene, in Rust entwickelte P2P-Engine statt über den mitgelieferten Stremio Server. Wenn keine Verbindung möglich ist, wird automatisch auf diesen zurückgegriffen. Status und Selbsttest findest du unten auf der Karte „Lokale Engine“.",
+    "Streame Torrents über Compasss eigene, in Rust entwickelte P2P-Engine statt über den mitgelieferten Stremio Server. Wenn keine Verbindung möglich ist, wird automatisch auf diesen zurückgegriffen. Status und Selbsttest findest du unten auf der Karte „Lokale Engine“.",
   "Streamer release rule": "Veröffentlichungsregel für Streamer",
   Streamers: "Streamer",
   Streaming: "Streaming",
@@ -2202,8 +2202,8 @@ const settings: Record<string, string> = {
   "System default": "Systemstandard",
   "System tray": "Infobereich",
   "THEN notify on": "DANN Benachrichtigung aktivieren",
-  "TMDB asks for an app URL when you create the key. Put any URL at all, like https://compass.app. The only thing you need back is the API key.":
-    "TMDB verlangt beim Erstellen des Schlüssels eine App-URL. Gib eine beliebige URL ein, zum Beispiel https://compass.app. Du benötigst anschließend nur den API-Schlüssel.",
+  "TMDB asks for an app URL when you create the key. Put any URL at all, like https://compass.sarl. The only thing you need back is the API key.":
+    "TMDB verlangt beim Erstellen des Schlüssels eine App-URL. Gib eine beliebige URL ein, zum Beispiel https://compass.sarl. Du benötigst anschließend nur den API-Schlüssel.",
   "TMDB · catalogs and rails": "TMDB · Kataloge und Reihen",
   TRACKS: "TONSPUREN",
   "TV guide": "TV-Programm",
@@ -2434,7 +2434,7 @@ const settings: Record<string, string> = {
     "Worker wird hochgeladen, Durable Object wird verbunden…",
   "Upscales SDR video with AI on an Nvidia RTX GPU (turn on RTX Video Super Resolution in the Nvidia app; needs GPU decode). Experimental. Unavailable while SVP is active for the current video.":
     "Skaliert SDR-Videos per KI auf einer Nvidia-RTX-GPU hoch (aktiviere RTX Video Super Resolution in der Nvidia-App; GPU-Decodierung erforderlich). Experimentell. Nicht verfügbar, solange SVP für das aktuelle Video aktiv ist.",
-  "Use Compass's built-in engine (beta)": "Compasses integrierte Engine verwenden (Beta)",
+  "Use Compass's built-in engine (beta)": "Compasss integrierte Engine verwenden (Beta)",
   "Use Compass's public relay": "Öffentliches Relay von Compass verwenden",
   "Use MyAnimeList avatar": "MyAnimeList-Avatar verwenden",
   "Use a custom meta addon you installed (e.g. a localized Cinemeta) for titles and descriptions instead of the built-in Cinemeta. Falls back to Cinemeta if yours has no data.":
@@ -2470,7 +2470,7 @@ const settings: Record<string, string> = {
     "Wird für deinen Cursor in Watch Together, deine Zeichenfarbe und dein Namensschild im Chat verwendet.",
   Usenet: "Usenet",
   "Using AIOStreams or another aggregator addon? Its own sorting and filtering happen inside the addon before Compass ever sees the results, then Compass applies the stream filter and result order above on top. If results look thinner than expected, keep one side permissive: either relax the addon's internal filters or set Compass's stream filter to Balanced or Off.":
-    "Verwendest du AIOStreams oder ein anderes Aggregator-Add-on? Dessen eigene Sortierung und Filterung erfolgen innerhalb des Add-ons, bevor Compass die Ergebnisse erhält. Anschließend wendet Compass zusätzlich den oben festgelegten Streamfilter und die Ergebnisreihenfolge an. Wenn weniger Ergebnisse als erwartet erscheinen, lass eine Seite großzügig eingestellt: Lockere entweder die internen Filter des Add-ons oder stelle Compasses Streamfilter auf Ausgewogen oder Aus.",
+    "Verwendest du AIOStreams oder ein anderes Aggregator-Add-on? Dessen eigene Sortierung und Filterung erfolgen innerhalb des Add-ons, bevor Compass die Ergebnisse erhält. Anschließend wendet Compass zusätzlich den oben festgelegten Streamfilter und die Ergebnisreihenfolge an. Wenn weniger Ergebnisse als erwartet erscheinen, lass eine Seite großzügig eingestellt: Lockere entweder die internen Filter des Add-ons oder stelle Compasss Streamfilter auf Ausgewogen oder Aus.",
   VOLUME: "LAUTSTÄRKE",
   "Verified status": "Verifizierungsstatus",
   "Verify & connect": "Verifizieren und verbinden",

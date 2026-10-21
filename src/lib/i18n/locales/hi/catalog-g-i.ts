@@ -227,10 +227,10 @@ const catalogGI: Record<string, string> = {
   "Compass checks a few times a day while it's open and lets you know here.":
     "Compass खुला रहने के दौरान दिन में कुछ बार जाँच करता है और आपको यहाँ सूचित करता है।",
   "Compass checks automatically every few hours.": "Compass हर कुछ घंटों में अपने आप जाँच करता है।",
-  "Compass checks compass.site for new versions and installs them in place.":
-    "Compass नए वर्ज़न के लिए compass.site की जाँच करता है और उन्हें सीधे इंस्टॉल कर देता है।",
-  "Compass checks compass.site for new versions and installs them in place. Nothing installs until you choose to, and a dismissed update never nags you again.":
-    "Compass नए वर्ज़न के लिए compass.site की जाँच करता है और उन्हें सीधे इंस्टॉल कर देता है। आपके चुने बिना कुछ भी इंस्टॉल नहीं होता और खारिज किया गया अपडेट आपको फिर कभी परेशान नहीं करता।",
+  "Compass checks compass.sarl for new versions and installs them in place.":
+    "Compass नए वर्ज़न के लिए compass.sarl की जाँच करता है और उन्हें सीधे इंस्टॉल कर देता है।",
+  "Compass checks compass.sarl for new versions and installs them in place. Nothing installs until you choose to, and a dismissed update never nags you again.":
+    "Compass नए वर्ज़न के लिए compass.sarl की जाँच करता है और उन्हें सीधे इंस्टॉल कर देता है। आपके चुने बिना कुछ भी इंस्टॉल नहीं होता और खारिज किया गया अपडेट आपको फिर कभी परेशान नहीं करता।",
   "Compass could not find these": "Compass इन्हें नहीं ढूँढ पाया",
   "Compass could not open its web server. Try again, or set this up on the TV.":
     "Compass अपना वेब सर्वर नहीं खोल पाया। फिर से कोशिश करें या इसे TV पर सेट अप करें।",
@@ -415,7 +415,7 @@ const catalogGI: Record<string, string> = {
     "Compass का स्ट्रीमिंग सर्वर केवल डेस्कटॉप ऐप में चलता है।",
   "Compass's temporary viewer requires HTTPS.": "Compass के अस्थायी व्यूअर के लिए HTTPS आवश्यक है।",
   "Compass, from a public domain frame": "Compass, सार्वजनिक डोमेन के एक फ़्रेम से",
-  "Compasses on your network": "आपके नेटवर्क पर मौजूद Compass इंस्टेंस",
+  "Compasss on your network": "आपके नेटवर्क पर मौजूद Compass इंस्टेंस",
   "Hard Boiled": "सख़्तमिज़ाज",
   "Hard outline": "ठोस आउटलाइन",
   "Hard stroke around each letter. High contrast.": "हर अक्षर के चारों ओर मोटी रेखा। अधिक कंट्रास्ट।",
@@ -1068,7 +1068,7 @@ const catalogGI: Record<string, string> = {
   "https://...manifest.json or stremio://...": "https://...manifest.json या stremio://...",
   "https://posters.example.com or a pattern with {id}":
     "https://posters.example.com या {id} वाला पैटर्न",
-  "https://sync.compass.site": "https://sync.compass.site",
+  "https://sync.compass.sarl": "https://sync.compass.sarl",
   "huge ({width}×{height}px)": "बहुत बड़ी ({width}×{height}px)",
   "if the first page is 0. Use this when the URL counts pages.":
     "अगर पहला पेज 0 है। इसका इस्तेमाल तब करें जब URL में पेज नंबर दिया जाता हो।",

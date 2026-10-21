@@ -17,7 +17,7 @@ import {
 } from "@/chrome/nav-items";
 import { NavHiddenTray, NavEditableItem, useNavDrag } from "@/chrome/nav-edit";
 import { useNavEditMode } from "@/chrome/nav-edit-mode";
-import { useSearch } from "@/lib/search-context";
+import { useSearchActions } from "@/lib/search-context";
 import { useSettings } from "@/lib/settings";
 import { useT } from "@/lib/i18n";
 import { useParental } from "@/lib/parental";
@@ -44,7 +44,7 @@ export function SideRail() {
   const { view, setView, chromeHidden } = useView();
   const { settings } = useSettings();
   const { locked, unlock, hiddenTabs } = useParental();
-  const { setOpen: setSearchOpen } = useSearch();
+  const { setOpen: setSearchOpen } = useSearchActions();
   const t = useT();
   const { open: openContextMenu } = useContextMenu();
   const openEmptyMenu = (e: React.MouseEvent) => {

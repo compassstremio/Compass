@@ -352,20 +352,6 @@ export function Settings({ visible = true }: { visible?: boolean }) {
   const [adDraft, setAdDraft] = useState(settings.adKey);
   const [pmDraft, setPmDraft] = useState(settings.pmKey);
   const [dlDraft, setDlDraft] = useState(settings.dlKey);
-  // The settings file and profile blobs load asynchronously, and the drafts
-  // above were seeded from whatever was available at mount (often the
-  // defaults). Writing those seeds back would replace real keys with empty
-  // strings, so keep the drafts in step with the loaded values.
-  useEffect(() => { setTmdbDraft(settings.tmdbKey); }, [settings.tmdbKey]);
-  useEffect(() => { setOmdbDraft(settings.omdbKey); }, [settings.omdbKey]);
-  useEffect(() => { setRpdbDraft(settings.rpdbKey); }, [settings.rpdbKey]);
-  useEffect(() => { setFanartDraft(settings.fanartKey); }, [settings.fanartKey]);
-  useEffect(() => { setTvdbDraft(settings.tvdbKey); }, [settings.tvdbKey]);
-  useEffect(() => { setRdDraft(settings.rdKey); }, [settings.rdKey]);
-  useEffect(() => { setTbDraft(settings.tbKey); }, [settings.tbKey]);
-  useEffect(() => { setAdDraft(settings.adKey); }, [settings.adKey]);
-  useEffect(() => { setPmDraft(settings.pmKey); }, [settings.pmKey]);
-  useEffect(() => { setDlDraft(settings.dlKey); }, [settings.dlKey]);
   const [savedKey, setSavedKey] = useState<SavedKey | null>(null);
   const { settingsSectionRequest, topKind, chromeHidden: viewChromeHidden } = useView();
   const TRACKER_IDS = ["trakt", "anilist", "mal", "simkl", "letterboxd"];

@@ -10,14 +10,17 @@ const SECRET_PREFIXES = [
   "compass.anilist.session.v1",
   "compass.media-server.token.v1",
   "compass.plex-auth.device.v1",
-  "compass.lastfm.v1",
+  "compass.publicmetadb.session.v1",
+  "compass.bingers.session.v1",
 ];
 
 let store: Record<string, string> = {};
 let rustAvailable = false;
 let loaded = false;
 let persistTimer: number | null = null;
-let persistChain: Promise<void> = Promise.resolve();
+let persistChain: Promise<boolean> = Promise.resolve(true);
+let retryTimer: number | null = null;
+const SECRET_WRITE_RETRY_MS = 5000;
 
 /**
  * Session and credential keys change rarely and losing one costs the listener a
@@ -34,6 +37,8 @@ const IMMEDIATE_KEY_PREFIXES = [
   "compass.anilist.session.v1",
   "compass.media-server.token.v1",
   "compass.plex-auth.device.v1",
+  "compass.publicmetadb.session.v1",
+  "compass.bingers.session.v1",
 ];
 
 function isImmediateKey(key: string): boolean {
@@ -57,17 +62,41 @@ export function getAllSecrets(): Record<string, string> {
   return { ...store };
 }
 
-async function persist(): Promise<void> {
-  if (!rustAvailable) return;
+/**
+ * The localStorage copy is only dropped once the Rust write is confirmed: until then it
+ * is the single durable copy, and removing it first would lose the secret on restart if
+ * the write failed.
+ */
+async function persist(): Promise<boolean> {
+  if (!rustAvailable) return true;
+  const snapshot = { ...store };
   try {
-    await invoke("secrets_write", { content: JSON.stringify(store) });
+    await invoke("secrets_write", { content: JSON.stringify(snapshot) });
+  } catch {
+    console.warn("[secrets] could not write the secret store; keeping the local copy and retrying");
+    scheduleRetry();
+    return false;
+  }
+  try {
+    for (const [key, value] of Object.entries(snapshot)) {
+      if (store[key] === value && localStorage.getItem(key) === value) localStorage.removeItem(key);
+    }
   } catch {
     void 0;
   }
+  return true;
+}
+
+function scheduleRetry(): void {
+  if (retryTimer != null) return;
+  retryTimer = window.setTimeout(() => {
+    retryTimer = null;
+    void persistSoon();
+  }, SECRET_WRITE_RETRY_MS);
 }
 
 /** Writes in order, so an old snapshot can never land after a newer one. */
-function persistSoon(): Promise<void> {
+function persistSoon(): Promise<boolean> {
   persistChain = persistChain.then(persist, persist);
   return persistChain;
 }
@@ -81,12 +110,12 @@ function schedulePersist(): void {
 }
 
 /** Flushes any pending secret writes immediately, for callers about to leave the page. */
-export async function flushSecrets(): Promise<void> {
+export async function flushSecrets(): Promise<boolean> {
   if (persistTimer != null) {
     window.clearTimeout(persistTimer);
     persistTimer = null;
   }
-  await persistSoon();
+  return persistSoon();
 }
 
 export async function loadSecrets(): Promise<void> {
@@ -110,7 +139,9 @@ export async function loadSecrets(): Promise<void> {
       const key = localStorage.key(i);
       if (!key || !isSecretKey(key)) continue;
       const val = localStorage.getItem(key);
-      if (val != null && store[key] == null) {
+      // A leftover localStorage copy is one whose Rust write never landed, so it is
+      // newer than the file and wins over it.
+      if (val != null && store[key] !== val) {
         store[key] = val;
         migrated = true;
       }
@@ -119,16 +150,7 @@ export async function loadSecrets(): Promise<void> {
     void 0;
   }
 
-  if (migrated) {
-    await persistSoon();
-    try {
-      for (const key of Object.keys(store)) {
-        if (isSecretKey(key)) localStorage.removeItem(key);
-      }
-    } catch {
-      void 0;
-    }
-  }
+  if (migrated) await persistSoon();
 
   // Readers that mounted before this resolved saw an empty store, and migration has
   // already removed the localStorage copies they would have fallen back to, so every
@@ -193,15 +215,16 @@ export function writeSharedSecret(base: string, value: string | null): void {
 
 export function setSecret(key: string, value: string | null): void {
   if (rustAvailable) {
+    try {
+      if (value == null) localStorage.removeItem(key);
+      else localStorage.setItem(key, value);
+    } catch {
+      void 0;
+    }
     if (value == null) delete store[key];
     else store[key] = value;
     if (isImmediateKey(key)) void persistSoon();
     else schedulePersist();
-    try {
-      localStorage.removeItem(key);
-    } catch {
-      void 0;
-    }
     return;
   }
   try {

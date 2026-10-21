@@ -322,7 +322,7 @@ const settings: Record<string, string> = {
     "Revisa los registros en el panel de Cloudflare y vuelve a implementar",
   "Check relay": "Comprobar servidor de retransmisión",
   "Checking {n} items…": "Comprobando {n} elementos…",
-  "Checking compass.site for a newer build.": "Buscando una versión más reciente en compass.site.",
+  "Checking compass.sarl for a newer build.": "Buscando una versión más reciente en compass.sarl.",
   "Checking…": "Comprobando…",
   "Choose a model": "Elige un modelo",
   "Choose an avatar": "Elige un avatar",
@@ -749,10 +749,10 @@ const settings: Record<string, string> = {
     "Compass intercepta los enlaces de instalación stremio:// para que el proceso de configuración e instalación permanezca dentro de la app. Cada instalación también se sincroniza con tu cuenta de Stremio, por lo que la app oficial sigue siendo el lugar principal de tu biblioteca.",
   "Compass checks automatically every few hours.":
     "Compass comprueba automáticamente cada pocas horas.",
-  "Compass checks compass.site for new versions and installs them in place.":
-    "Compass busca nuevas versiones en compass.site y las instala sobre la versión actual.",
-  "Compass checks compass.site for new versions and installs them in place. Nothing installs until you choose to, and a dismissed update never nags you again.":
-    "Compass busca nuevas versiones en compass.site y las instala sobre la versión actual. No se instala nada hasta que tú lo decidas, y una actualización descartada no volverá a molestarte.",
+  "Compass checks compass.sarl for new versions and installs them in place.":
+    "Compass busca nuevas versiones en compass.sarl y las instala sobre la versión actual.",
+  "Compass checks compass.sarl for new versions and installs them in place. Nothing installs until you choose to, and a dismissed update never nags you again.":
+    "Compass busca nuevas versiones en compass.sarl y las instala sobre la versión actual. No se instala nada hasta que tú lo decidas, y una actualización descartada no volverá a molestarte.",
   "Compass curated": "Selección de Compass",
   "Compass finds intro and credits timing from AniSkip, TheIntroDB, and the file's own chapters, then shows a Skip button at the right moment.":
     "Compass obtiene los tiempos de la introducción y los créditos de AniSkip, TheIntroDB y los capítulos del propio archivo, y muestra un botón Omitir en el momento adecuado.",
@@ -1859,8 +1859,8 @@ const settings: Record<string, string> = {
   "Titles, overviews, and taglines from TMDB display in this language when a translation exists. Needs a TMDB key.":
     "Los títulos, resúmenes y eslóganes de TMDB se muestran en este idioma cuando hay una traducción disponible. Requiere una clave de TMDB.",
   "TMDB · catalogs and rails": "TMDB · catálogos y filas",
-  "TMDB asks for an app URL when you create the key. Put any URL at all, like https://compass.app. The only thing you need back is the API key.":
-    "TMDB solicita la URL de una aplicación al crear la clave. Ingresa cualquier URL, como https://compass.app. Lo único que necesitas obtener es la clave de API.",
+  "TMDB asks for an app URL when you create the key. Put any URL at all, like https://compass.sarl. The only thing you need back is the API key.":
+    "TMDB solicita la URL de una aplicación al crear la clave. Ingresa cualquier URL, como https://compass.sarl. Lo único que necesitas obtener es la clave de API.",
   "To run a public relay, post the": "Para ejecutar un relé público, publica la",
   "To run a public relay, post the {code} URL on r/Stremio or wherever your community lives. Other Compass users paste it into Settings, Compass Relay, {kbd}.":
     "Para ejecutar un relé público, publica la URL de {code} en r/Stremio o donde esté tu comunidad. Otros usuarios de Compass pueden pegarla en Configuración, Relé de Compass, {kbd}.",

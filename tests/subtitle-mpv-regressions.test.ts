@@ -235,6 +235,65 @@ test("manual Off stays off when a delayed download and automatic discovery finis
   );
 });
 
+test("a finished translation cannot take over a manual Off or a manual pick", async () => {
+  for (const action of ["off", "other-track"] as const) {
+    const h = mpvBridgeHarness();
+    await h.bridge.load({ url: "fixture.mkv" });
+    h.emit("track-list", tracks);
+    if (action === "off") h.bridge.setSubtitleTrack(null);
+    else h.bridge.setSubtitleTrack("2");
+    await flushBridge();
+    const picksBefore = h.picks().length;
+    // use-translation-auto-select re-adds a ready translating-addon subtitle with
+    // select=true; it is automatic work and must not claim manual ownership.
+    assert.equal(
+      await h.bridge.addSubtitle(
+        "memory:finished-translation.srt",
+        "hi",
+        "Make Hindi",
+        true,
+        {
+          translation: true,
+        },
+        "automatic",
+      ),
+      true,
+    );
+    await flushBridge();
+    assert.equal(h.picks().length, picksBefore);
+    const additions = h.commands.filter(({ command }) => command === "mpv_sub_add");
+    assert.equal(additions.length, 1);
+    assert.equal(additions[0].args.select, false);
+    assert.equal(
+      h.snapshot().subtitleTracks.some((track) => track.selected),
+      action === "other-track",
+    );
+  }
+});
+
+test("a finished translation still selects when the viewer has not intervened", async () => {
+  const h = mpvBridgeHarness();
+  await h.bridge.load({ url: "fixture.mkv" });
+  h.emit("track-list", tracks);
+  assert.equal(
+    await h.bridge.addSubtitle(
+      "memory:finished-translation.srt",
+      "hi",
+      "Make Hindi",
+      true,
+      {
+        translation: true,
+      },
+      "automatic",
+    ),
+    true,
+  );
+  await flushBridge();
+  const additions = h.commands.filter(({ command }) => command === "mpv_sub_add");
+  assert.equal(additions.length, 1);
+  assert.equal(additions[0].args.select, true);
+});
+
 test("a delayed manual download cannot replace a newer manual track", async () => {
   const h = mpvBridgeHarness();
   await h.bridge.load({ url: "fixture.mkv" });

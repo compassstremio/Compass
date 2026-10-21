@@ -57,17 +57,27 @@ async function synchronizeMediaServerInner(
     report(`Syncing ${library.name}`);
     const seen = new Set<string>();
     let cursor: string | undefined;
+    let processed = 0;
+    let total = 0;
     do {
       const page = await adapter.synchronize(connection, library, cursor);
       await putMediaServerItems(page.items, page.deletedIds, connection.id);
       page.items.forEach((item) => seen.add(item.id));
       itemCount += page.items.length;
       report(`Syncing ${library.name}`, page.processed, page.total);
+      processed = page.processed ?? processed;
+      total = page.total ?? total;
       cursor = page.cursor;
     } while (cursor);
-    const stale = (await mediaServerItems(connection.id))
-      .filter((item) => item.libraryId === library.id && !seen.has(item.id))
-      .map((item) => item.id);
+    // Only sweep items the server no longer reports once pagination actually
+    // reached the end of the library; a truncated run must never delete the
+    // rest of the index.
+    const stale =
+      processed >= total
+        ? (await mediaServerItems(connection.id))
+            .filter((item) => item.libraryId === library.id && !seen.has(item.id))
+            .map((item) => item.id)
+        : [];
     if (stale.length > 0) {
       await putMediaServerItems([], stale, connection.id);
       removedItems += stale.length;

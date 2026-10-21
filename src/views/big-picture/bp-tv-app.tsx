@@ -26,6 +26,8 @@ import { SearchProvider } from "@/lib/search-context";
 import { SettingsProvider, useSettings } from "@/lib/settings";
 import { SFX } from "@/lib/sfx";
 import { SimklProvider } from "@/lib/simkl/provider";
+import { PublicMetaDbProvider } from "@/lib/publicmetadb/provider";
+import { BingersProvider } from "@/lib/bingers/provider";
 import { LetterboxdProvider } from "@/lib/stremboxd/provider";
 import { TogetherProvider } from "@/lib/together/provider";
 import { TopRankModalProvider } from "@/lib/top-rank-modal";
@@ -62,6 +64,8 @@ const BP_TV_PROVIDERS: BpTvProvider[] = [
   AnilistProvider,
   MalProvider,
   SimklProvider,
+  PublicMetaDbProvider,
+  BingersProvider,
   LetterboxdProvider,
   RankingsProvider,
   AuthProvider,

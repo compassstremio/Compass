@@ -8,7 +8,7 @@ import { RecordingPill } from "@/chrome/recording-pill";
 import { TogetherButton } from "@/chrome/topbar";
 import { useBigPictureEntry } from "@/chrome/use-big-picture-entry";
 import { useT } from "@/lib/i18n";
-import { useSearch } from "@/lib/search-context";
+import { useSearchActions } from "@/lib/search-context";
 import { useSettings } from "@/lib/settings";
 import { getThemeById } from "@/lib/theme";
 import { useView } from "@/lib/view";
@@ -19,7 +19,7 @@ const IS_TAURI = typeof window !== "undefined" && "__TAURI_INTERNALS__" in windo
 export function FloatingTop() {
   const { view, setView, chromeHidden, canGoBack, goBack, topKind, exitPlayback } = useView();
   const { settings } = useSettings();
-  const { setOpen: setSearchOpen } = useSearch();
+  const { setOpen: setSearchOpen } = useSearchActions();
   const t = useT();
   const bigPicture = useBigPictureEntry();
   const { open: openContextMenu } = useContextMenu();

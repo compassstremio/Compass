@@ -87,7 +87,7 @@ const surfaces: Record<string, string> = {
   "Books you save will appear here": "Bücher, die du speicherst, erscheinen hier",
   "Brand name": "Markenname",
   "Bring trusted source packages aboard through Compass’s isolated extension worker.":
-    "Hole vertrauenswürdige Quellpakete über Compasses isolierten Erweiterungs-Worker an Bord.",
+    "Hole vertrauenswürdige Quellpakete über Compasss isolierten Erweiterungs-Worker an Bord.",
   "Browse community": "Community durchsuchen",
   "Browse eBooks": "eBooks durchsuchen",
   "Browsing {section}. Change section": "Du durchsuchst {section}. Bereich wechseln",
@@ -189,7 +189,7 @@ const surfaces: Record<string, string> = {
   "Diacritic-insensitive · results ahead stay sealed":
     "Unabhängig von Diakritika · nachfolgende Ergebnisse bleiben verborgen",
   "Dispatched on window. Listen from your theme JS to react to Compass's lifecycle.":
-    "Wird auf window ausgelöst. Lausche im JS deines Themes auf das Ereignis, um auf Compasses Lebenszyklus zu reagieren.",
+    "Wird auf window ausgelöst. Lausche im JS deines Themes auf das Ereignis, um auf Compasss Lebenszyklus zu reagieren.",
   "Distinguished fiction honored by the Pulitzer Prize":
     "Herausragende, mit dem Pulitzer-Preis ausgezeichnete Belletristik",
   "Dolby Vision unsupported": "Dolby Vision nicht unterstützt",
@@ -848,7 +848,7 @@ const surfaces: Record<string, string> = {
   "download error": "Downloadfehler",
   "eBook actions": "eBook-Aktionen",
   "eBook extensions use Compass’s isolated worker, HTTP bridge, and HTML parser—the same sandbox used by Manga extensions. Only add repositories you trust.":
-    "E-Book-Erweiterungen nutzen Compasses isolierten Worker, die HTTP-Bridge und den HTML-Parser, also dieselbe Sandbox wie Manga-Erweiterungen. Füge nur Repositorys hinzu, denen du vertraust.",
+    "E-Book-Erweiterungen nutzen Compasss isolierten Worker, die HTTP-Bridge und den HTML-Parser, also dieselbe Sandbox wie Manga-Erweiterungen. Füge nur Repositorys hinzu, denen du vertraust.",
   "eBook source settings": "Einstellungen für eBook-Quellen",
   episodes: "Folgen",
   example: "Beispiel",

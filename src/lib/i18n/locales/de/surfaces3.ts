@@ -113,7 +113,7 @@ const surfaces3: Record<string, string> = {
   "Nice try!": "Guter Versuch!",
   "No PiP session. Closing.": "Keine PiP-Sitzung. Wird geschlossen.",
   "No clean release has surfaced yet. This may be too new. Compass's filters dropped everything that came back as wrong-movie noise.":
-    "Bisher ist noch kein passendes Release aufgetaucht. Vielleicht ist der Titel zu neu. Compasses Filter haben alles verworfen, was als unpassender Film-Treffer zurückkam.",
+    "Bisher ist noch kein passendes Release aufgetaucht. Vielleicht ist der Titel zu neu. Compasss Filter haben alles verworfen, was als unpassender Film-Treffer zurückkam.",
   "No playable video file was found in this torrent.":
     "In diesem Torrent wurde keine abspielbare Videodatei gefunden.",
   "Not cached": "Nicht im Cache",

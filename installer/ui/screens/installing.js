@@ -158,10 +158,15 @@ export function render(mount, ctx) {
       native.step = step;
     };
     const job = repairing
-      ? runRepair({ dest: ctx.state.dest, onProgress: onProgress })
+      ? runRepair({
+          dest: ctx.state.dest,
+          disabledFeatures: ctx.state.disabledFeatures || [],
+          onProgress: onProgress
+        })
       : runInstall({
           dest: ctx.state.dest,
           desktopShortcut: ctx.state.desktopShortcut !== false,
+          disabledFeatures: ctx.state.disabledFeatures || [],
           onProgress: onProgress
         });
     job.then(function (report) {

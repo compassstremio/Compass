@@ -39,7 +39,7 @@ export function SuccessCard({ id, onAnother }: { id: string; onAnother: () => vo
         </button>
         <button
           type="button"
-          onClick={() => openUrl("https://github.com/Compasssio/Compass/pulls")}
+          onClick={() => openUrl("https://github.com/compassstremio/compass/pulls")}
           className={ROW_ACTION}
         >
           <GitPullRequest size={18} strokeWidth={1.9} />

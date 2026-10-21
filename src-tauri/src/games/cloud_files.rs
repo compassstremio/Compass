@@ -136,7 +136,7 @@ impl Api {
             _ => return Err("cloud_provider"),
         };
         let client = reqwest::Client::builder()
-            .user_agent("Compass-Games/0.9 (https://compass.site)")
+            .user_agent("Compass-Games/0.9 (https://compass.sarl)")
             .redirect(reqwest::redirect::Policy::none())
             .timeout(Duration::from_secs(20))
             .build()

@@ -905,6 +905,15 @@ const coverage: Record<string, string> = {
   "NYT Books API key": "NYT Books APIキー",
   "Choose whether Compass prefers direct and debrid sources, peer-to-peer torrents, or shows both.":
     "Compassが直接およびdebridソース、P2Pトレントのどちらを優先するか、または両方を表示するかを選択します。",
+  "Import from Harbor": "Harbor からインポート",
+  "Your Harbor data was already brought over. Import it again to replace what Compass has now.": "Harbor のデータはすでに移行済みです。もう一度インポートすると、現在の Compass のデータが置き換わります。",
+  "Harbor is Compass's former name. Bring over its profiles, settings, lists, keys and connected accounts.": "Harbor は Compass の旧名です。プロフィール、設定、リスト、キー、連携アカウントを移行します。",
+  "Import your Harbor data?": "Harbor のデータをインポートしますか？",
+  "Compass restarts and replaces its current data with your Harbor setup. Close Harbor first.": "Compass が再起動し、現在のデータを Harbor の設定に置き換えます。先に Harbor を閉じてください。",
+  "Restarting...": "再起動中...",
+  "Import and restart": "インポートして再起動",
+  "Compass could not start the import. Try again.": "Compass はインポートを開始できませんでした。もう一度お試しください。",
+  "Nothing is deleted: Compass keeps its current data in a backup folder next to its own, and Harbor stays as it is.": "何も削除されません。Compass は現在のデータを自身のフォルダの隣にあるバックアップフォルダに保管し、Harbor はそのまま残ります。",
 };
 
 export default coverage;

@@ -4,10 +4,14 @@ import malLogo from "@/assets/mal.png";
 import simklLogo from "@/assets/simkl.png";
 import traktLogo from "@/assets/trakt.png";
 import letterboxdLogo from "@/assets/addon-logos/letterboxd.png";
+import publicmetadbLogo from "@/assets/publicmetadb.svg";
+import bingersLogo from "@/assets/bingers.png";
 import { useAnilist } from "@/lib/anilist/provider";
+import { useBingers } from "@/lib/bingers/provider";
 import { useMal } from "@/lib/mal/provider";
 import { useSimkl } from "@/lib/simkl/provider";
 import { useTrakt } from "@/lib/trakt/provider";
+import { usePublicMetaDb } from "@/lib/publicmetadb/provider";
 import { useSettings } from "@/lib/settings";
 import { useT } from "@/lib/i18n";
 import { ROW_DESC } from "./kit";
@@ -21,8 +25,12 @@ const SimklPanel = lazy(() => import("./simkl-panel").then((m) => ({ default: m.
 const LetterboxdPanel = lazy(() =>
   import("./letterboxd-panel").then((m) => ({ default: m.LetterboxdPanel })),
 );
+const PublicMetaDbPanel = lazy(() =>
+  import("./publicmetadb-panel").then((m) => ({ default: m.PublicMetaDbPanel })),
+);
+const BingersPanel = lazy(() => import("./bingers-panel").then((m) => ({ default: m.BingersPanel })));
 
-type TrackerId = "trakt" | "simkl" | "anilist" | "mal" | "letterboxd";
+type TrackerId = "trakt" | "simkl" | "anilist" | "mal" | "letterboxd" | "publicmetadb" | "bingers";
 
 const TRACKERS: Array<{ id: TrackerId; name: string; logo: string; blurb: string }> = [
   {
@@ -55,6 +63,18 @@ const TRACKERS: Array<{ id: TrackerId; name: string; logo: string; blurb: string
     logo: letterboxdLogo,
     blurb: "Brings your watchlist, diary, likes and lists in through the Stremboxd bridge.",
   },
+  {
+    id: "publicmetadb",
+    name: "PublicMetaDB",
+    logo: publicmetadbLogo,
+    blurb: "Scrobbles playback progress, resume points, and syncs watch history.",
+  },
+  {
+    id: "bingers",
+    name: "Bingers",
+    logo: bingersLogo,
+    blurb: "Marks the episodes and movies you finish as watched on Bingers.",
+  },
 ];
 
 export function TrackersPanel() {
@@ -68,12 +88,16 @@ export function TrackersPanel() {
   const simkl = useSimkl();
   const anilist = useAnilist();
   const mal = useMal();
+  const publicmetadb = usePublicMetaDb();
+  const bingers = useBingers();
   const connected: Record<TrackerId, boolean> = {
     trakt: trakt.isConnected,
     simkl: simkl.isConnected,
     anilist: anilist.isConnected,
     mal: mal.isConnected,
     letterboxd: !!settings.letterboxd?.enabled && !!settings.letterboxd?.username,
+    publicmetadb: publicmetadb.isConnected,
+    bingers: bingers.isConnected,
   };
   const total = TRACKERS.filter((s) => connected[s.id]).length;
 
@@ -103,6 +127,8 @@ export function TrackersPanel() {
           {active === "anilist" && <AnilistPanel />}
           {active === "mal" && <MalPanel />}
           {active === "letterboxd" && <LetterboxdPanel />}
+          {active === "publicmetadb" && <PublicMetaDbPanel />}
+          {active === "bingers" && <BingersPanel />}
         </Suspense>
       </div>
     </>

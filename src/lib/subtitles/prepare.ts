@@ -68,6 +68,11 @@ export type SubtitlePreparationHints = {
   durationSec?: number;
   requestHeaders?: Record<string, string>;
   translation?: boolean;
+  /**
+   * Trusted local-addon tracks: the byte download may use the local fetch
+   * guard exemption. Never set this from remotely-provided URLs.
+   */
+  allowLocalNetwork?: boolean;
 };
 
 export type SubtitlePreparationInput = SubtitlePreparationHints & {
@@ -90,6 +95,7 @@ export type SubtitlePreparationDependencies = {
     timeoutMs: number,
     headers?: Record<string, string>,
     maxBytes?: number,
+    allowLocalNetwork?: boolean,
   ) => Promise<Response>;
   createPlayable?: (
     bytes: Uint8Array,
@@ -471,8 +477,15 @@ async function defaultFetchBytes(
   timeoutMs: number,
   headers?: Record<string, string>,
   maxBytes?: number,
+  allowLocalNetwork = false,
 ): Promise<Response> {
-  return safeFetchBytes(url, { method: "GET", signal, headers }, timeoutMs, maxBytes);
+  return safeFetchBytes(
+    url,
+    { method: "GET", signal, headers },
+    timeoutMs,
+    maxBytes,
+    allowLocalNetwork,
+  );
 }
 
 async function defaultCreatePlayable(
@@ -603,6 +616,7 @@ export async function prepareSubtitle(
       limits.timeoutMs,
       input.requestHeaders,
       limits.networkBytes,
+      input.allowLocalNetwork === true,
     );
     const bytes = await readSubtitleResponseBytes(response, limits.networkBytes);
     // SubMaker uses HTTP 200 for both placeholders and partial translations. Its

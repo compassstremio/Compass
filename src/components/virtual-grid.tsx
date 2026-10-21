@@ -21,6 +21,7 @@ export function VirtualGrid<T>({
   gapX = 16,
   gapY = 32,
   overscan = 3,
+  paused = false,
   renderItem,
   className = "",
   getKey,
@@ -32,6 +33,8 @@ export function VirtualGrid<T>({
   gapX?: number;
   gapY?: number;
   overscan?: number;
+  /** Skip scroll measurement while the grid is hidden but kept mounted. */
+  paused?: boolean;
   renderItem: (item: T, index: number) => ReactNode;
   className?: string;
   getKey?: (item: T, index: number) => string | number;
@@ -61,13 +64,14 @@ export function VirtualGrid<T>({
   // a grid reads the raw scrollTop as its own and renders rows nowhere near the viewport.
   const [scrollMargin, setScrollMargin] = useState(0);
   const readMargin = useCallback(() => {
+    if (paused) return;
     const el = containerRef.current;
     const scroller = scrollRef.current;
     if (!el || !scroller) return;
     const offset =
       el.getBoundingClientRect().top - scroller.getBoundingClientRect().top + scroller.scrollTop;
     setScrollMargin((previous) => (Math.abs(previous - offset) > 0.5 ? offset : previous));
-  }, [scrollRef]);
+  }, [scrollRef, paused]);
 
   const rowCount = Math.max(1, Math.ceil(items.length / cols));
   const rowVirtualizer = useVirtualizer({

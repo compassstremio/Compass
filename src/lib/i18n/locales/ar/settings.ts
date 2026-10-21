@@ -258,8 +258,8 @@ const settings: Record<string, string> = {
   "Could not send: {error}": "تعذّر الإرسال: {error}",
   "Couldn't reach Trakt. Check your connection and try again.":
     "تعذّر الوصول إلى Trakt. تحقق من اتصالك وحاول مرة أخرى.",
-  "Couldn't reach compass.site to load earlier builds. Check your connection and try again.":
-    "تعذّر الوصول إلى compass.site لتحميل الإصدارات السابقة. تحقق من اتصالك وحاول مرة أخرى.",
+  "Couldn't reach compass.sarl to load earlier builds. Check your connection and try again.":
+    "تعذّر الوصول إلى compass.sarl لتحميل الإصدارات السابقة. تحقق من اتصالك وحاول مرة أخرى.",
   "Couldn't reach that pack": "تعذّر الوصول إلى تلك الحزمة",
   "Couldn't reach that pack (HTTP {n})": "تعذّر الوصول إلى تلك الحزمة (HTTP {n})",
   "Couldn't read your watchlist. Try again.": "تعذّرت قراءة قائمة مشاهدتك. حاول مرة أخرى.",
@@ -952,8 +952,8 @@ const settings: Record<string, string> = {
     'يُستخدم لتوفّر البث ونافذة إصدار "يُعرض الآن". اختر دولة ليتمكّن Compass من مطابقة لغات الواجهة والبيانات الوصفية والترجمة معها.',
   "A free TMDB key is highly recommended. It unlocks the full Compass experience. The rest are optional, and Cinemeta works out of the box without any.":
     "يُنصح بشدة بمفتاح TMDB المجاني. فهو يفتح تجربة Compass الكاملة. والبقية اختيارية، وتعمل Cinemeta مباشرةً بدون أي مفتاح.",
-  "TMDB asks for an app URL when you create the key. Put any URL at all, like https://compass.app. The only thing you need back is the API key.":
-    "تطلب TMDB رابط تطبيق عند إنشاء المفتاح. ضع أي رابط على الإطلاق، مثل https://compass.app. كل ما تحتاجه في المقابل هو مفتاح الـ API.",
+  "TMDB asks for an app URL when you create the key. Put any URL at all, like https://compass.sarl. The only thing you need back is the API key.":
+    "تطلب TMDB رابط تطبيق عند إنشاء المفتاح. ضع أي رابط على الإطلاق، مثل https://compass.sarl. كل ما تحتاجه في المقابل هو مفتاح الـ API.",
   "RPDB already paints scores onto the poster. Toggle to override.":
     "يرسم RPDB التقييمات على الملصق بالفعل. بدّل للتجاوز.",
   "MyAnimeList scores for anime titles. RPDB doesn't cover anime, so this stays optional.":
@@ -1116,8 +1116,8 @@ const settings: Record<string, string> = {
   "Hero carousel, Top 10, Trending, In Theaters, per-service rails.":
     "عرض دوّار، Top 10، الأكثر رواجاً، في دور السينما، صفوف لكل خدمة.",
   Updates: "التحديثات",
-  "Compass checks compass.site for new versions and installs them in place.":
-    "يتحقق Compass من compass.site من إصدارات جديدة ويثبّتها في مكانها.",
+  "Compass checks compass.sarl for new versions and installs them in place.":
+    "يتحقق Compass من compass.sarl من إصدارات جديدة ويثبّتها في مكانها.",
   "Backup & restore": "النسخ الاحتياطي والاستعادة",
   "Export your entire Compass setup to a single file, then restore it on a new computer or keep it as a backup.":
     "صدّر إعداداتك الكاملة لملف واحد، ثم استعدها على جهاز جديد.",
@@ -1964,8 +1964,8 @@ const settings: Record<string, string> = {
   "My library": "مكتبتي",
   Anticipated: "المنتظرة",
   "Custom calendar": "التقويم المخصص",
-  "Compass checks compass.site for new versions and installs them in place. Nothing installs until you choose to, and a dismissed update never nags you again.":
-    "يتحقق Compass من compass.site للبحث عن إصدارات جديدة ويثبتها في مكانها. لا يتم تثبيت أي شيء حتى تختار ذلك، ولن يزعجك إشعار التحديث المرفوض مرة أخرى.",
+  "Compass checks compass.sarl for new versions and installs them in place. Nothing installs until you choose to, and a dismissed update never nags you again.":
+    "يتحقق Compass من compass.sarl للبحث عن إصدارات جديدة ويثبتها في مكانها. لا يتم تثبيت أي شيء حتى تختار ذلك، ولن يزعجك إشعار التحديث المرفوض مرة أخرى.",
   "Library, watch progress, and addon collection sync from this account.":
     "المكتبة، وتقدم المشاهدة، ومجموعة الإضافات تتزامن من هذا الحساب.",
   "Export your entire Compass setup to a single file, then restore it on a new computer or keep it as a backup. Everything is included except your Stremio sign-in.":
@@ -2311,7 +2311,7 @@ const settings: Record<string, string> = {
     "تنبيه: إن كان Stremio مثبّتًا أيضًا، فقد يسأل Windows عن أي تطبيق تستخدمه في أول مرة يُطلق فيها رابط ‎stremio://‎. اختر Compass ليثبت ذلك.",
   "stremio:// links now open in the Stremio app. Compass will only install when you trigger it from inside Compass.":
     "تُفتح روابط ‎stremio://‎ الآن في تطبيق Stremio. ولن يثبّت Compass إلا عندما تطلقه من داخل Compass.",
-  "Checking compass.site for a newer build.": "يتحقّق من compass.site بحثًا عن إصدار أحدث.",
+  "Checking compass.sarl for a newer build.": "يتحقّق من compass.sarl بحثًا عن إصدار أحدث.",
   "Downloading {pct}%": "جارٍ التنزيل {pct}%",
   "Downloaded. Ready to install and restart.": "تم التنزيل. جاهز للتثبيت وإعادة التشغيل.",
   "Installing. Compass will restart.": "جارٍ التثبيت. سيُعاد تشغيل Compass.",

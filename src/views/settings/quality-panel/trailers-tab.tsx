@@ -1,3 +1,4 @@
+import { AutoplayTrailerQuality } from "../autoplay-trailer-quality";
 import { Dropdown } from "@/components/dropdown";
 import { Film, MousePointerClick, PlayCircle, Volume2 } from "../icons";
 import { Nested, SettingRow } from "../kit";
@@ -12,7 +13,7 @@ export function TrailersTab() {
   return (
     <Section
       title={t("Trailer quality")}
-      subtitle={t("How sharp trailers play, and when they start on their own.")}
+      subtitle={t("Choose trailer playback quality.")}
     >
       <SettingRow
         icon={<Film size={18} strokeWidth={2} />}
@@ -54,6 +55,11 @@ export function TrailersTab() {
           />
         }
       />
+      {(settings.detailTrailerAutoplay || settings.heroTrailers) && (
+        <Nested>
+          <AutoplayTrailerQuality />
+        </Nested>
+      )}
       {settings.detailTrailerAutoplay && (
         <Nested>
           <ToggleRow

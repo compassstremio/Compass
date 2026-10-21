@@ -111,8 +111,7 @@ function proxyImage(url: string, thumbWidthPx?: number): Promise<string | null> 
   return p;
 }
 
-const cacheKeyFor = (url: string, thumbWidthPx?: number): string =>
-  `${thumbWidthPx ?? 0}\n${url}`;
+const cacheKeyFor = (url: string, thumbWidthPx?: number): string => `${thumbWidthPx ?? 0}\n${url}`;
 
 export function useProxiedImageSrc(
   url: string | undefined,
@@ -125,11 +124,7 @@ export function useProxiedImageSrc(
       : needsImageProxy(url));
   const { settings } = useSettings();
   const thumbWidthPx =
-    settings.posterQuality === "max"
-      ? undefined
-      : settings.posterQuality === "high"
-        ? 600
-        : 400;
+    settings.posterQuality === "max" ? undefined : settings.posterQuality === "high" ? 600 : 400;
   const [blob, setBlob] = useState<string | undefined>(() =>
     url && need ? blobCache.get(cacheKeyFor(url, thumbWidthPx)) : undefined,
   );

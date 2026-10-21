@@ -676,8 +676,8 @@ const catalog: Record<string, string> = {
   Checking: "Memeriksa",
   "Checking SVP installation...": "Memeriksa instalasi SVP...",
   "Checking availability": "Memeriksa ketersediaan",
-  "Checking compass.site for a newer build.":
-    "Memeriksa apakah ada build yang lebih baru di compass.site.",
+  "Checking compass.sarl for a newer build.":
+    "Memeriksa apakah ada build yang lebih baru di compass.sarl.",
   "Checking plots, cast, and scenes": "Memeriksa plot, pemeran, dan adegan",
   "Checking sources and audio": "Memeriksa sumber dan audio",
   "Checking the local SVP and VapourSynth installation...":

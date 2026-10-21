@@ -1,4 +1,4 @@
-import { Check, ChevronDown, Minus, Plus, Trash2 } from "lucide-react";
+import { Check, ChevronDown, Lock, Minus, Plus, Trash2 } from "lucide-react";
 import { useRef, useState } from "react";
 import { AnchoredMenu } from "@/components/anchored-menu";
 import { Poster, usePosterChain } from "@/components/poster";
@@ -31,12 +31,14 @@ export function AnilistEntryCard({
   busy,
   onStatus,
   onProgress,
+  onPrivate,
   onRemove,
 }: {
   entry: AnilistMediaEntry;
   busy: boolean;
   onStatus: (s: MediaListStatus) => void;
   onProgress: (p: number) => void;
+  onPrivate: (next: boolean) => void;
   onRemove: () => void;
 }) {
   const t = useT();
@@ -72,6 +74,14 @@ export function AnilistEntryCard({
           seed={String(m.id)}
           className="h-full w-full"
         />
+        {entry.private && (
+          <span
+            aria-label={t("Private")}
+            className="absolute start-2 top-2 flex h-7 w-7 items-center justify-center rounded-full bg-canvas/85 text-ink ring-1 ring-edge-soft backdrop-blur-sm"
+          >
+            <Lock size={12} />
+          </span>
+        )}
         <span
           role="button"
           aria-label={t("Remove from AniList")}
@@ -89,7 +99,13 @@ export function AnilistEntryCard({
         {name}
       </button>
 
-      <StatusDropdown value={entry.status} disabled={busy} onChange={onStatus} />
+      <StatusDropdown
+        value={entry.status}
+        private={entry.private === true}
+        disabled={busy}
+        onChange={onStatus}
+        onPrivate={onPrivate}
+      />
 
       <div className="flex items-center justify-between rounded-lg bg-elevated/50 ring-1 ring-edge-soft">
         <button
@@ -121,12 +137,16 @@ export function AnilistEntryCard({
 
 function StatusDropdown({
   value,
+  private: isPrivate,
   disabled,
   onChange,
+  onPrivate,
 }: {
   value: MediaListStatus;
+  private: boolean;
   disabled: boolean;
   onChange: (s: MediaListStatus) => void;
+  onPrivate: (next: boolean) => void;
 }) {
   const t = useT();
   const [open, setOpen] = useState(false);
@@ -164,6 +184,20 @@ function StatusDropdown({
               {s === value && <Check size={13} className="text-ink" />}
             </button>
           ))}
+          <div className="my-1 h-px bg-edge-soft" />
+          <button
+            type="button"
+            onClick={() => onPrivate(!isPrivate)}
+            className={`flex w-full items-center justify-between gap-2 px-3 py-2 text-start text-[12.5px] transition-colors ${
+              isPrivate ? "text-ink" : "text-ink-muted hover:bg-elevated/40 hover:text-ink"
+            }`}
+          >
+            <span className="flex items-center gap-2">
+              <Lock size={13} />
+              {t("Private")}
+            </span>
+            {isPrivate && <Check size={13} className="text-ink" />}
+          </button>
         </div>
       </AnchoredMenu>
     </>

@@ -102,7 +102,7 @@ const catalog: Record<string, string> = {
   "{n} options active": "{n} opsi aktif",
   "{n} options#few": "{n} opsi",
   "{n} options#one": "{n} opsi",
-  "{n} other Compasses": "{n} Compass lainnya",
+  "{n} other Compasss": "{n} Compass lainnya",
   "{n} pages": "{n} halaman",
   "{n} pages#few": "{n} halaman",
   "{n} pages#one": "{n} halaman",

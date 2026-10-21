@@ -12,7 +12,7 @@ function flag(name, fallback) {
 }
 
 const exe = resolve(flag('exe', join(SETUP, 'target', 'release', 'compass-setup.exe')));
-const base = flag('base', 'https://compass.site/updates').replace(/\/+$/, '');
+const base = flag('base', 'https://compass.sarl/updates').replace(/\/+$/, '');
 const platform = flag('platform', 'windows-x86_64');
 const versionFile = join(SETUP, 'payload', 'version.txt');
 

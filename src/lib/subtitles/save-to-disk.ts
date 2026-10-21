@@ -1,6 +1,6 @@
 import { downloadText } from "@/lib/download-text";
 import { markLimitReached } from "./limit-signal";
-import { providerSubtitleDownloadHeaders, type SubtitleDownloadAuth } from "./provider-auth";
+import { subtitleTrackDownloadHeaders, type SubtitleDownloadAuth } from "./provider-auth";
 import {
   prepareSubtitle,
   prepareSubtitleBytes,
@@ -17,6 +17,8 @@ export type SaveSubtitleOptions = {
   format?: string;
   label: string;
   downloadAuth?: SubtitleDownloadAuth;
+  /** See SubResult.localTrusted: same-origin subtitle of a user-installed local addon. */
+  localTrusted?: boolean;
 };
 
 function localPathFromUrl(url: string): string {
@@ -26,10 +28,10 @@ function localPathFromUrl(url: string): string {
   return /^\/[a-z]:\//i.test(decoded) ? decoded.slice(1) : decoded;
 }
 
-async function prepareNonNetworkSubtitle(
+export async function readNonNetworkSubtitleBytes(
   url: string,
-  hints: SubtitlePreparationHints,
-): Promise<PreparedSubtitle> {
+  maxBytes = SUBTITLE_PREPARATION_LIMITS.networkBytes,
+): Promise<Uint8Array> {
   let bytes: Uint8Array;
   const isLocalPath =
     /^file:/i.test(url) ||
@@ -40,7 +42,7 @@ async function prepareNonNetworkSubtitle(
     const fs = await import("@tauri-apps/plugin-fs");
     const path = localPathFromUrl(url);
     const info = await fs.stat(path);
-    if (info.size > SUBTITLE_PREPARATION_LIMITS.networkBytes) {
+    if (info.size > maxBytes) {
       throw new SubtitlePreparationError("network-limit", "subtitle file exceeds the byte limit");
     }
     bytes = await fs.readFile(path);
@@ -52,8 +54,18 @@ async function prepareNonNetworkSubtitle(
         `subtitle fetch failed with status ${response.status}`,
       );
     }
-    bytes = await readSubtitleResponseBytes(response, SUBTITLE_PREPARATION_LIMITS.networkBytes);
+    bytes = await readSubtitleResponseBytes(response, maxBytes);
   }
+  if (bytes.length > maxBytes)
+    throw new SubtitlePreparationError("network-limit", "subtitle file exceeds the byte limit");
+  return bytes;
+}
+
+async function prepareNonNetworkSubtitle(
+  url: string,
+  hints: SubtitlePreparationHints,
+): Promise<PreparedSubtitle> {
+  const bytes = await readNonNetworkSubtitleBytes(url);
   return prepareSubtitleBytes(url, bytes, hints);
 }
 
@@ -71,7 +83,12 @@ export async function prepareSubtitleForSave(
     ? prepareSubtitle({
         url,
         ...hints,
-        requestHeaders: providerSubtitleDownloadHeaders(opts.downloadAuth, url),
+        allowLocalNetwork: opts.localTrusted === true,
+        requestHeaders: subtitleTrackDownloadHeaders(
+          opts.downloadAuth,
+          url,
+          opts.localTrusted !== true,
+        ),
       })
     : prepareNonNetworkSubtitle(url, hints);
 }

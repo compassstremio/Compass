@@ -1122,9 +1122,9 @@ const catalog06: Record<string, string> = {
   Remote: "Telecomando",
   "Remote control is off on that Compass, so it cannot be driven from here.":
     "Il controllo remoto è disattivato su quell'Compass, quindi non è possibile controllarlo da qui.",
-  "Remote control is off, so other Compasses can see this one but cannot drive it.":
+  "Remote control is off, so other Compasss can see this one but cannot drive it.":
     "Il controllo remoto è disattivato, quindi gli altri Compass possono vedere questo dispositivo ma non controllarlo.",
-  "Remote control is on, so other Compasses on this network can drive this one.":
+  "Remote control is on, so other Compasss on this network can drive this one.":
     "Il controllo remoto è attivo, quindi gli altri Compass sulla rete possono controllare questo dispositivo.",
   "Remote off": "Controllo remoto disattivato",
   "Remote server": "Server remoto",

@@ -129,7 +129,7 @@ const wired: Record<string, string> = {
   "Theme studio": "Designstudio",
   "This game couldn't load right now.": "Dieses Spiel konnte gerade nicht geladen werden.",
   "This site may not support Compass's temporary viewer. Retry the original link or open it in your browser.":
-    "Diese Website unterstützt möglicherweise Compasses temporären Viewer nicht. Versuche es erneut mit dem ursprünglichen Link oder öffne ihn in deinem Browser.",
+    "Diese Website unterstützt möglicherweise Compasss temporären Viewer nicht. Versuche es erneut mit dem ursprünglichen Link oder öffne ihn in deinem Browser.",
   "Undo (Ctrl/Cmd + Z)": "Rückgängig (Ctrl/Cmd + Z)",
   "Untitled theme": "Unbenanntes Design",
   "Ways to add an eBook source": "Möglichkeiten, eine eBook-Quelle hinzuzufügen",

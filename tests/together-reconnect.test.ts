@@ -3,7 +3,7 @@ import { readFileSync } from "node:fs";
 import test from "node:test";
 import ts from "typescript";
 
-function harness() {
+function harness(avatar: string | null = null) {
   let now = 100000, nextId = 0;
   const timers = new Map<number, { at: number; fn: () => void; repeat?: number }>();
   const timer = (fn: () => void, ms: number, repeat?: number) => {
@@ -35,7 +35,7 @@ function harness() {
       setInterval: (fn: () => void, ms: number) => timer(fn, ms, ms), clearInterval: (id: number) => timers.delete(id) },
     Socket, { now: () => now }, Object.assign(Object.create(Math), { random: () => 0 }),
   );
-  const client = new exports.TogetherClient("https://relay.test", "self", "Fixture");
+  const client = new exports.TogetherClient("https://relay.test", "self", "Fixture", avatar);
   const advance = (ms: number) => {
     const target = now + ms;
     for (;;) {
@@ -53,6 +53,23 @@ function harness() {
   };
   return { client, sockets, advance, joined };
 }
+
+test("the avatar handshake is the first frame on initial connect and reconnect", () => {
+  const avatar = "data:image/png;base64," + "A".repeat(50000);
+  const h = harness(avatar);
+  h.client.join("ABC123");
+  h.joined();
+  const first = h.sockets[0];
+  assert.ok(JSON.stringify(first.sent[0]).length > 32 * 1024);
+  assert.equal(first.sent[0].t, "hello");
+  assert.equal(first.sent[0].avatar, avatar);
+  assert.equal(first.sent[1].t, "ping");
+  first.close();
+  h.advance(1000);
+  h.joined();
+  assert.equal(h.sockets[1].sent[0].t, "hello");
+  assert.equal(h.sockets[1].sent[0].avatar, avatar);
+});
 
 test("an established room reconnects after the socket drops", () => {
   const h = harness(); h.client.join("ABC123"); h.joined();

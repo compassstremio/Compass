@@ -44,7 +44,7 @@ pub fn cancel(profile: &str, operation: &str) { if let Ok(active) = jobs().lock(
 pub fn cancel_profile(profile: &str) { if let Ok(active) = jobs().lock() { if let Some(job) = active.as_ref().filter(|j| j.profile == profile) { job.cancel.store(true, Ordering::Relaxed); } } }
 pub fn discard(profile: &str, token: &str) { if let Ok(mut held) = plans().lock() { if held.get(token).is_some_and(|p| p.profile == profile) { held.remove(token); } } }
 pub(super) fn client() -> Result<reqwest::Client> {
-    reqwest::Client::builder().user_agent("Compass-Games/0.9 (https://compass.site)").connect_timeout(Duration::from_secs(10)).read_timeout(Duration::from_secs(30)).timeout(Duration::from_secs(300))
+    reqwest::Client::builder().user_agent("Compass-Games/0.9 (https://compass.sarl)").connect_timeout(Duration::from_secs(10)).read_timeout(Duration::from_secs(30)).timeout(Duration::from_secs(300))
         .redirect(reqwest::redirect::Policy::custom(|a| { if a.previous().len() >= 3 || data::host(a.url().as_str()).is_err() { a.error("runtime redirect") } else { a.follow() } })).build().map_err(|_| "instance_network")
 }
 pub async fn cancellable<T>(cancel: &AtomicBool, future: impl std::future::Future<Output = T>) -> Result<T> {

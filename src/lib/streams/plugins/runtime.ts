@@ -2,6 +2,7 @@ import { PluginWorker } from "@/lib/manga/plugins/worker-host";
 import { dwarn } from "@/lib/debug";
 import { runExtensionPlugin } from "./extension/run";
 import { acquire, release } from "./gate";
+import { requireAndroidExtensions } from "./native";
 import { PRELUDE_VERSION } from "./provider-compat/prelude";
 import { settingsFingerprint, workerPluginFor } from "./source";
 import { saveStreamPlugin, streamPluginById } from "./store";
@@ -213,6 +214,8 @@ export async function runStreamPlugin(
   signal: AbortSignal,
   timeoutMs: number,
 ): Promise<unknown> {
+  // An installation choice is not a plugin failure; do not update health or auto-pause it.
+  if (plugin.format === "android-extension") await requireAndroidExtensions();
   await acquire();
   const native = plugin.format === "android-extension";
   let requestsBefore = requestCount(plugin);

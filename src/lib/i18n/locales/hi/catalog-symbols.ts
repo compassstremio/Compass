@@ -543,7 +543,7 @@ const catalogSymbols: Record<string, string> = {
   "{n} options active": "{n} विकल्प सक्रिय",
   "{n} options#few": "{n} विकल्प#few",
   "{n} options#one": "{n} विकल्प#one",
-  "{n} other Compasses": "{n} अन्य Compass",
+  "{n} other Compasss": "{n} अन्य Compass",
   "{n} pages": "{n} पेज",
   "{n} pages#few": "{n} पेज#few",
   "{n} pages#one": "{n} पेज#one",

@@ -1,7 +1,7 @@
 import { useSyncExternalStore } from "react";
 import { isSectionKey, registerSection } from "@/lib/profile-sync/sections";
 import { flushSyncNow, markSectionDirty, requestSyncPull } from "@/lib/profile-sync/scheduler";
-import { pushConfigToPairedCompasses } from "@/components/play-on-send";
+import { pushConfigToPairedCompasss } from "@/components/play-on-send";
 import type { TvDoc, TvValue, TvWire } from "./model";
 
 export type TvWireName = TvWire;
@@ -94,7 +94,7 @@ function commit(profileId: string, next: TvBundle): void {
 function queue(wire: TvWire, profileId: string): void {
   if (!isSectionKey(wire)) return;
   markSectionDirty(wire, profileId);
-  void pushConfigToPairedCompasses(load(profileId));
+  void pushConfigToPairedCompasss(load(profileId));
 }
 
 export function writeTvSettings(profileId: string, patch: TvDoc): void {

@@ -7,13 +7,10 @@ import {
 } from "@/lib/player/bridge";
 import { probeMpv } from "@/lib/player/mpv";
 import { mergeMpvOptions } from "@/lib/player/mpv-tuning";
+import { anime4kPackComplete, repairAnime4kPack } from "@/lib/anime4k";
 import { metaIsAnime } from "@/lib/player/anime-src";
-import { anime4kShadersFor, type Anime4kChoice } from "./use-anime4k";
-import {
-  generalShaderChain,
-  generalShaderKey,
-  shaderCompanionOptions,
-} from "@/lib/player/shader-chain";
+import { fullShaderChain, type Anime4kChoice } from "./use-anime4k";
+import { generalShaderKey, shaderCompanionOptions } from "@/lib/player/shader-chain";
 import type { PlayerSrc } from "@/lib/view";
 import type { Settings } from "@/lib/settings";
 import { setPlaybackClock, setPlaybackStatus } from "@/lib/player/playback-clock";
@@ -45,6 +42,8 @@ function snapChangedIgnoringClock(a: PlayerSnapshot, b: PlayerSnapshot): boolean
     a.audioNormalize !== b.audioNormalize ||
     a.videoWidth !== b.videoWidth ||
     a.videoHeight !== b.videoHeight ||
+    a.videoSourceWidth !== b.videoSourceWidth ||
+    a.videoSourceHeight !== b.videoSourceHeight ||
     a.hdrGamma !== b.hdrGamma ||
     a.errorMessage !== b.errorMessage ||
     a.errorCode !== b.errorCode
@@ -67,7 +66,48 @@ export function usePlayerBridge(params: {
   const hdrOpaqueWindow = isWindowsDesktop() && settings.playerHdrOpaqueWindow;
   const embedActive = settings.playerMpvEmbed && !hdrOpaqueWindow;
   const isAnimeSrc = metaIsAnime(src.meta) || !!src.isAnime;
-  const anime4kOn = settings.playerAnime4k && (!settings.playerAnime4kAnimeOnly || isAnimeSrc);
+  const anime4kWanted = settings.playerAnime4k && (!settings.playerAnime4kAnimeOnly || isAnimeSrc);
+  // mpv only compiles a shader chain whose files it can open, and it drops the
+  // rest without a word. Presets that name a kernel the installed pack predates
+  // would silently run short, so the gap is filled before the chain is built
+  // rather than only when the settings panel happens to be open.
+  const anime4kNeeded = anime4kWanted && !!settings.playerAnime4kFolder;
+  const [anime4kPack, setAnime4kPack] = useState<boolean | null>(anime4kNeeded ? null : true);
+  // Enabling Anime4K after the player mounted still gets the pack checked; the
+  // initial state only probes when it was already wanted at mount.
+  const anime4kChecked = useRef(anime4kNeeded);
+  useEffect(() => {
+    if (anime4kNeeded && !anime4kChecked.current) {
+      anime4kChecked.current = true;
+      setAnime4kPack(null);
+    }
+  }, [anime4kNeeded]);
+  useEffect(() => {
+    if (anime4kPack !== null) return;
+    let active = true;
+    anime4kPackComplete()
+      .then((complete) => {
+        if (!active) return;
+        if (complete) {
+          setAnime4kPack(true);
+          return;
+        }
+        // Stay pending while the pack is topped up: starting the bridge first
+        // and flipping the flag when the repair lands would restart mpv
+        // mid-playback.
+        void repairAnime4kPack().then(() => {
+          if (active) setAnime4kPack(true);
+        });
+      })
+      .catch(() => {
+        if (active) setAnime4kPack(true);
+      });
+    return () => {
+      active = false;
+    };
+  }, [anime4kPack]);
+  const anime4kOn = anime4kWanted && anime4kPack === true;
+  const anime4kPending = anime4kPack === null;
   const svpRequested = isSvpActiveForMedia(settings, src.meta);
   const [svpRuntimeReady, setSvpRuntimeReady] = useState<boolean | null>(
     isLinuxDesktop() && svpRequested ? null : true,
@@ -102,7 +142,7 @@ export function usePlayerBridge(params: {
   const bridgeKey = `${chosenEngine}|${anime4kOn}|${embedActive}|${anime4kOn ? settings.playerAnime4kShaders.join(",") : ""}|${generalShaderKey(settings)}|${svpOn}|${svpOn ? settings.svpVpyPath : ""}`;
   const [bridgeReady, setBridgeReady] = useState(false);
   useEffect(() => {
-    if (svpPending) return;
+    if (svpPending || anime4kPending) return;
     const host = videoMountRef.current;
     if (!host) return;
     let cancelled = false;
@@ -121,15 +161,13 @@ export function usePlayerBridge(params: {
         d3d11Flip: settings.playerD3d11Flip,
         renderer: settings.mpvRenderer,
         forceYuv420p: settings.mpvForceYuv420p,
-        anime4kShaders: [
-          ...anime4kShadersFor(
-            settings,
-            src,
-            (settings.playerAnime4kOverride as Anime4kChoice) || "auto",
-          ),
-          ...generalShaderChain(settings),
-        ],
-        macEdr: isMacDesktop() && embedActive && settings.playerMacEdr && !settings.playerHdrToSdr,
+        anime4kShaders: fullShaderChain(
+          settings,
+          src,
+          (settings.playerAnime4kOverride as Anime4kChoice) || "auto",
+        ),
+        macEdr:
+          isMacDesktop() && embedActive && settings.playerMacEdr && !settings.playerHdrToSdr,
         fullDownload: settings.torrentFullDownload,
         separateDisplay:
           settings.playerSeparateDisplay.mode === "explicit"
@@ -137,7 +175,7 @@ export function usePlayerBridge(params: {
             : null,
         separateCoverTaskbar: settings.playerSeparateCoverTaskbar,
         cacheDir: settings.playbackCacheDir,
-        extraOptions: [mergeMpvOptions(settings, svpOn), shaderCompanionOptions(settings)]
+        extraOptions: [mergeMpvOptions(settings, svpOn, { anime4k: anime4kOn }), shaderCompanionOptions(settings)]
           .filter(Boolean)
           .join("\n"),
         getEmbedRect,
@@ -167,7 +205,7 @@ export function usePlayerBridge(params: {
       setPlaybackStatus("idle");
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [bridgeKey, svpPending]);
+  }, [bridgeKey, svpPending, anime4kPending]);
 
   useEffect(() => {
     if (engine !== "html5") return;

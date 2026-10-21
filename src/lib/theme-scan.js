@@ -15,7 +15,7 @@
  * Precision model: a lone benign primitive (a fetch, a listener, a url(), a getItem)
  * is NEVER malicious on its own. Malice requires a COMBINATION — access to sensitive
  * data / the native bridge / site-targeting AND exfiltration / code execution — which
- * the "block" rules and combineWith signals encode. compass.site and common font/image
+ * the "block" rules and combineWith signals encode. compass.sarl and common font/image
  * CDNs are allowlisted so ordinary asset loading passes.
  *
  * Pure regex/string heuristics. No external dependencies. Rules are authored data

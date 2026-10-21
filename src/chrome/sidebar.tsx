@@ -1,4 +1,3 @@
-import { usePreviewNavCustomization } from "@/lib/theme-preview";
 import { useContextMenu } from "@/lib/context-menu";
 import { ChevronDown, ChevronUp, Lock } from "lucide-react";
 import { useEffect, useRef, useState, type ReactNode } from "react";
@@ -8,38 +7,21 @@ import { useT } from "@/lib/i18n";
 import { useSettings } from "@/lib/settings";
 import { useCompassLogo } from "@/lib/compass-logo";
 import { ParentalPinModal } from "@/components/parental-pin-modal";
-import { useParental, type LockableTab } from "@/lib/parental";
+import { useParental } from "@/lib/parental";
 import { useActiveKid } from "@/lib/profiles";
 import { useView, type View } from "@/lib/view";
 import { KidsSidebarDoodles } from "./kids-sidebar-doodles";
 import { CollapseToggle } from "@/chrome/sidebar/collapse-toggle";
 import { SidebarBigPictureEntry } from "@/chrome/sidebar/big-picture-entry";
-import {
-  useAvailableNavItems,
-  applyNavCustomization,
-  type NavItem,
-  type NavItemId,
-} from "@/chrome/nav-items";
+import type { NavItemId } from "@/chrome/nav-items";
 import { NavHiddenTray, NavEditableItem, useNavDrag } from "@/chrome/nav-edit";
 import { useNavEditMode } from "@/chrome/nav-edit-mode";
-
-const PRIMARY_IDS = new Set([
-  "home",
-  "discover",
-  "catalogs",
-  "movies",
-  "shows",
-  "kids",
-  "anime",
-  "live",
-  "sports",
-  "vod",
-]);
+import { useSidebarNavigation } from "./context-page-navigation";
 
 export function Sidebar() {
   const editing = useNavEditMode();
   const { view, setView, chromeHidden } = useView();
-  const { locked, unlock, hiddenTabs } = useParental();
+  const { locked, unlock } = useParental();
   const { settings } = useSettings();
   const kid = useActiveKid();
   const t = useT();
@@ -106,7 +88,7 @@ export function Sidebar() {
               <span
                 data-compass-sidebar-label
                 aria-hidden={collapsed || undefined}
-                className="hidden whitespace-nowrap text-[42px] font-bold leading-none tracking-tight lg:inline-flex lg:items-center"
+                className="hidden whitespace-nowrap text-[36px] font-bold leading-none tracking-tight lg:inline-flex lg:items-center"
                 style={{
                   fontFamily: '"Fredoka", "Baloo 2", system-ui, sans-serif',
                   transform: "translateY(1px)",
@@ -130,7 +112,7 @@ export function Sidebar() {
               <span
                 data-compass-sidebar-label
                 aria-hidden={collapsed || undefined}
-                className="hidden whitespace-nowrap text-[44px] font-medium leading-none tracking-tight lg:inline"
+                className="hidden whitespace-nowrap text-[38px] font-medium leading-none tracking-tight lg:inline"
                 style={{
                   fontFamily: '"Fraunces", "Iowan Old Style", "Georgia", serif',
                   transform: "translateY(2px)",
@@ -150,10 +132,8 @@ export function Sidebar() {
         <ScrollableNav
           view={view}
           setView={setView}
-          locked={locked}
           collapsed={collapsed}
           retainLabels={retainLabels}
-          hiddenTabs={hiddenTabs}
           onPinNav={(v) => setPendingPinView(v)}
         />
         <div data-compass-sidebar-footer className={`relative p-2 ${collapsed ? "" : "lg:p-4"}`}>
@@ -214,21 +194,16 @@ export function Sidebar() {
 function ScrollableNav({
   view,
   setView,
-  locked,
   collapsed,
   retainLabels,
-  hiddenTabs,
   onPinNav,
 }: {
   view: View;
   setView: (v: View) => void;
-  locked: boolean;
   collapsed: boolean;
   retainLabels: boolean;
-  hiddenTabs: Record<LockableTab, boolean>;
   onPinNav: (v: View) => void;
 }) {
-  const { settings } = useSettings();
   const kid = useActiveKid();
   const t = useT();
   const { open: openContextMenu } = useContextMenu();
@@ -236,21 +211,9 @@ function ScrollableNav({
     if ((e.target as HTMLElement).closest("button")) return;
     openContextMenu(e, { kind: "nav" });
   };
-  const items = applyNavCustomization(
-    useAvailableNavItems(),
-    usePreviewNavCustomization(settings.navCustomization),
-  );
-  const isItemVisible = (item: NavItem) => {
-    if (kid) return item.view === "kids";
-    if (item.view === "kids") return false;
-    if (item.view === "vod" && !settings.showPlaylistsTab) return false;
-    if (item.hideKey && settings.hideContent[item.hideKey]) return false;
-    if (locked && item.parentalKey && hiddenTabs[item.parentalKey]) return false;
-    return true;
-  };
-  const visible = items.filter(isItemVisible);
-  const primary = visible.filter((item) => PRIMARY_IDS.has(item.id));
-  const collections = visible.filter((item) => !PRIMARY_IDS.has(item.id));
+  const { entries } = useSidebarNavigation();
+  const primary = entries.filter((entry) => entry.primary);
+  const collections = entries.filter((entry) => !entry.primary);
   const ref = useRef<HTMLDivElement>(null);
   const [overflow, setOverflow] = useState<{ top: boolean; bottom: boolean }>({
     top: false,
@@ -297,7 +260,7 @@ function ScrollableNav({
         className="flex flex-1 flex-col overflow-y-auto px-4 pt-3 pb-6 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
       >
         <div className="flex flex-col gap-1.5">
-          {primary.map((item) => (
+          {primary.map(({ item }) => (
             <NavItem
               key={item.id}
               {...item}
@@ -330,8 +293,7 @@ function ScrollableNav({
           onContextMenu={openEmptyMenu}
         />
         <div className="flex flex-col gap-1.5">
-          {collections.map((item) => {
-            const gated = !!item.pinGated && locked;
+          {collections.map(({ item, gated }) => {
             return (
               <NavItem
                 key={item.id}

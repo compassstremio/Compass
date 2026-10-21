@@ -722,7 +722,7 @@ const sweep: Record<string, string> = {
   "Compass's own bar": "Собственная панель Compass",
   "Compass's own community server": "Собственный сервер сообщества Compass",
   "Compass's public relay": "Публичный ретранслятор Compass",
-  "Compasses on your network": "Compass в вашей сети",
+  "Compasss on your network": "Compass в вашей сети",
   "Hard outline": "Жёсткий контур",
   "Hardware acceleration (hwdec)": "Аппаратное ускорение (hwdec)",
   Head: "Голова",
@@ -880,7 +880,7 @@ const sweep: Record<string, string> = {
   "Link a title": "Привязать название",
   "Linked as {username}": "Привязано как {username}",
   "Linked to your Compass account.": "Привязано к вашему аккаунту Compass.",
-  "Listening for Compasses": "Поиск устройств Compass",
+  "Listening for Compasss": "Поиск устройств Compass",
   Lists: "Списки",
   "Live TV source": "Источник прямого эфира",
   "Live TV sources": "Источники прямого эфира",
@@ -1287,9 +1287,9 @@ const sweep: Record<string, string> = {
   "Remember your place on show pages": "Запоминать место на страницах сериалов",
   "Remote control is off on that Compass, so it cannot be driven from here.":
     "Дистанционное управление на том Compass выключено, поэтому им нельзя управлять отсюда.",
-  "Remote control is off, so other Compasses can see this one but cannot drive it.":
+  "Remote control is off, so other Compasss can see this one but cannot drive it.":
     "Дистанционное управление выключено: другие Compass видят это устройство, но не могут им управлять.",
-  "Remote control is on, so other Compasses on this network can drive this one.":
+  "Remote control is on, so other Compasss on this network can drive this one.":
     "Дистанционное управление включено: другие Compass в этой сети могут управлять этим устройством.",
   "Remote off": "Управление выключено",
   Remotes: "Пульты",
@@ -1983,7 +1983,7 @@ const sweep: Record<string, string> = {
   "{n} of {total} chosen": "Выбрано {n} из {total}",
   "{n} of {total} connected": "Подключено {n} из {total}",
   "{n} on": "Вкл: {n}",
-  "{n} other Compasses": "Других Compass: {n}",
+  "{n} other Compasss": "Других Compass: {n}",
   "{n} picks, refreshed daily": "Подборок: {n}, обновляется ежедневно",
   "{n} recorded winners": "Записанных победителей: {n}",
   "{n} seeders": "Сидеров: {n}",

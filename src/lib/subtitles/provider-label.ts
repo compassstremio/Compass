@@ -136,6 +136,9 @@ export function subtitleLoadMetadataOf(result: SubResult): SubtitleLoadMetadata 
     fromTrusted: result.fromTrusted,
     providerMatch: result.providerMatch,
     downloadAuth: result.downloadAuth,
+    // A same-origin local-addon subtitle is not provider-downloaded content:
+    // it must skip the public-network-only policy and may use local networking.
+    ...(result.localTrusted === true ? { providerDerived: false, localTrusted: true } : {}),
     originalUrl: result.url,
     refreshable: result.source === "addon",
     subId: result.id,

@@ -27,7 +27,7 @@ import {
   type CandidatePreflightProbe,
   type PreparedSubtitlePreflight,
 } from "./candidate-preflight";
-import { providerSubtitleDownloadHeaders } from "./provider-auth";
+import { subtitleTrackDownloadHeaders } from "./provider-auth";
 import {
   discardPreparedSubtitle,
   registerPreparedSubtitle,
@@ -53,6 +53,10 @@ const ON_DEMAND_SOURCES = new Set<SubResult["source"]>([
   "gestdown",
   "subsource",
 ]);
+
+/** Same-origin subtitles of a user-installed local addon bypass the public-only filter. */
+const isAllowedSubtitleUrl = (result: SubResult) =>
+  result.localTrusted === true || isSafeProviderSubtitleUrl(result.url);
 
 export type SubFetchParams = {
   bridge: PlayerBridge;
@@ -241,7 +245,7 @@ export async function fetchSubtitlesIntoPlayer(
 
   const rankedResults = (results: SubResult[]) =>
     results
-      .filter((result) => isSafeProviderSubtitleUrl(result.url))
+      .filter(isAllowedSubtitleUrl)
       .filter((r) => langScore(r.lang ?? "", p.langs) >= 0)
       .sort((a, b) => {
         const language = langScore(b.lang ?? "", p.langs) - langScore(a.lang ?? "", p.langs);
@@ -335,7 +339,7 @@ export async function fetchSubtitlesIntoPlayer(
       onPartial: queuePartial,
     },
   );
-  const results = searchedResults.filter((result) => isSafeProviderSubtitleUrl(result.url));
+  const results = searchedResults.filter(isAllowedSubtitleUrl);
   const generated = collectGeneratedSubtitleGroups(results);
 
   await progressiveQueue;
@@ -359,7 +363,12 @@ export async function fetchSubtitlesIntoPlayer(
           release: releaseOf(result) ?? hints.release ?? undefined,
           filename: result.rawFilename ?? subtitleStreamDescriptor(p.src.streamRef),
           durationSec: p.durationSec,
-          requestHeaders: providerSubtitleDownloadHeaders(result.downloadAuth, result.url),
+          allowLocalNetwork: result.localTrusted === true,
+          requestHeaders: subtitleTrackDownloadHeaders(
+            result.downloadAuth,
+            result.url,
+            result.localTrusted !== true,
+          ),
         }),
       AUTO_SELECTION_CANDIDATE_LIMIT,
     );

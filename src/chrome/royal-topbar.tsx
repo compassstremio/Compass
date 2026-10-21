@@ -11,7 +11,7 @@ import { ParentalPinModal } from "@/components/parental-pin-modal";
 import { TogetherButton } from "@/chrome/topbar";
 import { AccountMenu } from "@/chrome/account-menu/account-menu";
 import { useT } from "@/lib/i18n";
-import { useSearch } from "@/lib/search-context";
+import { useSearchActions } from "@/lib/search-context";
 import {
   effectiveBinding,
   eventToBinding,
@@ -33,7 +33,7 @@ export function RoyalTopbar() {
   const { view, setView, chromeHidden } = useView();
   const { locked, unlock, hiddenTabs } = useParental();
   const { settings } = useSettings();
-  const { setOpen: setSearchOpen } = useSearch();
+  const { setOpen: setSearchOpen } = useSearchActions();
   const t = useT();
   const [pinFor, setPinFor] = useState<View | null>(null);
   const maxed = useMaximized();

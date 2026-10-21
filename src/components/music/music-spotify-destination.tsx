@@ -6,6 +6,7 @@ import { MusicPlaylistDuplicateConfirm } from "./music-playlist-duplicate-confir
 import { useScrollPreserved } from "./use-scroll-preserved";
 import { useT } from "@/lib/i18n";
 import { connectSource } from "@/lib/music/catalog";
+import { guardMusicSource } from "@/lib/music/source-consent";
 import {
   addTrackToSpotifyPlaylist,
   createSpotifyPlaylist,
@@ -141,6 +142,7 @@ export function MusicSpotifyDestination({
   };
 
   const reconnect = async () => {
+    if (!guardMusicSource("spotify", () => void reconnect())) return;
     setBusy(true);
     setTarget("reconnect");
     setError("");

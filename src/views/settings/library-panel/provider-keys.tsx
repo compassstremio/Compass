@@ -59,12 +59,6 @@ export function useProviderKeys({
   const [posterSrvDraft, setPosterSrvDraft] = useState(settings.posterBaseUrl);
   const [auddDraft, setAuddDraft] = useState(settings.auddKey);
   const [songAiDraft, setSongAiDraft] = useState(settings.songIdAiKey);
-  // See settings.tsx: drafts must follow the values once they load.
-  useEffect(() => { setMdblistDraft(settings.mdblistKey); }, [settings.mdblistKey]);
-  useEffect(() => { setNytDraft(settings.nytKey); }, [settings.nytKey]);
-  useEffect(() => { setPosterSrvDraft(settings.posterBaseUrl); }, [settings.posterBaseUrl]);
-  useEffect(() => { setAuddDraft(settings.auddKey); }, [settings.auddKey]);
-  useEffect(() => { setSongAiDraft(settings.songIdAiKey); }, [settings.songIdAiKey]);
   const [extraSaved, setExtraSaved] = useState<
     "mdblist" | "postersrv" | "ai" | "audd" | "songai" | "nyt" | null
   >(null);
@@ -122,7 +116,7 @@ export function useProviderKeys({
       guide: guideButton(
         () => setTmdbGuide(true),
         t(
-          "TMDB asks for an app URL when you create the key. Put any URL at all, like https://compass.app. The only thing you need back is the API key.",
+          "TMDB asks for an app URL when you create the key. Put any URL at all, like https://compass.sarl. The only thing you need back is the API key.",
         ),
       ),
       field: (
@@ -313,6 +307,8 @@ export function useProviderKeys({
             <>
               {t("Leave empty to use your RPDB key above. Or paste")}{" "}
               <strong>Better Posters</strong> (<code>https://btttr.cc</code>),{" "}
+              <strong>Pictorium</strong> (<code>https://pictorium.compass.sarl</code>
+              {t(", keep any ?options from its editor link")}),{" "}
               {t(
                 "a bare RPDB-compatible server (your RPDB key is still sent), or a full URL template using",
               )}{" "}

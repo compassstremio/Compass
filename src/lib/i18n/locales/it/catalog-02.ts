@@ -342,7 +342,7 @@ const catalog02: Record<string, string> = {
   Checking: "Controllo in corso",
   "Checking SVP installation...": "Verifica dell'installazione di SVP...",
   "Checking availability": "Verifica della disponibilità",
-  "Checking compass.site for a newer build.": "Ricerca di una build più recente su compass.site.",
+  "Checking compass.sarl for a newer build.": "Ricerca di una build più recente su compass.sarl.",
   "Checking plots, cast, and scenes": "Verifica di trame, cast e scene",
   "Checking sources and audio": "Verifica di sorgenti e audio",
   "Checking the local SVP and VapourSynth installation...":
@@ -1006,8 +1006,8 @@ const catalog02: Record<string, string> = {
   "Couldn't reach Trakt. Check your connection and try again.":
     "Impossibile raggiungere Trakt. Controlla la connessione e riprova.",
   "Couldn't reach Trakt. Try refreshing.": "Impossibile raggiungere Trakt. Prova ad aggiornare.",
-  "Couldn't reach compass.site to load earlier builds. Check your connection and try again.":
-    "Impossibile raggiungere compass.site per caricare le build precedenti. Controlla la connessione e riprova.",
+  "Couldn't reach compass.sarl to load earlier builds. Check your connection and try again.":
+    "Impossibile raggiungere compass.sarl per caricare le build precedenti. Controlla la connessione e riprova.",
   "Couldn't reach that pack": "Impossibile raggiungere il pacchetto",
   "Couldn't reach that pack (HTTP {n})": "Impossibile raggiungere il pacchetto (HTTP {n})",
   "Couldn't reach the update server. Try again in a moment.":

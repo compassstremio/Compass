@@ -32,6 +32,7 @@ const state = {
   dest: '',
   launchNow: true,
   desktopShortcut: false,
+  disabledFeatures: [],
   mode: 'install',
   repair: null
 };

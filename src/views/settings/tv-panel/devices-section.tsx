@@ -29,7 +29,7 @@ import {
 import { Section } from "../shared";
 import { SButton } from "../ui";
 
-export const TV_DEVICES_TITLE = "Compasses on your network";
+export const TV_DEVICES_TITLE = "Compasss on your network";
 
 export function TvDevicesSection() {
   const t = useT();
@@ -100,12 +100,12 @@ export function TvDevicesSection() {
 
   const count = peers.length;
   const tally = scanning
-    ? t("Listening for Compasses")
+    ? t("Listening for Compasss")
     : count === 0
       ? t("No other Compass answered")
       : count === 1
         ? t("1 other Compass")
-        : t("{n} other Compasses", { n: count });
+        : t("{n} other Compasss", { n: count });
 
   return (
     <Section
@@ -123,8 +123,8 @@ export function TvDevicesSection() {
           state="self"
           note={
             commandable
-              ? t("Remote control is on, so other Compasses on this network can drive this one.")
-              : t("Remote control is off, so other Compasses can see this one but cannot drive it.")
+              ? t("Remote control is on, so other Compasss on this network can drive this one.")
+              : t("Remote control is off, so other Compasss can see this one but cannot drive it.")
           }
         />
 

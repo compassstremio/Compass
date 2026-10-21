@@ -2,7 +2,7 @@ import { useCallback, useEffect, useMemo, useState } from "react";
 import { fetchMediaListCollection, readCachedCollection } from "@/lib/anilist/lists";
 import { deleteListEntry, saveListEntry } from "@/lib/anilist/mutations";
 import { useAnilist } from "@/lib/anilist/provider";
-import type { AnilistMediaEntry, MediaListStatus } from "@/lib/anilist/types";
+import type { AnilistListGroup, AnilistMediaEntry, MediaListStatus } from "@/lib/anilist/types";
 import { RAIL_ORDER } from "@/lib/use-anilist-anime-rails";
 import { useT } from "@/lib/i18n";
 import { AnilistEntryCard } from "./anilist-entry-card";
@@ -16,12 +16,18 @@ function entryType(e: AnilistMediaEntry): "movie" | "series" {
   return e.media.format === "MOVIE" ? "movie" : "series";
 }
 
+/** A title in a custom list also sits in its status list, so counts must not double it. */
+function uniqueEntries(entries: AnilistMediaEntry[]): AnilistMediaEntry[] {
+  const seen = new Set<number>();
+  return entries.filter((entry) => (seen.has(entry.id) ? false : (seen.add(entry.id), true)));
+}
+
 export function AnilistTab() {
   const t = useT();
   const { session } = useAnilist();
   const userId = session?.userId;
-  const [entries, setEntries] = useState<AnilistMediaEntry[]>(() =>
-    userId != null ? (readCachedCollection(userId)?.flatMap((g) => g.entries) ?? []) : [],
+  const [groups, setGroups] = useState<AnilistListGroup[]>(() =>
+    userId != null ? readCachedCollection(userId) ?? [] : [],
   );
   const [status, setStatus] = useState<"loading" | "ready" | "error">(() =>
     userId != null && readCachedCollection(userId) != null ? "ready" : "loading",
@@ -35,15 +41,15 @@ export function AnilistTab() {
     let cancelled = false;
     const cached = readCachedCollection(userId);
     if (cached) {
-      setEntries(cached.flatMap((g) => g.entries));
+      setGroups(cached);
       setStatus("ready");
     } else {
       setStatus("loading");
     }
     fetchMediaListCollection(userId)
-      .then((groups) => {
+      .then((next) => {
         if (cancelled) return;
-        setEntries(groups.flatMap((g) => g.entries));
+        setGroups(next);
         setStatus("ready");
       })
       .catch(() => {
@@ -64,7 +70,12 @@ export function AnilistTab() {
   }, []);
 
   const applyLocal = useCallback((id: number, patch: Partial<AnilistMediaEntry>) => {
-    setEntries((prev) => prev.map((e) => (e.id === id ? { ...e, ...patch } : e)));
+    setGroups((prev) =>
+      prev.map((group) => ({
+        ...group,
+        entries: group.entries.map((entry) => (entry.id === id ? { ...entry, ...patch } : entry)),
+      })),
+    );
   }, []);
 
   const commitStatus = useCallback(
@@ -105,38 +116,95 @@ export function AnilistTab() {
     [applyLocal, setBusyFor],
   );
 
-  const commitRemove = useCallback(
-    async (entry: AnilistMediaEntry) => {
+  const commitPrivate = useCallback(
+    async (entry: AnilistMediaEntry, next: boolean) => {
       setBusyFor(entry.id, true);
-      setEntries((prev) => prev.filter((e) => e.id !== entry.id));
+      applyLocal(entry.id, { private: next });
       try {
-        await deleteListEntry(entry.id);
+        await saveListEntry({ mediaId: entry.media.id, private: next });
       } catch {
-        setEntries((prev) => (prev.some((e) => e.id === entry.id) ? prev : [...prev, entry]));
+        applyLocal(entry.id, { private: entry.private === true });
       } finally {
         setBusyFor(entry.id, false);
       }
     },
-    [setBusyFor],
+    [applyLocal, setBusyFor],
   );
 
-  const visible = useMemo(() => {
-    const q = query.trim().toLowerCase();
-    return entries.filter((e) => {
-      if (type !== "all" && entryType(e) !== type) return false;
-      if (q && !entryName(e).toLowerCase().includes(q)) return false;
-      return true;
-    });
-  }, [entries, type, query]);
+  const commitRemove = useCallback(
+    async (entry: AnilistMediaEntry) => {
+      setBusyFor(entry.id, true);
+      // Removing an entry clears it from every list it was in, so a failure restores all of them.
+      const before = groups;
+      setGroups((prev) =>
+        prev.map((group) => ({
+          ...group,
+          entries: group.entries.filter((item) => item.id !== entry.id),
+        })),
+      );
+      try {
+        await deleteListEntry(entry.id);
+      } catch {
+        setGroups(before);
+      } finally {
+        setBusyFor(entry.id, false);
+      }
+    },
+    [groups, setBusyFor],
+  );
 
-  const counts = useMemo(
-    () => ({
+  const matches = useCallback(
+    (entry: AnilistMediaEntry) => {
+      if (type !== "all" && entryType(entry) !== type) return false;
+      const q = query.trim().toLowerCase();
+      return !q || entryName(entry).toLowerCase().includes(q);
+    },
+    [type, query],
+  );
+
+  const statusEntries = useMemo(
+    () => groups.filter((group) => !group.isCustomList).flatMap((group) => group.entries),
+    [groups],
+  );
+
+  const sections = useMemo(
+    () =>
+      RAIL_ORDER.map((section) => ({
+        key: section.key,
+        title: section.title,
+        items: statusEntries
+          .filter((entry) => section.statuses.includes(entry.status))
+          .filter(matches),
+      })).filter((section) => section.items.length > 0),
+    [statusEntries, matches],
+  );
+
+  const customSections = useMemo(
+    () =>
+      groups
+        .filter((group) => group.isCustomList && group.name)
+        .map((group) => ({
+          key: `custom:${group.name}`,
+          name: group.name as string,
+          items: group.entries.filter(matches),
+        }))
+        .filter((section) => section.items.length > 0),
+    [groups, matches],
+  );
+
+  const counts = useMemo(() => {
+    const visible = uniqueEntries([
+      ...sections.flatMap((section) => section.items),
+      ...customSections.flatMap((section) => section.items),
+    ]);
+    return {
       all: visible.length,
       movie: visible.filter((e) => entryType(e) === "movie").length,
       series: visible.filter((e) => entryType(e) === "series").length,
-    }),
-    [visible],
-  );
+    };
+  }, [sections, customSections]);
+
+  const empty = useMemo(() => groups.every((group) => group.entries.length === 0), [groups]);
 
   if (status === "loading") {
     return <p className="text-[13px] text-ink-muted">{t("Loading your AniList…")}</p>;
@@ -148,7 +216,7 @@ export function AnilistTab() {
       </p>
     );
   }
-  if (entries.length === 0) {
+  if (empty) {
     return (
       <div className="flex flex-col items-center gap-3 rounded-2xl border border-dashed border-edge-soft bg-canvas/30 px-8 py-16 text-center">
         <h2 className="text-[16px] font-semibold text-ink">{t("Your AniList is empty")}</h2>
@@ -162,30 +230,48 @@ export function AnilistTab() {
   return (
     <section className="flex flex-col gap-10">
       <FilterBar type={type} setType={setType} query={query} setQuery={setQuery} counts={counts} />
-      {RAIL_ORDER.map((section) => {
-        const items = visible.filter((e) => section.statuses.includes(e.status));
-        if (items.length === 0) return null;
-        return (
-          <div key={section.key} className="flex flex-col gap-4">
-            <div className="flex items-baseline gap-3">
-              <h2 className="text-[18px] font-semibold text-ink">{t(section.title)}</h2>
-              <span className="text-[12px] text-ink-muted">{items.length}</span>
-            </div>
-            <Grid>
-              {items.map((entry) => (
-                <AnilistEntryCard
-                  key={entry.id}
-                  entry={entry}
-                  busy={busy.has(entry.id)}
-                  onStatus={(s) => void commitStatus(entry, s)}
-                  onProgress={(p) => void commitProgress(entry, p)}
-                  onRemove={() => void commitRemove(entry)}
-                />
-              ))}
-            </Grid>
+      {sections.map((section) => (
+        <div key={section.key} className="flex flex-col gap-4">
+          <div className="flex items-baseline gap-3">
+            <h2 className="text-[18px] font-semibold text-ink">{t(section.title)}</h2>
+            <span className="text-[12px] text-ink-muted">{section.items.length}</span>
           </div>
-        );
-      })}
+          <Grid>
+            {section.items.map((entry) => (
+              <AnilistEntryCard
+                key={entry.id}
+                entry={entry}
+                busy={busy.has(entry.id)}
+                onStatus={(s) => void commitStatus(entry, s)}
+                onProgress={(p) => void commitProgress(entry, p)}
+                onPrivate={(next) => void commitPrivate(entry, next)}
+                onRemove={() => void commitRemove(entry)}
+              />
+            ))}
+          </Grid>
+        </div>
+      ))}
+      {customSections.map((section) => (
+        <div key={section.key} className="flex flex-col gap-4">
+          <div className="flex items-baseline gap-3">
+            <h2 className="text-[18px] font-semibold text-ink">{section.name}</h2>
+            <span className="text-[12px] text-ink-muted">{section.items.length}</span>
+          </div>
+          <Grid>
+            {section.items.map((entry) => (
+              <AnilistEntryCard
+                key={entry.id}
+                entry={entry}
+                busy={busy.has(entry.id)}
+                onStatus={(s) => void commitStatus(entry, s)}
+                onProgress={(p) => void commitProgress(entry, p)}
+                onPrivate={(next) => void commitPrivate(entry, next)}
+                onRemove={() => void commitRemove(entry)}
+              />
+            ))}
+          </Grid>
+        </div>
+      ))}
     </section>
   );
 }

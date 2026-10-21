@@ -107,8 +107,8 @@ const catalog03: Record<string, string> = {
   "Couldn't reach Trakt. Check your connection and try again.":
     "Trakt에 연결하지 못했습니다. 연결을 확인하고 다시 시도하세요.",
   "Couldn't reach Trakt. Try refreshing.": "Trakt에 연결하지 못했습니다. 새로고침해 보세요.",
-  "Couldn't reach compass.site to load earlier builds. Check your connection and try again.":
-    "이전 빌드를 불러오기 위해 compass.site에 연결하지 못했습니다. 연결을 확인하고 다시 시도하세요.",
+  "Couldn't reach compass.sarl to load earlier builds. Check your connection and try again.":
+    "이전 빌드를 불러오기 위해 compass.sarl에 연결하지 못했습니다. 연결을 확인하고 다시 시도하세요.",
   "Couldn't reach that pack": "해당 팩에 연결할 수 없음",
   "Couldn't reach that pack (HTTP {n})": "해당 팩에 연결할 수 없음(HTTP {n})",
   "Couldn't reach the update server. Try again in a moment.":

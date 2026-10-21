@@ -351,7 +351,7 @@ const catalog: Record<string, string> = {
   "https://...manifest.json or stremio://...": "https://...manifest.json atau stremio://...",
   "https://posters.example.com or a pattern with {id}":
     "https://posters.example.com atau pola dengan {id}",
-  "https://sync.compass.site": "https://sync.compass.site",
+  "https://sync.compass.sarl": "https://sync.compass.sarl",
   "huge ({width}×{height}px)": "sangat besar ({width}×{height}px)",
   "if the first page is 0. Use this when the URL counts pages.":
     "jika halaman pertama adalah 0. Gunakan ini saat URL menghitung halaman.",

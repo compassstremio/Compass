@@ -298,7 +298,7 @@ const sweepB: Record<string, string> = {
   "Checking {n} items…#one": "正在检查 {n} 个条目…",
   "Checking {total} episodes for sources.": "正在检查 {total} 集的可用来源。",
   "Checking availability": "正在检查是否可用",
-  "Checking compass.site for a newer build.": "正在检查 compass.site 上是否有新版本。",
+  "Checking compass.sarl for a newer build.": "正在检查 compass.sarl 上是否有新版本。",
   "checking now": "正在检查",
   "checking other sources": "正在检查其他来源",
   "Checking SVP installation...": "正在检查 SVP 安装……",

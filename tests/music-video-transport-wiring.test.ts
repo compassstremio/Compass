@@ -55,7 +55,14 @@ function loadPlayer() {
         withoutLiked: (ids: readonly string[], t: any) => ids.filter((id: string) => id !== t.id),
       };
     if (name === "./source-consent")
-      return { musicSourceAllowed: () => true, requestMusicSourceConsent: () => {} };
+      return {
+        musicSourceAllowed: () => true,
+        musicPlaybackSourceAllowed: () => true,
+        filterMusicSourceCandidates: (candidates: unknown[]) => candidates,
+        hydrateMusicSourceConsent: async () => {},
+        subscribeMusicSourceConsent: () => () => {},
+        requestMusicSourceConsent: () => {},
+      };
     if (name === "./queue-insert")
       return {
         insertIntoQueue: (q: any[], t: any, at: number) => [...q.slice(0, at), t, ...q.slice(at)],

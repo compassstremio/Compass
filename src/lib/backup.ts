@@ -11,11 +11,13 @@ import {
   setSecret,
 } from "@/lib/secret-store";
 import { setItemWithRecovery } from "@/lib/storage-recovery";
+import { renameHarborKey } from "@/lib/harbor-migration";
 import { localLibraryReady, readLocalLibrary, restoreLocalLibrary } from "@/lib/local-library";
 
 declare const __APP_VERSION__: string;
 
 const FORMAT = "compass-backup";
+const HARBOR_FORMAT = "harbor-backup";
 const VERSION = 1;
 
 export type BackupSectionKey =
@@ -370,16 +372,6 @@ export type BackupValidationError =
   | "This backup has no data in it."
   | "This backup contained nothing restorable.";
 
-/**
- * Harbor (beta) labelled its keys harbor*, Compass labels them compass*.
- * Normalising here (older backups, imported data) keeps sections, secrets and
- * per-profile handling working on Compass key names. A no-op for compass keys.
- */
-export function renameHarborKey(key: string): string {
-  if (/^harbor([.\-]|[A-Z])/.test(key)) return `compass${key.slice(6)}`;
-  return key;
-}
-
 export type ParsedBackup =
   | { ok: true; backup: Backup }
   | { ok: false; error: BackupValidationError };
@@ -394,18 +386,19 @@ export function parseBackup(text: string): ParsedBackup {
   if (!json || typeof json !== "object") {
     return { ok: false, error: "Unrecognized file." };
   }
-  const b = json as Partial<Backup>;
-  const legacyHarbor = b.format === "harbor-backup";
-  if (b.format !== FORMAT && !legacyHarbor) {
+  const b = json as Partial<Omit<Backup, "format">> & { format?: unknown };
+  const fromHarbor = b.format === HARBOR_FORMAT;
+  if (b.format !== FORMAT && !fromHarbor) {
     return { ok: false, error: "This is not a Compass backup file." };
   }
   if (!b.data || typeof b.data !== "object") {
     return { ok: false, error: "This backup has no data in it." };
   }
   const data: Record<string, string> = {};
-  for (const [k, v] of Object.entries(b.data)) {
-    const key = renameHarborKey(k);
-    if (typeof v === "string" && isPortable(key)) data[key] = v;
+  for (const [raw, v] of Object.entries(b.data)) {
+    // Harbor, Compass's former name, wrote the same data under harbor.* keys.
+    const k = fromHarbor ? (renameHarborKey(raw) ?? raw) : raw;
+    if (typeof v === "string" && isPortable(k)) data[k] = v;
   }
   if (Object.keys(data).length === 0) {
     return { ok: false, error: "This backup contained nothing restorable." };

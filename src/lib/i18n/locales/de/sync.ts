@@ -79,7 +79,7 @@ const sync: Record<string, string> = {
     "Fordert Gäste zur Auswahl auf, statt sie automatisch zuzuordnen.",
   "Ready to save": "Speicherbereit",
   "Redeploy it to get the latest Watch Together fixes. Compass's public relay updates on its own.":
-    "Stelle es erneut bereit, um die neuesten Korrekturen für Watch Together zu erhalten. Compasses öffentliches Relay aktualisiert sich selbst.",
+    "Stelle es erneut bereit, um die neuesten Korrekturen für Watch Together zu erhalten. Compasss öffentliches Relay aktualisiert sich selbst.",
   "Relay outdated. Your self-hosted relay is running an older version.":
     "Relay veraltet. Dein selbst gehostetes Relay verwendet eine ältere Version.",
   "Remove from AniList": "Aus AniList entfernen",

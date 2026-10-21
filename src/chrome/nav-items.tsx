@@ -1,6 +1,7 @@
 import type { ReactNode } from "react";
 import { useSportsEnabled } from "@/lib/sports/enabled";
 import { usePluginCataloguesAvailable } from "@/lib/streams/plugins/available";
+import { useInstallFeatures } from "@/lib/features/install";
 import { SportsNavIcon } from "@/components/icons/sports-nav-icon";
 import { Popcorn, Puzzle } from "lucide-react";
 import { NavGlyph } from "@/components/icons/nav-glyph";
@@ -38,6 +39,7 @@ import { DownloadsNavIcon } from "@/chrome/downloads-nav-icon";
 import { GamesNavIcon } from "@/components/icons/games-nav-icon";
 import type { LockableTab } from "@/lib/parental";
 import type { View } from "@/lib/view";
+import { customizeNavigation } from "./navigation-policy";
 
 function CalendarNavIcon({ active }: { active: boolean }) {
   const unseen = useUnseenReminderCount();
@@ -310,30 +312,20 @@ export const GAMES_IN_NAV = true;
 export function useAvailableNavItems(): NavItem[] {
   const sportsEnabled = useSportsEnabled();
   const pluginCatalogs = usePluginCataloguesAvailable();
+  const features = useInstallFeatures();
   return NAV_ITEMS.filter(
     (item) =>
       (item.id !== "sports" || sportsEnabled) &&
-      (item.id !== "plugins" || pluginCatalogs) &&
-      (item.id !== "games" || GAMES_IN_NAV),
+      (item.id !== "plugins" || (pluginCatalogs && features.plugins)) &&
+      (item.id !== "games" || (GAMES_IN_NAV && features.games)) &&
+      (item.id !== "music" || features.music) &&
+      (item.id !== "ebook" || features.ebook) &&
+      (item.id !== "manga" || features.manga),
   );
 }
 
 export function applyNavCustomization(items: NavItem[], cfg: NavCustomization): NavItem[] {
-  const shown = items
-    .filter((it) => !cfg.hidden.includes(it.id))
-    .map((it) => (cfg.renamed[it.id] ? { ...it, label: cfg.renamed[it.id] } : it));
-  if (cfg.order.length === 0) return shown;
-  const byId = new Map<string, NavItem>(shown.map((it) => [it.id, it]));
-  const ordered: NavItem[] = [];
-  for (const id of cfg.order) {
-    const it = byId.get(id);
-    if (it) ordered.push(it);
-  }
-  const inOrder = new Set(cfg.order);
-  for (const it of shown) {
-    if (!inOrder.has(it.id)) ordered.push(it);
-  }
-  return ordered;
+  return customizeNavigation(items, cfg);
 }
 
 export function effectiveNavOrder(cfg: NavCustomization): NavItemId[] {

@@ -89,7 +89,7 @@ export function ClaimPanel({
             label={t("Theme link or ID")}
             value={themeId}
             onChange={setThemeId}
-            placeholder="compass.site/themes/api/t/..."
+            placeholder="compass.sarl/themes/api/t/..."
           />
           <TextField
             label={t("Owner token")}

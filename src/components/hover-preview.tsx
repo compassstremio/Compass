@@ -32,7 +32,7 @@ import {
   STAGGER_STEP_MS,
   TOPBAR_INSET_PX,
 } from "@/lib/hover-preview/timing";
-import { useSearch } from "@/lib/search-context";
+import { useSearchOpen } from "@/lib/search-context";
 import { useSettings } from "@/lib/settings";
 import { activeLayout } from "@/lib/theme";
 import { useView } from "@/lib/view";
@@ -43,7 +43,7 @@ import { crownHeightFor, panelWidthFor, placePanel } from "./hover-preview/use-p
 export function HoverPreview() {
   const { settings } = useSettings();
   const view = useView();
-  const search = useSearch();
+  const searchOpen = useSearchOpen();
   const menu = useContextMenu();
   const finePointer = useMedia("(hover: hover) and (pointer: fine)");
   const reduced = useMedia("(prefers-reduced-motion: reduce)");
@@ -66,10 +66,10 @@ export function HoverPreview() {
         (settings.cardHoverStyle === "default" || settings.cardHoverStyle === "marquee"),
       finePointer,
       viewClear: view.player === null && view.picker === null && !view.chromeHidden,
-      searchClosed: !search.open,
+      searchClosed: !searchOpen,
       menuClosed: menu.state === null,
     });
-  }, [settings.hoverPreviewEnabled, settings.cardHoverStyle, finePointer, view.player, view.picker, view.chromeHidden, search.open, menu.state]);
+  }, [settings.hoverPreviewEnabled, settings.cardHoverStyle, finePointer, view.player, view.picker, view.chromeHidden, searchOpen, menu.state]);
 
   const snap = useSyncExternalStore(subscribeHoverPreview, getHoverPreviewSnapshot);
 

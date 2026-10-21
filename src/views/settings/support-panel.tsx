@@ -1,10 +1,10 @@
-import { ArrowUpRight, Check } from "./icons";
+import { ArrowUpRight, Heart } from "./icons";
 import type { ReactNode } from "react";
-import elfLogo from "@/assets/elfhosted.svg";
 import stremioLogo from "@/assets/stremio.png";
 import amfIcon from "@/assets/support/amf.png";
 import charityNavigatorIcon from "@/assets/support/charity-navigator.png";
 import effIcon from "@/assets/support/eff.png";
+import ehsanIcon from "@/assets/support/ehsan.svg";
 import internetArchiveIcon from "@/assets/support/internet-archive.png";
 import msfIcon from "@/assets/support/msf.png";
 import nationalPcfIcon from "@/assets/support/nationalpcf.png";
@@ -16,20 +16,19 @@ import { SettingRow } from "./kit";
 import { ROW_DESC, Section } from "./shared";
 import { SButton, SRow } from "./ui";
 
-const ELF_STORE = "https://store.elfhosted.com/";
-const ELF_DONATE = "https://store.elfhosted.com/product/donation/";
 const STREMIO_DONATE = "https://www.stremio.com/donate";
 
-const ELF_PERKS = [
-  "Private Stremio add-ons with 10x the rate limits and built-in stream proxying, from $9 a month.",
-  "Managed Plex, Emby, or Jellyfin, running in minutes with no hardware and no Docker.",
-  "Over 100 self-hosted apps: the *arr stack, debrid tools, books and audiobooks, and more.",
-  "Daily backups, automatic updates, and monitoring, all handled for you.",
-];
+const KOFI_DONATE = "https://ko-fi.com/compass_sio";
 
 const CHARITY_NAVIGATOR = "https://www.charitynavigator.org/";
 
 const CHARITIES = [
+  {
+    name: "Ehsan (إحسان)",
+    url: "https://ehsan.sa/",
+    icon: ehsanIcon,
+    blurb: "Saudi Arabia's national platform for charitable giving, with licensed charities and projects.",
+  },
   {
     name: "St. Jude Children's Research Hospital",
     url: "https://www.stjude.org",
@@ -71,6 +70,7 @@ const CHARITIES = [
 ];
 
 const LEAD_IMG = "h-[22px] w-[22px] shrink-0 object-contain";
+const LEAD_ICON = "shrink-0 text-ink-subtle";
 const CHARITY_IMG = "h-9 w-9 shrink-0 rounded-[9px] object-cover";
 
 function OutArrow() {
@@ -110,47 +110,6 @@ export function SupportPanel() {
   return (
     <>
       <Section
-        title={t("Who keeps this running")}
-        subtitle={t(
-          "Compass's backend runs on ElfHosted. They run our servers at no cost to the community.",
-        )}
-      >
-        <Prose>
-          {t(
-            "Keeping Compass's backend online costs real money, and ElfHosted covers it so the community does not have to. Becoming a subscriber is the best way to keep that going, and it is not a donation. You get proper infrastructure for your own setup, and Compass stays funded at the same time.",
-          )}
-        </Prose>
-        <ul className="flex max-w-[70ch] flex-col gap-2.5">
-          {ELF_PERKS.map((perk) => (
-            <li key={perk} className={`flex items-start gap-2.5 ${ROW_DESC}`}>
-              <Check size={18} strokeWidth={2.6} className="mt-[2px] shrink-0 text-success" />
-              <span className="min-w-0">{t(perk)}</span>
-            </li>
-          ))}
-        </ul>
-        <SettingRow
-          wide
-          label={t("ElfHosted plans")}
-          desc={t(
-            "A third party runs these plans. Compass is not affiliated with them and receives nothing from a signup. Current pricing and terms are on their site.",
-          )}
-        >
-          <div className="flex w-full flex-wrap items-end justify-between gap-x-6 gap-y-4">
-            <div className="flex flex-wrap items-center gap-2.5">
-              <OpenButton label={t("See what you get")} url={ELF_STORE} primary />
-              <OpenButton label={t("One-off donation")} url={ELF_DONATE} />
-            </div>
-            <img
-              src={elfLogo}
-              alt="ElfHosted"
-              draggable={false}
-              className="h-[84px] w-auto shrink-0 object-contain"
-            />
-          </div>
-        </SettingRow>
-      </Section>
-
-      <Section
         title={t("Built on Stremio")}
         subtitle={t(
           "Compass would not be possible without Stremio. It is the foundation everything here is built on.",
@@ -184,19 +143,26 @@ export function SupportPanel() {
 
       <Section
         title={t("Donating to Compass")}
-        subtitle={t("Short version: don't. Compass takes no donations.")}
+        subtitle={t("Donations are optional. Compass is free to use either way.")}
       >
         <Prose>
           {t(
-            "If you were going to send something, send it to ElfHosted or Stremio above, or to one of the charities below. They all do more good with it.",
+            "If you would like to support Compass directly, you can do it on Ko-fi. If you would rather give elsewhere, send it to Stremio above, or to one of the charities below. They all do more good with it.",
           )}
         </Prose>
+        <SettingRow
+          icon={<Heart size={22} strokeWidth={2} className={LEAD_ICON} />}
+          label={t("Support Compass")}
+          desc={t("Opens the Compass Ko-fi page in your browser.")}
+        >
+          <OpenButton label={t("Donate")} url={KOFI_DONATE} primary />
+        </SettingRow>
       </Section>
 
       <Section
         title={t("Badges for giving")}
         subtitle={t(
-          "Support ElfHosted or Stremio, or give to any charity below, and the badge lands on your profile.",
+          "Support Stremio, or give to any charity below, and the badge lands on your profile.",
         )}
       >
         <SRow
@@ -212,11 +178,6 @@ export function SupportPanel() {
           }
           title={t("Charity $100+")}
           description={t("For giving more than $100 to charity.")}
-        />
-        <SRow
-          leading={<img src={elfLogo} alt="" draggable={false} className={LEAD_IMG} />}
-          title={t("ElfHosted")}
-          description={t("For an active ElfHosted subscription.")}
         />
       </Section>
 

@@ -12,12 +12,13 @@
  *   jlink version 17.0 does not match target java.base version 21.0
  * so the fetched JDK tracks the feature version of the jlink doing the work.
  *
- * Order for each: an explicit env var, then JAVA_HOME when it fits, then a Temurin build fetched
- * once from Adoptium and unpacked under a cache outside the repo. Nothing is fetched when a
- * usable JDK is already named, so the developer machine path is unchanged.
+ * Order for each: an explicit env var, then JAVA_HOME when it fits, then the JDK behind the
+ * java launcher on PATH when its java.home carries jmods/, and only then a Temurin build
+ * fetched once from Adoptium and unpacked under a cache outside the repo. Nothing is fetched
+ * when the machine already has a usable JDK anywhere those look.
  */
 
-import { execFileSync } from "node:child_process";
+import { execFileSync, spawnSync } from "node:child_process";
 import {
   chmodSync,
   existsSync,
@@ -172,8 +173,26 @@ export function markLaunchers(runtimeDir, target, log) {
 export const FIX = [
   "Set COMPASS_CAPSTAN_JDK to a JDK 17 or newer with jmods/, or",
   "COMPASS_CAPSTAN_JDK_TARGET to an unpacked JDK for the target platform, or",
-  "COMPASS_CAPSTAN_JDK_VERSION to a Temurin release name such as jdk-17.0.20+8.",
+  "COMPASS_CAPSTAN_JDK_VERSION to a Temurin release name such as jdk-17.0.20+8, or",
+  "have a JDK 17 or newer as the java on PATH.",
 ];
+
+/*
+ * A machine can have a full JDK installed with JAVA_HOME unset and only launcher shims on PATH
+ * (the Windows Oracle installer does exactly that, and its shims omit jar). The launcher names
+ * the real directory in its own java.home property, so it is asked rather than guessed at, and
+ * accepted only when it carries jmods/ and jlink; a JRE, a store stub or an old JVM still falls
+ * through to the fetch.
+ */
+function jdkOnPath() {
+  const print = spawnSync("java", ["-XshowSettings:properties", "-version"], {
+    encoding: "utf8",
+    timeout: 20_000,
+    windowsHide: true,
+  });
+  const text = `${print.stdout ?? ""}${print.stderr ?? ""}`;
+  return jdkHome(text.match(/^\s*java\.home\s*=\s*(.+)$/m)?.[1]?.trim() ?? "");
+}
 
 /*
  * Returns { hostJdk, targetJdk }. They are the same directory whenever the target is the host,
@@ -181,12 +200,24 @@ export const FIX = [
  */
 export async function resolveJdks(target, log) {
   if (!TARGETS[target]) throw new Error(`unknown target ${target}, known: ${Object.keys(TARGETS).join(", ")}`);
-  const named = jdkHome(process.env.COMPASS_CAPSTAN_JDK ?? process.env.JAVA_HOME ?? "");
   const host = hostTriple();
-  const hostJdk =
-    hasJmods(named) && existsSync(join(named, "bin", exe("jlink")))
-      ? named
-      : await fetchJdk(host, DEFAULT_FEATURE, log);
+  // The layer is compiled for Java 17, so an older JDK (JAVA_HOME on ubuntu-22.04 runners is 11)
+  // links a runtime that cannot load it.
+  const fits = (dir) =>
+    hasJmods(dir) && existsSync(join(dir, "bin", exe("jlink"))) && featureOf(dir) >= DEFAULT_FEATURE;
+  const named = jdkHome(process.env.COMPASS_CAPSTAN_JDK ?? process.env.JAVA_HOME ?? "");
+  let hostJdk;
+  if (fits(named)) {
+    hostJdk = named;
+  } else {
+    const onPath = jdkOnPath();
+    if (fits(onPath)) {
+      log(`using the JDK on PATH, ${onPath}`);
+      hostJdk = onPath;
+    } else {
+      hostJdk = await fetchJdk(host, DEFAULT_FEATURE, log);
+    }
+  }
   if (target === host) return { hostJdk, targetJdk: hostJdk };
 
   const forTarget = jdkHome(process.env.COMPASS_CAPSTAN_JDK_TARGET ?? "");

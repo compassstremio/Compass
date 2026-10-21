@@ -1,5 +1,6 @@
+import "@/lib/harbor-migration-boot";
 import { getCurrentWindow } from "@tauri-apps/api/window";
-import { StrictMode, useCallback, useEffect, useState } from "react";
+import { StrictMode, useCallback, useEffect, useRef, useState } from "react";
 import { createRoot } from "react-dom/client";
 import { App } from "@/App";
 import { hydrateCustomThemes } from "@/lib/custom-themes";
@@ -7,6 +8,7 @@ import { getUiLanguage } from "@/lib/i18n/store";
 import { ensureUiLocale } from "@/lib/i18n/load-locale";
 import { applyOsDataset } from "@/lib/platform";
 import { loadSecrets } from "@/lib/secret-store";
+import { migrateHarborDatabases } from "@/lib/harbor-migration";
 import { initializeMusic } from "@/lib/music/player";
 import { initSubtitleCache } from "@/lib/subtitles/subtitle-cache";
 import { CaptionsApp } from "@/views/captions-app";
@@ -164,34 +166,56 @@ function StartupReady() {
   return null;
 }
 
+/**
+ * Minimum time the boot splash stays up before the app is revealed.
+ *
+ * The seconds after mount are the heaviest in the app's life: the home feed loads dozens of rows
+ * and every background runner starts at once. Revealing during that window shows the user raw
+ * loading jank; holding the splash through it means the first frame they see is a settled one.
+ * This is the one constant to tune — raise it to hide more of the load, lower it to reach content
+ * sooner.
+ */
+const MIN_BOOT_MS = 1800;
+
 function MainRoot() {
   const [appReady, setAppReady] = useState(false);
   const markAppReady = useCallback(() => setAppReady(true), []);
+  const mountedAt = useRef(performance.now());
+
+  // Acknowledge startup and take focus as soon as the app is mounted. The window is already on
+  // screen showing the splash, and holding focus back would let the user click elsewhere first.
+  useEffect(() => {
+    if (!appReady || !("__TAURI_INTERNALS__" in window)) return;
+    void import("@tauri-apps/api/core").then(async ({ invoke }) => {
+      await invoke("compass_startup_ready").catch(() => {});
+      if (returnPreferencesReady) {
+        try {
+          await invoke("handoff_confirm");
+          const pending = JSON.parse(localStorage.getItem("compass.update.pending") ?? "null");
+          if (pending?.recoverable && pending.version === __APP_VERSION__) {
+            localStorage.removeItem("compass.update.pending");
+          }
+        } catch {
+          /* Keep pending state and recovery files if startup cannot be acknowledged. */
+        }
+      }
+    });
+  }, [appReady]);
+
   useEffect(() => {
     if (!appReady) return;
-    revealRoot();
-    const boot = document.getElementById("compass-boot");
-    if (boot) {
-      boot.classList.add("gone");
-      setTimeout(() => boot.remove(), 280);
-    }
-    if ("__TAURI_INTERNALS__" in window) {
-      void import("@tauri-apps/api/core").then(async ({ invoke }) => {
-        await invoke("compass_startup_ready").catch(() => {});
-        if (returnPreferencesReady) {
-          try {
-            await invoke("handoff_confirm");
-            const pending = JSON.parse(localStorage.getItem("compass.update.pending") ?? "null");
-            if (pending?.recoverable && pending.version === __APP_VERSION__) {
-              localStorage.removeItem("compass.update.pending");
-            }
-          } catch {
-            /* Keep pending state and recovery files if startup cannot be acknowledged. */
-          }
-        }
-      });
-    }
+    const wait = Math.max(0, MIN_BOOT_MS - (performance.now() - mountedAt.current));
+    const timer = window.setTimeout(() => {
+      revealRoot();
+      const boot = document.getElementById("compass-boot");
+      if (boot) {
+        boot.classList.add("gone");
+        setTimeout(() => boot.remove(), 280);
+      }
+    }, wait);
+    return () => window.clearTimeout(timer);
   }, [appReady]);
+
   return <App onReady={markAppReady} />;
 }
 
@@ -207,6 +231,7 @@ async function mount() {
     !isRemote
   ) {
     returnPreferencesReady = completeBetaReturnPreferences(__APP_VERSION__);
+    await migrateHarborDatabases().catch(() => {});
   }
   await Promise.all([
     loadSecrets(),

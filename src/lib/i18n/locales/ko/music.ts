@@ -339,11 +339,11 @@ const music: Record<string, string> = {
   "music.source.preferred": "선호",
   "music.source.loading": "음악 소스 찾는 중",
   "music.source.none": "현재 일치하는 소스가 없습니다.",
-  "music.consent.title": "YouTube 또는 SoundCloud를 켜기 전에",
+  "music.consent.title": "YouTube, SoundCloud 또는 Spotify를 켜기 전에",
   "music.consent.hosting":
     "Compass는 음악을 호스팅하지 않습니다. 전 세계 기여자들이 작성한 오픈 소스 코드로, 사용자가 켜는 서비스의 공개된 페이지를 열 뿐입니다. Compass와 기여자들은 어떤 콘텐츠도 저장·업로드·제공하지 않습니다.",
   "music.consent.terms":
-    "YouTube와 SoundCloud는 각자의 서비스 약관을 가진 독립된 서비스입니다. 여기서 켜는 것은 해당 서비스의 약관을 따르고, 더 이상 동의하지 않으면 사용을 중단하는 데 동의한다는 의미입니다. Compass는 두 서비스와 제휴, 보증, 연관 관계가 없습니다.",
+    "YouTube, SoundCloud, Spotify는 각자의 서비스 약관을 가진 독립된 서비스입니다. 여기서 켜는 것은 해당 서비스의 약관을 따르고, 더 이상 동의하지 않으면 사용을 중단하는 데 동의한다는 의미입니다. Compass는 이 서비스들과 제휴, 보증, 연관 관계가 없습니다.",
   "music.consent.responsibility":
     "이 소스를 어떻게 사용하는지와 거주 지역의 법을 지키는 것은 사용자의 책임입니다. 재생·다운로드·공유하는 내용에 대해 Compass 기여자들은 어떠한 책임도 지지 않습니다.",
   "music.consent.rights":

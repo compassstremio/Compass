@@ -189,12 +189,13 @@ async function putWithState(
         hasScheduledVideos: baseHints.hasScheduledVideos ?? false,
       },
       removed: base ? base.removed === true : false,
-      temp: base ? base.temp === true : false,
+      // Recording watched state does not create an explicit bookmark.
+      temp: base ? base.removed === true || base.temp === true : true,
       _ctime: base?._ctime ?? now,
       _mtime: now,
     };
     const ok = await cloudLibraryPut(authKey, item as unknown as LibraryItem);
-    if (state.watched != null) setFresh(canonicalId, state.watched, Date.parse(now));
+    if (ok && state.watched != null) setFresh(canonicalId, state.watched, Date.parse(now));
     return ok;
   });
 }
@@ -225,13 +226,12 @@ export async function setEpisodesWatchedStremio(
   }
   if (isDetectedAnime(meta.id)) return false;
   return putWithState(authKey, meta, canonicalId, async (base) => {
-    const server = await decodeWatchedEpisodes(base?.state?.watched, videos).catch(
-      () => new Set<string>(),
-    );
+    const server = await decodeWatchedEpisodes(base?.state?.watched, videos, true);
     const merged = new Set(server);
     for (const k of localWatched) merged.add(k);
     for (const k of localUnwatched) merged.delete(k);
     const field = await encodeWatchedEpisodes(merged, videos);
-    return field == null ? {} : { watched: field };
+    if (field == null) throw new Error("Episode watched state could not be encoded.");
+    return { watched: field };
   });
 }

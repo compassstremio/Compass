@@ -3,7 +3,7 @@ import { CompanionRequests } from "./companion-request";
 import { retryAfterTime } from "./wow-data";
 import { OSRS_API, osrsItemId, osrsHistoryUrl, parseOsrsItems, parseOsrsLatest, parseOsrsHistory, type OsrsRange } from "./osrs-data";
 
-const identity = "CompassGrandExchange/1.0 (+https://compass.site)";
+const identity = "CompassGrandExchange/1.0 (+https://compass.sarl)";
 let cooldown = 0;
 const requests = new CompanionRequests(async (url, signal) => {
   if (Date.now() < cooldown) throw Error("Price source rate limited");

@@ -13,6 +13,7 @@ fn main() {
             install::default_install_dir,
             install::payload_size,
             install::run_install,
+            install::installed_features,
             install::run_repair,
             install::launch_compass,
             install::run_uninstall,

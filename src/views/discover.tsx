@@ -1,11 +1,4 @@
-import {
-  startTransition,
-  useCallback,
-  useEffect,
-  useMemo,
-  useRef,
-  useState,
-} from "react";
+import { startTransition, useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { BackToTop } from "@/components/back-to-top";
 import { CollectionsRow } from "@/components/collections-row";
 import { CriticsPick } from "@/components/critics-pick";
@@ -524,7 +517,7 @@ export function Discover({ active = true }: { active?: boolean }) {
             active={active}
             railId={item.key}
             allRails={dailyRows}
-            deduped={dedupedShown}
+            items={dedupedShown[item.key] ?? null}
             loadMore={loadMore}
             ensureLoaded={ensureLoaded}
             titleOverride={renamed}
@@ -536,7 +529,7 @@ export function Discover({ active = true }: { active?: boolean }) {
   return (
     <main ref={scrollCb} className="flex-1 overflow-y-auto overflow-x-hidden px-12 pb-20 pt-28">
       <ScrollRootContext.Provider value={scrollEl}>
-        <div {...contentDrag} className="flex flex-col gap-14">
+        <div {...contentDrag} data-context-page-background className="flex flex-col gap-14">
           {pageRows.editMode || !hiddenFeatured ? (
             <div className="relative">
               {pageRows.editMode && (
@@ -666,14 +659,18 @@ export function Discover({ active = true }: { active?: boolean }) {
                 );
               })
             : visibleRails.map((item) => {
-              const row = renderRow(item);
-              if (!isSpecialRow(item.key)) return row;
-              return row ? (
-                <div key={item.key} data-scroll-anchor={`discover:${item.key}`} className="empty:hidden">
-                  {row}
-                </div>
-              ) : null;
-            })}
+                const row = renderRow(item);
+                if (!isSpecialRow(item.key)) return row;
+                return row ? (
+                  <div
+                    key={item.key}
+                    data-scroll-anchor={`discover:${item.key}`}
+                    className="empty:hidden"
+                  >
+                    {row}
+                  </div>
+                ) : null;
+              })}
         </div>
       </ScrollRootContext.Provider>
       <BackToTop scrollRef={scrollRef} />

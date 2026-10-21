@@ -21,7 +21,7 @@ import {
 } from "@/lib/hotkeys";
 import { useT } from "@/lib/i18n";
 import { useActiveKid } from "@/lib/profiles";
-import { useSearch } from "@/lib/search-context";
+import { useSearchActions } from "@/lib/search-context";
 import { useSettings } from "@/lib/settings";
 import { usePlaylists } from "@/lib/iptv/playlists-store";
 import { useTogether } from "@/lib/together/provider";
@@ -426,7 +426,7 @@ function nameHue(name: string): number {
 }
 
 function SearchPill() {
-  const { setOpen } = useSearch();
+  const { setOpen } = useSearchActions();
   const { settings } = useSettings();
   const t = useT();
   const binding = effectiveBinding("globalSearchFocus", settings.hotkeys ?? {});

@@ -415,8 +415,8 @@ const settings: Record<string, string> = {
     "配信状況と「上映中」の公開期間に使用します。国を選ぶと、Compassのインターフェース、メタデータ、字幕の言語をその国に合わせられます。",
   "A free TMDB key is highly recommended. It unlocks the full Compass experience. The rest are optional, and Cinemeta works out of the box without any.":
     "無料のTMDBキーを強くおすすめします。Compassの全機能を利用できるようになります。その他は任意で、Cinemetaはキーなしですぐに使えます。",
-  "TMDB asks for an app URL when you create the key. Put any URL at all, like https://compass.app. The only thing you need back is the API key.":
-    "キーの作成時にTMDBからアプリのURLを求められます。https://compass.app など、任意のURLを入力してください。必要なのは発行されるAPIキーだけです。",
+  "TMDB asks for an app URL when you create the key. Put any URL at all, like https://compass.sarl. The only thing you need back is the API key.":
+    "キーの作成時にTMDBからアプリのURLを求められます。https://compass.sarl など、任意のURLを入力してください。必要なのは発行されるAPIキーだけです。",
   "RPDB already paints scores onto the poster. Toggle to override.":
     "RPDBではすでにポスターに評価が表示されます。上書きするにはオンにしてください。",
   "MyAnimeList scores for anime titles. RPDB doesn't cover anime, so this stays optional.":
@@ -579,8 +579,8 @@ const settings: Record<string, string> = {
   "Hero carousel, Top 10, Trending, In Theaters, per-service rails.":
     "ヒーローカルーセル、トップ10、トレンド、劇場公開中、サービス別レール。",
   Updates: "アップデート",
-  "Compass checks compass.site for new versions and installs them in place.":
-    "Compassはcompass.siteで新しいバージョンを確認し、そのまま上書きインストールします。",
+  "Compass checks compass.sarl for new versions and installs them in place.":
+    "Compassはcompass.sarlで新しいバージョンを確認し、そのまま上書きインストールします。",
   "Backup & restore": "バックアップと復元",
   "Export your entire Compass setup to a single file, then restore it on a new computer or keep it as a backup.":
     "Compassの設定一式を1つのファイルにエクスポートし、新しいパソコンで復元したり、バックアップとして保管したりできます。",
@@ -1440,8 +1440,8 @@ const settings: Record<string, string> = {
   "My library": "マイライブラリ",
   Anticipated: "期待作",
   "Custom calendar": "カスタムカレンダー",
-  "Compass checks compass.site for new versions and installs them in place. Nothing installs until you choose to, and a dismissed update never nags you again.":
-    "Compassはcompass.siteで新しいバージョンを確認し、アプリをそのまま更新します。選択するまで何もインストールされず、一度スキップした更新が再び表示されることもありません。",
+  "Compass checks compass.sarl for new versions and installs them in place. Nothing installs until you choose to, and a dismissed update never nags you again.":
+    "Compassはcompass.sarlで新しいバージョンを確認し、アプリをそのまま更新します。選択するまで何もインストールされず、一度スキップした更新が再び表示されることもありません。",
   "Library, watch progress, and addon collection sync from this account.":
     "ライブラリ、視聴進捗、アドオンコレクションがこのアカウントから同期されます。",
   "Export your entire Compass setup to a single file, then restore it on a new computer or keep it as a backup. Everything is included except your Stremio sign-in.":
@@ -1795,7 +1795,7 @@ const settings: Record<string, string> = {
     "注意: Stremioもインストールされている場合、stremio://リンクを初めて開く際に、使用するアプリをWindowsが確認することがあります。Compassを選ぶと、以後もCompassで開きます。",
   "stremio:// links now open in the Stremio app. Compass will only install when you trigger it from inside Compass.":
     "stremio://リンクはStremioアプリで開くようになりました。Compassでインストールされるのは、Compass内から実行した場合のみです。",
-  "Checking compass.site for a newer build.": "compass.siteで新しいビルドを確認しています。",
+  "Checking compass.sarl for a newer build.": "compass.sarlで新しいビルドを確認しています。",
   "Downloading {pct}%": "ダウンロード中 {pct}%",
   "Downloaded. Ready to install and restart.":
     "ダウンロードが完了しました。インストールして再起動できます。",

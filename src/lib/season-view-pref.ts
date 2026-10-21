@@ -1,7 +1,13 @@
 const viewed = new Map<string, number>();
 
-export function getViewedSeason(seriesId: string): number | undefined {
-  return viewed.get(seriesId);
+export function getViewedSeason(
+  seriesId: string,
+  seasons?: { seasonNumber: number }[],
+): number | undefined {
+  const season = viewed.get(seriesId);
+  return season != null && (!seasons || seasons.some((s) => s.seasonNumber === season))
+    ? season
+    : undefined;
 }
 
 export function setViewedSeason(seriesId: string, season: number): void {

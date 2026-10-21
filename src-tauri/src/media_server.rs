@@ -1,4 +1,5 @@
 use std::collections::HashMap;
+use std::error::Error as StdError;
 use std::sync::OnceLock;
 use std::time::Duration;
 
@@ -29,11 +30,34 @@ fn client() -> Result<&'static reqwest::Client, String> {
             reqwest::Client::builder()
                 .redirect(reqwest::redirect::Policy::none())
                 .connect_timeout(Duration::from_secs(10))
+                // Media servers are user-configured hosts, frequently on the LAN
+                // or a tailnet. Environment proxies (HTTPS_PROXY/ALL_PROXY, set
+                // by VPN and proxy tools) would otherwise capture these requests
+                // and fail, even though a browser reaches the same address.
+                // Every other Compass HTTP client disables the proxy; match them.
+                .no_proxy()
                 .build()
                 .map_err(|e| e.to_string())
         })
         .as_ref()
         .map_err(Clone::clone)
+}
+
+/// reqwest's `Display` stops at "error sending request for url (...)", which
+/// hides whether the failure was DNS, a refused connection, or a rejected
+/// certificate. Walk the source chain so the interface can show the cause.
+fn describe_error(error: &reqwest::Error) -> String {
+    let mut message = error.to_string();
+    let mut source = StdError::source(error);
+    while let Some(cause) = source {
+        let text = cause.to_string();
+        if !text.is_empty() && !message.contains(&text) {
+            message.push_str(": ");
+            message.push_str(&text);
+        }
+        source = cause.source();
+    }
+    message
 }
 
 fn normalized_origin(value: &str) -> Result<reqwest::Url, String> {
@@ -93,7 +117,7 @@ pub async fn media_server_request(
     let response = request
         .send()
         .await
-        .map_err(|e| format!("media server request failed: {e}"))?;
+        .map_err(|e| format!("media server request failed: {}", describe_error(&e)))?;
     if response.status().is_redirection() {
         return Err("media server redirects are not followed".into());
     }
@@ -106,7 +130,7 @@ pub async fn media_server_request(
     let body = response
         .text()
         .await
-        .map_err(|e| format!("media server response failed: {e}"))?;
+        .map_err(|e| format!("media server response failed: {}", describe_error(&e)))?;
     Ok(MediaServerResponse {
         status,
         headers,
@@ -117,6 +141,36 @@ pub async fn media_server_request(
 #[cfg(test)]
 mod tests {
     use super::*;
+
+    /// Sets proxy environment variables for the duration of a test and restores
+    /// them afterwards, even if the test panics.
+    struct ProxyEnv(Vec<(&'static str, Option<String>)>);
+
+    impl ProxyEnv {
+        fn set(pairs: &[(&'static str, &str)]) -> Self {
+            let saved = pairs
+                .iter()
+                .map(|(key, value)| {
+                    let previous = std::env::var(key).ok();
+                    std::env::set_var(key, value);
+                    (*key, previous)
+                })
+                .collect();
+            Self(saved)
+        }
+    }
+
+    impl Drop for ProxyEnv {
+        fn drop(&mut self) {
+            for (key, previous) in self.0.drain(..) {
+                match previous {
+                    Some(value) => std::env::set_var(key, value),
+                    None => std::env::remove_var(key),
+                }
+            }
+        }
+    }
+
     #[test]
     fn origin_comparison_includes_scheme_and_port() {
         let a = reqwest::Url::parse("http://server:8096/a").unwrap();
@@ -132,5 +186,52 @@ mod tests {
             &a,
             &reqwest::Url::parse("http://server:8097/b").unwrap()
         ));
+    }
+
+    #[tokio::test]
+    async fn reaches_a_local_server_even_when_a_proxy_is_configured() {
+        let listener = tokio::net::TcpListener::bind("127.0.0.1:0")
+            .await
+            .expect("bind test server");
+        let addr = listener.local_addr().expect("test server address");
+        let app = axum::Router::new().route(
+            "/Users/AuthenticateByName",
+            axum::routing::post(|| async {
+                axum::Json(serde_json::json!({
+                    "AccessToken": "token",
+                    "User": { "Id": "user", "Name": "name" }
+                }))
+            }),
+        );
+        let server = tokio::spawn(async move {
+            let _ = axum::serve(listener, app).await;
+        });
+
+        // A proxy that cannot reach anything. Without `.no_proxy()` the request
+        // would be routed here and fail with "error sending request". NO_PROXY
+        // is cleared so a loopback host is not exempted by the machine.
+        let _proxy = ProxyEnv::set(&[
+            ("HTTP_PROXY", "http://127.0.0.1:1"),
+            ("ALL_PROXY", "http://127.0.0.1:1"),
+            ("NO_PROXY", ""),
+            ("no_proxy", ""),
+        ]);
+
+        let origin = format!("http://{addr}");
+        let response = media_server_request(MediaServerRequestArgs {
+            origin: origin.clone(),
+            url: format!("{origin}/Users/AuthenticateByName"),
+            method: Some("POST".to_string()),
+            headers: None,
+            body: Some(r#"{"Username":"user","Pw":"password"}"#.to_string()),
+            timeout_ms: Some(5_000),
+        })
+        .await
+        .expect("a local media server is reached without the proxy");
+
+        server.abort();
+        assert_eq!(response.status, 200);
+        let body: serde_json::Value = serde_json::from_str(&response.body).expect("json body");
+        assert_eq!(body["AccessToken"], "token");
     }
 }

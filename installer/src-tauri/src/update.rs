@@ -206,7 +206,7 @@ fn run(args: Args) -> i32 {
 
     let desktop = desktop_shortcut_present();
     let mut bucket = -1i64;
-    let outcome = install::install_core(&dest, desktop, &mut |pct, step| {
+    let outcome = install::install_core(&dest, desktop, None, &mut |pct, step| {
         let next = (pct / 10.0) as i64;
         if next != bucket {
             bucket = next;
@@ -236,19 +236,22 @@ fn run(args: Args) -> i32 {
 
 fn run_recoverable(dest: &Path, version: &str, log: &mut Log) -> i32 {
     use compass_install_recovery::Transaction;
+    // Read before the transaction moves the old tree aside: the new install must carry the
+    // selection the user already made, and only after the swap is there nowhere left to read it.
+    let disabled = install::read_marker_disabled(dest);
     let tx = match Transaction::begin(dest, version) {
         Ok(tx) => tx,
         Err(e) => { log.line(&format!("cannot start recovery transaction: {e}")); let _ = relaunch(dest); return 1; }
     };
     let outcome = (|| -> Result<(), String> {
-        let total = install::prepare_recoverable(&tx)?;
+        let total = install::prepare_recoverable(&tx, &disabled)?;
         let instructions = format!(
             "Recovery files are retained locally. No AppData is restored automatically.\r\n\
              If interrupted before Compass reopens, run from this folder:\r\n\
              Recover-Compass.exe --recover-only --target-dir \"{}\"\r\n", dest.display());
         std::fs::write(tx.root().join("RECOVERY.txt"), instructions).map_err(|e| e.to_string())?;
         tx.commit().map_err(|e| e.to_string())?;
-        install::finish_recoverable(dest, desktop_shortcut_present(), total)?;
+        install::finish_recoverable(dest, desktop_shortcut_present(), total, &disabled)?;
         let mut child = relaunch(dest)?;
         let deadline = Instant::now() + Duration::from_secs(90);
         loop {

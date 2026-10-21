@@ -64,7 +64,7 @@ Both use branch `codex/experimental-feed`; neither has been pushed.
 | Experimental              | `updates/latest-experimental.json` | Add a new manifest and explicit route |
 
 The app keeps the configured native Tauri URL,
-`https://compass.site/updates/latest.json`, with `x-compass-channel: experimental`.
+`https://compass.sarl/updates/latest.json`, with `x-compass-channel: experimental`.
 Its preliminary browser fetch instead uses `/updates/latest-experimental.json`
 with no custom request header. This simple CORS GET avoids changing the normal
 channels' preflight behavior. The compiled native endpoint and signing key stay

@@ -2,6 +2,7 @@ import { safeFetch as fetch } from "@/lib/safe-fetch";
 import { dwarn } from "@/lib/debug";
 import { completedTorrentDownloadFor } from "@/lib/download/downloads-store";
 import { hasUncachedMarker, isP2pStream } from "./cached";
+import { streamSubtitles } from "./stream-subtitles";
 import {
   magnetFromHash,
   type DebridResult,
@@ -110,7 +111,7 @@ export async function resolveStream(
           filesize: completed.totalBytes ?? completed.receivedBytes,
           notWebReady: true,
           filename: completed.streamLabel ?? undefined,
-          subtitles: stream.subtitles?.map((s) => ({ url: s.url, lang: s.lang, id: s.id })),
+          subtitles: streamSubtitles(stream),
         },
       };
     }
@@ -148,7 +149,7 @@ export async function resolveStream(
       filesize: stream.behaviorHints?.videoSize,
       headers,
       notWebReady: stream.behaviorHints?.notWebReady,
-      subtitles: stream.subtitles?.map((s) => ({ url: s.url, lang: s.lang, id: s.id })),
+      subtitles: streamSubtitles(stream),
     };
     const validation = validateLink(data, expectedSize);
     if (validation.ok) {
@@ -372,7 +373,7 @@ async function tryLocalEngine(
       fileIdx: chosenIdx,
       filename: filename ?? undefined,
       notWebReady: stream.behaviorHints?.notWebReady,
-      subtitles: stream.subtitles?.map((s) => ({ url: s.url, lang: s.lang, id: s.id })),
+      subtitles: streamSubtitles(stream),
     };
   } finally {
     releaseAbortCleanup();
@@ -417,7 +418,7 @@ async function tryRemoteEngine(
     fileIdx: chosenIdx,
     filename: filename ?? undefined,
     notWebReady: stream.behaviorHints?.notWebReady,
-    subtitles: stream.subtitles?.map((s) => ({ url: s.url, lang: s.lang, id: s.id })),
+    subtitles: streamSubtitles(stream),
   };
 }
 

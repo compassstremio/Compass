@@ -4,6 +4,8 @@ import { useDockDrag, type DockSpot } from "./sports/use-dock-drag";
 import { readEmbedRect } from "@/lib/player/embed-rect";
 import { EmbeddedBroadcastPlayer } from "./sports/embedded-broadcast-player";
 import { resolveChromeTheme } from "@/lib/theme";
+import { useLocalBackCapability } from "@/lib/use-local-back-capability";
+import { playerLoadIdentity } from "@/lib/player/load-identity";
 import { useBigPicture } from "@/lib/big-picture";
 import { useActiveKid } from "@/lib/profiles";
 import { type PlayerBridge } from "@/lib/player/bridge";
@@ -76,6 +78,12 @@ import { useQueueAdvance } from "./player/hooks/use-queue-advance";
 import { useQueueNav } from "./player/hooks/use-queue-nav";
 import { usePipMode } from "./player/hooks/use-pip-mode";
 import { usePlaybackControls } from "./player/hooks/use-playback-controls";
+import { returnToActivePlayback, type PlayerReturnOptions } from "@/lib/player/return-to-playback";
+import {
+  capturePlaybackActor,
+  isPlaybackActorCurrent,
+  playbackSourceKey,
+} from "@/lib/playback-history";
 import { useRemotePlaybackBinding } from "@/lib/remote/use-remote-playback-binding";
 import { usePlaybackPresence } from "./player/hooks/use-playback-presence";
 import { usePlayerExit } from "./player/hooks/use-player-exit";
@@ -187,7 +195,10 @@ function NativePlayerView({ src }: { src: PlayerSrc }) {
     hostSource,
   } = useTogether();
   const stageRef = useRef<HTMLDivElement>(null);
-  const refreshDockGeometry = useCallback(() => window.dispatchEvent(new Event("compass:mpv-refresh-geom")), []);
+  const refreshDockGeometry = useCallback(
+    () => window.dispatchEvent(new Event("compass:mpv-refresh-geom")),
+    [],
+  );
   const videoMountRef = useRef<HTMLDivElement>(null);
   const bridgeRef = useRef<PlayerBridge | null>(null);
   const selfFrameReadyRef = useRef(false);
@@ -199,17 +210,25 @@ function NativePlayerView({ src }: { src: PlayerSrc }) {
     settings,
   });
   const nativeDock = docked && engine === "mpv" && embedActive;
-  const prepareDockMove = useCallback((next: DockSpot, commit: () => void) => {
-    if (!nativeDock) return false;
-    const stage = stageRef.current?.getBoundingClientRect();
-    const rect = readEmbedRect(videoMountRef.current);
-    if (!stage || !rect) return false;
-    return bridgeRef.current?.moveEmbeddedSurface?.({
-      ...rect,
-      cssLeft: rect.cssLeft + next.x - stage.left,
-      cssTop: rect.cssTop + next.y - stage.top,
-    }, commit) ?? false;
-  }, [nativeDock]);
+  const prepareDockMove = useCallback(
+    (next: DockSpot, commit: () => void) => {
+      if (!nativeDock) return false;
+      const stage = stageRef.current?.getBoundingClientRect();
+      const rect = readEmbedRect(videoMountRef.current);
+      if (!stage || !rect) return false;
+      return (
+        bridgeRef.current?.moveEmbeddedSurface?.(
+          {
+            ...rect,
+            cssLeft: rect.cssLeft + next.x - stage.left,
+            cssTop: rect.cssTop + next.y - stage.top,
+          },
+          commit,
+        ) ?? false
+      );
+    },
+    [nativeDock],
+  );
   const dockDrag = useDockDrag(stageRef, docked, refreshDockGeometry, prepareDockMove);
   useSportsDockSurface(nativeDock && !src.pipDocked, videoMountRef);
   const isP2pEngine =
@@ -476,14 +495,27 @@ function NativePlayerView({ src }: { src: PlayerSrc }) {
     [activeMediaSrc, liveUrl, src.url, transcodedUrl],
   );
   const cast = usePlayerCast({ src: castSource, debrids, snapRef, bridgeRef, settings });
+  const returnTargetRef = useRef(activeMediaSrc);
+  returnTargetRef.current = activeMediaSrc;
+  const returnToPlayerRef = useRef<(options?: PlayerReturnOptions) => Promise<void>>(
+    async () => {},
+  );
+  const returnToPlayer = useCallback(
+    (options?: PlayerReturnOptions) => returnToPlayerRef.current(options),
+    [],
+  );
+  const enterLiveSyncRef = useRef<() => void>(() => {});
+  const handleEnterSync = useCallback(() => enterLiveSyncRef.current(), []);
   const {
     resolvedImdbId,
+    resolvedImdbVerified,
     subAssNative,
     captureExitSnapshot,
     download,
     subDropToast,
-    suspendAutoSyncForManualTiming,
+    prepareLiveSync,
   } = usePlayerMedia({
+    onEnterSync: handleEnterSync,
     src: activeMediaSrc,
     snap,
     engine,
@@ -495,6 +527,7 @@ function NativePlayerView({ src }: { src: PlayerSrc }) {
     svpActive,
     videoMountRef,
     toggleFullscreen,
+    returnToPlayer,
     castActiveRef: cast.castActiveRef,
     season,
     episode,
@@ -580,6 +613,7 @@ function NativePlayerView({ src }: { src: PlayerSrc }) {
     }
     await closePlayer();
   }, [src, replacePlayerSrc, closePlayer]);
+  useLocalBackCapability(true);
   useEffect(() => {
     const onLocalBack = (e: Event) => {
       e.preventDefault();
@@ -592,7 +626,8 @@ function NativePlayerView({ src }: { src: PlayerSrc }) {
   useKeyboardNavigation({
     // TV focus navigation intentionally owns arrows and Space while enabled.
     // Keep it opt-in so standard player hotkeys remain the default.
-    enabled: settings.tvNavigation && settings.playerTvNavigation && !screenLocked && !src.pipDocked,
+    enabled:
+      settings.tvNavigation && settings.playerTvNavigation && !screenLocked && !src.pipDocked,
     wrap: true,
     arrows: chromeVisible && !pipMode,
     onBack: () => {
@@ -765,7 +800,39 @@ function NativePlayerView({ src }: { src: PlayerSrc }) {
       sendCommand,
     });
 
-  const textSync = useTextSync(bridgeRef.current, src.meta.id, rememberSubChoice);
+  returnToPlayerRef.current = async (options = {}) => {
+    const actor = capturePlaybackActor();
+    const target = activeMediaSrc;
+    const activeBridge = bridgeRef.current;
+    await returnToActivePlayback(options, {
+      exitPip,
+      isCurrent: () => {
+        const current = returnTargetRef.current;
+        return (
+          activeBridge != null &&
+          bridgeRef.current === activeBridge &&
+          isPlaybackActorCurrent(actor) &&
+          playbackSourceKey(current) === playbackSourceKey(target) &&
+          current.meta.id === target.meta.id &&
+          current.episode?.season === target.episode?.season &&
+          current.episode?.episode === target.episode?.episode
+        );
+      },
+      canControl,
+      status: () => snapRef.current.status,
+      seekTo,
+      playPause: playPauseToggle,
+      focus: () => stageRef.current?.focus({ preventScroll: true }),
+    });
+  };
+  const textSync = useTextSync(bridgeRef.current, src.meta.id, rememberSubChoice, {
+    scopeKey: JSON.stringify([
+      bridgeKey,
+      playerLoadIdentity(activeMediaSrc, activeMediaSrc.url, season, episode),
+      capturePlaybackActor(),
+    ]),
+    beforeEnter: prepareLiveSync,
+  });
   const [syncToast, setSyncToast] = useState<ToastInfo | null>(null);
   const syncToastTimerRef = useRef<number | null>(null);
   const showSyncToast = useCallback((kind: "ok" | "error", text: string) => {
@@ -788,10 +855,9 @@ function NativePlayerView({ src }: { src: PlayerSrc }) {
       );
     };
   }, [showSyncToast, t]);
-  const handleEnterSync = useCallback(() => {
-    suspendAutoSyncForManualTiming();
-    void textSync.enter(src.url, src.headers);
-  }, [textSync.enter, src.url, src.headers, suspendAutoSyncForManualTiming]);
+  enterLiveSyncRef.current = () => {
+    void textSync.enter(activeMediaSrc.url, activeMediaSrc.headers);
+  };
 
   const volumeIndicatorTimerRef = useRef<number | null>(null);
   const [volumeIndicator, setVolumeIndicator] = useState<VolumeIndicatorState>({
@@ -824,7 +890,14 @@ function NativePlayerView({ src }: { src: PlayerSrc }) {
 
   const videoFill = useVideoFill(bridgeRef, src.url, playing);
   useLivePictureEq(bridgeRef, src.url);
-  const anime4k = useAnime4k(bridgeRef, src.url, src, snap.videoWidth, bridgeReady);
+  const anime4k = useAnime4k(
+    bridgeRef,
+    src.url,
+    src,
+    snap.videoWidth,
+    snap.videoSourceWidth,
+    bridgeReady,
+  );
   const [mouseHoldSpeedActive, setMouseHoldSpeedActive] = useState(false);
   const mouseHoldRef = useRef<{
     pointerId: number | null;
@@ -1049,7 +1122,11 @@ function NativePlayerView({ src }: { src: PlayerSrc }) {
     const unsub = subscribePlaybackClock(() => {
       const livePos = getPlaybackPosition();
       const currentSnap = snapRef.current;
-      if (currentSnap.status === "idle" || currentSnap.status === "ended" || currentSnap.status === "error") {
+      if (
+        currentSnap.status === "idle" ||
+        currentSnap.status === "ended" ||
+        currentSnap.status === "error"
+      ) {
         clearMediaControls();
         return;
       }
@@ -1101,7 +1178,14 @@ function NativePlayerView({ src }: { src: PlayerSrc }) {
     onVolumeFeedback: showVolumeFeedback,
   });
 
-  const { pendingResumeSec, acknowledgeResume, pendingSeekSec, clearPendingSeek, sourceKey, resumeReady } = useBridgeLoad({
+  const {
+    pendingResumeSec,
+    acknowledgeResume,
+    pendingSeekSec,
+    clearPendingSeek,
+    sourceKey,
+    resumeReady,
+  } = useBridgeLoad({
     bridgeRef,
     inRoomRef,
     isHostRef,
@@ -1118,6 +1202,7 @@ function NativePlayerView({ src }: { src: PlayerSrc }) {
     pendingSeekSec,
     sourceKey,
     startPaused: src.startPaused,
+    preserveExactPosition: src.startPositionMs != null,
     clearPendingSeek,
     durationSec: snap.durationSec,
     bridgeRef,
@@ -1396,6 +1481,7 @@ function NativePlayerView({ src }: { src: PlayerSrc }) {
     setHideOthersDrawings,
     canPickAnother: !liveOverlay.isLive || !inRoom || isHost,
     resolvedImdbId,
+    resolvedImdbVerified,
     contentAdvisory,
     tmdbKey: settings.tmdbKey ?? null,
     download: isLocalSrc ? undefined : download,
@@ -1480,9 +1566,14 @@ function NativePlayerView({ src }: { src: PlayerSrc }) {
       data-docked={docked}
       data-native-dock={nativeDock}
       data-audio-only={docked && dockMinimized}
+      tabIndex={-1}
       dir="ltr"
       className={`fixed z-[100] overflow-hidden ${docked ? "sports-player-dock" : "inset-0"} ${stageBg}`}
-      style={{ ...(screenLocked ? { cursor: "default" } : cursorStyle), ...dockDrag.style, ...(src.pipDocked ? { visibility: "hidden", pointerEvents: "none" } : {}) }}
+      style={{
+        ...(screenLocked ? { cursor: "default" } : cursorStyle),
+        ...dockDrag.style,
+        ...(src.pipDocked ? { visibility: "hidden", pointerEvents: "none" } : {}),
+      }}
       onMouseMove={wakeChrome}
       onMouseEnter={wakeChrome}
     >

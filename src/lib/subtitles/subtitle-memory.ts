@@ -21,6 +21,7 @@ export type RememberedSub = {
   encoding?: string;
   downloadAuthKind?: SubtitleDownloadAuthKind;
   providerDerived?: boolean;
+  localTrusted?: boolean;
   matchScore?: number;
   matchConfidence?: SubtitleMatchConfidence;
   streamKey?: string;
@@ -43,6 +44,7 @@ export type SubChoiceInput = {
   encoding?: string;
   downloadAuth?: SubtitleLoadMetadata["downloadAuth"];
   providerDerived?: boolean;
+  localTrusted?: boolean;
   matchScore?: number;
   matchConfidence?: SubtitleMatchConfidence;
   streamKey?: string;
@@ -165,6 +167,7 @@ export function rememberedFromChoice(choice: SubChoiceInput): Omit<RememberedSub
     encoding: choice.encoding,
     downloadAuthKind: choice.downloadAuth?.kind,
     providerDerived: choice.providerDerived,
+    localTrusted: choice.localTrusted === true || undefined,
     matchScore: choice.matchScore,
     matchConfidence: choice.matchConfidence,
     streamKey: choice.streamKey,
@@ -189,6 +192,7 @@ export function rememberedChoiceFromLoad(
     encoding: metadata?.encoding,
     downloadAuth: metadata?.downloadAuth,
     providerDerived: metadata?.providerDerived,
+    localTrusted: metadata?.localTrusted === true || undefined,
     provider: metadata?.provider,
     release: metadata?.release,
     subId: metadata?.subId,
@@ -219,9 +223,12 @@ export function rememberedSubtitleLoadMetadata(
     downloadAuth,
     release: remembered.release,
     provider: remembered.provider,
+    localTrusted: remembered.localTrusted === true || undefined,
     providerDerived:
-      remembered.providerDerived ??
-      (rememberedSubtitleIsLocal(remembered) ? false : Boolean(remembered.provider)),
+      remembered.localTrusted === true
+        ? false
+        : remembered.providerDerived ??
+          (rememberedSubtitleIsLocal(remembered) ? false : Boolean(remembered.provider)),
     subId: remembered.subId,
     matchScore: remembered.matchScore,
     matchConfidence: remembered.matchConfidence,

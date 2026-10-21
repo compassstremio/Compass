@@ -112,7 +112,7 @@ export function DraculaSidebar() {
               <CompassMark className="compass-dracula-moon h-7 w-7 shrink-0 text-accent drop-shadow-[0_0_10px_var(--color-accent-soft)] lg:h-[26px] lg:w-[26px]" />
               {!collapsed && (
                 <span
-                  className="hidden text-[40px] font-medium leading-none tracking-tight lg:inline"
+                  className="hidden text-[35px] font-medium leading-none tracking-tight lg:inline"
                   style={{ fontFamily: "var(--font-display)", transform: "translateY(1px)" }}
                 >
                   C

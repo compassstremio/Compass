@@ -66,8 +66,8 @@ const dynamic: Record<string, string> = {
   "Fetching {n} items…#few": "{n} Elemente werden abgerufen…",
   "Fetching {n} items…#one": "{n} Element wird abgerufen…",
   "Fill in the details, then Subscribe": "Details ausfüllen, dann abonnieren",
-  "For Application URL anything works, for example https://compass.site. TMDB never visits it.":
-    "Als Anwendungs-URL funktioniert jede beliebige Adresse, zum Beispiel https://compass.site. TMDB ruft sie nie auf.",
+  "For Application URL anything works, for example https://compass.sarl. TMDB never visits it.":
+    "Als Anwendungs-URL funktioniert jede beliebige Adresse, zum Beispiel https://compass.sarl. TMDB ruft sie nie auf.",
   "Forward {n} seconds#few": "{n} Sekunden vorspulen",
   "Forward {n} seconds#one": "{n} Sekunde vorspulen",
   "Free forever for personal use. No payment, ever.":

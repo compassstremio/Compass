@@ -1,5 +1,169 @@
 {
   "notes": {
+    "0.9.136": {
+      "title": "Compass Beta 0.9.136",
+      "intro": "A big feature update: right-click menus across the app, PublicMetaDB, your TorBox cloud in the Library, chapter navigation in the player, Pictorium posters, much stronger anime sync, and a new Compass look.",
+      "sections": [
+        {
+          "heading": "Highlights",
+          "items": [
+            "Right-click menus for titles, tracks, playlists, albums and artists.",
+            "PublicMetaDB joins as a tracker.",
+            "The Library opens your private TorBox cloud.",
+            "Pictorium posters, served from Compass's own server.",
+            "The player gains chapter navigation.",
+            "Anime sync lands every episode on the right cour.",
+            "Trackers stop signing you out.",
+            "Playback survives audio device changes and episode switches.",
+            "Episode ratings return.",
+            "New Compass logo and app icon."
+          ]
+        },
+        {
+          "heading": "Context menus",
+          "items": [
+            "Quick actions on titles, Continue Watching cards, profiles and images, plus download shortcuts for episodes and titles.",
+            "Music menus for tracks, playlists, albums and artists, and the add-to-playlist picker is now a cover grid."
+          ]
+        },
+        {
+          "heading": "PublicMetaDB",
+          "items": [
+            "Connect with your username and API key.",
+            "Watchlists show on overview pages and in the Library; resume progress syncs as you watch.",
+            "Badges appear on Continue Watching cards."
+          ]
+        },
+        {
+          "heading": "Library and media servers",
+          "items": [
+            "Browse your private TorBox cloud and play files straight from it.",
+            "Browse server collections, pick refresh intervals, and server posters come first with TMDB as fallback."
+          ]
+        },
+        {
+          "heading": "Posters",
+          "items": [
+            "Pictorium joins the custom poster services: paste https://pictorium.compass.sarl, or your own Pictorium link with its editor options, in Settings › Library & metadata › Custom poster service.",
+            "Series get their Pictorium posters too, and {type} in a custom poster template now reads series for shows."
+          ]
+        },
+        {
+          "heading": "Anime and sync",
+          "items": [
+            "AniList and MAL rewatches sync, with a Count rewatches toggle.",
+            "AniList custom lists and private entries appear in your library.",
+            "Episode titles pick the best source per language and fill in from MAL and Kitsu.",
+            "Sync and Continue Watching land on the cour that aired the episode."
+          ]
+        },
+        {
+          "heading": "Player",
+          "items": [
+            "Chapter navigation and timeline markers.",
+            "Trailer autoplay is more reliable and can use its own resolution."
+          ]
+        },
+        {
+          "heading": "Fixes",
+          "items": [
+            "Simkl and Trakt only sign out on a true token rejection; queued Simkl watches retry on their own.",
+            "Audio device or window changes no longer interrupt playback.",
+            "A/B loops land exactly where you mark them.",
+            "Live streams stay live after a source switch.",
+            "Media server libraries no longer shrink after a short page.",
+            "Episode search no longer gets stuck on \"Loading episodes…\".",
+            "Discord presence: real manga covers, instant music updates, correct timestamps after seeking.",
+            "A closed console window no longer causes a false crash report on the next launch.",
+            "Add-ons page loading shows the Compass mark.",
+            "Compass services now live at compass.sarl."
+          ]
+        }
+      ],
+      "translations": {
+        "ar": {
+          "title": "Compass بيتا 0.9.136",
+          "intro": "تحديث كبير بالميزات: قوائم بزر الفأرة الأيمن في كل التطبيق، دعم PublicMetaDB، سحابة TorBox الخاصة بك داخل المكتبة، التنقّل بين الفصول في المشغّل، ملصقات Pictorium، مزامنة أنمي أقوى بكثير، ومظهر جديد لـ Compass.",
+          "sections": [
+            {
+              "heading": "أبرز ما في التحديث",
+              "items": [
+                "قوائم بزر الفأرة الأيمن للعناوين والمقاطع الموسيقية وقوائم التشغيل والألبومات والفنانين.",
+                "انضمام PublicMetaDB كخدمة تتبّع.",
+                "المكتبة تفتح سحابة TorBox الخاصة بك.",
+                "ملصقات Pictorium من خادم Compass نفسه.",
+                "المشغّل يدعم التنقّل بين الفصول.",
+                "مزامنة الأنمي تضع كل حلقة في الجزء الصحيح.",
+                "خدمات التتبّع لم تعد تسجّل خروجك.",
+                "التشغيل يستمر عند تغيير جهاز الصوت أو تبديل الحلقات.",
+                "عودة تقييمات الحلقات.",
+                "شعار Compass وأيقونة التطبيق الجديدان."
+              ]
+            },
+            {
+              "heading": "قوائم النقر الأيمن",
+              "items": [
+                "إجراءات سريعة على العناوين وبطاقات متابعة المشاهدة والملفات الشخصية والصور، مع اختصارات لتنزيل الحلقات والعناوين.",
+                "قوائم للموسيقى تشمل المقاطع وقوائم التشغيل والألبومات والفنانين، ونافذة الإضافة إلى قائمة تشغيل أصبحت شبكة من الأغلفة."
+              ]
+            },
+            {
+              "heading": "PublicMetaDB",
+              "items": [
+                "اربط حسابك باسم المستخدم ومفتاح API.",
+                "تظهر قوائم المشاهدة في صفحات النظرة العامة وفي المكتبة، ويُزامَن تقدّم المشاهدة أثناء التشغيل.",
+                "تظهر الشارات على بطاقات متابعة المشاهدة."
+              ]
+            },
+            {
+              "heading": "المكتبة وخوادم الوسائط",
+              "items": [
+                "تصفّح سحابة TorBox الخاصة بك وشغّل الملفات منها مباشرة.",
+                "تصفّح مجموعات الخادم، واختر فترات التحديث، وتظهر ملصقات الخادم أولاً مع TMDB كبديل."
+              ]
+            },
+            {
+              "heading": "الملصقات",
+              "items": [
+                "إضافة Pictorium إلى خدمات الملصقات المخصّصة: الصق https://pictorium.compass.sarl أو رابط Pictorium الخاص بك مع خيارات المحرّر، من الإعدادات ‹ المكتبة والبيانات ‹ خدمة ملصقات مخصّصة.",
+                "المسلسلات تحصل على ملصقات Pictorium أيضاً، و{type} في قالب الملصقات المخصّص يعطي series للمسلسلات."
+              ]
+            },
+            {
+              "heading": "الأنمي والمزامنة",
+              "items": [
+                "مزامنة إعادة المشاهدة مع AniList وMAL، مع مفتاح لاحتساب إعادة المشاهدة.",
+                "تظهر قوائم AniList المخصصة والإدخالات الخاصة في مكتبتك.",
+                "عناوين الحلقات تختار المصدر الأفضل لكل لغة، وتُكمَّل من MAL وKitsu.",
+                "المزامنة ومتابعة المشاهدة تضعان الحلقة في الجزء الذي عُرضت فيه."
+              ]
+            },
+            {
+              "heading": "المشغّل",
+              "items": [
+                "التنقّل بين الفصول وعلامات الفصول على الشريط الزمني.",
+                "التشغيل التلقائي للمقاطع الدعائية أكثر موثوقية، ويمكنه استخدام دقة خاصة به."
+              ]
+            },
+            {
+              "heading": "الإصلاحات",
+              "items": [
+                "لا يتم تسجيل الخروج من Simkl وTrakt إلا عند رفض الرمز فعلياً، وتُعاد محاولة مشاهدات Simkl المتأخرة تلقائياً.",
+                "تغيير جهاز الصوت أو النافذة لم يعد يقطع التشغيل.",
+                "حلقات التكرار A/B تقع بالضبط حيث حدّدتها.",
+                "البث المباشر يبقى مباشراً بعد تبديل المصدر.",
+                "مكتبات خوادم الوسائط لم تعد تتقلّص بعد صفحة قصيرة.",
+                "بحث الحلقات لم يعد يعلق على «جارٍ تحميل الحلقات…».",
+                "حالة Discord: أغلفة مانغا حقيقية، وتحديث فوري للموسيقى، وأوقات صحيحة بعد التقديم.",
+                "إغلاق نافذة الطرفية لم يعد يسبّب تقرير تعطّل خاطئاً في التشغيل التالي.",
+                "شاشة تحميل صفحة الإضافات تعرض شعار Compass.",
+                "خدمات Compass أصبحت على compass.sarl."
+              ]
+            }
+          ]
+        }
+      }
+    },
     "0.9.128": {
       "title": "Compass Beta 0.9.128",
       "intro": "The biggest beta yet: a full Sports section, a complete DJ deck, a much larger Music experience, a rebuilt Manga library with a phone remote, and a curated film canon running through discovery and detail pages, alongside a deep pass on speed, caching and reliability.",

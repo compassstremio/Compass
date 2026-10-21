@@ -12,7 +12,7 @@ import { ROW_DESC } from "../kit";
 import { SButton } from "../ui";
 import { VERSION_BADGE } from "./badge";
 
-const RELEASES_URL = "https://github.com/Compasssio/Compass/releases";
+const RELEASES_URL = "https://github.com/compassstremio/compass/releases";
 
 export function VersionNotesModal({
   entry,

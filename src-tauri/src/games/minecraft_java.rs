@@ -78,7 +78,7 @@ pub fn memory(profile: &str, path: &str, id: &str, memory: u32) -> Result<State>
     instances::write(&folder, "java.json", &config)?; state(profile, path, id)
 }
 fn client() -> Result<reqwest::Client> {
-    reqwest::Client::builder().user_agent("Compass-Games/0.9 (https://compass.site)").connect_timeout(Duration::from_secs(10)).read_timeout(Duration::from_secs(30)).timeout(Duration::from_secs(300))
+    reqwest::Client::builder().user_agent("Compass-Games/0.9 (https://compass.sarl)").connect_timeout(Duration::from_secs(10)).read_timeout(Duration::from_secs(30)).timeout(Duration::from_secs(300))
         .redirect(reqwest::redirect::Policy::custom(|a| { if a.previous().len() >= 5 || data::download_url(a.url().as_str(),true).is_err() { a.error("java redirect") } else { a.follow() } })).build().map_err(|_| "instance_network")
 }
 async fn package(major: u32, cancel: &AtomicBool) -> Result<Package> {

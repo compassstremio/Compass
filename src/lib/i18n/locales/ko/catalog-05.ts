@@ -740,7 +740,7 @@ const catalog05: Record<string, string> = {
     "공개된 컬렉션은 커뮤니티 탐색 기능이 출시되면 표시됩니다.",
   Listen: "듣기",
   Listening: "듣는 중",
-  "Listening for Compasses": "Compass 검색 중",
+  "Listening for Compasss": "Compass 검색 중",
   "Listening…": "듣는 중…",
   Lists: "목록",
   Literary: "문학",

@@ -80,7 +80,7 @@ function steps(t: (s: string) => string): Step[] {
       title: t("Fill in the details, then Subscribe"),
       body: t("This is the part people get stuck on. None of it is checked and nothing is billed. Give the app any name, any URL, pick a type of use, and write a sentence for the summary. The contact fields can be anything real enough to look sensible. Tick the agreement and press Subscribe."),
       shot: shotApi3,
-      note: t("For Application URL anything works, for example https://compass.site. TMDB never visits it."),
+      note: t("For Application URL anything works, for example https://compass.sarl. TMDB never visits it."),
     },
     {
       title: t("That was the hard part"),

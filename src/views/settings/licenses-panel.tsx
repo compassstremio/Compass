@@ -9,7 +9,6 @@ import { AssetDownloadFeedback, useAssetDownload, type AssetDownload } from "./a
 import compassWordmark from "@/assets/compass-wordmark.svg";
 import crowdinLogo from "@/assets/crowdin-mark.png";
 import cloudsmithLogo from "@/assets/cloudsmith.png";
-import elfhostedLogo from "@/assets/elfhosted.svg";
 import stremioAddonsLogo from "@/assets/stremio-addons-net.png";
 import stremioLogo from "@/assets/stremio.png";
 import tmdbLogo from "@/assets/addon-logos/tmdb.png";
@@ -32,6 +31,7 @@ import simklLogo from "@/assets/simkl.png";
 import anilistLogo from "@/assets/anilist.png";
 import malLogo from "@/assets/mal.png";
 import letterboxdLogo from "@/assets/addon-logos/letterboxd.png";
+import publicmetadbLogo from "@/assets/publicmetadb.svg";
 import aniskipLogo from "@/assets/service-logos/aniskip.png";
 import theIntroDbLogo from "@/assets/service-logos/theintrodb.png";
 import introdbLogo from "@/assets/service-logos/introdb.png";
@@ -240,12 +240,6 @@ const PARTNERS: Credit[] = [
     fill: true,
   },
   {
-    name: "ElfHosted",
-    blurb: "Runs Compass's community addon infrastructure and the hosted build.",
-    url: "https://elfhosted.com",
-    logo: elfhostedLogo,
-  },
-  {
     name: "stremio-addons.net",
     blurb: "Provides the community addon directory used by Compass's Addons page.",
     url: "https://stremio-addons.net",
@@ -290,6 +284,7 @@ const TRACKERS: Credit[] = [
   { name: "AniList", blurb: "Anime and manga list management and progress synchronisation.", url: "https://anilist.co", logo: anilistLogo },
   { name: "MyAnimeList", blurb: "Anime and manga list management and progress synchronisation.", url: "https://myanimelist.net", logo: malLogo },
   { name: "Letterboxd", blurb: "Film diary and watchlist import.", url: "https://letterboxd.com", logo: letterboxdLogo },
+  { name: "PublicMetaDB", blurb: "Watch history, playback resume sync and watchlists.", url: "https://publicmetadb.com", logo: publicmetadbLogo },
 ];
 
 const SUBTITLES: Credit[] = [

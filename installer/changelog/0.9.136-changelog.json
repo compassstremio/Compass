@@ -1,0 +1,87 @@
+{
+  "channel": "beta",
+  "pub_date": "2026-10-20T10:31:17Z",
+  "notes": {
+    "0.9.136": {
+      "title": "Compass Beta 0.9.136",
+      "intro": "A big feature update: right-click menus across the app, PublicMetaDB, your TorBox cloud in the Library, chapter navigation in the player, Pictorium posters, much stronger anime sync, and a new Compass look.",
+      "sections": [
+        {
+          "heading": "Highlights",
+          "items": [
+            "Right-click menus for titles, tracks, playlists, albums and artists.",
+            "PublicMetaDB joins as a tracker.",
+            "The Library opens your private TorBox cloud.",
+            "Pictorium posters, served from Compass's own server.",
+            "The player gains chapter navigation.",
+            "Anime sync lands every episode on the right cour.",
+            "Trackers stop signing you out.",
+            "Playback survives audio device changes and episode switches.",
+            "Episode ratings return.",
+            "New Compass logo and app icon."
+          ]
+        },
+        {
+          "heading": "Context menus",
+          "items": [
+            "Quick actions on titles, Continue Watching cards, profiles and images, plus download shortcuts for episodes and titles.",
+            "Music menus for tracks, playlists, albums and artists, and the add-to-playlist picker is now a cover grid."
+          ]
+        },
+        {
+          "heading": "PublicMetaDB",
+          "items": [
+            "Connect with your username and API key.",
+            "Watchlists show on overview pages and in the Library; resume progress syncs as you watch.",
+            "Badges appear on Continue Watching cards."
+          ]
+        },
+        {
+          "heading": "Library and media servers",
+          "items": [
+            "Browse your private TorBox cloud and play files straight from it.",
+            "Browse server collections, pick refresh intervals, and server posters come first with TMDB as fallback."
+          ]
+        },
+        {
+          "heading": "Posters",
+          "items": [
+            "Pictorium joins the custom poster services: paste https://pictorium.compass.sarl, or your own Pictorium link with its editor options, in Settings › Library & metadata › Custom poster service.",
+            "Series get their Pictorium posters too, and {type} in a custom poster template now reads series for shows."
+          ]
+        },
+        {
+          "heading": "Anime and sync",
+          "items": [
+            "AniList and MAL rewatches sync, with a Count rewatches toggle.",
+            "AniList custom lists and private entries appear in your library.",
+            "Episode titles pick the best source per language and fill in from MAL and Kitsu.",
+            "Sync and Continue Watching land on the cour that aired the episode."
+          ]
+        },
+        {
+          "heading": "Player",
+          "items": [
+            "Chapter navigation and timeline markers.",
+            "Trailer autoplay is more reliable and can use its own resolution."
+          ]
+        },
+        {
+          "heading": "Fixes",
+          "items": [
+            "Simkl and Trakt only sign out on a true token rejection; queued Simkl watches retry on their own.",
+            "Audio device or window changes no longer interrupt playback.",
+            "A/B loops land exactly where you mark them.",
+            "Live streams stay live after a source switch.",
+            "Media server libraries no longer shrink after a short page.",
+            "Episode search no longer gets stuck on \"Loading episodes…\".",
+            "Discord presence: real manga covers, instant music updates, correct timestamps after seeking.",
+            "A closed console window no longer causes a false crash report on the next launch.",
+            "Add-ons page loading shows the Compass mark.",
+            "Compass services now live at compass.sarl."
+          ]
+        }
+      ]
+    }
+  }
+}

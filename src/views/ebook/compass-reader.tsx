@@ -28,6 +28,7 @@ import {
   X,
 } from "lucide-react";
 import { useT } from "@/lib/i18n";
+import { copyText } from "@/lib/clipboard-text";
 import type { EBookChapter, EBookChapterContent } from "@/lib/ebook/providers";
 import { ebookTextIdentity } from "@/lib/ebook/chapter-locations";
 import { createEBookFlipPages, type EBookFlipPages } from "@/lib/ebook/book-pages";
@@ -157,7 +158,7 @@ const fallbackNarrationVoices: ReaderNarrationVoice[] = narrationVoices.map((voi
 }));
 
 const VOICE_SAMPLE_TEXT: Record<string, string> = {
-  ar: "مرحباً، هذا نموذج قصير لاختبار نبرة الصوت ووضوح القراءة في هاربور.",
+  ar: "مرحباً، هذا نموذج قصير لاختبار نبرة الصوت ووضوح القراءة في كومباس.",
   en: "Welcome to Compass. This short sample helps you compare the voice, tone, and reading clarity.",
   es: "Bienvenido a Compass. Esta breve muestra permite comparar la voz, el tono y la claridad.",
   fr: "Bienvenue dans Compass. Ce court extrait permet de comparer la voix, le ton et la clarté.",
@@ -165,14 +166,14 @@ const VOICE_SAMPLE_TEXT: Record<string, string> = {
   it: "Benvenuto in Compass. Questo breve esempio aiuta a confrontare voce, tono e chiarezza.",
   pt: "Bem-vindo ao Compass. Esta breve amostra ajuda a comparar a voz, o tom e a clareza.",
   ru: "Добро пожаловать в Compass. Этот короткий пример поможет сравнить голос и ясность чтения.",
-  ja: "ハーバーへようこそ。この短いサンプルで、声の調子と読みやすさを比較できます。",
-  ko: "하버에 오신 것을 환영합니다. 이 짧은 샘플로 목소리와 읽기 명료도를 비교할 수 있습니다.",
+  ja: "Compassへようこそ。この短いサンプルで、声の調子と読みやすさを比較できます。",
+  ko: "Compass에 오신 것을 환영합니다. 이 짧은 샘플로 목소리와 읽기 명료도를 비교할 수 있습니다.",
   zh: "欢迎使用 Compass。这个简短示例可以帮助你比较声音、语调和朗读清晰度。",
-  hi: "हार्बर में आपका स्वागत है। यह छोटा नमूना आवाज़ और पढ़ने की स्पष्टता की तुलना करता है।",
+  hi: "Compass में आपका स्वागत है। यह छोटा नमूना आवाज़ और पढ़ने की स्पष्टता की तुलना करता है।",
   tr: "Compass'a hoş geldiniz. Bu kısa örnek ses tonunu ve okuma netliğini karşılaştırır.",
 };
 const VOICE_SAMPLE_BY_LOCALE: Record<string, string> = {
-  "ar-SA": "هلا والله، كيف حالك؟ إن شاء الله أمورك طيبة. هذا صوت تجريبي من هاربور.",
+  "ar-SA": "هلا والله، كيف حالك؟ إن شاء الله أمورك طيبة. هذا صوت تجريبي من كومباس.",
   "ar-EG": "أهلاً وسهلاً، إزيّك؟ النهارده هنجرب الصوت ده ونشوف وضوحه ونبرته.",
   "ar-AE": "مرحبا الساع، شحالك؟ عساك بخير. خلّنا نجرّب هالصوت ونسمع نبرته.",
   "ar-KW": "هلا والله، شلونك؟ عساك بخير. خلّنا نسمع هالصوت ونجرب نبرته.",
@@ -667,7 +668,8 @@ export function CompassReader({
     (chapter.volume ? t("Volume {volume}", { volume: chapter.volume }) : undefined);
   const persistReadingPosition = useCallback(
     (line: number) => {
-      if (!paragraphs.length || (!chapter.legacy && chapterIndex < 0) || !bookChapters.length) return;
+      if (!paragraphs.length || (!chapter.legacy && chapterIndex < 0) || !bookChapters.length)
+        return;
       const safeLine = Math.max(0, Math.min(paragraphs.length - 1, line));
       const chapterProgress =
         paragraphs.length <= 1 ? 100 : Math.round((safeLine / (paragraphs.length - 1)) * 100);
@@ -1959,7 +1961,9 @@ export function CompassReader({
                 : draftAnnotation(true),
             )
           }
-          onCopy={() => navigator.clipboard.writeText(selection.text)}
+          onCopy={async () => {
+            if (!(await copyText(selection.text))) throw new Error("Could not copy selected text.");
+          }}
           onHoverStart={cancelAnnotationDismiss}
           onHoverEnd={() =>
             selection.annotationId && scheduleAnnotationDismiss(selection.annotationId)

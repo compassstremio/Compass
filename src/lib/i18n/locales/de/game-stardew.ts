@@ -31,7 +31,7 @@ export default {
   "games.stardew.running": "Schließe Stardew Valley und SMAPI, bevor du Mod-Dateien änderst.",
   "games.stardew.requirementsError": "Ein benötigter Mod oder die SMAPI-Version fehlt oder ist zu alt. Prüfe die Anforderungen des Mods.",
   "games.stardew.dependentsError": "Ein aktivierter Mod benötigt diese Version. Deaktiviere ihn zuerst oder wähle eine kompatible Version.",
-  "games.stardew.unmanagedError": "Dieser Mod ist bereits außerhalb von Compasses Aufzeichnungen vorhanden. Verschiebe die vorhandene Kopie vor dem Import.",
+  "games.stardew.unmanagedError": "Dieser Mod ist bereits außerhalb von Compasss Aufzeichnungen vorhanden. Verschiebe die vorhandene Kopie vor dem Import.",
   "games.stardew.archiveError": "Wähle eine ZIP mit einem fertigen Mod-Ordner, bis zu 32 MB (entpackt 128 MB). Quellcode-Downloads sind keine installierbaren Mods.",
   "games.stardew.moreFiles": "{count} weitere Dateien",
   "games.stardew.partialError": "Einige Mods konnten nicht geprüft werden. Behebe den unvollständigen Scan, bevor du Dateien änderst.",

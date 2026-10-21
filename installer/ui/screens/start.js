@@ -29,24 +29,29 @@ const ICONS = {
 };
 
 const LINKS = [
-  { icon: "globe", lead: "Website", value: "compass.site", url: "https://compass.site" },
+  {
+    icon: "globe",
+    lead: "Website",
+    value: "compass.sarl",
+    url: "https://compass.sarl",
+  },
   {
     icon: "branch",
     lead: "Source",
-    value: "github.com/Compasssio/Compass",
-    url: "https://github.com/Compasssio/Compass",
+    value: "github.com/compassstremio/compass",
+    url: "https://github.com/compassstremio/compass",
   },
   {
     icon: "branch",
     lead: "Bugs",
     value: "GitHub Issues",
-    url: "https://github.com/Compasssio/Compass/issues",
+    url: "https://github.com/compassstremio/compass/issues",
   },
   {
     icon: "chat",
     lead: "Community",
-    value: "discord.gg/mrVypwv3pU",
-    url: "https://discord.gg/mrVypwv3pU",
+    value: "discord.gg/pQBRmN9XdD",
+    url: "https://discord.gg/pQBRmN9XdD",
   },
 ];
 
@@ -140,6 +145,29 @@ function parseNotes(notes, version) {
   return blocks;
 }
 
+function headNode(text) {
+  const h = document.createElement("p");
+  h.className = "hb-news-head t-eyebrow";
+  h.textContent = text;
+  return h;
+}
+
+function itemNode(text) {
+  const li = document.createElement("p");
+  li.className = "hb-news-item t-prose";
+  const copy = document.createElement("span");
+  copy.textContent = text;
+  li.append(marker("hb-news-mark"), copy);
+  return li;
+}
+
+function proseNode(text) {
+  const p = document.createElement("p");
+  p.className = "hb-news-prose t-prose";
+  p.textContent = text;
+  return p;
+}
+
 function entryNode(entry) {
   const wrap = document.createElement("article");
   wrap.className = "hb-news-entry";
@@ -163,27 +191,34 @@ function entryNode(entry) {
 
   wrap.appendChild(head);
 
+  // A bundled rich note (the docs/release-notes shape) renders its own blocks; the live feed
+  // still carries plain text, which parseNotes turns into headings, items and prose.
+  const note = entry.note;
+  if (note && (note.title || note.intro || (note.sections || []).length)) {
+    if (note.title) {
+      const title = document.createElement("p");
+      title.className = "hb-news-lead t-prose";
+      title.textContent = note.title;
+      wrap.appendChild(title);
+    }
+    if (note.intro) wrap.appendChild(proseNode(note.intro));
+    (note.sections || []).forEach((section) => {
+      if (section.heading) wrap.appendChild(headNode(section.heading));
+      (section.items || []).forEach((text) => wrap.appendChild(itemNode(text)));
+    });
+    return wrap;
+  }
+
   parseNotes(entry.notes, entry.version).forEach((block) => {
     if (block.kind === "head") {
-      const h = document.createElement("p");
-      h.className = "hb-news-head t-eyebrow";
-      h.textContent = block.text;
-      wrap.appendChild(h);
+      wrap.appendChild(headNode(block.text));
       return;
     }
     if (block.kind === "item") {
-      const li = document.createElement("p");
-      li.className = "hb-news-item t-prose";
-      const copy = document.createElement("span");
-      copy.textContent = block.text;
-      li.append(marker("hb-news-mark"), copy);
-      wrap.appendChild(li);
+      wrap.appendChild(itemNode(block.text));
       return;
     }
-    const p = document.createElement("p");
-    p.className = "hb-news-prose t-prose";
-    p.textContent = block.text;
-    wrap.appendChild(p);
+    wrap.appendChild(proseNode(block.text));
   });
 
   return wrap;
@@ -236,10 +271,12 @@ function news() {
   let channel = "beta";
   const buttons = {};
 
+  function inChannel(entry, name) {
+    return name === "stable" ? entry.channel === "stable" : entry.channel !== "stable";
+  }
+
   function paint() {
-    const list = versions.filter((v) =>
-      channel === "stable" ? v.channel === "stable" : v.channel !== "stable",
-    );
+    const list = versions.filter((v) => inChannel(v, channel));
 
     body.replaceChildren();
     body.scrollTop = 0;
@@ -288,6 +325,16 @@ function news() {
         if (dead) return;
         const list = Array.isArray(data && data.versions) ? data.versions : [];
         versions = list.filter((v) => v && typeof v.version === "string");
+        // Open on a tab that has releases: a stable installer must not land on an empty Beta tab.
+        if (versions.length && !versions.some((v) => inChannel(v, channel))) {
+          const other = channel === "stable" ? "beta" : "stable";
+          if (versions.some((v) => inChannel(v, other))) {
+            channel = other;
+            Object.keys(buttons).forEach((k) =>
+              buttons[k].setAttribute("aria-pressed", String(k === channel)),
+            );
+          }
+        }
         paint();
       })
       .catch(() => {

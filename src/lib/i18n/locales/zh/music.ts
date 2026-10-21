@@ -338,11 +338,11 @@ const music: Record<string, string> = {
   "music.source.preferred": "首选",
   "music.source.loading": "正在查找音乐来源",
   "music.source.none": "目前没有匹配的可用来源。",
-  "music.consent.title": "开启 YouTube 或 SoundCloud 之前",
+  "music.consent.title": "开启 YouTube、SoundCloud 或 Spotify 之前",
   "music.consent.hosting":
     "Compass 不托管任何音乐。它是由世界各地贡献者编写的开源代码，只会打开你选择启用的服务上公开可用的页面。Compass 及其贡献者不存储、不上传、也不提供任何内容。",
   "music.consent.terms":
-    "YouTube 和 SoundCloud 是各自独立的服务，拥有自己的服务条款。在此启用即表示你同意遵守该服务的条款，并在不再接受时停止使用。Compass 与这两项服务没有关联，也未获得其认可。",
+    "YouTube、SoundCloud 和 Spotify 是各自独立的服务，拥有自己的服务条款。在此启用即表示你同意遵守该服务的条款，并在不再接受时停止使用。Compass 与这些服务没有关联，也未获得其认可。",
   "music.consent.responsibility":
     "你需要对如何使用这些来源以及遵守所在地法律负责。对于你选择播放、下载或分享的内容，Compass 的贡献者不承担任何责任。",
   "music.consent.rights":

@@ -282,7 +282,7 @@ export class TogetherClient {
       if (this.ws !== socket || !this.room) return;
       this.reconnectAttempt = 0;
       this.lastInboundAt = Date.now();
-      this.sendPing();
+      // The relay reserves its larger avatar payload allowance for the first frame.
       this.sendNow({
         t: "hello",
         room: this.room,
@@ -291,6 +291,7 @@ export class TogetherClient {
         avatar: this.avatar,
         color: this.color,
       });
+      this.sendPing();
       this.flushOutQueue();
       if (this.claimedHost) {
         this.sendNow({ t: "claim-host", room: this.room, clientId: this.clientId, fresh: false });

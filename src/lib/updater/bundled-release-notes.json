@@ -1,5 +1,79 @@
 {
   "notes": {
+    "0.9.137": {
+      "title": "Compass Beta 0.9.137",
+      "intro": "Arabic manga built into Compass, Bingers tracking, and your data carried over from before the rename.",
+      "sections": [
+        {
+          "heading": "Highlights",
+          "items": [
+            "Arabic manga, built in. With Compass in Arabic, Manga sources has a new Compass Manga card. Get your key from manga.compass.sarl/account (sign in with your Compass account), paste it, and مانجا العاشق and AzoraFly appear in your manga section.",
+            "Bingers joins as a tracker.",
+            "Settings and library from before the app was renamed Compass carry over."
+          ]
+        },
+        {
+          "heading": "Compass Manga",
+          "items": [
+            "One key per Compass account. The account page shows today's usage, the last 30 days, and resets the key if you need a new one.",
+            "The card checks your key before saving it, and tells you if it was mistyped or has been reset.",
+            "Sources only appear for their own language, so other languages see no change.",
+            "Locked (paid) chapters are left out of chapter lists."
+          ]
+        },
+        {
+          "heading": "Bingers",
+          "items": [
+            "Connect your account in Settings.",
+            "Episodes and movies are marked watched on Bingers once you get through 90%. You can turn that off."
+          ]
+        },
+        {
+          "heading": "Fixes",
+          "items": [
+            "Marking something watched no longer fails silently when storage is full; Compass reports it."
+          ]
+        }
+      ],
+      "translations": {
+        "ar": {
+          "title": "Compass بيتا 0.9.137",
+          "intro": "مانجا عربية مدمجة في Compass، وتتبّع عبر Bingers، وانتقال بياناتك من قبل تغيير الاسم.",
+          "sections": [
+            {
+              "heading": "أبرز ما في التحديث",
+              "items": [
+                "مانجا عربية مدمجة. عند استخدام Compass باللغة العربية تظهر بطاقة Compass Manga الجديدة في مصادر المانجا. احصل على مفتاحك من manga.compass.sarl/account (سجّل الدخول بحساب Compass)، والصقه، فتظهر مانجا العاشق وAzoraFly في قسم المانجا.",
+                "انضمام Bingers كمتتبّع.",
+                "انتقال الإعدادات والمكتبة من قبل تغيير اسم التطبيق إلى Compass."
+              ]
+            },
+            {
+              "heading": "Compass Manga",
+              "items": [
+                "مفتاح واحد لكل حساب Compass. تعرض صفحة الحساب استهلاك اليوم وآخر 30 يوماً، وتتيح إعادة تعيين المفتاح إذا احتجت مفتاحاً جديداً.",
+                "تتحقق البطاقة من المفتاح قبل حفظه، وتنبّهك إذا كان فيه خطأ في النسخ أو أُعيد تعيينه.",
+                "تظهر المصادر لأصحاب لغتها فقط، فلا يتغير شيء لمستخدمي اللغات الأخرى.",
+                "تُستبعد الفصول المقفلة (المدفوعة) من قوائم الفصول."
+              ]
+            },
+            {
+              "heading": "Bingers",
+              "items": [
+                "اربط حسابك من الإعدادات.",
+                "تُعلَّم الحلقات والأفلام كمُشاهَدة على Bingers عند وصولك إلى 90% منها، ويمكنك إيقاف ذلك."
+              ]
+            },
+            {
+              "heading": "الإصلاحات",
+              "items": [
+                "لم يعد تعليم العنصر كمُشاهَد يفشل بصمت عند امتلاء مساحة التخزين، بل يُنبّهك Compass."
+              ]
+            }
+          ]
+        }
+      }
+    },
     "0.9.136": {
       "title": "Compass Beta 0.9.136",
       "intro": "A big feature update: right-click menus across the app, PublicMetaDB, your TorBox cloud in the Library, chapter navigation in the player, Pictorium posters, much stronger anime sync, and a new Compass look.",

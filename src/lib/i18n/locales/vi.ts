@@ -80,6 +80,7 @@ import contextActionsFallback from "./context-actions-fallback";
 import ebookSources from "./vi/ebook-sources";
 import settingsRefinements from "./vi/settings-refinements";
 import accountEmail from "./vi/account-email";
+import accountDiscord from "./vi/account-discord";
 import coverage from "./vi/coverage";
 import bingers from "./vi/bingers";
 import gap from "./vi/gap";
@@ -334,6 +335,7 @@ const vi: Record<string, string> = {
   ...ageGate,
   ...settingsRefinements,
   ...accountEmail,
+  ...accountDiscord,
   ...plugins,
   ...brands,
   ...sportsHub,

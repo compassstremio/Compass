@@ -80,6 +80,7 @@ import contextActionsFallback from "./context-actions-fallback";
 import ebookSources from "./ko/ebook-sources";
 import settingsRefinements from "./ko/settings-refinements";
 import accountEmail from "./ko/account-email";
+import accountDiscord from "./ko/account-discord";
 import coverage from "./ko/coverage";
 import bingers from "./ko/bingers";
 import catalog01 from "./ko/catalog-01";
@@ -293,6 +294,7 @@ const ko: Record<string, string> = {
   ...currentTail,
   ...settingsRefinements,
   ...accountEmail,
+  ...accountDiscord,
   ...plugins,
   ...brands,
   ...sportsHub,

@@ -81,6 +81,7 @@ import contextActionsFallback from "./context-actions-fallback";
 import ebookSources from "./pt/ebook-sources";
 import settingsRefinements from "./pt/settings-refinements";
 import accountEmail from "./pt/account-email";
+import accountDiscord from "./pt/account-discord";
 import experimentalUpdates from "./pt/experimental-updates";
 import coverage from "./pt/coverage";
 import bingers from "./pt/bingers";
@@ -341,6 +342,7 @@ const pt: Record<string, string> = {
   ...experimentalUpdates,
   ...settingsRefinements,
   ...accountEmail,
+  ...accountDiscord,
   ...plugins,
   ...brands,
   ...sportsHub,

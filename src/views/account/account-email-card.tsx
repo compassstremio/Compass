@@ -3,7 +3,7 @@ import { Loader2, Mail } from "@/views/settings/icons";
 import { attachEmail, normaliseEmail, resendEmailVerification } from "@/lib/account/email";
 import { accountErrorMessage, type AccountErrorMessage } from "@/lib/account/error-messages";
 import { fetchMe } from "@/lib/account/identity";
-import { useEmailCapabilities } from "@/hooks/use-email-capabilities";
+import { useAccountCapabilities } from "@/hooks/use-account-capabilities";
 import type { Author } from "@/lib/theme-auth";
 import { useT } from "@/lib/i18n";
 import { SettingRow } from "@/views/settings/kit";
@@ -14,7 +14,7 @@ type Busy = "save" | "resend" | null;
 
 export function AccountEmailCard({ author }: { author: Author }) {
   const t = useT();
-  const caps = useEmailCapabilities();
+  const caps = useAccountCapabilities();
   const [editing, setEditing] = useState(false);
   const [draft, setDraft] = useState("");
   const [newsletter, setNewsletter] = useState<boolean | null>(null);

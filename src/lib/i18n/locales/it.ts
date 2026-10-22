@@ -80,6 +80,7 @@ import contextActionsFallback from "./context-actions-fallback";
 import ebookSources from "./it/ebook-sources";
 import settingsRefinements from "./it/settings-refinements";
 import accountEmail from "./it/account-email";
+import accountDiscord from "./it/account-discord";
 import catalog01 from "./it/catalog-01";
 import catalog02 from "./it/catalog-02";
 import catalog03 from "./it/catalog-03";
@@ -291,6 +292,7 @@ const it: Record<string, string> = {
   ...bingers,
   ...settingsRefinements,
   ...accountEmail,
+  ...accountDiscord,
   ...plugins,
   ...brands,
   ...sportsHub,

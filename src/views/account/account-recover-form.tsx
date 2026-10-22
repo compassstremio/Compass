@@ -3,7 +3,7 @@ import { ArrowLeft, Check, Loader2 } from "@/views/settings/icons";
 import { recoverIdentity } from "@/lib/account/identity";
 import { normaliseEmail, requestPasswordReset } from "@/lib/account/email";
 import { accountErrorMessage, type AccountErrorMessage } from "@/lib/account/error-messages";
-import { useEmailCapabilities } from "@/hooks/use-email-capabilities";
+import { useAccountCapabilities } from "@/hooks/use-account-capabilities";
 import { PasswordField, TextField } from "./fields";
 import { RECOVERY_KEY_LENGTH, RecoveryKeyInput } from "./recovery-key-input";
 import { useT } from "@/lib/i18n";
@@ -24,7 +24,7 @@ export function AccountRecoverForm({
   inline?: boolean;
 }) {
   const t = useT();
-  const caps = useEmailCapabilities();
+  const caps = useAccountCapabilities();
   const [mode, setMode] = useState<Mode>("key");
   const [username, setUsername] = useState("");
   const [key, setKey] = useState("");

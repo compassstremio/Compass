@@ -35,6 +35,17 @@ const BY_CODE = {
   blocked_text: "That text isn't allowed. Try different wording.",
   password_too_short: "Your password needs to be at least 8 characters.",
   email_not_configured: "Email isn't available on this Compass server.",
+  discord_not_configured: "Discord linking isn't available on this Compass server.",
+  discord_cancelled: "Discord didn't approve the link. Try again if you meant to.",
+  discord_timeout: "Timed out waiting for Discord. Try again.",
+  discord_port_busy:
+    "Another app is using the port Discord returns to. Close it and try again.",
+  discord_code_invalid: "That Discord approval expired. Try again.",
+  discord_unreachable: "Couldn't reach Discord right now. Try again in a moment.",
+  discord_already_bound:
+    "That Discord account is already linked to a different Compass account. Unlink it there first.",
+  no_alternate_credential:
+    "Set a password or link Stremio first, so you don't get locked out of your account.",
 } as const;
 
 const BY_REASON = {

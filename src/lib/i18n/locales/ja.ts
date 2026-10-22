@@ -81,6 +81,7 @@ import contextActionsFallback from "./context-actions-fallback";
 import ebookSources from "./ja/ebook-sources";
 import settingsRefinements from "./ja/settings-refinements";
 import accountEmail from "./ja/account-email";
+import accountDiscord from "./ja/account-discord";
 import addons from "./ja/addons";
 import appFill from "./ja/app-fill";
 import awards from "./ja/awards";
@@ -334,6 +335,7 @@ const ja: Record<string, string> = {
   ...questions,
   ...settingsRefinements,
   ...accountEmail,
+  ...accountDiscord,
   ...plugins,
   ...brands,
   ...sportsHub,

@@ -2,7 +2,7 @@ import { useState } from "react";
 import { useT } from "@/lib/i18n";
 import { loginIdentity, registerIdentity } from "@/lib/account/identity";
 import { normaliseEmail } from "@/lib/account/email";
-import { useEmailCapabilities } from "@/hooks/use-email-capabilities";
+import { useAccountCapabilities } from "@/hooks/use-account-capabilities";
 import { authToken, currentAuthor, refreshTokenValue } from "@/lib/theme-auth";
 import { SetupShell, type SetupChrome } from "./setup-shell";
 import { SetupSlipway } from "./setup-slipway";
@@ -65,7 +65,7 @@ export function SetupCompass({
   const [email, setEmail] = useState("");
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const caps = useEmailCapabilities();
+  const caps = useAccountCapabilities();
 
   const confirmed = delivery === "confirmed";
   const nameOk = USERNAME_RE.test(username);

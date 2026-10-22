@@ -3,7 +3,7 @@ import { KeyRound, Loader2, X } from "@/views/settings/icons";
 import { ModalShell, useModalExit } from "@/components/modal-shell";
 import { loginIdentity, registerIdentity } from "@/lib/account/identity";
 import { normaliseEmail } from "@/lib/account/email";
-import { useEmailCapabilities } from "@/hooks/use-email-capabilities";
+import { useAccountCapabilities } from "@/hooks/use-account-capabilities";
 import { accountErrorMessage, type AccountErrorMessage } from "@/lib/account/error-messages";
 import { PasswordField, TextField } from "./fields";
 import { AccountRecoverForm } from "./account-recover-form";
@@ -102,7 +102,7 @@ export function AccountAuthForm({
   const [newsletter, setNewsletter] = useState<boolean | null>(null);
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<AccountErrorMessage | null>(null);
-  const caps = useEmailCapabilities();
+  const caps = useAccountCapabilities();
 
   const trimmed = username.trim();
   const usernameOk = USERNAME_RE.test(trimmed);

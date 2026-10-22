@@ -81,6 +81,7 @@ import contextActionsFallback from "./context-actions-fallback";
 import ebookSources from "./es/ebook-sources";
 import settingsRefinements from "./es/settings-refinements";
 import accountEmail from "./es/account-email";
+import accountDiscord from "./es/account-discord";
 import sweep from "./es/sweep";
 import used from "./es/used";
 import extra from "./es/extra";
@@ -327,6 +328,7 @@ const es: Record<string, string> = {
   ...bingers,
   ...settingsRefinements,
   ...accountEmail,
+  ...accountDiscord,
   ...plugins,
   ...brands,
   ...sportsHub,

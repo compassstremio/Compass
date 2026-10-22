@@ -81,6 +81,8 @@ import contextActionsFallback from "./context-actions-fallback";
 
 import ebookSources from "./ar/ebook-sources";
 import settingsRefinements from "./ar/settings-refinements";
+import accountEmail from "./ar/account-email";
+import accountDiscord from "./ar/account-discord";
 import uiFallback from "./ui-fallback";
 import experimentalUpdates from "./ar/experimental-updates";
 import coverage from "./ar/coverage";
@@ -334,6 +336,8 @@ const ar: Record<string, string> = {
   ...audit,
   ...experimentalUpdates,
   ...settingsRefinements,
+  ...accountEmail,
+  ...accountDiscord,
   ...plugins,
   ...brands,
   ...sportsHub,

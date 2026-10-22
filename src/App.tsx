@@ -122,6 +122,7 @@ import { GamepadRunner } from "@/components/gamepad-runner";
 import { ProfileIdentitySync } from "@/lib/profile-identity-sync";
 import { CompassAvatarSync } from "@/components/compass-avatar-sync";
 import { CompassNameSync } from "@/components/compass-name-sync";
+import { EmailVerifyPrompt } from "@/components/email-verify-prompt";
 import { SettingsProfileBridge } from "@/lib/settings-profile-bridge";
 import { TrackerProfileBridge } from "@/lib/tracker-profile-bridge";
 import { ProfilePickerModal } from "@/components/profile-picker/picker-modal";
@@ -471,6 +472,7 @@ function AppProviders({ onReady }: { onReady?: () => void }) {
                                                       <ProfileIdentitySync />
                                                       <CompassAvatarSync />
                                                       <CompassNameSync />
+                                                      <EmailVerifyPrompt />
                                                       <SettingsProfileBridge />
                                                       <TrackerProfileBridge />
                                                       <AnilistAvatarSync />

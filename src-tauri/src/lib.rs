@@ -36,6 +36,7 @@ mod proc_mem;
 mod settings_store;
 mod stream_proxy;
 mod streams;
+mod discord_auth;
 mod stremio_auth;
 mod subtitle_credentials;
 mod temp_prune;
@@ -1600,6 +1601,7 @@ pub fn run() {
             tray::tray_set_prefs,
             tray::tray_set_custom_themes,
             stremio_auth::stremio_auth_start,
+            discord_auth::discord_auth_start,
             song_id::recognize_now_playing,
             song_id::recognize_now_playing_ai,
             app_icon::set_app_icon,

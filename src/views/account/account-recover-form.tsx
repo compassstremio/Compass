@@ -1,7 +1,9 @@
 import { useState } from "react";
-import { ArrowLeft, Loader2 } from "@/views/settings/icons";
+import { ArrowLeft, Check, Loader2 } from "@/views/settings/icons";
 import { recoverIdentity } from "@/lib/account/identity";
+import { normaliseEmail, requestPasswordReset } from "@/lib/account/email";
 import { accountErrorMessage, type AccountErrorMessage } from "@/lib/account/error-messages";
+import { useAccountCapabilities } from "@/hooks/use-account-capabilities";
 import { PasswordField, TextField } from "./fields";
 import { RECOVERY_KEY_LENGTH, RecoveryKeyInput } from "./recovery-key-input";
 import { useT } from "@/lib/i18n";
@@ -10,7 +12,7 @@ import { ROW_ACTION_PRIMARY } from "@/views/settings/kit";
 
 const USERNAME_RE = /^[a-zA-Z0-9_]{3,24}$/;
 
-type Mode = "key";
+type Mode = "key" | "email";
 
 export function AccountRecoverForm({
   onBack,
@@ -22,15 +24,19 @@ export function AccountRecoverForm({
   inline?: boolean;
 }) {
   const t = useT();
+  const caps = useAccountCapabilities();
   const [mode, setMode] = useState<Mode>("key");
   const [username, setUsername] = useState("");
   const [key, setKey] = useState("");
   const [password, setPassword] = useState("");
+  const [email, setEmail] = useState("");
+  const [sentTo, setSentTo] = useState<string | null>(null);
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<AccountErrorMessage | null>(null);
 
   const usernameOk = USERNAME_RE.test(username.trim());
   const keyReady = usernameOk && key.length >= RECOVERY_KEY_LENGTH && password.length >= 8;
+  const emailReady = normaliseEmail(email) !== "";
 
   const submitKey = async () => {
     if (!keyReady || busy) return;
@@ -46,28 +52,58 @@ export function AccountRecoverForm({
     }
   };
 
+  const submitEmail = async () => {
+    if (!emailReady || busy) return;
+    setBusy(true);
+    setError(null);
+    try {
+      await requestPasswordReset(email);
+      setSentTo(normaliseEmail(email));
+    } catch (err) {
+      setError(accountErrorMessage(err));
+    } finally {
+      setBusy(false);
+    }
+  };
+
   const switchMode = (next: Mode) => {
     setMode(next);
     setError(null);
     setPassword("");
+    setSentTo(null);
   };
 
-  const heading =
-    mode === "key"
-      ? t("Reset your password")
-      : mode === "discord-request"
-        ? t("Recover via Discord")
-        : t("Enter your code");
+  const goBack = () => (mode === "key" ? onBack() : switchMode("key"));
+
+  const heading = mode === "key" ? t("Reset your password") : t("Reset by email");
   const subheading =
     mode === "key"
       ? t(
           "Enter your username and the recovery key you saved. We'll set a new password and sign you in.",
         )
-      : mode === "discord-request"
-        ? t(
-            "If this account has Discord linked, we'll DM you a code to reset your password without the recovery key.",
-          )
-        : t("We sent a 6-digit code to your Discord DMs. It expires in 10 minutes.");
+      : t(
+          "Enter the email you confirmed on your account. We'll send a link to choose a new password.",
+        );
+
+  const errorLine = error && (
+    <p
+      role={inline ? "alert" : undefined}
+      className={
+        inline
+          ? "rounded-md bg-danger/10 px-3.5 py-3 text-[15.5px] leading-[22px] text-danger"
+          : "text-[12.5px] text-danger"
+      }
+    >
+      {error.kind === "built-in" ? t(error.key) : error.detail}
+    </p>
+  );
+
+  const submitClass = inline
+    ? `${ROW_ACTION_PRIMARY} self-end justify-center`
+    : "flex h-11 items-center justify-center gap-2 rounded-md bg-accent text-[14px] font-semibold text-canvas transition-all duration-150 hover:opacity-90 active:scale-[0.99] disabled:opacity-40 disabled:active:scale-100";
+
+  const linkClass =
+    "min-h-11 self-start text-[14px] font-medium text-ink-muted transition-colors hover:text-ink";
 
   const content = (
     <div
@@ -77,7 +113,7 @@ export function AccountRecoverForm({
         <div className="flex items-start gap-3">
           <button
             type="button"
-            onClick={() => (mode === "key" ? onBack() : switchMode("key"))}
+            onClick={goBack}
             aria-label={t("Back")}
             className="flex h-11 w-11 shrink-0 items-center justify-center rounded-lg text-ink-muted transition-colors hover:bg-elevated hover:text-ink"
           >
@@ -117,33 +153,57 @@ export function AccountRecoverForm({
             onEnter={submitKey}
           />
 
-          {error && (
-            <p
-              role={inline ? "alert" : undefined}
-              className={
-                inline
-                  ? "rounded-md bg-danger/10 px-3.5 py-3 text-[15.5px] leading-[22px] text-danger"
-                  : "text-[12.5px] text-danger"
-              }
-            >
-              {error.kind === "built-in" ? t(error.key) : error.detail}
-            </p>
-          )}
+          {errorLine}
 
-          <button
-            type="submit"
-            disabled={!keyReady || busy}
-            className={
-              inline
-                ? `${ROW_ACTION_PRIMARY} self-end justify-center`
-                : "flex h-11 items-center justify-center gap-2 rounded-md bg-accent text-[14px] font-semibold text-canvas transition-all duration-150 hover:opacity-90 active:scale-[0.99] disabled:opacity-40 disabled:active:scale-100"
-            }
-          >
+          <button type="submit" disabled={!keyReady || busy} className={submitClass}>
             {busy && <Loader2 size={16} className="animate-spin" />}
             {t("Reset password")}
           </button>
+
+          {caps.email && (
+            <button type="button" onClick={() => switchMode("email")} className={linkClass}>
+              {t("Lost your recovery key? Reset by email")}
+            </button>
+          )}
         </form>
       )}
+
+      {mode === "email" &&
+        (sentTo ? (
+          <p className="flex items-start gap-2.5 rounded-md bg-canvas px-3.5 py-3 text-[15px] leading-[22px] text-ink-muted">
+            <Check size={16} strokeWidth={2.4} className="mt-0.5 shrink-0 text-success" />
+            {t(
+              "If {email} is confirmed on a Compass account, a reset link is on its way. It works once, for one hour.",
+              { email: sentTo },
+            )}
+          </p>
+        ) : (
+          <form
+            onSubmit={(e) => {
+              e.preventDefault();
+              void submitEmail();
+            }}
+            className="flex flex-col gap-4"
+          >
+            <TextField
+              label={t("Email")}
+              value={email}
+              onChange={setEmail}
+              placeholder={t("you@example.com")}
+              maxLength={254}
+              inputMode="email"
+              autoComplete="email"
+              onEnter={submitEmail}
+            />
+
+            {errorLine}
+
+            <button type="submit" disabled={!emailReady || busy} className={submitClass}>
+              {busy && <Loader2 size={16} className="animate-spin" />}
+              {t("Send reset link")}
+            </button>
+          </form>
+        ))}
     </div>
   );
 
@@ -155,7 +215,7 @@ export function AccountRecoverForm({
       </Section>
       <button
         type="button"
-        onClick={() => (mode === "key" ? onBack() : switchMode("key"))}
+        onClick={goBack}
         aria-label={t("Back")}
         className="absolute end-0 top-0 grid h-11 w-11 place-items-center rounded-md text-ink-muted transition-colors hover:bg-elevated hover:text-ink"
       >

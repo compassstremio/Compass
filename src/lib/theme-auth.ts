@@ -67,6 +67,10 @@ export type Author = {
   stremioLinked?: boolean;
   discordLinkMethod?: string | null;
   discordUsername?: string | null;
+  email?: string | null;
+  emailVerified?: boolean;
+  emailPending?: string | null;
+  emailVerifyBy?: string | null;
   badges?: AuthorBadge[];
 };
 
@@ -94,6 +98,10 @@ function toAuthor(u: RawUser): Author {
     stremioLinked: u.stremioLinked === true,
     discordLinkMethod: typeof u.discordLinkMethod === "string" ? u.discordLinkMethod : null,
     discordUsername: typeof u.discordUsername === "string" ? u.discordUsername : null,
+    email: typeof u.email === "string" && u.email ? u.email : null,
+    emailVerified: u.emailVerified === true,
+    emailPending: typeof u.emailPending === "string" && u.emailPending ? u.emailPending : null,
+    emailVerifyBy: typeof u.emailVerifyBy === "string" && u.emailVerifyBy ? u.emailVerifyBy : null,
     badges: Array.isArray(u.badges) ? u.badges : [],
   };
 }

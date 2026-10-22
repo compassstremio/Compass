@@ -13,9 +13,15 @@ type AuthResultWithCode = AuthResult & { recoveryCode: string };
 export async function registerIdentity(
   username: string,
   password: string,
+  opts?: { email?: string; newsletterOptIn?: boolean },
 ): Promise<{ recoveryCode: string }> {
   const isCurrent = captureSessionScope();
-  const d = await postJson<AuthResultWithCode>("/identity/api/register", { username, password });
+  const body: Record<string, unknown> = { username, password };
+  if (opts?.email) {
+    body.email = opts.email;
+    body.newsletterOptIn = opts.newsletterOptIn === true;
+  }
+  const d = await postJson<AuthResultWithCode>("/identity/api/register", body);
   if (!isCurrent()) throw new Error("Account changed");
   applyAuthResult(d);
   return { recoveryCode: d.recoveryCode };

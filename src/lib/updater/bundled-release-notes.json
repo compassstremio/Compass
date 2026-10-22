@@ -1,5 +1,135 @@
 {
   "notes": {
+    "0.9.138": {
+      "title": "Compass Beta 0.9.138",
+      "intro": "Playnite, Steam friends and wishlist, the finished Compass branding, and email on your Compass account.",
+      "sections": [
+        {
+          "heading": "Highlights",
+          "items": [
+            "Playnite library. Browse everything you own on Epic Games, EA app, GOG, Ubisoft Connect and Xbox, installed or not.",
+            "Steam friends and wishlist, plus uninstall through Steam.",
+            "Add an email to your Compass account, reset your password by email, and link Discord.",
+            "The Compass branding refresh: new app icons, theme previews, loader and screens."
+          ]
+        },
+        {
+          "heading": "Games",
+          "items": [
+            "The Explore shortcuts (Enter a World, Studios & Publishers, ROM Hacks, Explore by Launcher, Updates & Events, Explore the Charts) now jump straight to their section, even when it is further down the page.",
+            "Select several .exe files when adding local games; each one is added as its own game.",
+            "Missing game logos: we are still working on some pages. If a game has no logo, tell us its name."
+          ]
+        },
+        {
+          "heading": "Playnite",
+          "items": [
+            "Library, All Games, Playnite. Click Add the extension to Playnite, then restart Playnite once.",
+            "Installed games launch from Compass. Games that are not installed have an Install in Playnite button.",
+            "Games Compass already knows through Steam or other launchers do not appear twice.",
+            "Portable Playnite works too: select the Playnite folder.",
+            "The extension only reads your library and changes nothing in Playnite.",
+            "The Epic Games and EA app filters now include the Playnite games for that store, next to the ones installed on your system."
+          ]
+        },
+        {
+          "heading": "Steam",
+          "items": [
+            "Uninstall from an installed game page; Steam asks you to confirm.",
+            "Friends: see who is online, who is playing, and what.",
+            "Wishlist: browse your Steam wishlist and save all of it to your saved games in one click.",
+            "Friends and Wishlist need your Steam account linked from the library."
+          ]
+        },
+        {
+          "heading": "Branding",
+          "items": [
+            "All 17 preset app icons (Liquid Glass, Watercolor, Pixel, Blueprint, Anime Ink and more) are redrawn with the compass, each keeping its own style. If you picked a preset icon before, select it again in Settings to get the new one.",
+            "Every theme preview (Dracula, Nord, Royal, Velvet and more) shows the Compass logo and name in that theme's font.",
+            "The loader, addon installation screen, Watch Together waiting screen, Voyage and the screensaver with the cat on the boat match the new look. The TMDB setup guide and other tutorial images are updated.",
+            "The OG badge has its own artwork: an orange medal with a star. It is already live on profiles."
+          ]
+        },
+        {
+          "heading": "Compass account",
+          "items": [
+            "Settings, Account, Compass account, Email: enter your address and open the confirmation link. To change it, click Change; the old email stays active until you confirm the new one.",
+            "Forgot password, Reset by email on the sign-in screen, so you no longer depend on the recovery key alone.",
+            "Existing accounts have 30 days to confirm an email. Compass reminds you and shows the exact deadline. After that, publishing, comments, ratings, friends and sync pause until you confirm. Watching is never affected. New accounts are asked for an email at sign-up.",
+            "Link your Discord account from the same page and join the Compass Discord server automatically.",
+            "Release news by email is off by default and only starts if you opt in.",
+            "Your email is used only for confirmation, password resets and, if you opt in, release news.",
+            "These account features need this update."
+          ]
+        }
+      ],
+      "translations": {
+        "ar": {
+          "title": "Compass بيتا 0.9.138",
+          "intro": "مكتبة Playnite، وأصدقاء Steam وقائمة الأمنيات، واكتمال هوية Compass الجديدة، والبريد الإلكتروني لحساب Compass.",
+          "sections": [
+            {
+              "heading": "أبرز ما في التحديث",
+              "items": [
+                "مكتبة Playnite. تصفّح كل ما تملكه على Epic Games وEA app وGOG وUbisoft Connect وXbox، سواء كان مثبّتاً أو لا.",
+                "أصدقاء Steam وقائمة الأمنيات، مع إلغاء التثبيت عبر Steam.",
+                "أضف بريداً إلكترونياً إلى حساب Compass، وأعد تعيين كلمة المرور بالبريد، واربط Discord.",
+                "اكتمال تحديث هوية Compass: أيقونات التطبيق ومعاينات الثيمات وشاشة التحميل وغيرها."
+              ]
+            },
+            {
+              "heading": "الألعاب",
+              "items": [
+                "اختصارات الاستكشاف (Enter a World وStudios & Publishers وROM Hacks وExplore by Launcher وUpdates & Events وExplore the Charts) تنقلك الآن مباشرة إلى قسمها حتى لو كان أسفل الصفحة.",
+                "حدّد عدة ملفات .exe عند إضافة الألعاب المحلية، ويُضاف كل ملف كلعبة مستقلة.",
+                "شعارات الألعاب المفقودة: ما زلنا نعمل عليها في بعض الصفحات. إن كانت لعبة بلا شعار فأخبرنا باسمها."
+              ]
+            },
+            {
+              "heading": "Playnite",
+              "items": [
+                "المكتبة ← كل الألعاب ← Playnite. اضغط «إضافة الإضافة إلى Playnite» ثم أعد تشغيل Playnite مرة واحدة.",
+                "الألعاب المثبّتة تُشغَّل من Compass، وغير المثبّتة يظهر لها زر «التثبيت في Playnite».",
+                "الألعاب التي يعرفها Compass عبر Steam أو منصات أخرى لا تظهر مرتين.",
+                "نسخ Playnite المحمولة مدعومة بتحديد مجلد Playnite.",
+                "الإضافة تقرأ مكتبتك فقط ولا تغيّر شيئاً في Playnite.",
+                "فلترا Epic Games وEA app في مكتبتك يشملان الآن ألعاب Playnite لذلك المتجر بجانب الألعاب المثبّتة على جهازك."
+              ]
+            },
+            {
+              "heading": "Steam",
+              "items": [
+                "إلغاء التثبيت من صفحة اللعبة المثبّتة، ويتولى Steam طلب التأكيد.",
+                "الأصدقاء: من المتصل ومن يلعب وماذا يلعب.",
+                "قائمة الأمنيات: تصفّح قائمة أمنيات Steam واحفظها كلها في ألعابك المحفوظة بنقرة واحدة.",
+                "الأصدقاء وقائمة الأمنيات يتطلبان ربط حساب Steam من المكتبة."
+              ]
+            },
+            {
+              "heading": "الهوية",
+              "items": [
+                "أعيد رسم جميع أيقونات التطبيق الجاهزة الـ17 (Liquid Glass وWatercolor وPixel وBlueprint وAnime Ink وغيرها) بالبوصلة مع الحفاظ على طابع كل أيقونة. إن كنت اخترت أيقونة جاهزة سابقاً فاخترها مرة أخرى من الإعدادات.",
+                "معاينات كل الثيمات (Dracula وNord وRoyal وVelvet وغيرها) تعرض شعار Compass واسمه بخط الثيم.",
+                "شاشة التحميل وتثبيت الإضافات وانتظار المشاهدة معاً وVoyage وشاشة التوقف بالقط على القارب تطابق الهوية الجديدة، كما حُدّثت صور شرح TMDB وبقية الشروحات.",
+                "شارة OG لها الآن رسمها الخاص: وسام برتقالي بنجمة، وهي ظاهرة في الملفات الشخصية فعلاً."
+              ]
+            },
+            {
+              "heading": "حساب Compass",
+              "items": [
+                "الإعدادات ← الحساب ← حساب Compass ← البريد: أدخل بريدك وافتح رابط التأكيد. لتغييره اضغط «تغيير»، ويبقى البريد القديم فعّالاً حتى تؤكد الجديد.",
+                "نسيت كلمة المرور ← إعادة التعيين بالبريد في شاشة الدخول، فلا تعتمد على مفتاح الاسترداد وحده.",
+                "للحسابات الحالية 30 يوماً لتأكيد البريد، ويذكّرك Compass بالموعد الدقيق. بعد انتهائه يتوقف النشر والتعليقات والتقييمات والأصدقاء والمزامنة حتى تؤكد بريدك. المشاهدة لا تتأثر أبداً. الحسابات الجديدة تُطالَب بالبريد عند التسجيل.",
+                "اربط حساب Discord من الصفحة نفسها وانضم تلقائياً إلى سيرفر Compass.",
+                "أخبار الإصدارات بالبريد معطّلة افتراضياً ولا تعمل إلا إذا اشتركت.",
+                "يُستخدم بريدك فقط للتأكيد وإعادة تعيين كلمة المرور وأخبار الإصدارات إن اشتركت.",
+                "ميزات الحساب هذه تتطلب هذا التحديث."
+              ]
+            }
+          ]
+        }
+      }
+    },
     "0.9.137": {
       "title": "Compass Beta 0.9.137",
       "intro": "Arabic manga built into Compass, Bingers tracking, and your data carried over from before the rename.",

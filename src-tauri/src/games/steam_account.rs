@@ -73,7 +73,7 @@ fn cache() -> &'static Mutex<HashMap<String, SteamAchievements>> {
     static VALUE: OnceLock<Mutex<HashMap<String, SteamAchievements>>> = OnceLock::new();
     VALUE.get_or_init(|| Mutex::new(HashMap::new()))
 }
-fn now() -> u64 {
+pub(super) fn now() -> u64 {
     SystemTime::now()
         .duration_since(UNIX_EPOCH)
         .unwrap_or_default()
@@ -150,7 +150,7 @@ pub fn disconnect(root: PathBuf, profile: String) -> Result<()> {
     Ok(())
 }
 
-fn client() -> Result<reqwest::Client> {
+pub(super) fn client() -> Result<reqwest::Client> {
     reqwest::Client::builder()
         .timeout(Duration::from_secs(15))
         .connect_timeout(Duration::from_secs(8))
@@ -159,7 +159,7 @@ fn client() -> Result<reqwest::Client> {
         .build()
         .map_err(|_| "steam_account_network")
 }
-async fn request(
+pub(super) async fn request(
     client: &reqwest::Client,
     path: &str,
     key: &str,
@@ -203,7 +203,7 @@ async fn request_url(
     }
     serde_json::from_slice(&bytes).map_err(|_| "steam_account_response")
 }
-fn text(value: &Value, max: usize) -> String {
+pub(super) fn text(value: &Value, max: usize) -> String {
     value
         .as_str()
         .unwrap_or_default()
@@ -212,7 +212,7 @@ fn text(value: &Value, max: usize) -> String {
         .take(max)
         .collect()
 }
-fn image(value: &Value) -> String {
+pub(super) fn image(value: &Value) -> String {
     let value = text(value, 2000);
     let Ok(url) = reqwest::Url::parse(&value) else {
         return String::new();
@@ -507,6 +507,15 @@ pub(crate) fn parse_achievements(
         items,
         updated_at: now(),
     })
+}
+/// The connected key and Steam ID for one profile, for read-only account requests.
+pub(super) fn credentials(root: &Path, profile: &str) -> Result<(String, String)> {
+    let identity = profile_key(root, profile)?;
+    let mut map = sessions().lock().map_err(|_| "steam_account_store")?;
+    let session = initialize(&mut map, &identity, root, profile)?;
+    let key = session.key.clone().ok_or("steam_account_disconnected")?;
+    let id = session.snapshot.as_ref().ok_or("steam_account_disconnected")?.steam_id.clone();
+    Ok((key, id))
 }
 pub async fn achievements(
     root: PathBuf,

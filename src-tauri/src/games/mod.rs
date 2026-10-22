@@ -45,6 +45,7 @@ pub fn games_cancel_patch_download(id: String) { patch_download::cancel(&id); }
 mod steam_paths;
 mod steam_account;
 mod steam_account_store;
+mod steam_social;
 mod minecraft_data;
 mod minecraft_store;
 mod minecraft_account;
@@ -219,6 +220,7 @@ mod steam_shortcut_icons;
 mod steam_shortcut_launch;
 pub mod steam_shortcut_commands;
 mod launcher_scan;
+mod playnite;
 pub mod library_management;
 mod wow_addons;
 mod sims_package;
@@ -387,6 +389,22 @@ use serde::Serialize;
 #[tauri::command]
 pub async fn games_scan_launchers() -> Result<launcher_scan::Scan, String> {
     tauri::async_runtime::spawn_blocking(launcher_scan::scan).await.map_err(|_| "launcher_scan_failed".into())
+}
+
+#[tauri::command]
+pub async fn games_playnite_status(folder: Option<String>) -> Result<playnite::Status, String> {
+    tauri::async_runtime::spawn_blocking(move || playnite::status(folder)).await.map_err(|_| "playnite_export_invalid".into())
+}
+
+#[tauri::command]
+pub async fn games_playnite_install(folder: Option<String>) -> Result<playnite::Status, String> {
+    tauri::async_runtime::spawn_blocking(move || playnite::install(folder)).await.map_err(|_| "playnite_install_failed")?.map_err(String::from)
+}
+
+#[tauri::command]
+pub async fn games_playnite_open(folder: Option<String>, id: String, action: String) -> Result<(), String> {
+    let uri = tauri::async_runtime::spawn_blocking(move || playnite::uri(folder, &id, &action)).await.map_err(|_| "playnite_launch_failed")??;
+    tauri_plugin_opener::open_url(uri, None::<&str>).map_err(|_| "playnite_launch_failed".into())
 }
 
 #[tauri::command]
@@ -756,6 +774,10 @@ pub async fn games_refresh_steam_account(app:tauri::AppHandle,profile:String)->R
 pub async fn games_disconnect_steam_account(app:tauri::AppHandle,profile:String)->Result<(),String>{let root=account_root(&app)?;tauri::async_runtime::spawn_blocking(move||steam_account::disconnect(root,profile)).await.map_err(|_|"steam_account_store")?.map_err(String::from)}
 #[tauri::command]
 pub async fn games_steam_achievements(app:tauri::AppHandle,profile:String,app_id:u32)->Result<steam_account::SteamAchievements,String>{steam_account::achievements(account_root(&app)?,profile,app_id).await.map_err(String::from)}
+#[tauri::command]
+pub async fn games_steam_wishlist(app:tauri::AppHandle,profile:String)->Result<steam_social::Wishlist,String>{steam_social::wishlist(account_root(&app)?,profile).await.map_err(String::from)}
+#[tauri::command]
+pub async fn games_steam_friends(app:tauri::AppHandle,profile:String)->Result<steam_social::Friends,String>{steam_social::friends(account_root(&app)?,profile).await.map_err(String::from)}
 #[tauri::command]
 pub async fn games_install_steam(app:tauri::AppHandle,profile:String,app_id:u32)->Result<(),String>{
     let root=account_root(&app)?;let owned=tauri::async_runtime::spawn_blocking(move||steam_account::owns(root,profile,app_id)).await.map_err(|_|"steam_account_store")?.map_err(String::from)?;

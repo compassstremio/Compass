@@ -16,14 +16,16 @@ import type { ImportedSteamGame } from "./steam-imports";
 import { libraryTitle } from "./library-titles";
 import { libraryMetadataPresentation } from "./library-metadata";
 import { libraryShuffleRank } from "./library-shuffle";
+import { launcherNameIndex, playniteAdditions, playniteSummary, type PlayniteGame } from "./playnite";
 
-export type UnifiedSource = "steam" | "shortcut" | "custom" | "retro" | GameLauncher;
-export const UNIFIED_SOURCES: readonly UnifiedSource[] = ["steam", "shortcut", ...Object.keys(LAUNCHER_NAMES) as GameLauncher[], "custom", "retro"];
+export type UnifiedSource = "steam" | "shortcut" | "custom" | "retro" | "playnite" | GameLauncher;
+export const UNIFIED_SOURCES: readonly UnifiedSource[] = ["steam", "shortcut", ...Object.keys(LAUNCHER_NAMES) as GameLauncher[], "playnite", "custom", "retro"];
 export type UnifiedState = "ready" | "client" | "notInstalled" | "updating" | "unavailable" | "setup" | "unknown";
 export type UnifiedLibraryGame = {
   id: string; name: string; originalName?: string; game?: GameSummary; source: UnifiedSource;
   quick?: QuickGame; owned?: SteamOwnedGame; favorite: boolean; hidden: boolean;
   lastPlayed: number; addedAt?: number; state: UnifiedState; playStatus?: LibraryPlayStatus; imported?: ImportedSteamGame;
+  playnite?: PlayniteGame;
 };
 export type UnifiedLibraryInput = {
   installed: SteamInstall[]; steamKnown: boolean; steamComplete?: boolean; account?: SteamAccountSnapshot | null;
@@ -31,6 +33,9 @@ export type UnifiedLibraryInput = {
   launchersKnown: boolean; preferences: LibraryPreferences;
   shortcuts?: SteamShortcut[];
   steamImports?: ImportedSteamGame[];
+  playnite?: PlayniteGame[];
+  /** Turns a Playnite library file path into a URL the page can display. */
+  playniteImage?: (path: string) => string;
 };
 
 /** Preserve installation/edition identities. Only the same Steam app merges with account ownership. */
@@ -63,6 +68,14 @@ export function unifiedLibrary(input: UnifiedLibraryInput, now = Date.now()): Un
       lastPlayed: 0, addedAt: timestamp(imported.addedAt), state: input.steamKnown && input.steamComplete !== false ? "notInstalled" : "unknown" };
     items.push(entry); installed.set(entry.id, entry);
   }
+  const steamIds = new Set(items.flatMap(item => item.source === "steam" && item.game?.steamId ? [item.game.steamId] : []));
+  const launcherNames = launcherNameIndex(items.flatMap(item => item.quick?.source === "launcher" ? [{ launcher: item.quick.install.launcher, name: item.quick.install.name }] : []));
+  for (const game of playniteAdditions(input.playnite ?? [], { steamIds, launcherNames })) {
+    const summary = playniteSummary(game, input.playniteImage), preference = input.preferences.entries[summary.id];
+    items.push({ id: summary.id, name: game.name, game: summary, source: "playnite", playnite: game,
+      favorite: !!preference?.pinned || game.favorite, hidden: preference?.hidden ?? game.hidden,
+      lastPlayed: timestamp(game.lastPlayed), addedAt: timestamp(game.addedAt) || undefined, state: game.installed ? "ready" : "notInstalled" });
+  }
   return items.map(item=>{
     const original = item.quick?.originalName ?? item.name;
     const name = libraryTitle(item.id,original,input.preferences.entries[item.id],input.preferences.titleRules);
@@ -78,7 +91,7 @@ export function filterUnifiedLibrary(games: UnifiedLibraryGame[], filters: Unifi
   const times = new Map(games.map(game => [game.id, libraryPlaytime(game)]));
   const ranks = filters.sort === "shuffle" ? new Map(games.map(game => [game.id, libraryShuffleRank(game.id, filters.shuffleSeed ?? 0)])) : null;
   return games.filter(game => (filters.visibility === "hidden" ? game.hidden : !game.hidden && (filters.visibility !== "pinned" || game.favorite))
-    && (filters.source === "all" || filters.source === game.source)
+    && (filters.source === "all" || filters.source === game.source || game.playnite?.store === filters.source)
     && (filters.availability === "all" || (filters.availability === "attention" ? ["updating","unavailable","setup","unknown"].includes(game.state) : game.state === filters.availability))
     && matchesLibraryPlaytime(times.get(game.id), filters.playtime)
     && matchesLibraryStatus(game.playStatus, filters.playStatus)

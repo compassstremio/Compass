@@ -1,6 +1,9 @@
 import { WindowCaptionPreview } from "@/chrome/hybrid-title-bar";
 import { HybridMenuBar } from "@/chrome/hybrid-menu-bar";
-import { WindowControlButton, WindowControlGlyph } from "@/chrome/window-control-button";
+import {
+  WindowControlButton,
+  WindowControlGlyph,
+} from "@/chrome/window-control-button";
 import { CompassMark } from "@/components/icons/compass-mark";
 import { UiIcon } from "@/components/ui-icon";
 import { useT } from "@/lib/i18n";
@@ -19,7 +22,10 @@ export function WindowControlArt({ style }: { style: Style }) {
       className="pointer-events-none flex w-fit max-w-full items-center gap-2 py-2"
     >
       <span className="contents [&>button]:w-11 [&>div]:w-11">
-        <WindowControlButton label={t("chrome.watchTogether")} appearance={style}>
+        <WindowControlButton
+          label={t("chrome.watchTogether")}
+          appearance={style}
+        >
           <UiIcon name="watch-together" className="h-[17px] w-[17px]" />
         </WindowControlButton>
       </span>
@@ -46,7 +52,9 @@ export function TitleBarArt() {
       className="pointer-events-none flex h-8 w-full items-center overflow-hidden rounded-t-lg border border-edge-soft bg-elevated"
     >
       {mac && <WindowCaptionPreview native />}
-      <span className={`flex min-w-0 flex-1 items-center gap-2 px-2 text-[12px] text-ink ${mac ? "justify-center pe-16" : ""}`}>
+      <span
+        className={`flex min-w-0 flex-1 items-center gap-2 px-2 text-[12px] text-ink ${mac ? "justify-center pe-16" : ""}`}
+      >
         {!mac && <CompassMark className="h-4 w-4 shrink-0" />}
         Compass
       </span>
@@ -66,7 +74,9 @@ export function HybridBarArt() {
     >
       {mac && <WindowCaptionPreview />}
       <div className="h-full min-w-0 flex-1 overflow-hidden">
-        <div className="h-full w-max"><HybridMenuBar /></div>
+        <div className="h-full w-max">
+          <HybridMenuBar />
+        </div>
       </div>
       {!mac && <WindowCaptionPreview />}
     </div>

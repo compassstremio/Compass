@@ -1,4 +1,11 @@
-import { Check, ChevronDown, ImageDown, RefreshCw, Trash2, Upload } from "../icons";
+import {
+  Check,
+  ChevronDown,
+  ImageDown,
+  RefreshCw,
+  Trash2,
+  Upload,
+} from "../icons";
 import { useEffect, useRef, useState } from "react";
 import { applyAppIcon } from "@/lib/app-icon";
 import { useSettings } from "@/lib/settings";
@@ -17,7 +24,8 @@ async function srcToDataUrl(src: string): Promise<string | null> {
     const blob = await res.blob();
     return await new Promise((resolve) => {
       const reader = new FileReader();
-      reader.onload = () => resolve(typeof reader.result === "string" ? reader.result : null);
+      reader.onload = () =>
+        resolve(typeof reader.result === "string" ? reader.result : null);
       reader.onerror = () => resolve(null);
       reader.readAsDataURL(blob);
     });
@@ -85,7 +93,11 @@ function LogoSlot({
         {busy ? t("Working…") : value ? t("Replace") : t("Upload")}
       </SButton>
       {value && !busy && (
-        <SButton variant="danger" onClick={() => onChange("")} title={t("Remove")}>
+        <SButton
+          variant="danger"
+          onClick={() => onChange("")}
+          title={t("Remove")}
+        >
           <Trash2 size={18} strokeWidth={2.2} />
         </SButton>
       )}
@@ -134,7 +146,10 @@ function AppIconPicker() {
   const active = presetId || hasCustom;
 
   useEffect(() => {
-    const id = window.setInterval(() => setRot((i) => (i + 1) % APP_ICON_PRESETS.length), 3000);
+    const id = window.setInterval(
+      () => setRot((i) => (i + 1) % APP_ICON_PRESETS.length),
+      3000,
+    );
     return () => window.clearInterval(id);
   }, []);
 
@@ -153,7 +168,8 @@ function AppIconPicker() {
     setBusy(true);
     try {
       const processed = await processLogoImage(file, 256);
-      if (processed) update({ customAppIcon: processed, customAppIconPreset: "" });
+      if (processed)
+        update({ customAppIcon: processed, customAppIconPreset: "" });
     } finally {
       setBusy(false);
     }
@@ -189,7 +205,11 @@ function AppIconPicker() {
               />
             ) : (
               <span className="flex h-full w-full items-center justify-center rounded-[10px] border border-dashed border-edge-soft bg-elevated">
-                <ImageDown size={20} strokeWidth={1.6} className="text-ink-subtle" />
+                <ImageDown
+                  size={20}
+                  strokeWidth={1.6}
+                  className="text-ink-subtle"
+                />
               </span>
             )}
           </span>
@@ -212,11 +232,19 @@ function AppIconPicker() {
               ) : (
                 <RefreshCw size={18} strokeWidth={2.2} />
               )}
-              {applied ? t("Applied") : failed ? t("Could not apply") : t("Apply now")}
+              {applied
+                ? t("Applied")
+                : failed
+                  ? t("Could not apply")
+                  : t("Apply now")}
             </SButton>
           )}
           {active && (
-            <SButton onClick={() => update({ customAppIcon: "", customAppIconPreset: "" })}>
+            <SButton
+              onClick={() =>
+                update({ customAppIcon: "", customAppIconPreset: "" })
+              }
+            >
               {t("Reset")}
             </SButton>
           )}
@@ -351,7 +379,9 @@ export function LogoPicker() {
       <div className="compass-settings-group">
         <LogoSlot
           label={t("App logo")}
-          hint={t("Square mark in the sidebar. Transparent PNG or SVG works best.")}
+          hint={t(
+            "Square mark in the sidebar. Transparent PNG or SVG works best.",
+          )}
           value={settings.customLogoMark}
           square
           maxDim={256}
@@ -359,7 +389,9 @@ export function LogoPicker() {
         />
         <LogoSlot
           label={t("Wordmark")}
-          hint={t("Wide logo shown beside the mark when the sidebar is expanded.")}
+          hint={t(
+            "Wide logo shown beside the mark when the sidebar is expanded.",
+          )}
           value={settings.customLogoWordmark}
           maxDim={512}
           onChange={(v) => update({ customLogoWordmark: v })}

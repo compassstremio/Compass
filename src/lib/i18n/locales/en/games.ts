@@ -729,6 +729,8 @@ export default {
   "games.custom.field.prefix": "This game's compatibility folder",
   "games.custom.field.steamDirectory": "Steam installation",
   "games.custom.choose.executable": "Choose the game's executable",
+  "games.custom.choose.executables": "Choose one or more game executables",
+  "games.custom.batchSkipped": "The other games were added, but {count} of {total} files couldn't be used. Add those one at a time to see why.",
   "games.custom.choose.workingDirectory": "Use the executable's folder",
   "games.custom.choose.runner": "Choose Wine or Proton",
   "games.custom.choose.prefix": "Choose a folder for this game",

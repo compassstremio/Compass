@@ -57,6 +57,20 @@ export function useCustomGameLibrary(profile: string, active: boolean) {
     await change(store => saveCustomConfiguration(store, { ...game, config }));
     if (valid()) inspection.recheck();
   });
+  /** Adds every file that validates and reports how many were left out. */
+  const saveMany = async (games: CustomGame[]) => {
+    let skipped = 0;
+    const ok = await task("batch", async () => {
+      const checked = await Promise.allSettled(games.map(game => invoke<LaunchConfig>("games_validate_custom_launch", { config: game.config })));
+      const accepted = games.flatMap((game, index) => { const result = checked[index]!; return result.status === "fulfilled" ? [{ ...game, config: result.value }] : []; });
+      skipped = games.length - accepted.length;
+      if (!accepted.length) throw (checked.find(result => result.status === "rejected") as PromiseRejectedResult).reason;
+      if (!valid()) return;
+      await change(store => accepted.reduce(saveCustomConfiguration, store));
+      if (valid()) inspection.recheck();
+    });
+    return { ok, skipped };
+  };
   const update = (id: string, patch: Partial<Pick<CustomGame, "pinned" | "hidden" | "linked" | "artwork">>) => task(id, async () => { await change(store => { const game = store.games.find(game => game.id === id); if (!game) throw Error("launch_removed"); return upsertCustomGame(store, { ...game, ...patch }); }); });
   const matchMissing = (id: string, name: string, metadata: GameSummary, signal: AbortSignal) => task(id, async () => {
     await change(store => { signal.throwIfAborted(); if (!valid()) throw Error("metadata_import_conflict"); return importUnmatchedCustom(store,id,name,metadata); });
@@ -88,6 +102,6 @@ export function useCustomGameLibrary(profile: string, active: boolean) {
     await new Promise<void>((resolve, reject) => { const image = new Image(), timer = setTimeout(() => reject(Error("launch_artwork")), 8000); image.onload = () => { clearTimeout(timer); image.naturalWidth > 0 && image.naturalWidth * image.naturalHeight <= 40_000_000 ? resolve() : reject(Error("launch_artwork")); }; image.onerror = () => { clearTimeout(timer); reject(Error("launch_artwork")); }; image.src = convertFileSrc(canonical); });
     if (valid()) await change(store => { const item = store.games.find(item => item.id === game.id); if (!item) throw Error("launch_removed"); return upsertCustomGame(store, { ...item, artwork: canonical }); });
   });
-  return { profile, available, data, ...inspection, running: running.filter(p => p.profile === profile), busy, error, save, update, matchMissing, updateMany, correctPlaytime, remove, launch, chooseArtwork, refresh: () => { inspection.recheck(); return refresh(); }, dismissError: () => setError("") };
+  return { profile, available, data, ...inspection, running: running.filter(p => p.profile === profile), busy, error, save, saveMany, update, matchMissing, updateMany, correctPlaytime, remove, launch, chooseArtwork, refresh: () => { inspection.recheck(); return refresh(); }, dismissError: () => setError("") };
 }
 export type CustomGameLibrary = ReturnType<typeof useCustomGameLibrary>;

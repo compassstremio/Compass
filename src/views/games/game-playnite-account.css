@@ -1,0 +1,5 @@
+.games-playnite-status,.games-playnite-note{font-size:13px;line-height:1.7;color:var(--color-ink-muted);margin:0 0 18px;overflow-wrap:anywhere}
+.games-playnite-folder{display:grid;gap:6px;margin:0 0 18px;font-size:13px;color:var(--color-ink-muted)}
+.games-playnite-folder>code{display:block;padding:8px 10px;border-radius:6px;background:var(--color-canvas);color:var(--color-ink);font-size:12px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.games-playnite-dialog>footer{flex-wrap:wrap}
+.games-playnite-dialog>footer>.games-button{min-height:44px;font-size:14px;gap:10px}

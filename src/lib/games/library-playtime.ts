@@ -3,7 +3,7 @@ import type { UnifiedLibraryGame } from "./unified-library";
 
 export const LIBRARY_PLAYTIME_FILTERS = ["all", "zero", "short", "played", "unknown"] as const;
 export type LibraryPlaytimeFilter = typeof LIBRARY_PLAYTIME_FILTERS[number];
-export type LibraryPlaytime = { seconds: number; source: "steam" | "compass" | "adjusted" | "hydra" };
+export type LibraryPlaytime = { seconds: number; source: "steam" | "compass" | "adjusted" | "hydra" | "playnite" };
 
 /** A launch date is not a duration. Never borrow another installation's playtime. */
 export function libraryPlaytime(game: UnifiedLibraryGame): LibraryPlaytime | undefined {
@@ -14,6 +14,9 @@ export function libraryPlaytime(game: UnifiedLibraryGame): LibraryPlaytime | und
   } else if (game.source === "steam" && game.owned) {
     seconds = game.owned.minutes * 60;
     source = "steam";
+  } else if (game.playnite) {
+    seconds = game.playnite.playtime;
+    source = "playnite";
   } else if (game.quick?.source === "launcher" && game.quick.install.activity?.seconds !== undefined) {
     seconds = game.quick.install.activity.seconds;
     source = "compass";

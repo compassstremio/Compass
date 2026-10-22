@@ -20,6 +20,7 @@ export function pathDrive(value: string | null | undefined): LibraryDrive | unde
 
 export function installationDrive(game: UnifiedLibraryGame): LibraryDrive | undefined {
   const item = game.quick;
+  if (game.playnite?.installPath) return pathDrive(game.playnite.installPath);
   if (!item) return;
   if (item.source === "steam" || item.source === "launcher") return pathDrive(item.install.installPath);
   if (item.source === "retro") return pathDrive(item.local.path);

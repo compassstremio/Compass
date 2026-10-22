@@ -94,6 +94,7 @@ function CustomGameEditor({ game, library, onClose, onMatch }: { game?: CustomGa
   const [id] = useState(() => game?.id ?? crypto.randomUUID()), [name, setName] = useState(game?.name ?? "");
   const [config, setConfig] = useState<LaunchConfig>(game?.config ?? emptyLaunchConfig()), [args, setArgs] = useState(game?.config.arguments.join("\n") ?? "");
   const [choosing, setChoosing] = useState(false), [saving, setSaving] = useState(false), [remove, setRemove] = useState(false), [error, setError] = useState("");
+  const [skipped, setSkipped] = useState<{ count: number; total: number } | null>(null);
   const busy = choosing || saving || library.busy.includes(id), running = library.running.some(p => p.id === id);
   const dismiss = () => { if (playtimeBack.current) playtimeBack.current(); else if (!saving) close(); };
   useSectionBack(dismiss, true);
@@ -105,7 +106,17 @@ function CustomGameEditor({ game, library, onClose, onMatch }: { game?: CustomGa
   }, []);
   const choose = async (field: "executable" | "workingDirectory" | "runner" | "prefix" | "steamDirectory") => {
     if (busy) return; setChoosing(true); setError("");
-    try { const { open } = await import("@tauri-apps/plugin-dialog"); const path = await open({ multiple: false, directory: ["workingDirectory", "prefix", "steamDirectory"].includes(field), title: t(`games.custom.choose.${field}`), ...(field === "executable" && (osClass() === "windows" || config.mode !== "native") ? { filters: [{ name: t("games.custom.executable"), extensions: ["exe"] }] } : {}) }); if (typeof path === "string" && live.current) { setConfig(previous => field === "executable" ? relocateCustomExecutable(previous, path) : ({ ...previous, [field]: path })); if (field === "executable" && !name.trim()) setName(customGameName(path)); } } catch { if (live.current) setError("games.custom.launch_path"); } finally { if (live.current) setChoosing(false); }
+    // A new entry accepts several executables at once; each becomes its own library game.
+    const many = field === "executable" && !game;
+    try { const { open } = await import("@tauri-apps/plugin-dialog"); const picked = await open({ multiple: many, directory: ["workingDirectory", "prefix", "steamDirectory"].includes(field), title: t(many ? "games.custom.choose.executables" : `games.custom.choose.${field}`), ...(field === "executable" && (osClass() === "windows" || config.mode !== "native") ? { filters: [{ name: t("games.custom.executable"), extensions: ["exe"] }] } : {}) }); const paths = picked === null ? [] : Array.isArray(picked) ? picked : [picked]; if (paths.length > 1 && live.current) { await saveBatch(paths); return; } const path = paths[0]; if (typeof path === "string" && live.current) { setConfig(previous => field === "executable" ? relocateCustomExecutable(previous, path) : ({ ...previous, [field]: path })); if (field === "executable" && !name.trim()) setName(customGameName(path)); } } catch { if (live.current) setError("games.custom.launch_path"); } finally { if (live.current) setChoosing(false); }
+  };
+  const saveBatch = async (paths: string[]) => {
+    const now = Date.now(), base = { ...config, arguments: launchArguments(args) };
+    const games = paths.map((path, index): CustomGame => ({ id: crypto.randomUUID(), name: customGameName(path) || path, config: relocateCustomExecutable(base, path), linked: null, artwork: null, pinned: false, hidden: false, addedAt: now + index, lastPlayed: 0, measuredSeconds: 0 }));
+    const result = await library.saveMany(games);
+    if (!live.current) return;
+    if (result.ok && !result.skipped) close();
+    else if (result.ok) setSkipped({ count: result.skipped, total: paths.length });
   };
   const save = async () => {
     if (busy || !name.trim()) return; setSaving(true); setError("");
@@ -128,7 +139,7 @@ function CustomGameEditor({ game, library, onClose, onMatch }: { game?: CustomGa
         <CustomPlaytimeEditor key={game.id} game={game} library={library} onBackChange={setPlaytimeBack} />
         <div className="games-custom-remove">{remove ? <><p>{t("games.custom.removeNote", { name: game.name })}</p><button className="games-button" disabled={busy} onClick={() => setRemove(false)}>{t("common.cancel")}</button><button className="games-button" disabled={busy || running} onClick={() => void library.remove(id).then(ok => { if (ok) close(); })}><Trash2 size={15} />{t("games.custom.remove")}</button></> : <button className="games-button" disabled={busy || running} onClick={() => setRemove(true)}><Trash2 size={15} />{t("games.custom.remove")}</button>}</div>
       </>}
-    </div><footer>{(error || library.error) && <p className="games-custom-error" role="alert">{t(error || library.error)}</p>}<div><span>{t(playtimeEditing ? "games.playtime.finishEdit" : "games.custom.saveNote")}</span><button className="games-button games-button-primary" disabled={busy || playtimeEditing || !name.trim() || !config.executable} onClick={() => void save()}>{saving ? <LoaderCircle size={16} className="games-custom-working" /> : <Check size={16} />}{t(game ? "games.custom.saveChanges" : "games.custom.addLibrary")}</button></div></footer>
+    </div><footer>{(error || library.error) ? <p className="games-custom-error" role="alert">{t(error || library.error)}</p> : skipped && <p className="games-custom-error" role="alert">{t("games.custom.batchSkipped", skipped)}</p>}<div><span>{t(playtimeEditing ? "games.playtime.finishEdit" : "games.custom.saveNote")}</span><button className="games-button games-button-primary" disabled={busy || playtimeEditing || !name.trim() || !config.executable} onClick={() => void save()}>{saving ? <LoaderCircle size={16} className="games-custom-working" /> : <Check size={16} />}{t(game ? "games.custom.saveChanges" : "games.custom.addLibrary")}</button></div></footer>
   </div></ModalShell>;
 }
 

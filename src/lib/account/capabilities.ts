@@ -14,8 +14,12 @@ export const NO_CAPABILITIES: AccountCapabilities = {
 
 // The server enables email and Discord per instance, so the app asks before
 // showing either. A server that predates the route answers 404, which reads as
-// "everything off" and is asked again next time rather than remembered.
+// "everything off" and is asked again next time rather than remembered. An
+// answer is reused only for CACHE_MS, so a server that turns email on reaches
+// an app that is already open.
+const CACHE_MS = 5 * 60_000;
 let cached: AccountCapabilities | null = null;
+let cachedAt = 0;
 let inflight: Promise<AccountCapabilities> | null = null;
 
 function parseCapabilities(raw: unknown): AccountCapabilities {
@@ -45,14 +49,15 @@ export function cachedAccountCapabilities(): AccountCapabilities | null {
 }
 
 export function loadAccountCapabilities(): Promise<AccountCapabilities> {
-  if (cached) return Promise.resolve(cached);
+  if (cached && Date.now() - cachedAt < CACHE_MS) return Promise.resolve(cached);
   if (inflight) return inflight;
   inflight = getJson<unknown>("/identity/api/capabilities")
     .then((raw) => {
       cached = parseCapabilities(raw);
+      cachedAt = Date.now();
       return cached;
     })
-    .catch(() => NO_CAPABILITIES)
+    .catch(() => cached ?? NO_CAPABILITIES)
     .finally(() => {
       inflight = null;
     });

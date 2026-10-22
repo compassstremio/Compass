@@ -74,6 +74,28 @@ test("a server without the route reads as everything off, and is asked again lat
   assert.equal(calls.length, 2);
 });
 
+test("an open app picks up email being turned on once the cached answer is old", async () => {
+  const realNow = Date.now;
+  let now = 1_000_000;
+  Date.now = () => now;
+  try {
+    let answer: unknown = { ...ENABLED, email: false };
+    const { mod, calls } = caps(() => answer);
+    assert.equal((await mod.loadAccountCapabilities()).email, false);
+    answer = ENABLED;
+    now += 4 * 60_000;
+    assert.equal((await mod.loadAccountCapabilities()).email, false, "still fresh");
+    now += 2 * 60_000;
+    assert.deepEqual(await mod.loadAccountCapabilities(), ENABLED);
+    assert.equal(calls.length, 2);
+    answer = Object.assign(new Error("offline"), { status: 0 });
+    now += 6 * 60_000;
+    assert.deepEqual(await mod.loadAccountCapabilities(), ENABLED, "a failed refresh keeps the last answer");
+  } finally {
+    Date.now = realNow;
+  }
+});
+
 test("a malformed answer never turns anything on", async () => {
   const { mod } = caps(() => ({ email: "yes", newsletter: { enabled: 1, label: 5 }, discord: 1 }));
   assert.deepEqual(await mod.loadAccountCapabilities(), mod.NO_CAPABILITIES);

@@ -70,6 +70,7 @@ export type Author = {
   email?: string | null;
   emailVerified?: boolean;
   emailPending?: string | null;
+  emailVerifyBy?: string | null;
   badges?: AuthorBadge[];
 };
 
@@ -100,6 +101,7 @@ function toAuthor(u: RawUser): Author {
     email: typeof u.email === "string" && u.email ? u.email : null,
     emailVerified: u.emailVerified === true,
     emailPending: typeof u.emailPending === "string" && u.emailPending ? u.emailPending : null,
+    emailVerifyBy: typeof u.emailVerifyBy === "string" && u.emailVerifyBy ? u.emailVerifyBy : null,
     badges: Array.isArray(u.badges) ? u.badges : [],
   };
 }

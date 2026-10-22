@@ -18,6 +18,13 @@ const accountEmail: Record<string, string> = {
   "Lost your recovery key? Reset by email": "Kehilangan kunci pemulihan? Atur ulang lewat email",
   "If {email} is confirmed on a Compass account, a reset link is on its way. It works once, for one hour.": "Jika {email} terkonfirmasi di akun Compass, tautan pengaturan ulang sedang dikirim. Tautan berfungsi sekali, selama satu jam.",
   "Send reset link": "Kirim tautan pengaturan ulang",
+  "Confirm your email to keep using account features. Add it in Settings, Compass account.": "Konfirmasi email kamu agar tetap bisa memakai fitur akun. Tambahkan di Pengaturan, akun Compass.",
+  "Confirm your email to unpause your account": "Konfirmasi email kamu untuk mengaktifkan kembali akun",
+  "Confirm your email": "Konfirmasi email kamu",
+  "Publishing, comments, ratings, friends and sync are paused until you confirm an email. Watching is not affected.": "Memublikasikan, komentar, rating, teman, dan sinkronisasi dijeda sampai kamu mengonfirmasi email. Menonton tidak terpengaruh.",
+  "Confirm an email address to keep publishing, comments, ratings, friends and sync. It's also how you reset your password. Days left: {days}": "Konfirmasi alamat email agar tetap bisa memublikasikan, berkomentar, memberi rating, berteman, dan sinkronisasi. Ini juga cara kamu mengatur ulang kata sandi. Sisa hari: {days}",
+  "Publishing, comments, ratings, friends and sync are paused until you confirm an email.": "Memublikasikan, komentar, rating, teman, dan sinkronisasi dijeda sampai kamu mengonfirmasi email.",
+  "Confirm an email by {date} to keep publishing, comments, ratings, friends and sync.": "Konfirmasi email sebelum {date} agar tetap bisa memublikasikan, berkomentar, memberi rating, berteman, dan sinkronisasi.",
 };
 
 export default accountEmail;

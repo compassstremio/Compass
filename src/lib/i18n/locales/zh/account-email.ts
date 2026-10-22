@@ -18,6 +18,13 @@ const accountEmail: Record<string, string> = {
   "Lost your recovery key? Reset by email": "丢失了恢复密钥？通过电子邮件重置",
   "If {email} is confirmed on a Compass account, a reset link is on its way. It works once, for one hour.": "如果 {email} 已在 Compass 账户中确认，重置链接正在发送。链接只能使用一次，有效期一小时。",
   "Send reset link": "发送重置链接",
+  "Confirm your email to keep using account features. Add it in Settings, Compass account.": "请确认你的电子邮件，以继续使用账户功能。可在设置的 Compass 账户中添加。",
+  "Confirm your email to unpause your account": "确认你的电子邮件以恢复账户",
+  "Confirm your email": "确认你的电子邮件",
+  "Publishing, comments, ratings, friends and sync are paused until you confirm an email. Watching is not affected.": "在你确认电子邮件之前，发布、评论、评分、好友和同步已暂停。观看不受影响。",
+  "Confirm an email address to keep publishing, comments, ratings, friends and sync. It's also how you reset your password. Days left: {days}": "请确认一个电子邮件地址，以继续发布、评论、评分、使用好友和同步。重置密码时也会用到它。剩余天数：{days}",
+  "Publishing, comments, ratings, friends and sync are paused until you confirm an email.": "在你确认电子邮件之前，发布、评论、评分、好友和同步已暂停。",
+  "Confirm an email by {date} to keep publishing, comments, ratings, friends and sync.": "请在 {date} 前确认电子邮件，以继续发布、评论、评分、使用好友和同步。",
 };
 
 export default accountEmail;

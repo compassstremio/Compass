@@ -18,6 +18,13 @@ const accountEmail: Record<string, string> = {
   "Lost your recovery key? Reset by email": "Perdeu a chave de recuperação? Redefina por e-mail",
   "If {email} is confirmed on a Compass account, a reset link is on its way. It works once, for one hour.": "Se {email} estiver confirmado em uma conta do Compass, um link de redefinição está a caminho. Ele funciona uma vez, por uma hora.",
   "Send reset link": "Enviar link de redefinição",
+  "Confirm your email to keep using account features. Add it in Settings, Compass account.": "Confirme seu e-mail para continuar usando os recursos da conta. Adicione em Configurações, conta do Compass.",
+  "Confirm your email to unpause your account": "Confirme seu e-mail para reativar sua conta",
+  "Confirm your email": "Confirme seu e-mail",
+  "Publishing, comments, ratings, friends and sync are paused until you confirm an email. Watching is not affected.": "Publicação, comentários, avaliações, amigos e sincronização estão pausados até você confirmar um e-mail. Assistir não é afetado.",
+  "Confirm an email address to keep publishing, comments, ratings, friends and sync. It's also how you reset your password. Days left: {days}": "Confirme um endereço de e-mail para continuar publicando, comentando, avaliando, usando amigos e sincronização. Ele também é como você redefine sua senha. Dias restantes: {days}",
+  "Publishing, comments, ratings, friends and sync are paused until you confirm an email.": "Publicação, comentários, avaliações, amigos e sincronização estão pausados até você confirmar um e-mail.",
+  "Confirm an email by {date} to keep publishing, comments, ratings, friends and sync.": "Confirme um e-mail até {date} para continuar publicando, comentando, avaliando, usando amigos e sincronização.",
 };
 
 export default accountEmail;

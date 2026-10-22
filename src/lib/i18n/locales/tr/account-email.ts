@@ -18,6 +18,13 @@ const accountEmail: Record<string, string> = {
   "Lost your recovery key? Reset by email": "Kurtarma anahtarını mı kaybettin? E-postayla sıfırla",
   "If {email} is confirmed on a Compass account, a reset link is on its way. It works once, for one hour.": "{email} bir Compass hesabında onaylıysa sıfırlama bağlantısı yolda. Bir kez ve bir saat boyunca çalışır.",
   "Send reset link": "Sıfırlama bağlantısı gönder",
+  "Confirm your email to keep using account features. Add it in Settings, Compass account.": "Hesap özelliklerini kullanmaya devam etmek için e-postanı onayla. Ayarlar, Compass hesabı bölümünden ekle.",
+  "Confirm your email to unpause your account": "Hesabının duraklatmasını kaldırmak için e-postanı onayla",
+  "Confirm your email": "E-postanı onayla",
+  "Publishing, comments, ratings, friends and sync are paused until you confirm an email. Watching is not affected.": "Bir e-postayı onaylayana kadar yayınlama, yorumlar, puanlar, arkadaşlar ve senkronizasyon duraklatıldı. İzleme etkilenmez.",
+  "Confirm an email address to keep publishing, comments, ratings, friends and sync. It's also how you reset your password. Days left: {days}": "Yayınlama, yorum, puanlama, arkadaşlar ve senkronizasyona devam etmek için bir e-posta adresi onayla. Şifreni de bununla sıfırlarsın. Kalan gün: {days}",
+  "Publishing, comments, ratings, friends and sync are paused until you confirm an email.": "Bir e-postayı onaylayana kadar yayınlama, yorumlar, puanlar, arkadaşlar ve senkronizasyon duraklatıldı.",
+  "Confirm an email by {date} to keep publishing, comments, ratings, friends and sync.": "Yayınlama, yorum, puanlama, arkadaşlar ve senkronizasyona devam etmek için {date} tarihine kadar bir e-posta onayla.",
 };
 
 export default accountEmail;

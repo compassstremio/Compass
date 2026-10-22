@@ -3,6 +3,7 @@ import { Loader2, Mail } from "@/views/settings/icons";
 import { attachEmail, normaliseEmail, resendEmailVerification } from "@/lib/account/email";
 import { accountErrorMessage, type AccountErrorMessage } from "@/lib/account/error-messages";
 import { fetchMe } from "@/lib/account/identity";
+import { verifyPromptState } from "@/lib/account/email-deadline";
 import { useAccountCapabilities } from "@/hooks/use-account-capabilities";
 import type { Author } from "@/lib/theme-auth";
 import { useT } from "@/lib/i18n";
@@ -51,6 +52,16 @@ export function AccountEmailCard({ author }: { author: Author }) {
     void run("save", () => attachEmail(draft, caps.newsletter.enabled && optIn));
   };
 
+  const deadline = verifyPromptState(author, caps.email, Date.now());
+  const warn =
+    deadline.kind === "overdue"
+      ? t("Publishing, comments, ratings, friends and sync are paused until you confirm an email.")
+      : deadline.kind === "reminder" && author.emailVerifyBy
+        ? t("Confirm an email by {date} to keep publishing, comments, ratings, friends and sync.", {
+            date: new Date(author.emailVerifyBy).toLocaleDateString(),
+          })
+        : undefined;
+
   const desc = pending
     ? t("We sent a link to {email}. Open it to confirm the address.", { email: pending })
     : verified
@@ -62,6 +73,7 @@ export function AccountEmailCard({ author }: { author: Author }) {
       label={t("Email")}
       desc={desc}
       icon={<Mail size={18} />}
+      warn={warn}
       wide={editing}
     >
       {editing ? (

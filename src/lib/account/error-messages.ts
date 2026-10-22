@@ -35,6 +35,8 @@ const BY_CODE = {
   blocked_text: "That text isn't allowed. Try different wording.",
   password_too_short: "Your password needs to be at least 8 characters.",
   email_not_configured: "Email isn't available on this Compass server.",
+  email_verification_required:
+    "Confirm your email to keep using account features. Add it in Settings, Compass account.",
   discord_not_configured: "Discord linking isn't available on this Compass server.",
   discord_cancelled: "Discord didn't approve the link. Try again if you meant to.",
   discord_timeout: "Timed out waiting for Discord. Try again.",

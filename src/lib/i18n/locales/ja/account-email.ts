@@ -18,6 +18,13 @@ const accountEmail: Record<string, string> = {
   "Lost your recovery key? Reset by email": "リカバリーキーをなくしましたか？メールで再設定",
   "If {email} is confirmed on a Compass account, a reset link is on its way. It works once, for one hour.": "{email} がCompassアカウントで確認済みなら、再設定リンクを送信しています。1回だけ、1時間有効です。",
   "Send reset link": "再設定リンクを送信",
+  "Confirm your email to keep using account features. Add it in Settings, Compass account.": "アカウント機能を使い続けるにはメールを確認してください。設定のCompassアカウントから追加できます。",
+  "Confirm your email to unpause your account": "アカウントを再開するにはメールを確認してください",
+  "Confirm your email": "メールを確認してください",
+  "Publishing, comments, ratings, friends and sync are paused until you confirm an email. Watching is not affected.": "メールを確認するまで、公開、コメント、評価、フレンド、同期は一時停止しています。視聴には影響しません。",
+  "Confirm an email address to keep publishing, comments, ratings, friends and sync. It's also how you reset your password. Days left: {days}": "公開、コメント、評価、フレンド、同期を続けるにはメールアドレスを確認してください。パスワードの再設定にも使います。残り日数: {days}",
+  "Publishing, comments, ratings, friends and sync are paused until you confirm an email.": "メールを確認するまで、公開、コメント、評価、フレンド、同期は一時停止しています。",
+  "Confirm an email by {date} to keep publishing, comments, ratings, friends and sync.": "公開、コメント、評価、フレンド、同期を続けるには {date} までにメールを確認してください。",
 };
 
 export default accountEmail;

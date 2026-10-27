@@ -1,5 +1,71 @@
 {
   "notes": {
+    "0.9.139": {
+      "title": "Compass Beta 0.9.139",
+      "intro": "TorBox Direct: TorBox-cached streams without a scraper addon, faster TorBox cache checks, and Trakt sign-in on its new address.",
+      "sections": [
+        {
+          "heading": "Highlights",
+          "items": [
+            "TorBox Direct. With a TorBox key, Compass now finds releases already cached on TorBox by itself, even with no stream addon installed. They appear in the list as [TB⚡] TorBox Direct.",
+            "TorBox cache checks are much faster: hundreds of releases are checked in one request instead of dozens.",
+            "Trakt sign-in uses Trakt's new login address."
+          ]
+        },
+        {
+          "heading": "TorBox Direct",
+          "items": [
+            "Turns on by itself when a TorBox API key is set in Settings, Streaming, Services. There is nothing else to set up.",
+            "Searches public release indexes for the movie or episode you open, then keeps only what is already cached on your TorBox account. Every result plays instantly.",
+            "Your TorBox key never leaves the connection to TorBox. The public indexes only receive the title and IMDb ID.",
+            "More 4K releases and season packs are found.",
+            "Anime with absolute episode numbers (for example One Piece - 1150) is matched to the right episode.",
+            "Reopening a title is faster: the search is reused for a few minutes, while TorBox availability is checked fresh every time."
+          ]
+        },
+        {
+          "heading": "Trakt",
+          "items": [
+            "Signing in to Trakt now uses auth.trakt.tv. Trakt stops accepting logins on the old address on 1 February 2027, so update before then to keep signing in.",
+            "You stay signed in; nothing changes for accounts that are already connected."
+          ]
+        }
+      ],
+      "translations": {
+        "ar": {
+          "title": "Compass بيتا 0.9.139",
+          "intro": "TorBox Direct: مصادر من كاش TorBox بدون إضافة بحث، وفحص أسرع لكاش TorBox، وتسجيل دخول Trakt على عنوانه الجديد.",
+          "sections": [
+            {
+              "heading": "أبرز ما في التحديث",
+              "items": [
+                "TorBox Direct. مع مفتاح TorBox، صار Compass يلقى بنفسه الإصدارات الموجودة في كاش TorBox، حتى لو ما عندك أي إضافة مصادر. تظهر في القائمة باسم [TB⚡] TorBox Direct.",
+                "فحص كاش TorBox صار أسرع بكثير: مئات الإصدارات تنفحص بطلب واحد بدل عشرات الطلبات.",
+                "تسجيل الدخول إلى Trakt يستخدم عنوان الدخول الجديد من Trakt."
+              ]
+            },
+            {
+              "heading": "TorBox Direct",
+              "items": [
+                "يشتغل تلقائياً لما يكون مفتاح TorBox مضاف في الإعدادات ← البث ← الخدمات. ما يحتاج أي إعداد ثاني.",
+                "يبحث في فهارس الإصدارات العامة عن الفيلم أو الحلقة اللي تفتحها، ويبقي بس اللي موجود أصلاً في كاش حسابك على TorBox. كل النتائج تشتغل فوراً.",
+                "مفتاح TorBox ما يروح لأي جهة غير TorBox. الفهارس العامة توصلها بس العنوان ورقم IMDb.",
+                "يلقى إصدارات 4K وحزم مواسم أكثر.",
+                "الأنمي المرقّم ترقيماً مطلقاً (مثل One Piece - 1150) ينطابق مع الحلقة الصحيحة.",
+                "إعادة فتح نفس العنوان صارت أسرع: البحث ينعاد استخدامه لدقايق، وتوفّر الإصدارات في TorBox ينفحص من جديد كل مرة."
+              ]
+            },
+            {
+              "heading": "Trakt",
+              "items": [
+                "تسجيل الدخول إلى Trakt صار عن طريق auth.trakt.tv. Trakt بيوقف قبول الدخول من العنوان القديم في 1 فبراير 2027، فحدّث قبلها عشان تقدر تسجّل دخول.",
+                "تبقى مسجّل دخول، وما يتغيّر شي للحسابات المربوطة من قبل."
+              ]
+            }
+          ]
+        }
+      }
+    },
     "0.9.138": {
       "title": "Compass Beta 0.9.138",
       "intro": "Playnite, Steam friends and wishlist, the finished Compass branding, and email on your Compass account.",

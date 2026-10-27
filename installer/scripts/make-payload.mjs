@@ -195,16 +195,24 @@ writeFileSync(join(OUT_DIR, "version.txt"), appVersion, "utf8");
 console.log(`payload version: ${appVersion}`);
 
 rmSync(OUT, { force: true });
-execFileSync(
-  "powershell",
-  [
-    "-NoProfile",
-    "-NonInteractive",
-    "-Command",
-    `Compress-Archive -Path '${STAGE}\\*' -DestinationPath '${OUT}' -CompressionLevel Optimal -Force`,
-  ],
-  { stdio: "inherit" },
+// Windows PowerShell can fail to load its Archive module (a pwsh 7 PSModulePath, a
+// Restricted policy on a fresh install). Retry with pwsh, whose module ships with it.
+const compress = [
+  "-NoProfile",
+  "-NonInteractive",
+  "-Command",
+  `Compress-Archive -Path '${STAGE}\\*' -DestinationPath '${OUT}' -CompressionLevel Optimal -Force`,
+];
+const psEnv = Object.fromEntries(
+  Object.entries(process.env).filter(([name]) => name.toLowerCase() !== "psmodulepath"),
 );
+try {
+  execFileSync("powershell", compress, { stdio: "inherit", env: psEnv });
+} catch {
+  console.log("Windows PowerShell could not compress the payload; retrying with pwsh.");
+  rmSync(OUT, { force: true });
+  execFileSync("pwsh", compress, { stdio: "inherit" });
+}
 
 rmSync(STAGE, { recursive: true, force: true });
 

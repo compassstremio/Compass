@@ -25,10 +25,11 @@ function harness(responses) {
   const mocks = {
     [path.join(root, "config.ts")]: {
       TRAKT_API_BASE: "https://api.trakt.tv",
+      TRAKT_AUTH_BASE: "https://auth.trakt.tv",
       TRAKT_API_VERSION: "2",
       TRAKT_CLIENT_ID: "test-client",
       TRAKT_TOKEN_PROXY: "https://compass.test/api/trakt/token",
-      TRAKT_VERIFY_URL: "https://trakt.tv/activate",
+      TRAKT_VERIFY_URL: "https://auth.trakt.tv/activate",
       REFRESH_THRESHOLD_SEC: 14 * 24 * 60 * 60,
       WRITE_MIN_INTERVAL_MS: 1000,
     },

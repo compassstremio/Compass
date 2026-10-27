@@ -18,6 +18,15 @@ const POLL_DELAY_MS = 1000;
 const POLL_MAX_ATTEMPTS = 30;
 const LIBRARY_TTL_MS = 5 * 60_000;
 const LIBRARY_CACHE = new Map<string, { at: number; data: LibraryEntry[] }>();
+const POST_BATCH = 1000;
+const GET_BATCH = 25;
+const NO_FALLBACK = new Set(["unauthorized", "rate-limited", "not-premium"]);
+
+function chunk<T>(items: T[], size: number): T[][] {
+  const out: T[][] = [];
+  for (let i = 0; i < items.length; i += size) out.push(items.slice(i, i + size));
+  return out;
+}
 
 export function createTorbox(apiKey: string): DebridStore {
   const headers = (extra?: HeadersInit): HeadersInit => ({
@@ -65,10 +74,43 @@ export function createTorbox(apiKey: string): DebridStore {
     };
   }
 
+  async function postJson<T>(path: string, body: unknown, signal: AbortSignal): Promise<DebridResult<T>> {
+    return wrap<T>(() =>
+      fetch(`${BASE}${path}`, {
+        method: "POST",
+        headers: headers({ "Content-Type": "application/json" }),
+        body: JSON.stringify(body),
+        signal,
+      }),
+    );
+  }
+
+  // POST takes large hash arrays in one request; GET (25 per URL) is the fallback.
   async function cacheCheckBatch(
     batch: string[],
     signal: AbortSignal,
   ): Promise<DebridResult<CacheMap>> {
+    const posted = await postJson<TbEnvelope<unknown>>(
+      "/torrents/checkcached?format=object&list_files=false",
+      { hashes: batch.map((h) => h.toLowerCase()) },
+      signal,
+    );
+    if (posted.ok) return { ok: true, data: cachedFrom(posted.data?.data, batch) };
+    // Auth and rate-limit failures would only repeat themselves in more requests.
+    if (signal.aborted || NO_FALLBACK.has(posted.code)) {
+      dwarn("[torbox] cacheCheck batch failed", { code: posted.code, status: posted.status });
+      return { ok: true, data: {} };
+    }
+    dwarn("[torbox] cacheCheck POST failed, falling back to GET", { code: posted.code, status: posted.status });
+    const merged: CacheMap = {};
+    const results = await Promise.allSettled(
+      chunk(batch, GET_BATCH).map((b) => cacheCheckGet(b, signal)),
+    );
+    for (const r of results) if (r.status === "fulfilled") Object.assign(merged, r.value);
+    return { ok: true, data: merged };
+  }
+
+  async function cacheCheckGet(batch: string[], signal: AbortSignal): Promise<CacheMap> {
     const params = new URLSearchParams();
     for (const h of batch) params.append("hash", h.toLowerCase());
     params.append("format", "object");
@@ -79,10 +121,13 @@ export function createTorbox(apiKey: string): DebridStore {
     );
     if (!r.ok) {
       dwarn("[torbox] cacheCheck batch failed", { code: r.code, status: r.status });
-      return { ok: true, data: {} };
+      return {};
     }
+    return cachedFrom(r.data?.data, batch);
+  }
+
+  function cachedFrom(data: unknown, batch: string[]): CacheMap {
     const out: CacheMap = {};
-    const data = r.data?.data;
     const requested = new Set(batch.map((h) => h.toLowerCase()));
 
     const tag = (h: string) => {
@@ -110,18 +155,13 @@ export function createTorbox(apiKey: string): DebridStore {
     dlog(
       `[torbox] cacheCheck batch ${batch.length} → ${Object.keys(out).length} cached`,
     );
-    return { ok: true, data: out };
+    return out;
   }
 
   async function cacheCheck(hashes: string[], signal: AbortSignal): Promise<DebridResult<CacheMap>> {
     if (hashes.length === 0) return { ok: true, data: {} };
-    const BATCH = 25;
-    const batches: string[][] = [];
-    for (let i = 0; i < hashes.length; i += BATCH) {
-      batches.push(hashes.slice(i, i + BATCH));
-    }
     const results = await Promise.allSettled(
-      batches.map((b) => cacheCheckBatch(b, signal)),
+      chunk(hashes, POST_BATCH).map((b) => cacheCheckBatch(b, signal)),
     );
     const merged: CacheMap = {};
     for (const r of results) {

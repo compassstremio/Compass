@@ -11,6 +11,8 @@ const zilean = [
   { info_hash: HASH(1), raw_title: "The Matrix 1999 2160p UHD BluRay", size: 60e9, imdb_id: "tt0133093" },
   { info_hash: HASH(2), raw_title: "The Matrix Reloaded 2003 1080p", size: 9e9, imdb_id: "tt0234215" },
 ];
+const matrixZilean = [...zilean];
+const resetZilean = () => zilean.splice(0, zilean.length, ...matrixZilean);
 const knaben = {
   hits: [
     { hash: HASH(3), title: "The Matrix (1999) 1080p BrRip x264 - YIFY", bytes: 2e9 },
@@ -102,4 +104,42 @@ test("series filter drops other seasons but keeps a covering season range", asyn
   const r = await discover(s, series, new AbortController().signal);
   const got = r.streams.map((x: any) => x.infoHash).sort();
   assert.deepEqual(got, [HASH(7), HASH(9)]);
+});
+
+test("anime keeps absolute-numbered releases only for the matching absolute episode", async () => {
+  const { discover } = load();
+  const anime = { type: "series", imdbId: "tt0388629", title: "One Piece", season: 21, episode: 159 };
+  zilean.splice(0, zilean.length,
+    { info_hash: HASH(10), raw_title: "[SubsPlease] One Piece - 1050 (1080p)", size: 1, imdb_id: "tt0388629" },
+    { info_hash: HASH(11), raw_title: "[SubsPlease] One Piece - 1049 (1080p)", size: 1, imdb_id: "tt0388629" },
+    // No IMDb tag: kept on the title alone, which the parser cannot read here.
+    { info_hash: HASH(12), raw_title: "[Erai-raws] One Piece - 1050 [1080p][Multiple Subtitle]", size: 1 },
+    { info_hash: HASH(13), raw_title: "[Erai-raws] One Piece Film Red - 1050 [1080p]", size: 1 },
+  );
+  const s = store([HASH(10), HASH(11), HASH(12), HASH(13)]);
+  const r = await discover(s, anime, new AbortController().signal, { absoluteEpisode: 1050 });
+  assert.deepEqual(r.streams.map((x: any) => x.infoHash).sort(), [HASH(10), HASH(12)]);
+});
+
+test("reopening a title reuses index lookups but re-checks availability", async () => {
+  resetZilean();
+  const { discover, hosts } = load();
+  const s = store([HASH(1)]);
+  await discover(s, movie, new AbortController().signal);
+  const calls = hosts.length;
+  const again = await discover(s, movie, new AbortController().signal);
+  assert.equal(hosts.length, calls);
+  assert.equal(s.asked.length, 2);
+  assert.deepEqual(again.streams.map((x: any) => x.infoHash), [HASH(1)]);
+});
+
+test("an aborted caller does not poison the shared lookup", async () => {
+  resetZilean();
+  const { discover } = load();
+  const ac = new AbortController();
+  const first = discover(store([HASH(1)]), movie, ac.signal);
+  ac.abort();
+  assert.equal((await first).streams.length, 0);
+  const r = await discover(store([HASH(1)]), movie, new AbortController().signal);
+  assert.deepEqual(r.streams.map((x: any) => x.infoHash), [HASH(1)]);
 });

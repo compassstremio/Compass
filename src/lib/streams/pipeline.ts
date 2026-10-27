@@ -349,7 +349,9 @@ export async function runPipeline(
           input.forcedAddonBases,
         ),
     torbox
-      ? discoverTorboxStreams(torbox, input.query, signal).then((r) => {
+      ? discoverTorboxStreams(torbox, input.query, signal, {
+          absoluteEpisode: input.isAnime ? input.animeAbsoluteEpisode : null,
+        }).then((r) => {
           if (signal.aborted || r.checked.length === 0) return;
           const checked = checkedBySlug.get(torbox.slug) ?? new Set<string>();
           for (const h of r.checked) checked.add(h);

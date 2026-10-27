@@ -7,6 +7,13 @@
       "intro": "TorBox Direct: TorBox-cached streams without a scraper addon, faster TorBox cache checks, and Trakt sign-in on its new address.",
       "sections": [
         {
+          "heading": "Install this update manually",
+          "items": [
+            "Compass's update signing key has changed, so this one update cannot install itself. Download Compass 0.9.139 and install it over your current version. Your settings, library and accounts are kept.",
+            "Updates after 0.9.139 install automatically again."
+          ]
+        },
+        {
           "heading": "Highlights",
           "items": [
             "TorBox Direct. With a TorBox key, Compass now finds releases already cached on TorBox by itself, even with no stream addon installed. They appear in the list as [TB⚡] TorBox Direct.",

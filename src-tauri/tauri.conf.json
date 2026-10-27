@@ -125,7 +125,7 @@
     },
     "updater": {
       "endpoints": ["https://compass.sarl/updates/latest.json"],
-      "pubkey": "dW50cnVzdGVkIGNvbW1lbnQ6IG1pbmlzaWduIHB1YmxpYyBrZXk6IDc1NzE2RTIzQzgzNDQxNjYKUldSbVFUVElJMjV4ZFhYc21YMHRMbmpGNkI3MnJNbzJmWGtTbXFjaUxsS05YS1kwZk9pZi9TdlkK",
+      "pubkey": "dW50cnVzdGVkIGNvbW1lbnQ6IG1pbmlzaWduIHB1YmxpYyBrZXk6IDVBMEZBMzU0OTYxMjc0RjEKUldUeGRCS1dWS01QV241RXlZTkYzZUJsM28zVm0zc0V4aWxzM0JIVTRndUhFbDIxQU1hdTJ2cnQK",
       "windows": {
         "installMode": "passive"
       }

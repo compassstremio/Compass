@@ -122,6 +122,33 @@ test("Trakt refusing the refresh token ends the connection", async () => {
   }
 });
 
+test("a refusal that is not a spent grant keeps the session", async () => {
+  // A Cloudflare challenge answers 403 with HTML, the proxy answers 400 bad_json, and a
+  // rotated client secret gives invalid_client. None says this refresh token is spent,
+  // and signing out on them would log every listener out at once.
+  const bodies = [
+    "<html>Just a moment...</html>",
+    "",
+    "{}",
+    '{"message":"nope"}',
+    '{"error":"bad_json"}',
+    '{"error":"invalid_client"}',
+  ];
+  for (const status of [400, 401, 403]) {
+    for (const body of bodies) {
+      const h = harness([json({}, 401), new Response(body, { status })]);
+      try {
+        await assert.rejects(h.load("client.ts").traktRequest("/sync/watchlist"), { status: 401 });
+        assert.equal(h.state.clears, 0, `status ${status} with body ${JSON.stringify(body)}`);
+        assert.equal(h.state.session.refreshToken, "refresh-1");
+        assert.equal(h.calls.length, 2, "a failed refresh must not trigger further requests");
+      } finally {
+        h.restore();
+      }
+    }
+  }
+});
+
 test("a session replaced mid-refresh is never cleared by the old answer", async () => {
   const h = harness([
     json({}, 401),

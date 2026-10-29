@@ -35,6 +35,26 @@ function proxyHeaders(): HeadersInit {
   return { "Content-Type": "application/json" };
 }
 
+const REFUSAL_BODY_TIMEOUT_MS = 3000;
+
+/**
+ * Trakt answers a spent or revoked refresh token with `{"error":"invalid_grant"}`.
+ * Anything else with the same status (a Cloudflare page, the proxy's `bad_json`, an
+ * `invalid_client` from a rotated secret) says nothing about this token, so the
+ * session stays. The read is bounded because the refresh is shared by every caller.
+ */
+async function isSpentGrant(res: Response): Promise<boolean> {
+  try {
+    const body = await Promise.race([
+      res.json() as Promise<{ error?: unknown } | null>,
+      new Promise<null>((resolve) => setTimeout(() => resolve(null), REFUSAL_BODY_TIMEOUT_MS)),
+    ]);
+    return body?.error === "invalid_grant";
+  } catch {
+    return false;
+  }
+}
+
 async function refreshAccessToken(): Promise<TraktSession | null> {
   const current = getSession();
   if (!current) return null;
@@ -56,10 +76,14 @@ async function refreshAccessToken(): Promise<TraktSession | null> {
   // Signing in elsewhere while it is pending must not replace that new session.
   if (getSession() !== current) return null;
   if (!res.ok) {
-    // Only Trakt's own refusal ends the connection. A proxy hiccup, a rate limit or a
-    // server error must not sign the listener out of their tracker and lose the
+    // Only Trakt saying this refresh token is spent ends the connection. A proxy hiccup,
+    // a rate limit, a server error, a Cloudflare challenge or a server-side
+    // misconfiguration must not sign the listener out of their tracker and lose the
     // refresh token, which is the only thing that can restore it silently.
-    if (res.status === 400 || res.status === 401 || res.status === 403) {
+    if (
+      (res.status === 400 || res.status === 401 || res.status === 403) &&
+      (await isSpentGrant(res))
+    ) {
       // A refresh token rotates on every use: a rejection means this one is spent.
       const latest = getSession();
       if (latest?.refreshToken === current.refreshToken) setSession(null);

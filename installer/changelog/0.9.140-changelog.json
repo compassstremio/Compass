@@ -1,0 +1,42 @@
+{
+  "channel": "beta",
+  "notes": {
+    "0.9.140": {
+      "title": "Compass Beta 0.9.140",
+      "intro": "Your ratings now shape what Discover suggests, binge-watching keeps the same release from one episode to the next, and adult addons can no longer be shown.",
+      "sections": [
+        {
+          "heading": "Highlights",
+          "items": [
+            "Rate a title 8 or higher and Discover suggests more like it. Rate it 4 or lower and it suggests less.",
+            "New installs keep the same source when the next episode starts, so quality and release group stay consistent through a series.",
+            "Adult addons can no longer be shown. Adult content is always hidden."
+          ]
+        },
+        {
+          "heading": "Discover",
+          "items": [
+            "Your ratings now teach Discover what you like. A rating of 8 or more counts as a thumbs up and a rating of 4 or less as a thumbs down.",
+            "Ratings between 5 and 7 are treated as neutral and change nothing.",
+            "This works for titles whose page you have opened in Compass. Ratings imported in bulk from Trakt, IMDb and other services do not change your suggestions, so an import cannot drown out what you actually watch.",
+            "Rating still works offline: your taste updates on this device even if saving the rating to your account fails."
+          ]
+        },
+        {
+          "heading": "Playback",
+          "items": [
+            "Keep same source on next episode is now on by default for new installs. When the next episode auto-plays, Compass keeps the release you were just watching and falls back to the best stream if it is not available.",
+            "If you already chose a setting, it is kept. You can change it any time in Settings, Player, Play mode."
+          ]
+        },
+        {
+          "heading": "Addons",
+          "items": [
+            "Removed the Adult button, the age check and the adult category from the Addons room. Adult addons are no longer listed in the catalog or spotlight.",
+            "Removed Hide adult content from Settings, Library, because it can no longer be turned off. A synced profile cannot switch it off either."
+          ]
+        }
+      ]
+    }
+  }
+}

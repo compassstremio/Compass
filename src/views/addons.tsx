@@ -1,9 +1,7 @@
 import { Check, ChevronRight, Library, Sparkles, Star, TrendingUp } from "lucide-react";
 import { useEffect, useMemo, useRef, useState } from "react";
-import { AgeGateModal } from "@/components/age-gate-modal";
 import { CompassLoader } from "@/components/compass-loader";
 import { useScrollMemory, useView } from "@/lib/view";
-import { useSettings } from "@/lib/settings";
 import { useT } from "@/lib/i18n";
 import { AddonsMosaicBackdrop } from "@/components/addons-mosaic-backdrop";
 import { useAddonsCatalog, type ResolvedAddon } from "@/lib/addons-store/store";
@@ -26,7 +24,6 @@ import animeIcon from "@/assets/category/anime.svg";
 import sportsIcon from "@/assets/category/sports.svg";
 import livetvIcon from "@/assets/category/livetv.svg";
 import toolsIcon from "@/assets/category/tools.svg";
-import adultIcon from "@/assets/category/adult.svg";
 import { AddByUrlBar } from "./addons/add-by-url-bar";
 import { AddonDetail } from "./addons/addon-detail";
 import { AddonInstallModal } from "./addons/install-modal";
@@ -48,7 +45,6 @@ void animeIcon;
 void sportsIcon;
 void livetvIcon;
 void toolsIcon;
-void adultIcon;
 
 type BrowseModeId = "top" | "new" | "rising";
 
@@ -67,10 +63,9 @@ void Library;
 
 export function AddonsView({ active = true }: { active?: boolean }) {
   const t = useT();
-  const { settings, update } = useSettings();
   const { authKey } = useAuth();
   const { byId, installedIds, installedAddons, loading, refetch } = useAddonsCatalog(
-    settings.showAdultAddons,
+    false,
   );
   const { addonDetailId, openAddonDetail, goBack } = useView();
   const [tab, setTab] = useState<Tab>(() => consumeAddonsTab() ?? "discover");
@@ -92,8 +87,8 @@ export function AddonsView({ active = true }: { active?: boolean }) {
     scrollRef.current?.scrollTo({ top: 0, behavior: "auto" });
   }, [tab, categoryFilter]);
   useEffect(() => {
-    if (!settings.showAdultAddons && categoryFilter === "nsfw") setCategoryFilter(null);
-  }, [settings.showAdultAddons, categoryFilter]);
+    if (categoryFilter === "nsfw") setCategoryFilter(null);
+  }, [categoryFilter]);
   const [query, setQuery] = useState("");
   useEffect(() => {
     if (!active) return;
@@ -109,7 +104,6 @@ export function AddonsView({ active = true }: { active?: boolean }) {
     setCategoryFilter(cat);
     setTab("browse");
   };
-  const [ageGateOpen, setAgeGateOpen] = useState(false);
   const [toast, setToast] = useState<ToastInfo | null>(null);
   const toastTimerRef = useRef<number | null>(null);
   const [installModal, setInstallModal] = useState<
@@ -289,11 +283,6 @@ export function AddonsView({ active = true }: { active?: boolean }) {
   return (
     <main data-tv-chrome-offset className="relative flex h-full flex-col overflow-hidden">
       {tab === "discover" && <AddonsMosaicBackdrop />}
-      <AgeGateModal
-        open={ageGateOpen}
-        onClose={() => setAgeGateOpen(false)}
-        onPass={() => update({ showAdultAddons: true })}
-      />
       <header className="shrink-0 px-12 pt-20 pb-3">
         <div className="flex flex-wrap items-center gap-x-6 gap-y-3">
           <nav className="flex flex-wrap items-center gap-1">
@@ -364,43 +353,6 @@ export function AddonsView({ active = true }: { active?: boolean }) {
                 compact
               />
             </div>
-            <button
-              onClick={() => {
-                if (settings.showAdultAddons) {
-                  update({ showAdultAddons: false });
-                } else {
-                  setAgeGateOpen(true);
-                }
-              }}
-              title={settings.showAdultAddons ? t("Hide adult addons") : t("Show adult addons")}
-              className={`flex h-9 shrink-0 items-center gap-1.5 rounded-full border px-3 text-[11.5px] font-semibold uppercase tracking-[0.14em] transition-colors ${
-                settings.showAdultAddons
-                  ? "border-ink bg-ink/10 text-ink"
-                  : "border-edge-soft text-ink-subtle hover:border-edge hover:text-ink-muted"
-              }`}
-            >
-              <span
-                className={`flex h-3 w-3 items-center justify-center rounded-sm border ${
-                  settings.showAdultAddons ? "border-ink bg-ink" : "border-edge"
-                }`}
-              >
-                {settings.showAdultAddons && (
-                  <svg
-                    width="8"
-                    height="8"
-                    viewBox="0 0 24 24"
-                    fill="none"
-                    stroke="currentColor"
-                    strokeWidth="3.5"
-                    strokeLinecap="round"
-                    className="text-canvas"
-                  >
-                    <polyline points="20 6 9 17 4 12" />
-                  </svg>
-                )}
-              </span>
-              <span>{t("Adult")}</span>
-            </button>
             {tab === "browse" && (
               <button
                 onClick={() => setFiltersOpen((v) => !v)}
@@ -435,7 +387,7 @@ export function AddonsView({ active = true }: { active?: boolean }) {
                   {t("All")}
                 </button>
                 {saCategories
-                  .filter((c) => settings.showAdultAddons || c.slug !== "nsfw")
+                  .filter((c) => c.slug !== "nsfw")
                   .map((c) => {
                     const active = categoryFilter === c.slug;
                     return (
@@ -498,7 +450,6 @@ export function AddonsView({ active = true }: { active?: boolean }) {
             mode={browseMode}
             category={trimmedQuery ? null : categoryFilter}
             search={trimmedQuery || null}
-            allowAdult={settings.showAdultAddons}
             installedIds={installedIds}
             onOpen={openAddonDetail}
             onRefetch={refetch}

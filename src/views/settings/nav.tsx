@@ -2826,8 +2826,6 @@ const SETTINGS_OPTIONS: SettingsOption[] = [
       "hide anime",
       "hide manga",
       "hide live tv",
-      "hide adult",
-      "age",
       "filter",
     ],
   },
@@ -4256,13 +4254,6 @@ const SETTINGS_OPTIONS: SettingsOption[] = [
     tab: "library",
     anchorTitle: "Content filters",
     keywords: ["hide live tv", "remove tv tab", "no live", "sidebar"],
-  },
-  {
-    label: "Hide adult content",
-    section: "library",
-    tab: "library",
-    anchorTitle: "Content filters",
-    keywords: ["adult filter", "nsfw", "xxx", "safe mode", "adult catalogs"],
   },
   {
     label: "Connect your Trakt account",

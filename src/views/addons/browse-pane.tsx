@@ -4,7 +4,6 @@ export function BrowsePane({
   mode,
   category,
   search,
-  allowAdult,
   installedIds,
   onOpen,
   onRefetch,
@@ -12,7 +11,6 @@ export function BrowsePane({
   mode: BrowseMode;
   category: string | null;
   search?: string | null;
-  allowAdult?: boolean;
   installedIds: Set<string>;
   onOpen: (id: string) => void;
   onRefetch?: () => void;
@@ -22,7 +20,6 @@ export function BrowsePane({
       mode={mode}
       category={category}
       search={search}
-      allowAdult={allowAdult}
       installedIds={installedIds}
       onOpen={onOpen}
       onChange={onRefetch}

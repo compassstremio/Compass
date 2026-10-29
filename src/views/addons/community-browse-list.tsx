@@ -17,7 +17,6 @@ export function CommunityBrowseList({
   mode,
   category,
   search,
-  allowAdult,
   installedIds,
   onOpen,
   onChange,
@@ -25,20 +24,18 @@ export function CommunityBrowseList({
   mode: BrowseMode;
   category?: string | null;
   search?: string | null;
-  allowAdult?: boolean;
   installedIds: Set<string>;
   onOpen: (manifestId: string) => void;
   onChange?: () => void;
 }) {
-  if (mode === "rising") return <RisingList category={category ?? null} search={search ?? null} allowAdult={!!allowAdult} installedIds={installedIds} onOpen={onOpen} onChange={onChange} />;
-  return <ApiSortedList mode={mode} category={category ?? null} search={search ?? null} allowAdult={!!allowAdult} installedIds={installedIds} onOpen={onOpen} onChange={onChange} />;
+  if (mode === "rising") return <RisingList category={category ?? null} search={search ?? null} installedIds={installedIds} onOpen={onOpen} onChange={onChange} />;
+  return <ApiSortedList mode={mode} category={category ?? null} search={search ?? null} installedIds={installedIds} onOpen={onOpen} onChange={onChange} />;
 }
 
 function ApiSortedList({
   mode,
   category,
   search,
-  allowAdult,
   installedIds,
   onOpen,
   onChange,
@@ -46,7 +43,6 @@ function ApiSortedList({
   mode: "top" | "new";
   category: string | null;
   search: string | null;
-  allowAdult: boolean;
   installedIds: Set<string>;
   onOpen: (manifestId: string) => void;
   onChange?: () => void;
@@ -65,7 +61,7 @@ function ApiSortedList({
     setItems([]);
     setPage(1);
     setExhausted(false);
-  }, [mode, category, search, allowAdult]);
+  }, [mode, category, search]);
 
   const loadMore = useCallback(async () => {
     if (loading || exhausted) return;
@@ -76,7 +72,7 @@ function ApiSortedList({
         limit: 50,
         sort_by: mode === "top" ? "stars" : "createdAt",
         order: "desc",
-        ...(allowAdult || category === "nsfw" ? {} : { nsfw: "exclude" as const }),
+        nsfw: "exclude" as const,
         ...(category ? { category } : {}),
         ...(search ? { search } : {}),
       });
@@ -93,7 +89,7 @@ function ApiSortedList({
     } finally {
       setLoading(false);
     }
-  }, [mode, page, loading, exhausted, category, search, allowAdult]);
+  }, [mode, page, loading, exhausted, category, search]);
 
   useEffect(() => {
     if (items.length === 0 && !loading && !exhausted) void loadMore();
@@ -151,14 +147,12 @@ function ApiSortedList({
 function RisingList({
   category,
   search,
-  allowAdult,
   installedIds,
   onOpen,
   onChange,
 }: {
   category: string | null;
   search: string | null;
-  allowAdult: boolean;
   installedIds: Set<string>;
   onOpen: (manifestId: string) => void;
   onChange?: () => void;
@@ -168,10 +162,8 @@ function RisingList({
   const allMovers = useTopMovers(80);
   const q = search?.trim().toLowerCase() ?? "";
   const officialFiltered = official.filter((a) => {
-    if (!allowAdult && category !== "nsfw") {
-      const bh = (a.manifest as { behaviorHints?: { adult?: boolean } } | undefined)?.behaviorHints;
-      if (bh?.adult) return false;
-    }
+    const bh = (a.manifest as { behaviorHints?: { adult?: boolean } } | undefined)?.behaviorHints;
+    if (bh?.adult) return false;
     if (category && !a.categories.some((c) => c.slug === category)) return false;
     if (q) {
       const m = a.manifest as { name?: string; description?: string } | undefined;

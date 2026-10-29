@@ -82,15 +82,6 @@ function uiStrings(): Set<string> {
       if (k && k.length <= 300) out.add(k);
     }
   }
-  const ageGate = readFileSync(new URL("src/components/age-gate-modal.tsx", ROOT), "utf8");
-  const bankStart = ageGate.indexOf("const QUESTION_BANK");
-  const bankEnd = ageGate.indexOf("const AR_QUESTION_BANK", bankStart);
-  assert.ok(bankStart >= 0 && bankEnd > bankStart, "age gate question bank is missing");
-  const questionBlock = ageGate.slice(bankStart, bankEnd);
-  for (const match of questionBlock.matchAll(/(["'])((?:\\.|(?!\1)[^\\])*?)\1/g)) {
-    const key = match[2].replace(/\\(["'\\])/g, "$1");
-    if (key) out.add(key);
-  }
   return out;
 }
 

@@ -60,13 +60,21 @@ function useAccess(profile: string, enabled: boolean, gamesActive: boolean, onNa
     } catch { if (owner.current === profile) setSaveFailed(true); return false; }
     finally { saving.current = false; }
   };
+  /** Adds games that are not saved yet; already saved games keep their place. */
+  const saveMany = (games: GameSummary[]) => {
+    const known = new Set(storedSaved.map(item => item.id)), added = games.filter(game => !known.has(game.id) && known.add(game.id));
+    if (!added.length) return 0;
+    const next = [...added, ...storedSaved];
+    try { writeSavedGames(profile, next); setSavedState({ profile, games: next }); setSaveFailed(false); return added.length; }
+    catch { setSaveFailed(true); return -1; }
+  };
   const navigate = (target: GameAccessTarget, origin?: HTMLElement) => { setDockOpen(false); setIntent({ id: ++serial.current, target, external: !gamesActive, origin }); onNavigate?.(); };
   const repairCustom = (id:string,origin?:HTMLElement) => setRepair({profile,id,origin});
   const closeRepair = () => { const origin=repair?.origin; setRepair(null); requestAnimationFrame(()=>{if(origin?.isConnected)origin.focus({preventScroll:true});}); };
   const openShortcut=(id:string,origin?:HTMLElement)=>{setDockOpen(false);setShortcutDetails({profile,id,origin});};
   const closeShortcut=()=>{const origin=shortcutDetails?.origin;setShortcutDetails(null);requestAnimationFrame(()=>{if(origin?.isConnected)origin.focus({preventScroll:true});});};
   useEffect(()=>setShortcutDetails(null),[profile,enabled]);
-  return { profile, library, shortcuts, steamImports, openShortcut, closeShortcut, shortcutDetails, launchers, libraryPreferences, customLibrary, emulation, saved, save, saveFailed, setSaveFailed, dockOpen, setDockOpen, setActivity, intent, consumed, navigate, repair, repairCustom, closeRepair, leave: onLeave };
+  return { profile, library, shortcuts, steamImports, openShortcut, closeShortcut, shortcutDetails, launchers, libraryPreferences, customLibrary, emulation, saved, save, saveMany, saveFailed, setSaveFailed, dockOpen, setDockOpen, setActivity, intent, consumed, navigate, repair, repairCustom, closeRepair, leave: onLeave };
 }
 export type GameAccessValue = ReturnType<typeof useAccess>;
 export function GameAccessProvider({ profile, enabled = true, gamesActive, onNavigate, onLeave, children }: { profile: string; enabled?: boolean; gamesActive: boolean; onNavigate?: () => void; onLeave?: () => void; children: ReactNode }) {

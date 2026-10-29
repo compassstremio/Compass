@@ -1,0 +1,45 @@
+{
+  "channel": "beta",
+  "pub_date": "2026-10-27T00:00:00Z",
+  "notes": {
+    "0.9.139": {
+      "title": "Compass Beta 0.9.139",
+      "intro": "TorBox Direct: TorBox-cached streams without a scraper addon, faster TorBox cache checks, and Trakt sign-in on its new address.",
+      "sections": [
+        {
+          "heading": "Install this update manually",
+          "items": [
+            "Compass's update signing key has changed, so this one update cannot install itself. Download Compass 0.9.139 and install it over your current version. Your settings, library and accounts are kept.",
+            "Updates after 0.9.139 install automatically again."
+          ]
+        },
+        {
+          "heading": "Highlights",
+          "items": [
+            "TorBox Direct. With a TorBox key, Compass now finds releases already cached on TorBox by itself, even with no stream addon installed. They appear in the list as [TB⚡] TorBox Direct.",
+            "TorBox cache checks are much faster: hundreds of releases are checked in one request instead of dozens.",
+            "Trakt sign-in uses Trakt's new login address."
+          ]
+        },
+        {
+          "heading": "TorBox Direct",
+          "items": [
+            "Turns on by itself when a TorBox API key is set in Settings, Streaming, Services. There is nothing else to set up.",
+            "Searches public release indexes for the movie or episode you open, then keeps only what is already cached on your TorBox account. Every result plays instantly.",
+            "Your TorBox key never leaves the connection to TorBox. The public indexes only receive the title and IMDb ID.",
+            "More 4K releases and season packs are found.",
+            "Anime with absolute episode numbers (for example One Piece - 1150) is matched to the right episode.",
+            "Reopening a title is faster: the search is reused for a few minutes, while TorBox availability is checked fresh every time."
+          ]
+        },
+        {
+          "heading": "Trakt",
+          "items": [
+            "Signing in to Trakt now uses auth.trakt.tv. Trakt stops accepting logins on the old address on 1 February 2027, so update before then to keep signing in.",
+            "You stay signed in; nothing changes for accounts that are already connected."
+          ]
+        }
+      ]
+    }
+  }
+}

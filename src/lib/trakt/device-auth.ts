@@ -1,5 +1,6 @@
 import {
   TRAKT_API_BASE,
+  TRAKT_AUTH_BASE,
   TRAKT_CLIENT_ID,
   TRAKT_DEVICE_TOKEN_PROXY,
 } from "./config";
@@ -11,7 +12,7 @@ const baseHeaders = (): HeadersInit => ({
 });
 
 export async function requestDeviceCode(): Promise<DeviceCode> {
-  const res = await fetch(`${TRAKT_API_BASE}/oauth/device/code`, {
+  const res = await fetch(`${TRAKT_AUTH_BASE}/oauth/device/code`, {
     method: "POST",
     headers: baseHeaders(),
     body: JSON.stringify({ client_id: TRAKT_CLIENT_ID }),

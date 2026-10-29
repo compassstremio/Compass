@@ -1,6 +1,17 @@
 import { getRating, setRatingLocal, removeRatingLocal } from "./store";
 import { upsertRating, deleteRatingRemote } from "@/lib/social/ratings-api";
+import { profileForId, trackEvent } from "@/lib/discover/store";
 import type { MyRating, RatingTarget } from "./types";
+
+const LIKE_SCORE = 8;
+const DISLIKE_SCORE = 4;
+
+function feedTaste(itemKey: string, score: number): void {
+  if (score < LIKE_SCORE && score > DISLIKE_SCORE) return;
+  const profile = profileForId(itemKey);
+  if (!profile) return;
+  trackEvent(itemKey, score >= LIKE_SCORE ? "vote_up" : "vote_down", profile);
+}
 
 function statusOf(e: unknown): number | undefined {
   return (e as { status?: number })?.status;
@@ -25,6 +36,7 @@ export async function rate(
     updatedAt: Date.now(),
   };
   setRatingLocal(optimistic);
+  feedTaste(target.itemKey, score);
   try {
     const saved = await upsertRating({ ...target, score, review, spoiler });
     setRatingLocal(saved);

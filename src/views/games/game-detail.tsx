@@ -32,6 +32,7 @@ import { useLiveRefresh } from "./use-live-refresh";
 import type { GameDetail, GameSummary } from "@/lib/games/types";
 import { GameArt } from "./game-art";
 import { GameHeroLogo } from "./game-hero-logo";
+import { GameSteamUninstallButton } from "./game-steam-uninstall";
 import { GameMediaGallery } from "./game-media-gallery";
 import { GameLaunchButton } from "./game-library";
 import type { SteamLibraryState } from "@/hooks/use-steam-library";
@@ -246,6 +247,7 @@ export function GameDetailPage({ openMods, onGuides, game, saved, onSave, onBack
             {onGuides && hasGuides && <HoverTooltip label={t("games.guides.short")}><button className="games-detail-icon-action" aria-label={t("games.guides.short")} onClick={() => onGuides({ ...game, steamId, hero: detail?.libraryHero || detail?.hero || game.capsule, logo: detail?.logo })}><BookOpen size={27}/></button></HoverTooltip>}
             <HoverTooltip label={t("games.backups.title")}><button className="games-detail-icon-action" aria-label={t("games.backups.title")} onClick={() => setBackups(true)}><History size={27}/></button></HoverTooltip>
             {steamId && <GameSteamAchievementButton account={account} appId={steamId} active={active} />}
+            {installed?.state === "installed" && library.available && <GameSteamUninstallButton appId={installed.appId} name={displayName}/>}
           </div>
           {failed && <button className="games-button" onClick={() => setAttempt(value => value + 1)}>{t("common.retry")}</button>}
         </div>

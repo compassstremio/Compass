@@ -24,6 +24,19 @@ function describe(error: SourceError): { title: string; detail: string; offline:
       detail: "Every source Compass tried failed to start. Pick a different one, or try again in a moment.",
       offline: false,
     };
+  if (status === 0 && error.cause === "no-video")
+    return {
+      title: "The video couldn't be displayed",
+      detail:
+        "The source is playing, but no picture reached the screen. Try another source, or change Hardware acceleration in the player settings.",
+      offline: false,
+    };
+  if (status === 0 && error.cause === "playback")
+    return {
+      title: "Compass couldn't play this source",
+      detail: "The source responded but the stream would not open. Try a different one.",
+      offline: false,
+    };
   if (status === 0)
     return {
       title: "This source didn't respond",
@@ -60,7 +73,14 @@ export function SourceErrorCard({
 }) {
   const t = useT();
   const info = describe(error);
-  const codeLabel = error.status === 0 ? t("No response") : `HTTP ${error.status}`;
+  const codeLabel =
+    error.status !== 0
+      ? `HTTP ${error.status}`
+      : error.cause === "no-video"
+        ? t("No video")
+        : error.cause === "playback"
+          ? t("Playback error")
+          : t("No response");
   const statusName = STATUS_TEXT[error.status];
 
   return (

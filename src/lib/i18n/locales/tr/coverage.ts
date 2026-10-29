@@ -916,6 +916,10 @@ const coverage: Record<string, string> = {
   "Import and restart": "İçe aktar ve yeniden başlat",
   "Compass could not start the import. Try again.": "Compass içe aktarmayı başlatamadı. Tekrar dene.",
   "Nothing is deleted: Compass keeps its current data in a backup folder next to its own, and Harbor stays as it is.": "Hiçbir şey silinmez: Compass mevcut verilerini kendi klasörünün yanındaki bir yedek klasöründe saklar ve Harbor olduğu gibi kalır.",
+  "The video couldn't be displayed": "Video görüntülenemedi",
+  "The source is playing, but no picture reached the screen. Try another source, or change Hardware acceleration in the player settings.": "Kaynak oynatılıyor ama ekrana görüntü ulaşmıyor. Başka bir kaynak deneyin veya oynatıcı ayarlarından Donanım hızlandırmayı değiştirin.",
+  "No video": "Video yok",
+  "Playback error": "Oynatma hatası",
 };
 
 export default coverage;

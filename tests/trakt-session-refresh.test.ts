@@ -25,10 +25,11 @@ function harness(responses) {
   const mocks = {
     [path.join(root, "config.ts")]: {
       TRAKT_API_BASE: "https://api.trakt.tv",
+      TRAKT_AUTH_BASE: "https://auth.trakt.tv",
       TRAKT_API_VERSION: "2",
       TRAKT_CLIENT_ID: "test-client",
       TRAKT_TOKEN_PROXY: "https://compass.test/api/trakt/token",
-      TRAKT_VERIFY_URL: "https://trakt.tv/activate",
+      TRAKT_VERIFY_URL: "https://auth.trakt.tv/activate",
       REFRESH_THRESHOLD_SEC: 14 * 24 * 60 * 60,
       WRITE_MIN_INTERVAL_MS: 1000,
     },
@@ -117,6 +118,33 @@ test("Trakt refusing the refresh token ends the connection", async () => {
       assert.equal(h.state.session, null);
     } finally {
       h.restore();
+    }
+  }
+});
+
+test("a refusal that is not a spent grant keeps the session", async () => {
+  // A Cloudflare challenge answers 403 with HTML, the proxy answers 400 bad_json, and a
+  // rotated client secret gives invalid_client. None says this refresh token is spent,
+  // and signing out on them would log every listener out at once.
+  const bodies = [
+    "<html>Just a moment...</html>",
+    "",
+    "{}",
+    '{"message":"nope"}',
+    '{"error":"bad_json"}',
+    '{"error":"invalid_client"}',
+  ];
+  for (const status of [400, 401, 403]) {
+    for (const body of bodies) {
+      const h = harness([json({}, 401), new Response(body, { status })]);
+      try {
+        await assert.rejects(h.load("client.ts").traktRequest("/sync/watchlist"), { status: 401 });
+        assert.equal(h.state.clears, 0, `status ${status} with body ${JSON.stringify(body)}`);
+        assert.equal(h.state.session.refreshToken, "refresh-1");
+        assert.equal(h.calls.length, 2, "a failed refresh must not trigger further requests");
+      } finally {
+        h.restore();
+      }
     }
   }
 });

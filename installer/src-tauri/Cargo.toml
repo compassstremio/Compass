@@ -1,6 +1,6 @@
 [package]
 name = "compass-setup"
-version = "0.9.136"
+version = "0.9.139"
 edition = "2021"
 rust-version = "1.77"
 default-run = "compass-setup"

@@ -161,3 +161,29 @@ test("storage refusal preserves both libraries and leaves all selected IDs retry
   });
   assert.deepEqual(result.completed,[]);assert.deepEqual([...memory],before);
 });
+
+test("Playnite fills in games Compass cannot see without duplicating native Steam or launcher entries", () => {
+  const data = input();
+  data.launchers = { supported: true, clients: [], warnings: [], games: [{ id: "epic:ns:item:Fortnite", launcher: "epic", productId: "ns:item:Fortnite", name: "Fortnite", installPath: "W:/epic/fortnite", state: "installed", launchMode: "play" }] };
+  const base = { source: "Playnite", platforms: [], lastPlayed: 0, addedAt: now - 5, hidden: false, favorite: false };
+  data.playnite = [
+    { ...base, id: "a1", name: "Pokémon", source: "Steam", store: "steam", steamAppId: 42, installed: true, playtime: 60 },
+    { ...base, id: "a2", name: "FORTNITE", source: "Epic", store: "epic", installed: true, playtime: 60 },
+    { ...base, id: "a3", name: "Alan Wake 2", source: "Epic", store: "epic", installed: false, playtime: 7200, cover: "W:/playnite/library/files/a3/cover.jpg" },
+  ];
+  data.playniteImage = path => `asset://${path}`;
+  const games = unifiedLibrary(data, now), added = games.filter(game => game.source === "playnite");
+  assert.deepEqual(added.map(game => game.id), ["playnite:a3"]);
+  assert.equal(added[0].state, "notInstalled");
+  assert.equal(added[0].game?.portrait, "asset://W:/playnite/library/files/a3/cover.jpg");
+  assert.equal(filterUnifiedLibrary(games, { ...unifiedLibraryDefaults(), source: "playnite" }).length, 1);
+  assert.equal(filterUnifiedLibrary(games, { ...unifiedLibraryDefaults(), playtime: "played", source: "playnite" }).length, 1);
+});
+
+test("a launcher filter also lists that store's games reported by Playnite", () => {
+  const data = input();
+  data.playnite = [{ id: "b1", name: "Battlefield 6", source: "EA app", store: "ea", installed: false, platforms: [], playtime: 0, lastPlayed: 0, addedAt: 0, hidden: false, favorite: false }];
+  const games = unifiedLibrary(data, now);
+  assert.deepEqual(filterUnifiedLibrary(games, { ...unifiedLibraryDefaults(), source: "ea" }).map(game => game.id), ["playnite:b1"]);
+  assert.deepEqual(filterUnifiedLibrary(games, { ...unifiedLibraryDefaults(), source: "epic" }), []);
+});

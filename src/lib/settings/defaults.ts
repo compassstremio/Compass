@@ -233,7 +233,7 @@ export const DEFAULT: Settings = {
   fullscreenMode: "fullscreen",
   seasonSourceLock: false,
   rememberLastStream: true,
-  keepSourceNextEpisode: false,
+  keepSourceNextEpisode: true,
   playerHdrToSdr: true,
   playerRtxHdr: false,
   playerRtxVsr: false,

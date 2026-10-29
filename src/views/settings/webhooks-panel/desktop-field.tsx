@@ -41,7 +41,9 @@ export function DesktopNotifyField({
     <div className="flex flex-col gap-2.5">
       <ToggleRow
         label={t("Desktop notifications")}
-        sub={t("Get a system notification on this device when something you follow drops.")}
+        sub={t(
+          "Get a system notification on this device when something you follow drops.",
+        )}
         value={enabled}
         onChange={(v) => void toggle(v)}
         warn={
@@ -60,7 +62,13 @@ export function DesktopNotifyField({
             aria-disabled={busy}
             className={`${ROW_ACTION_PRIMARY}${busy ? " pointer-events-none opacity-40" : ""}`}
           >
-            {busy && <Loader2 size={17} strokeWidth={2.4} className="shrink-0 animate-spin" />}
+            {busy && (
+              <Loader2
+                size={17}
+                strokeWidth={2.4}
+                className="shrink-0 animate-spin"
+              />
+            )}
             {t("Send test")}
           </button>
           <StatusBadge status={status} />

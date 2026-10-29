@@ -1,0 +1,70 @@
+{
+  "channel": "beta",
+  "pub_date": "2026-10-22T00:00:00Z",
+  "notes": {
+    "0.9.138": {
+      "title": "Compass Beta 0.9.138",
+      "intro": "Playnite, Steam friends and wishlist, the finished Compass branding, and email on your Compass account.",
+      "sections": [
+        {
+          "heading": "Highlights",
+          "items": [
+            "Playnite library. Browse everything you own on Epic Games, EA app, GOG, Ubisoft Connect and Xbox, installed or not.",
+            "Steam friends and wishlist, plus uninstall through Steam.",
+            "Add an email to your Compass account, reset your password by email, and link Discord.",
+            "The Compass branding refresh: new app icons, theme previews, loader and screens."
+          ]
+        },
+        {
+          "heading": "Games",
+          "items": [
+            "The Explore shortcuts (Enter a World, Studios & Publishers, ROM Hacks, Explore by Launcher, Updates & Events, Explore the Charts) now jump straight to their section, even when it is further down the page.",
+            "Select several .exe files when adding local games; each one is added as its own game.",
+            "Missing game logos: we are still working on some pages. If a game has no logo, tell us its name."
+          ]
+        },
+        {
+          "heading": "Playnite",
+          "items": [
+            "Library, All Games, Playnite. Click Add the extension to Playnite, then restart Playnite once.",
+            "Installed games launch from Compass. Games that are not installed have an Install in Playnite button.",
+            "Games Compass already knows through Steam or other launchers do not appear twice.",
+            "Portable Playnite works too: select the Playnite folder.",
+            "The extension only reads your library and changes nothing in Playnite.",
+            "The Epic Games and EA app filters now include the Playnite games for that store, next to the ones installed on your system."
+          ]
+        },
+        {
+          "heading": "Steam",
+          "items": [
+            "Uninstall from an installed game page; Steam asks you to confirm.",
+            "Friends: see who is online, who is playing, and what.",
+            "Wishlist: browse your Steam wishlist and save all of it to your saved games in one click.",
+            "Friends and Wishlist need your Steam account linked from the library."
+          ]
+        },
+        {
+          "heading": "Branding",
+          "items": [
+            "All 17 preset app icons (Liquid Glass, Watercolor, Pixel, Blueprint, Anime Ink and more) are redrawn with the compass, each keeping its own style. If you picked a preset icon before, select it again in Settings to get the new one.",
+            "Every theme preview (Dracula, Nord, Royal, Velvet and more) shows the Compass logo and name in that theme's font.",
+            "The loader, addon installation screen, Watch Together waiting screen, Voyage and the screensaver with the cat on the boat match the new look. The TMDB setup guide and other tutorial images are updated.",
+            "The OG badge has its own artwork: an orange medal with a star. It is already live on profiles."
+          ]
+        },
+        {
+          "heading": "Compass account",
+          "items": [
+            "Settings, Account, Compass account, Email: enter your address and open the confirmation link. To change it, click Change; the old email stays active until you confirm the new one.",
+            "Forgot password, Reset by email on the sign-in screen, so you no longer depend on the recovery key alone.",
+            "Existing accounts have 30 days to confirm an email. Compass reminds you and shows the exact deadline. After that, publishing, comments, ratings, friends and sync pause until you confirm. Watching is never affected. New accounts are asked for an email at sign-up.",
+            "Link your Discord account from the same page and join the Compass Discord server automatically.",
+            "Release news by email is off by default and only starts if you opt in.",
+            "Your email is used only for confirmation, password resets and, if you opt in, release news.",
+            "These account features need this update."
+          ]
+        }
+      ]
+    }
+  }
+}

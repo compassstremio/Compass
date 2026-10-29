@@ -18,6 +18,7 @@ import { setMdblistBatchKey } from "@/lib/providers/mdblist-batch";
 import { setUiLanguage } from "@/lib/i18n";
 import { makeSafeTauriUnlisten } from "@/lib/tauri-unlisten";
 import { STORAGE_KEY } from "./settings/defaults";
+import { enforceAdultPolicy } from "./settings/adult-policy";
 import { readSettingsFile, writeSettingsFile } from "./settings/file-store";
 import { torrentEngineSetEnabled } from "./torrent/local-engine";
 import { loadFontData, saveFontData } from "./font-storage";
@@ -493,7 +494,7 @@ export function SettingsProvider({
   }, []);
 
   const update = useCallback((patch: Partial<Settings>) => {
-    setSettings((s) => ({ ...s, ...patch }));
+    setSettings((s) => ({ ...s, ...enforceAdultPolicy(patch) }));
     // The write-side trigger for account sync. Without it a layout change is persisted
     // locally and never queued, so the section only ever travels device-to-server by
     // accident. Marking on the patch rather than diffing the whole blob keeps this off

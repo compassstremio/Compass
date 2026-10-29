@@ -1,0 +1,22 @@
+.games-steam-social-control{grid-template-columns:auto auto}
+.games-steam-social-tabs{display:flex;gap:6px;margin:4px 0 14px;border-bottom:1px solid var(--color-edge-soft)}
+.games-steam-social-tabs>button{display:inline-flex;align-items:center;gap:8px;min-height:40px;padding:0 14px;border:0;border-bottom:2px solid transparent;background:none;color:var(--color-ink-muted);font-size:13px;cursor:pointer}
+.games-steam-social-tabs>button[aria-selected=true]{color:var(--color-ink);border-bottom-color:var(--color-accent)}
+.games-steam-social-tabs>button:focus-visible{outline:2px solid var(--color-ink);outline-offset:-2px}
+.games-steam-social-note{font-size:13px;line-height:1.7;color:var(--color-ink-muted);margin:0 0 14px}
+.games-steam-friends,.games-steam-wishlist{list-style:none;margin:0;padding:0;display:grid;gap:2px}
+.games-steam-friends>li{display:grid;grid-template-columns:40px minmax(0,1fr) auto;align-items:center;gap:12px;min-height:56px;padding:6px 4px;border-top:1px solid var(--color-edge-soft)}
+.games-steam-friend-avatar{display:grid;place-items:center;width:40px;height:40px;border-radius:50%;overflow:hidden;background:var(--color-canvas);color:var(--color-ink-muted);box-shadow:0 0 0 2px var(--color-edge-soft)}
+.games-steam-friend-avatar>img{width:100%;height:100%;object-fit:cover}
+.games-steam-friends>li[data-state=online] .games-steam-friend-avatar{box-shadow:0 0 0 2px #57cbde}
+.games-steam-friends>li[data-state=playing] .games-steam-friend-avatar{box-shadow:0 0 0 2px #90ba3c}
+.games-steam-friends>li[data-state=offline]{opacity:.62}
+.games-steam-friend-copy{display:grid;gap:2px;min-width:0}
+.games-steam-friend-copy>strong{font-size:14px;font-weight:600;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.games-steam-friend-copy>small{font-size:12px;color:var(--color-ink-muted);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.games-steam-wishlist{grid-template-columns:repeat(auto-fill,minmax(170px,1fr));gap:12px}
+.games-steam-wishlist button{display:grid;gap:8px;width:100%;padding:0;border:0;background:none;color:var(--color-ink);text-align:start;cursor:pointer}
+.games-steam-wishlist button>img,.games-steam-wishlist button>.games-art-empty{width:100%;aspect-ratio:460/215;object-fit:cover;border-radius:6px;background:var(--color-canvas)}
+.games-steam-wishlist button>span{font-size:13px;line-height:1.4;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.games-steam-wishlist button:hover>span{text-decoration:underline}
+.games-steam-wishlist button:focus-visible{outline:2px solid var(--color-ink);outline-offset:3px;border-radius:6px}

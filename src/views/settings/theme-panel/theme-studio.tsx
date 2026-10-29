@@ -36,17 +36,31 @@ const STUDIO_STYLE_ID = "compass-studio-preview-css";
 const STUDIO_HTML_ID = "compass-studio-preview-html";
 const STUDIO_AUTHORITY_ID = "compass-studio-authority-css";
 
-export function ThemeStudio({ seed, onClose }: { seed?: ThemePreset; onClose: () => void }) {
+export function ThemeStudio({
+  seed,
+  onClose,
+}: {
+  seed?: ThemePreset;
+  onClose: () => void;
+}) {
   const t = useT();
   const { settings, update } = useSettings();
-  const [initialDraft] = useState(() => emptyDraft(seed, settings.navCustomization));
-  const { draft, setDraft, undo, redo, canUndo, canRedo } = useDraftHistory(() => initialDraft);
+  const [initialDraft] = useState(() =>
+    emptyDraft(seed, settings.navCustomization),
+  );
+  const { draft, setDraft, undo, redo, canUndo, canRedo } = useDraftHistory(
+    () => initialDraft,
+  );
   const drag = usePanelDrag();
   const restoreRef = useState(() => settings.theme.preset)[0];
   const liveThemeRef = useRef(settings.theme);
   liveThemeRef.current = settings.theme;
   const [popoutTab, setPopoutTab] = useState<CodeLang | null>(null);
-  const { inspectorHidden, setInspectorHidden } = useStudioPreview(draft.layout, draft.bokeh, draft.navCustomization);
+  const { inspectorHidden, setInspectorHidden } = useStudioPreview(
+    draft.layout,
+    draft.bokeh,
+    draft.navCustomization,
+  );
   const [initialJson] = useState(() => JSON.stringify(initialDraft));
   const [confirmClose, setConfirmClose] = useState(false);
   const minimizeRef = useRef<HTMLButtonElement>(null);
@@ -58,7 +72,10 @@ export function ThemeStudio({ seed, onClose }: { seed?: ThemePreset; onClose: ()
     : t("Designing a theme");
   const activityState = t("Theme Studio");
   const untitledThemeName = t("Untitled theme");
-  const dirty = useMemo(() => JSON.stringify(draft) !== initialJson, [draft, initialJson]);
+  const dirty = useMemo(
+    () => JSON.stringify(draft) !== initialJson,
+    [draft, initialJson],
+  );
   const requestClose = () => {
     if (dirty) setConfirmClose(true);
     else onClose();
@@ -76,11 +93,11 @@ export function ThemeStudio({ seed, onClose }: { seed?: ThemePreset; onClose: ()
       id: "user:__studio_preview__" as never,
       name: draft.name || untitledThemeName,
       blurb: draft.blurb,
-      swatch: [draft.colors.canvas, draft.colors.surface, draft.colors.accent] as [
-        string,
-        string,
-        string,
-      ],
+      swatch: [
+        draft.colors.canvas,
+        draft.colors.surface,
+        draft.colors.accent,
+      ] as [string, string, string],
       tokens: customColorsToTokens(draft.colors),
       layout: draft.layout,
       cardStyle: draft.cardStyle,
@@ -108,7 +125,9 @@ export function ThemeStudio({ seed, onClose }: { seed?: ThemePreset; onClose: ()
   }, [draft]);
 
   useEffect(() => {
-    let style = document.getElementById(STUDIO_STYLE_ID) as HTMLStyleElement | null;
+    let style = document.getElementById(
+      STUDIO_STYLE_ID,
+    ) as HTMLStyleElement | null;
     if (!style) {
       style = document.createElement("style");
       style.id = STUDIO_STYLE_ID;
@@ -118,7 +137,9 @@ export function ThemeStudio({ seed, onClose }: { seed?: ThemePreset; onClose: ()
   }, [draft.css]);
 
   useEffect(() => {
-    let authority = document.getElementById(STUDIO_AUTHORITY_ID) as HTMLStyleElement | null;
+    let authority = document.getElementById(
+      STUDIO_AUTHORITY_ID,
+    ) as HTMLStyleElement | null;
     if (!authority) {
       authority = document.createElement("style");
       authority.id = STUDIO_AUTHORITY_ID;
@@ -131,11 +152,14 @@ export function ThemeStudio({ seed, onClose }: { seed?: ThemePreset; onClose: ()
   }, [draft.colors]);
 
   useEffect(() => {
-    let overlay = document.getElementById(STUDIO_HTML_ID) as HTMLDivElement | null;
+    let overlay = document.getElementById(
+      STUDIO_HTML_ID,
+    ) as HTMLDivElement | null;
     if (!overlay) {
       overlay = document.createElement("div");
       overlay.id = STUDIO_HTML_ID;
-      overlay.style.cssText = "position:fixed;inset:0;z-index:59;pointer-events:none;";
+      overlay.style.cssText =
+        "position:fixed;inset:0;z-index:59;pointer-events:none;";
       overlay.setAttribute("data-tv-skip", "");
       document.body.appendChild(overlay);
     }
@@ -166,7 +190,12 @@ export function ThemeStudio({ seed, onClose }: { seed?: ThemePreset; onClose: ()
       }
       if ((e.metaKey || e.ctrlKey) && (e.key === "z" || e.key === "Z")) {
         const el = e.target as HTMLElement | null;
-        if (el && (el.tagName === "INPUT" || el.tagName === "TEXTAREA" || el.isContentEditable))
+        if (
+          el &&
+          (el.tagName === "INPUT" ||
+            el.tagName === "TEXTAREA" ||
+            el.isContentEditable)
+        )
           return;
         e.preventDefault();
         if (e.shiftKey) redo();
@@ -175,7 +204,16 @@ export function ThemeStudio({ seed, onClose }: { seed?: ThemePreset; onClose: ()
     };
     document.addEventListener("keydown", onKey);
     return () => document.removeEventListener("keydown", onKey);
-  }, [onClose, inspectorHidden, setInspectorHidden, popoutTab, confirmClose, dirty, undo, redo]);
+  }, [
+    onClose,
+    inspectorHidden,
+    setInspectorHidden,
+    popoutTab,
+    confirmClose,
+    dirty,
+    undo,
+    redo,
+  ]);
 
   useEffect(() => {
     const el = inspectorHidden ? editThemeRef.current : minimizeRef.current;
@@ -207,12 +245,16 @@ export function ThemeStudio({ seed, onClose }: { seed?: ThemePreset; onClose: ()
         next.html = gen.html;
         next.css = gen.css;
       }
-      if ((patch.css !== undefined || patch.html !== undefined) && d.layout === "custom") {
+      if (
+        (patch.css !== undefined || patch.html !== undefined) &&
+        d.layout === "custom"
+      ) {
         next.chromeDirty = true;
       }
       return next;
     });
-  const onSeed = (t: ThemePreset) => setDraft(emptyDraft(t, draft.navCustomization));
+  const onSeed = (t: ThemePreset) =>
+    setDraft(emptyDraft(t, draft.navCustomization));
 
   const onChromeChange = (config: ChromeConfig) =>
     setDraft((d) => {
@@ -229,7 +271,8 @@ export function ThemeStudio({ seed, onClose }: { seed?: ThemePreset; onClose: ()
 
   const trimmedName = draft.name.trim();
   const canSave =
-    trimmedName.length > 0 && (draft.layout !== "custom" || draft.chrome.items.length > 0);
+    trimmedName.length > 0 &&
+    (draft.layout !== "custom" || draft.chrome.items.length > 0);
 
   const buildTheme = (): CustomTheme => {
     const slug =
@@ -240,7 +283,9 @@ export function ThemeStudio({ seed, onClose }: { seed?: ThemePreset; onClose: ()
         .slice(0, 40) || "theme";
     const nav = draft.navCustomization;
     const hasNav =
-      nav.order.length > 0 || nav.hidden.length > 0 || Object.keys(nav.renamed).length > 0;
+      nav.order.length > 0 ||
+      nav.hidden.length > 0 ||
+      Object.keys(nav.renamed).length > 0;
     return {
       id: `user:${slug}-${Date.now().toString(36)}`,
       name: trimmedName.slice(0, 60),
@@ -273,8 +318,14 @@ export function ThemeStudio({ seed, onClose }: { seed?: ThemePreset; onClose: ()
     if (!canSave) return;
     const theme = buildTheme();
     const previous =
-      settings.theme.preset !== "custom" ? getThemeById(settings.theme.preset) : null;
-    const image = nextBackgroundImage(settings.theme.backgroundImage, previous, theme);
+      settings.theme.preset !== "custom"
+        ? getThemeById(settings.theme.preset)
+        : null;
+    const image = nextBackgroundImage(
+      settings.theme.backgroundImage,
+      previous,
+      theme,
+    );
     saveCustomTheme(theme);
     update({
       navCustomization: draft.navCustomization,
@@ -291,16 +342,19 @@ export function ThemeStudio({ seed, onClose }: { seed?: ThemePreset; onClose: ()
   const onExport = async () => {
     if (!canSave) return;
     const text = serializeCompassStyle(buildTheme());
-    const slug = trimmedName.toLowerCase().replace(/[^a-z0-9]+/g, "-") || "theme";
+    const slug =
+      trimmedName.toLowerCase().replace(/[^a-z0-9]+/g, "-") || "theme";
     await downloadText(`${slug}.compassstyle`, text, ["compassstyle"]);
   };
 
   return createPortal(
-    <div
-      className="pointer-events-none fixed inset-0 z-[210]"
-    >
+    <div className="pointer-events-none fixed inset-0 z-[210]">
       {!inspectorHidden && (
-        <StudioShell cardRef={drag.ref} position={drag.position} dragging={drag.dragging}>
+        <StudioShell
+          cardRef={drag.ref}
+          position={drag.position}
+          dragging={drag.dragging}
+        >
           <StudioHeader
             name={trimmedName}
             minimizeRef={minimizeRef}

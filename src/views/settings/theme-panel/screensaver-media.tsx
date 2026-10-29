@@ -10,7 +10,12 @@ import {
   screensaverMediaSrc,
 } from "@/lib/screensaver/media";
 import type { ScreensaverMedia } from "@/lib/settings/types";
-import { ROW_ACTION, ROW_ACTION_DANGER, ROW_ACTION_PRIMARY, SettingRow } from "../kit";
+import {
+  ROW_ACTION,
+  ROW_ACTION_DANGER,
+  ROW_ACTION_PRIMARY,
+  SettingRow,
+} from "../kit";
 
 export function ScreensaverMediaManager() {
   const t = useT();
@@ -25,7 +30,10 @@ export function ScreensaverMediaManager() {
       const paths = await pickScreensaverFiles();
       const fresh = paths
         .map(newScreensaverMedia)
-        .filter((m): m is ScreensaverMedia => m !== null && !list.some((x) => x.path === m.path));
+        .filter(
+          (m): m is ScreensaverMedia =>
+            m !== null && !list.some((x) => x.path === m.path),
+        );
       if (fresh.length === 0) return;
       update({
         screensaverMedia: [...list, ...fresh],
@@ -41,7 +49,9 @@ export function ScreensaverMediaManager() {
     update({
       screensaverMedia: next,
       screensaverMediaId:
-        settings.screensaverMediaId === id ? (next[0]?.id ?? null) : settings.screensaverMediaId,
+        settings.screensaverMediaId === id
+          ? (next[0]?.id ?? null)
+          : settings.screensaverMediaId,
     });
   };
 
@@ -57,7 +67,9 @@ export function ScreensaverMediaManager() {
       <div className="flex w-full flex-col gap-2.5">
         {list.length === 0 && (
           <p className="text-[14.5px] text-ink-subtle">
-            {t("Nothing added yet. The default screensaver plays until you add one.")}
+            {t(
+              "Nothing added yet. The default screensaver plays until you add one.",
+            )}
           </p>
         )}
         {list.map((m) => (
@@ -80,7 +92,11 @@ export function ScreensaverMediaManager() {
             {t("Add video, GIF, or image")}
           </button>
           {active && (
-            <button type="button" onClick={previewScreensaver} className={ROW_ACTION}>
+            <button
+              type="button"
+              onClick={previewScreensaver}
+              className={ROW_ACTION}
+            >
               <Play size={18} strokeWidth={2.2} />
               {t("Try it now")}
             </button>
@@ -104,7 +120,12 @@ function MediaRow({
 }) {
   const t = useT();
   const src = screensaverMediaSrc(media.path);
-  const kind = media.kind === "video" ? t("Video") : media.kind === "gif" ? t("GIF") : t("Image");
+  const kind =
+    media.kind === "video"
+      ? t("Video")
+      : media.kind === "gif"
+        ? t("GIF")
+        : t("Image");
   return (
     <div
       className={`flex items-center gap-3 rounded-[10px] bg-elevated px-3 py-2 ring-1 ${
@@ -113,13 +134,25 @@ function MediaRow({
     >
       <span className="h-10 w-[68px] shrink-0 overflow-hidden rounded-[6px] bg-canvas">
         {media.kind === "video" ? (
-          <video src={src} muted preload="metadata" className="h-full w-full object-cover" />
+          <video
+            src={src}
+            muted
+            preload="metadata"
+            className="h-full w-full object-cover"
+          />
         ) : (
-          <img src={src} alt="" draggable={false} className="h-full w-full object-cover" />
+          <img
+            src={src}
+            alt=""
+            draggable={false}
+            className="h-full w-full object-cover"
+          />
         )}
       </span>
       <span className="flex min-w-0 flex-1 flex-col">
-        <span className="truncate text-[14.5px] font-medium text-ink">{media.name}</span>
+        <span className="truncate text-[14.5px] font-medium text-ink">
+          {media.name}
+        </span>
         <span className="text-[12.5px] text-ink-subtle">
           {inUse ? t("{kind} · In use", { kind }) : kind}
         </span>

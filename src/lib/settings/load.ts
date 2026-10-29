@@ -38,6 +38,7 @@ const RETIRED_GEMINI = new Set([
   "gemini-3-pro-preview",
 ]);
 import { DEFAULT, STORAGE_KEY } from "./defaults";
+import { enforceAdultPolicy } from "./adult-policy";
 import type { Settings } from "./types";
 import { adoptLegacyPlaylists, readPlaylists } from "@/lib/iptv/playlists-store";
 import { sanitizeDisplaySelection } from "@/lib/monitors";
@@ -585,7 +586,7 @@ function parseStoredSettings(raw: string | null): { settings: Settings; cacheabl
         ? parsed.tmdbImageLangs.filter((l): l is string => typeof l === "string")
         : DEFAULT.tmdbImageLangs,
     };
-    return { settings, cacheable };
+    return { settings: enforceAdultPolicy(settings), cacheable };
   } catch {
     return { settings: DEFAULT, cacheable: false };
   }

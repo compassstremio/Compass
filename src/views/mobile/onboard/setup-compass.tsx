@@ -1,6 +1,8 @@
 import { useState } from "react";
 import { useT } from "@/lib/i18n";
 import { loginIdentity, registerIdentity } from "@/lib/account/identity";
+import { normaliseEmail } from "@/lib/account/email";
+import { useAccountCapabilities } from "@/hooks/use-account-capabilities";
 import { authToken, currentAuthor, refreshTokenValue } from "@/lib/theme-auth";
 import { SetupShell, type SetupChrome } from "./setup-shell";
 import { SetupSlipway } from "./setup-slipway";
@@ -60,13 +62,17 @@ export function SetupCompass({
   const [mode, setMode] = useState<"create" | "signin">("create");
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
+  const [email, setEmail] = useState("");
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const caps = useAccountCapabilities();
 
   const confirmed = delivery === "confirmed";
   const nameOk = USERNAME_RE.test(username);
   const nameBad = username.length > 0 && !nameOk;
-  const ready = nameOk && password.length >= 6;
+  const askEmail = mode === "create" && caps.email;
+  const emailOk = !askEmail || normaliseEmail(email) !== "";
+  const ready = nameOk && password.length >= 6 && emailOk;
 
   const submit = async () => {
     setError(null);
@@ -74,7 +80,11 @@ export function SetupCompass({
     setBusy(true);
     try {
       if (mode === "create") {
-        const { recoveryCode } = await registerIdentity(username, password);
+        const { recoveryCode } = await registerIdentity(
+          username,
+          password,
+          askEmail ? { email: normaliseEmail(email) } : undefined,
+        );
         setPassword("");
         const s = readSession();
         if (!s) {
@@ -186,9 +196,25 @@ export function SetupCompass({
                 }}
                 type="password"
                 autoComplete={mode === "create" ? "new-password" : "current-password"}
-                enterKeyHint="go"
+                enterKeyHint={askEmail ? "next" : "go"}
                 invalid={!!error}
               />
+              {askEmail && (
+                <SetupField
+                  label={t("Email")}
+                  hint={t("We'll send a link to confirm it. It's also how you reset your password.")}
+                  value={email}
+                  onChange={(v) => {
+                    setEmail(v);
+                    setError(null);
+                  }}
+                  type="email"
+                  inputMode="email"
+                  autoComplete="email"
+                  enterKeyHint="go"
+                  invalid={email.trim().length > 0 && !emailOk}
+                />
+              )}
             </div>
           </SetupCard>
 

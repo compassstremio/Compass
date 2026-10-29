@@ -229,14 +229,7 @@ export function isAdultText(...fields: Array<string | undefined | null>): boolea
 }
 
 export function adultContentHidden(): boolean {
-  try {
-    const raw = localStorage.getItem("compass.settings");
-    if (!raw) return true;
-    const parsed = JSON.parse(raw) as { hideContent?: { adult?: boolean } };
-    return parsed.hideContent?.adult !== false;
-  } catch {
-    return true;
-  }
+  return true;
 }
 
 const ADULT_ANIME_GENRES = new Set(["hentai", "erotica"]);

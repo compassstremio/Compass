@@ -131,6 +131,18 @@ export function loadGameArtwork(ids: number[]): Promise<Record<number, GameArtwo
   });
 }
 
+/** Store names and art for exact Steam app IDs, such as a wishlist, in the given order. */
+export async function loadSteamAppSummaries(ids: number[], signal?: AbortSignal): Promise<GameSummary[]> {
+  const appids = [...new Set(ids)].filter(id => Number.isSafeInteger(id) && id > 0);
+  const pages: GameSummary[][] = [];
+  for (let start = 0; start < appids.length; start += 50) {
+    const batch = appids.slice(start, start + 50);
+    const input = encodeURIComponent(JSON.stringify({ ids: batch.map(appid => ({ appid })), context: { language: "english", country_code: "US" }, data_request: { include_assets: true, include_basic_info: true, include_release: true, include_platforms: true } }));
+    pages.push(parseSteamStoreItems(await request(`IStoreBrowseService/GetItems/v1/?input_json=${input}`, "https://api.steampowered.com/", signal), batch));
+  }
+  return pages.flat();
+}
+
 export type GameHighlight = GameSummary & GameArtwork & { reviews?: SteamReviewSummary; publishers?: string[] };
 export type GameChart = { games: (GameHighlight & { chartRank:number; peakPlayers?:number })[]; date?:number; fetchedAt?:number; cachedAt?:number };
 export function loadMostPlayedGames(limit = 100):Promise<GameChart> {

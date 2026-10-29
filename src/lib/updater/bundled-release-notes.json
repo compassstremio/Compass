@@ -1,5 +1,289 @@
 {
   "notes": {
+    "0.9.139": {
+      "title": "Compass Beta 0.9.139",
+      "intro": "TorBox Direct: TorBox-cached streams without a scraper addon, faster TorBox cache checks, and Trakt sign-in on its new address.",
+      "sections": [
+        {
+          "heading": "Install this update manually",
+          "items": [
+            "Compass's update signing key has changed, so this one update cannot install itself. Download Compass 0.9.139 and install it over your current version. Your settings, library and accounts are kept.",
+            "Updates after 0.9.139 install automatically again."
+          ]
+        },
+        {
+          "heading": "Highlights",
+          "items": [
+            "TorBox Direct. With a TorBox key, Compass now finds releases already cached on TorBox by itself, even with no stream addon installed. They appear in the list as [TB⚡] TorBox Direct.",
+            "TorBox cache checks are much faster: hundreds of releases are checked in one request instead of dozens.",
+            "Trakt sign-in uses Trakt's new login address."
+          ]
+        },
+        {
+          "heading": "TorBox Direct",
+          "items": [
+            "Turns on by itself when a TorBox API key is set in Settings, Streaming, Services. There is nothing else to set up.",
+            "Searches public release indexes for the movie or episode you open, then keeps only what is already cached on your TorBox account. Every result plays instantly.",
+            "Your TorBox key never leaves the connection to TorBox. The public indexes only receive the title and IMDb ID.",
+            "More 4K releases and season packs are found.",
+            "Anime with absolute episode numbers (for example One Piece - 1150) is matched to the right episode.",
+            "Reopening a title is faster: the search is reused for a few minutes, while TorBox availability is checked fresh every time."
+          ]
+        },
+        {
+          "heading": "Trakt",
+          "items": [
+            "Signing in to Trakt now uses auth.trakt.tv. Trakt stops accepting logins on the old address on 1 February 2027, so update before then to keep signing in.",
+            "You stay signed in; nothing changes for accounts that are already connected."
+          ]
+        }
+      ],
+      "translations": {
+        "ar": {
+          "title": "Compass بيتا 0.9.139",
+          "intro": "TorBox Direct: مصادر من كاش TorBox بدون إضافة بحث، وفحص أسرع لكاش TorBox، وتسجيل دخول Trakt على عنوانه الجديد.",
+          "sections": [
+            {
+              "heading": "ثبّت هذا التحديث يدوياً",
+              "items": [
+                "مفتاح توقيع تحديثات Compass تغيّر، فهذا التحديث بالذات ما يقدر يثبّت نفسه. نزّل Compass 0.9.139 وثبّته فوق نسختك الحالية، وبتبقى إعداداتك ومكتبتك وحساباتك زي ما هي.",
+                "التحديثات بعد 0.9.139 ترجع تثبّت نفسها تلقائياً."
+              ]
+            },
+            {
+              "heading": "أبرز ما في التحديث",
+              "items": [
+                "TorBox Direct. مع مفتاح TorBox، صار Compass يلقى بنفسه الإصدارات الموجودة في كاش TorBox، حتى لو ما عندك أي إضافة مصادر. تظهر في القائمة باسم [TB⚡] TorBox Direct.",
+                "فحص كاش TorBox صار أسرع بكثير: مئات الإصدارات تنفحص بطلب واحد بدل عشرات الطلبات.",
+                "تسجيل الدخول إلى Trakt يستخدم عنوان الدخول الجديد من Trakt."
+              ]
+            },
+            {
+              "heading": "TorBox Direct",
+              "items": [
+                "يشتغل تلقائياً لما يكون مفتاح TorBox مضاف في الإعدادات ← البث ← الخدمات. ما يحتاج أي إعداد ثاني.",
+                "يبحث في فهارس الإصدارات العامة عن الفيلم أو الحلقة اللي تفتحها، ويبقي بس اللي موجود أصلاً في كاش حسابك على TorBox. كل النتائج تشتغل فوراً.",
+                "مفتاح TorBox ما يروح لأي جهة غير TorBox. الفهارس العامة توصلها بس العنوان ورقم IMDb.",
+                "يلقى إصدارات 4K وحزم مواسم أكثر.",
+                "الأنمي المرقّم ترقيماً مطلقاً (مثل One Piece - 1150) ينطابق مع الحلقة الصحيحة.",
+                "إعادة فتح نفس العنوان صارت أسرع: البحث ينعاد استخدامه لدقايق، وتوفّر الإصدارات في TorBox ينفحص من جديد كل مرة."
+              ]
+            },
+            {
+              "heading": "Trakt",
+              "items": [
+                "تسجيل الدخول إلى Trakt صار عن طريق auth.trakt.tv. Trakt بيوقف قبول الدخول من العنوان القديم في 1 فبراير 2027، فحدّث قبلها عشان تقدر تسجّل دخول.",
+                "تبقى مسجّل دخول، وما يتغيّر شي للحسابات المربوطة من قبل."
+              ]
+            }
+          ]
+        }
+      }
+    },
+    "0.9.138": {
+      "title": "Compass Beta 0.9.138",
+      "intro": "Playnite, Steam friends and wishlist, the finished Compass branding, and email on your Compass account.",
+      "sections": [
+        {
+          "heading": "Highlights",
+          "items": [
+            "Playnite library. Browse everything you own on Epic Games, EA app, GOG, Ubisoft Connect and Xbox, installed or not.",
+            "Steam friends and wishlist, plus uninstall through Steam.",
+            "Add an email to your Compass account, reset your password by email, and link Discord.",
+            "The Compass branding refresh: new app icons, theme previews, loader and screens."
+          ]
+        },
+        {
+          "heading": "Games",
+          "items": [
+            "The Explore shortcuts (Enter a World, Studios & Publishers, ROM Hacks, Explore by Launcher, Updates & Events, Explore the Charts) now jump straight to their section, even when it is further down the page.",
+            "Select several .exe files when adding local games; each one is added as its own game.",
+            "Missing game logos: we are still working on some pages. If a game has no logo, tell us its name."
+          ]
+        },
+        {
+          "heading": "Playnite",
+          "items": [
+            "Library, All Games, Playnite. Click Add the extension to Playnite, then restart Playnite once.",
+            "Installed games launch from Compass. Games that are not installed have an Install in Playnite button.",
+            "Games Compass already knows through Steam or other launchers do not appear twice.",
+            "Portable Playnite works too: select the Playnite folder.",
+            "The extension only reads your library and changes nothing in Playnite.",
+            "The Epic Games and EA app filters now include the Playnite games for that store, next to the ones installed on your system."
+          ]
+        },
+        {
+          "heading": "Steam",
+          "items": [
+            "Uninstall from an installed game page; Steam asks you to confirm.",
+            "Friends: see who is online, who is playing, and what.",
+            "Wishlist: browse your Steam wishlist and save all of it to your saved games in one click.",
+            "Friends and Wishlist need your Steam account linked from the library."
+          ]
+        },
+        {
+          "heading": "Branding",
+          "items": [
+            "All 17 preset app icons (Liquid Glass, Watercolor, Pixel, Blueprint, Anime Ink and more) are redrawn with the compass, each keeping its own style. If you picked a preset icon before, select it again in Settings to get the new one.",
+            "Every theme preview (Dracula, Nord, Royal, Velvet and more) shows the Compass logo and name in that theme's font.",
+            "The loader, addon installation screen, Watch Together waiting screen, Voyage and the screensaver with the cat on the boat match the new look. The TMDB setup guide and other tutorial images are updated.",
+            "The OG badge has its own artwork: an orange medal with a star. It is already live on profiles."
+          ]
+        },
+        {
+          "heading": "Compass account",
+          "items": [
+            "Settings, Account, Compass account, Email: enter your address and open the confirmation link. To change it, click Change; the old email stays active until you confirm the new one.",
+            "Forgot password, Reset by email on the sign-in screen, so you no longer depend on the recovery key alone.",
+            "Existing accounts have 30 days to confirm an email. Compass reminds you and shows the exact deadline. After that, publishing, comments, ratings, friends and sync pause until you confirm. Watching is never affected. New accounts are asked for an email at sign-up.",
+            "Link your Discord account from the same page and join the Compass Discord server automatically.",
+            "Release news by email is off by default and only starts if you opt in.",
+            "Your email is used only for confirmation, password resets and, if you opt in, release news.",
+            "These account features need this update."
+          ]
+        }
+      ],
+      "translations": {
+        "ar": {
+          "title": "Compass بيتا 0.9.138",
+          "intro": "مكتبة Playnite، وأصدقاء Steam وقائمة الأمنيات، واكتمال هوية Compass الجديدة، والبريد الإلكتروني لحساب Compass.",
+          "sections": [
+            {
+              "heading": "أبرز ما في التحديث",
+              "items": [
+                "مكتبة Playnite. تصفّح كل ما تملكه على Epic Games وEA app وGOG وUbisoft Connect وXbox، سواء كان مثبّتاً أو لا.",
+                "أصدقاء Steam وقائمة الأمنيات، مع إلغاء التثبيت عبر Steam.",
+                "أضف بريداً إلكترونياً إلى حساب Compass، وأعد تعيين كلمة المرور بالبريد، واربط Discord.",
+                "اكتمال تحديث هوية Compass: أيقونات التطبيق ومعاينات الثيمات وشاشة التحميل وغيرها."
+              ]
+            },
+            {
+              "heading": "الألعاب",
+              "items": [
+                "اختصارات الاستكشاف (Enter a World وStudios & Publishers وROM Hacks وExplore by Launcher وUpdates & Events وExplore the Charts) تنقلك الآن مباشرة إلى قسمها حتى لو كان أسفل الصفحة.",
+                "حدّد عدة ملفات .exe عند إضافة الألعاب المحلية، ويُضاف كل ملف كلعبة مستقلة.",
+                "شعارات الألعاب المفقودة: ما زلنا نعمل عليها في بعض الصفحات. إن كانت لعبة بلا شعار فأخبرنا باسمها."
+              ]
+            },
+            {
+              "heading": "Playnite",
+              "items": [
+                "المكتبة ← كل الألعاب ← Playnite. اضغط «إضافة الإضافة إلى Playnite» ثم أعد تشغيل Playnite مرة واحدة.",
+                "الألعاب المثبّتة تُشغَّل من Compass، وغير المثبّتة يظهر لها زر «التثبيت في Playnite».",
+                "الألعاب التي يعرفها Compass عبر Steam أو منصات أخرى لا تظهر مرتين.",
+                "نسخ Playnite المحمولة مدعومة بتحديد مجلد Playnite.",
+                "الإضافة تقرأ مكتبتك فقط ولا تغيّر شيئاً في Playnite.",
+                "فلترا Epic Games وEA app في مكتبتك يشملان الآن ألعاب Playnite لذلك المتجر بجانب الألعاب المثبّتة على جهازك."
+              ]
+            },
+            {
+              "heading": "Steam",
+              "items": [
+                "إلغاء التثبيت من صفحة اللعبة المثبّتة، ويتولى Steam طلب التأكيد.",
+                "الأصدقاء: من المتصل ومن يلعب وماذا يلعب.",
+                "قائمة الأمنيات: تصفّح قائمة أمنيات Steam واحفظها كلها في ألعابك المحفوظة بنقرة واحدة.",
+                "الأصدقاء وقائمة الأمنيات يتطلبان ربط حساب Steam من المكتبة."
+              ]
+            },
+            {
+              "heading": "الهوية",
+              "items": [
+                "أعيد رسم جميع أيقونات التطبيق الجاهزة الـ17 (Liquid Glass وWatercolor وPixel وBlueprint وAnime Ink وغيرها) بالبوصلة مع الحفاظ على طابع كل أيقونة. إن كنت اخترت أيقونة جاهزة سابقاً فاخترها مرة أخرى من الإعدادات.",
+                "معاينات كل الثيمات (Dracula وNord وRoyal وVelvet وغيرها) تعرض شعار Compass واسمه بخط الثيم.",
+                "شاشة التحميل وتثبيت الإضافات وانتظار المشاهدة معاً وVoyage وشاشة التوقف بالقط على القارب تطابق الهوية الجديدة، كما حُدّثت صور شرح TMDB وبقية الشروحات.",
+                "شارة OG لها الآن رسمها الخاص: وسام برتقالي بنجمة، وهي ظاهرة في الملفات الشخصية فعلاً."
+              ]
+            },
+            {
+              "heading": "حساب Compass",
+              "items": [
+                "الإعدادات ← الحساب ← حساب Compass ← البريد: أدخل بريدك وافتح رابط التأكيد. لتغييره اضغط «تغيير»، ويبقى البريد القديم فعّالاً حتى تؤكد الجديد.",
+                "نسيت كلمة المرور ← إعادة التعيين بالبريد في شاشة الدخول، فلا تعتمد على مفتاح الاسترداد وحده.",
+                "للحسابات الحالية 30 يوماً لتأكيد البريد، ويذكّرك Compass بالموعد الدقيق. بعد انتهائه يتوقف النشر والتعليقات والتقييمات والأصدقاء والمزامنة حتى تؤكد بريدك. المشاهدة لا تتأثر أبداً. الحسابات الجديدة تُطالَب بالبريد عند التسجيل.",
+                "اربط حساب Discord من الصفحة نفسها وانضم تلقائياً إلى سيرفر Compass.",
+                "أخبار الإصدارات بالبريد معطّلة افتراضياً ولا تعمل إلا إذا اشتركت.",
+                "يُستخدم بريدك فقط للتأكيد وإعادة تعيين كلمة المرور وأخبار الإصدارات إن اشتركت.",
+                "ميزات الحساب هذه تتطلب هذا التحديث."
+              ]
+            }
+          ]
+        }
+      }
+    },
+    "0.9.137": {
+      "title": "Compass Beta 0.9.137",
+      "intro": "Arabic manga built into Compass, Bingers tracking, and your data carried over from before the rename.",
+      "sections": [
+        {
+          "heading": "Highlights",
+          "items": [
+            "Arabic manga, built in. With Compass in Arabic, Manga sources has a new Compass Manga card. Get your key from manga.compass.sarl/account (sign in with your Compass account), paste it, and مانجا العاشق and AzoraFly appear in your manga section.",
+            "Bingers joins as a tracker.",
+            "Settings and library from before the app was renamed Compass carry over."
+          ]
+        },
+        {
+          "heading": "Compass Manga",
+          "items": [
+            "One key per Compass account. The account page shows today's usage, the last 30 days, and resets the key if you need a new one.",
+            "The card checks your key before saving it, and tells you if it was mistyped or has been reset.",
+            "Sources only appear for their own language, so other languages see no change.",
+            "Locked (paid) chapters are left out of chapter lists."
+          ]
+        },
+        {
+          "heading": "Bingers",
+          "items": [
+            "Connect your account in Settings.",
+            "Episodes and movies are marked watched on Bingers once you get through 90%. You can turn that off."
+          ]
+        },
+        {
+          "heading": "Fixes",
+          "items": [
+            "Marking something watched no longer fails silently when storage is full; Compass reports it."
+          ]
+        }
+      ],
+      "translations": {
+        "ar": {
+          "title": "Compass بيتا 0.9.137",
+          "intro": "مانجا عربية مدمجة في Compass، وتتبّع عبر Bingers، وانتقال بياناتك من قبل تغيير الاسم.",
+          "sections": [
+            {
+              "heading": "أبرز ما في التحديث",
+              "items": [
+                "مانجا عربية مدمجة. عند استخدام Compass باللغة العربية تظهر بطاقة Compass Manga الجديدة في مصادر المانجا. احصل على مفتاحك من manga.compass.sarl/account (سجّل الدخول بحساب Compass)، والصقه، فتظهر مانجا العاشق وAzoraFly في قسم المانجا.",
+                "انضمام Bingers كمتتبّع.",
+                "انتقال الإعدادات والمكتبة من قبل تغيير اسم التطبيق إلى Compass."
+              ]
+            },
+            {
+              "heading": "Compass Manga",
+              "items": [
+                "مفتاح واحد لكل حساب Compass. تعرض صفحة الحساب استهلاك اليوم وآخر 30 يوماً، وتتيح إعادة تعيين المفتاح إذا احتجت مفتاحاً جديداً.",
+                "تتحقق البطاقة من المفتاح قبل حفظه، وتنبّهك إذا كان فيه خطأ في النسخ أو أُعيد تعيينه.",
+                "تظهر المصادر لأصحاب لغتها فقط، فلا يتغير شيء لمستخدمي اللغات الأخرى.",
+                "تُستبعد الفصول المقفلة (المدفوعة) من قوائم الفصول."
+              ]
+            },
+            {
+              "heading": "Bingers",
+              "items": [
+                "اربط حسابك من الإعدادات.",
+                "تُعلَّم الحلقات والأفلام كمُشاهَدة على Bingers عند وصولك إلى 90% منها، ويمكنك إيقاف ذلك."
+              ]
+            },
+            {
+              "heading": "الإصلاحات",
+              "items": [
+                "لم يعد تعليم العنصر كمُشاهَد يفشل بصمت عند امتلاء مساحة التخزين، بل يُنبّهك Compass."
+              ]
+            }
+          ]
+        }
+      }
+    },
     "0.9.136": {
       "title": "Compass Beta 0.9.136",
       "intro": "A big feature update: right-click menus across the app, PublicMetaDB, your TorBox cloud in the Library, chapter navigation in the player, Pictorium posters, much stronger anime sync, and a new Compass look.",

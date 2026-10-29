@@ -5,6 +5,13 @@ import { makeSuwayomiProvider } from "./sources/suwayomi/provider";
 import { makeLocalProvider } from "./sources/local";
 import { makeHtmlProvider, type HtmlSourceConfig } from "./sources/html";
 import {
+  hostedSourceId,
+  hostedSourcesSync,
+  makeHostedProvider,
+  refreshHostedSources,
+  subscribeHostedSources,
+} from "./sources/compass-hosted";
+import {
   communityCatalog,
   refreshCommunityCatalog,
   subscribeCommunity,
@@ -26,7 +33,7 @@ import { setSuwayomiBaseResolver } from "./sources/suwayomi/progress-bridge";
 import { makeServer } from "./sources/suwayomi/model";
 import { subscribeSuwayomiSourcesChanged } from "./sources/suwayomi/source-events";
 
-export type MangaSourceKind = "suwayomi" | "local" | "plugin" | "html" | "mangayomi";
+export type MangaSourceKind = "suwayomi" | "local" | "plugin" | "html" | "mangayomi" | "hosted";
 
 export type MangaSourcesState = "loading" | "ready" | "error";
 
@@ -54,6 +61,7 @@ const listeners = new Set<() => void>();
 subscribeCommunity(() => notify());
 subscribePlugins(() => notify());
 subscribeMangayomiSources(() => notify());
+subscribeHostedSources(() => notify());
 // A Suwayomi extension install/update/uninstall changes which sources back the
 // merged feed, so re-notify the view (bumping its sourceTick) to re-request the
 // popular hero/rail instead of waiting for a manual remount.
@@ -212,14 +220,28 @@ function mangayomiSources(): MangaSource[] {
     }));
 }
 
+// Compass's own manga server. Always present, so the section has content with nothing
+// installed; builtin keeps them out of the removable custom-source list.
+function hostedSources(): MangaSource[] {
+  return hostedSourcesSync().map((s) => ({
+    id: hostedSourceId(s.id),
+    name: s.name,
+    baseUrl: "",
+    builtin: true,
+    kind: "hosted" as MangaSourceKind,
+    iconUrl: s.icon,
+  }));
+}
+
 function configuredSources(): MangaSource[] {
   if (sourcesMemo) return sourcesMemo;
+  const hosted = hostedSources();
   const custom = readCustom();
   const plugins = pluginSources();
   const mangayomi = mangayomiSources();
   const cat = communityCatalog();
   if (cat.length === 0) {
-    sourcesMemo = [...readResolved(), ...custom, ...plugins, ...mangayomi];
+    sourcesMemo = [...hosted, ...readResolved(), ...custom, ...plugins, ...mangayomi];
     return sourcesMemo;
   }
   const community = configuredIds()
@@ -228,7 +250,7 @@ function configuredSources(): MangaSource[] {
     .sort((a, b) => (a.order ?? 99) - (b.order ?? 99))
     .map(communityToSource);
   writeResolved(community);
-  sourcesMemo = [...community, ...custom, ...plugins, ...mangayomi];
+  sourcesMemo = [...hosted, ...community, ...custom, ...plugins, ...mangayomi];
   return sourcesMemo;
 }
 
@@ -299,6 +321,10 @@ function providerForSource(src: MangaSource): MangaProvider {
   if (src.kind === "mangayomi") {
     const record = mangayomiSourcesSync().find((s) => s.id === src.id);
     return record ? makeMangayomiProvider(record) : EMPTY_PROVIDER;
+  }
+  if (src.kind === "hosted") {
+    const hosted = hostedSourcesSync().find((s) => hostedSourceId(s.id) === src.id);
+    return hosted ? makeHostedProvider(hosted) : EMPTY_PROVIDER;
   }
   return EMPTY_PROVIDER;
 }
@@ -571,6 +597,7 @@ export function initMangaSource(): void {
   migrateCommunitySources();
   reconcileSuwayomiServers();
   void ensureMangaSources();
+  void refreshHostedSources();
   void loadInstalledPlugins().then(() => warmPlugins());
   void loadMangayomiSources();
   void loadRepos();

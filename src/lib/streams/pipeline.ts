@@ -13,6 +13,7 @@ import { enhanceAnimeStreams } from "./anitomy";
 import { partitionByExactAnimeEpisode } from "./anime-identity-core";
 import { fetchLibraryStreams, type LibraryListings, type LibraryQuery } from "./library";
 import { parseStream } from "./parser";
+import { discoverTorboxStreams } from "./torbox-discovery";
 import { applyTrust, type Rejection, type TrustOptions } from "./trust";
 import { computeCorpusStats, rankAndPick, scoreStream, type ScoreOptions } from "./scoring";
 import type { ParsedStream, RankedPicker, Stream } from "./types";
@@ -135,6 +136,7 @@ export async function runPipeline(
   onAddonProgress?: (progress: AddonProgress) => void,
 ): Promise<PipelineResult> {
   let library: Stream[] = [];
+  let discovered: Stream[] = [];
   let lastPartialAt = 0;
   let latestAddonStreams: Stream[] = [];
   const debridErrors: DebridError[] = [];
@@ -201,6 +203,7 @@ export async function runPipeline(
     await Promise.allSettled(
       input.debrids.map(async (d) => {
         const checked = checkedBySlug.get(d.slug) ?? new Set<string>();
+        checkedBySlug.set(d.slug, checked);
         const fresh = hashes.filter((h) => !checked.has(h));
         if (fresh.length === 0) return;
         const r = await d.cacheCheck(fresh, signal);
@@ -218,7 +221,7 @@ export async function runPipeline(
   };
 
   const buildPartial = async (addonStreams: Stream[]): Promise<PipelineResult> => {
-    const merged = mergeAndDedupe(library, addonStreams);
+    const merged = mergeAndDedupe(library, [...addonStreams, ...discovered]);
     const pre = merged.map(parseStream);
     if (input.isAnime && input.animeAbsoluteEpisode != null) {
       await enhanceAnimeStreams(pre);
@@ -238,7 +241,7 @@ export async function runPipeline(
     return {
       picker: applyStreamPriority(fin.picker, priorityActive, input.score.activeDebrids),
       rejected: [...fin.rejected, ...extraRejected],
-      raw: { addon: addonStreams, library },
+      raw: { addon: addonStreams, library: [...library, ...discovered] },
       debridErrors: debridErrors.length > 0 ? debridErrors : undefined,
       addonErrors: addonErrors.length > 0 ? addonErrors : undefined,
     };
@@ -325,6 +328,8 @@ export async function runPipeline(
       : Promise.resolve([]);
 
   const presets = input.presetStreams ?? [];
+  // Embedded/preset streams skip the addon fetch, so they skip hash discovery too.
+  const torbox = presets.length === 0 ? input.debrids.find((d) => d.slug === "tb") : undefined;
   const [librarySettled, addonSettled] = await Promise.allSettled([
     fetchLibraryStreams(input.debrids, input.query, signal, libraryListsPromise).then((s) => {
       library = s;
@@ -343,6 +348,21 @@ export async function runPipeline(
           input.addonRanks,
           input.forcedAddonBases,
         ),
+    torbox
+      ? discoverTorboxStreams(torbox, input.query, signal, {
+          absoluteEpisode: input.isAnime ? input.animeAbsoluteEpisode : null,
+        }).then((r) => {
+          if (signal.aborted || r.checked.length === 0) return;
+          const checked = checkedBySlug.get(torbox.slug) ?? new Set<string>();
+          for (const h of r.checked) checked.add(h);
+          checkedBySlug.set(torbox.slug, checked);
+          const map = cachedBySlug.get(torbox.slug) ?? {};
+          for (const h of r.cached) map[h] = true;
+          cachedBySlug.set(torbox.slug, map);
+          discovered = r.streams;
+          emitPartialNow();
+        })
+      : Promise.resolve(),
   ]);
   // An older asynchronous parse must never replace the completed picker. Finish
   // the active cache check before flushing its tail to avoid duplicate requests.
@@ -350,7 +370,8 @@ export async function runPipeline(
   signal.removeEventListener("abort", stopPartials);
   if (librarySettled.status === "fulfilled") library = librarySettled.value;
   const addonStreams = addonSettled.status === "fulfilled" ? addonSettled.value : [];
-  const merged = mergeAndDedupe(library, addonStreams);
+  const merged = mergeAndDedupe(library, [...addonStreams, ...discovered]);
+  const rawLibrary = [...library, ...discovered];
   await cacheCheckInFlight;
   await runCacheCheck(merged);
 
@@ -408,7 +429,7 @@ export async function runPipeline(
     return {
       picker: applyStreamPriority(fin.picker, priorityActive, input.score.activeDebrids),
       rejected: [...fin.rejected, ...animeRejected],
-      raw: { addon: addonStreams, library },
+      raw: { addon: addonStreams, library: rawLibrary },
       debridErrors: debridErrors.length > 0 ? debridErrors : undefined,
       addonErrors: addonErrors.length > 0 ? addonErrors : undefined,
     };
@@ -441,7 +462,7 @@ export async function runPipeline(
   return {
     picker: applyStreamPriority(fin.picker, priorityActive, input.score.activeDebrids),
     rejected: [...fin.rejected, ...animeRejected],
-    raw: { addon: addonStreams, library },
+    raw: { addon: addonStreams, library: rawLibrary },
     debridErrors: debridErrors.length > 0 ? debridErrors : undefined,
     addonErrors: addonErrors.length > 0 ? addonErrors : undefined,
   };

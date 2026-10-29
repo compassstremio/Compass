@@ -1,5 +1,4 @@
 import animeCatIcon from "@/assets/category/anime.svg";
-import adultCatIcon from "@/assets/category/adult.svg";
 import { Download, HardDrive, Minus, Plus } from "../icons";
 import { useProfiles } from "@/lib/profiles";
 import { useSettings } from "@/lib/settings";
@@ -34,7 +33,7 @@ export function LibraryTab() {
 
   const setMinFileSize = (v: number) => update({ localMinFileSizeMb: Math.max(0, Math.round(v)) });
 
-  const pushHideContent = (key: "anime" | "adult", value: boolean) => {
+  const pushHideContent = (key: "anime", value: boolean) => {
     const next = { ...settings.hideContent, [key]: value };
     update({ hideContent: next });
     if (activeProfile) updateProfile(activeProfile.id, { hideContent: next });
@@ -56,13 +55,6 @@ export function LibraryTab() {
           )}
           value={settings.hideContent.anime}
           onChange={(v) => pushHideContent("anime", v)}
-        />
-        <ToggleRow
-          label={t("Hide adult content")}
-          leading={<CatIcon src={adultCatIcon} />}
-          sub={t("Filters out streams from adult catalogs and addons. On by default.")}
-          value={settings.hideContent.adult}
-          onChange={(v) => pushHideContent("adult", v)}
         />
       </Section>
 

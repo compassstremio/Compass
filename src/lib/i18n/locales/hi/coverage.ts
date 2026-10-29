@@ -1487,6 +1487,10 @@ const coverage: Record<string, string> = {
   "Import and restart": "इम्पोर्ट करें और रीस्टार्ट करें",
   "Compass could not start the import. Try again.": "Compass इम्पोर्ट शुरू नहीं कर सका। फिर से कोशिश करें।",
   "Nothing is deleted: Compass keeps its current data in a backup folder next to its own, and Harbor stays as it is.": "कुछ भी नहीं हटाया जाता: Compass अपना मौजूदा डेटा अपने फ़ोल्डर के पास एक बैकअप फ़ोल्डर में रखता है, और Harbor जैसा है वैसा ही रहता है।",
+  "The video couldn't be displayed": "वीडियो दिखाया नहीं जा सका",
+  "The source is playing, but no picture reached the screen. Try another source, or change Hardware acceleration in the player settings.": "स्रोत चल रहा है, लेकिन स्क्रीन पर कोई तस्वीर नहीं पहुँची। कोई दूसरा स्रोत आज़माएँ, या प्लेयर सेटिंग्स में हार्डवेयर एक्सेलेरेशन बदलें।",
+  "No video": "वीडियो नहीं",
+  "Playback error": "प्लेबैक त्रुटि",
 };
 
 export default coverage;

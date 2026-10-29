@@ -1,0 +1,6 @@
+Id: CompassLibraryExport_6f2b8a1e-4c3d-4b7a-9e1f-2a5c7d9e0b13
+Name: Compass library export
+Author: Compass
+Version: 1.0
+Module: CompassLibraryExport.psm1
+Type: Script

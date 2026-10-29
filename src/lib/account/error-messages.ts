@@ -34,10 +34,27 @@ const BY_CODE = {
   slow_down: "You're doing that too fast. Wait a moment and try again.",
   blocked_text: "That text isn't allowed. Try different wording.",
   password_too_short: "Your password needs to be at least 8 characters.",
+  email_not_configured: "Email isn't available on this Compass server.",
+  email_verification_required:
+    "Confirm your email to keep using account features. Add it in Settings, Compass account.",
+  discord_not_configured: "Discord linking isn't available on this Compass server.",
+  discord_cancelled: "Discord didn't approve the link. Try again if you meant to.",
+  discord_timeout: "Timed out waiting for Discord. Try again.",
+  discord_port_busy:
+    "Another app is using the port Discord returns to. Close it and try again.",
+  discord_code_invalid: "That Discord approval expired. Try again.",
+  discord_unreachable: "Couldn't reach Discord right now. Try again in a moment.",
+  discord_already_bound:
+    "That Discord account is already linked to a different Compass account. Unlink it there first.",
+  no_alternate_credential:
+    "Set a password or link Stremio first, so you don't get locked out of your account.",
 } as const;
 
 const BY_REASON = {
   password_too_short: "Your password needs to be at least 8 characters.",
+  email_required: "Enter your email address to create an account.",
+  bad_email: "That doesn't look like an email address. Check it and try again.",
+  nothing_pending: "There's no email waiting to be confirmed.",
   "too-short": "That name is too short. Use at least 3 characters.",
   invalid:
     "That name has characters that aren't allowed. Stick to letters, numbers, and underscores.",

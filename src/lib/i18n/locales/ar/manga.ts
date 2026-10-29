@@ -353,6 +353,18 @@ const manga: Record<string, string> = {
   "{page} of {count}": "{page} من {count}",
   "← folder or .cbz / .zip": "← مجلد أو .cbz / .zip",
   "← name it like the manga": "← سمِّه باسم المانجا",
+  "Read {sources} here with your Compass Manga key.": "اقرأ {sources} هنا بمفتاح Compass Manga حقك.",
+  "This key isn't valid anymore. Get a new one from your account page.":
+    "هذا المفتاح ما عاد صالح. خذ مفتاح جديد من صفحة حسابك.",
+  "This doesn't look like a Compass Manga key.": "هذا ما يشبه مفتاح Compass Manga.",
+  "That key wasn't accepted. Copy it again from your account page.": "المفتاح ما انقبل. انسخه من جديد من صفحة حسابك.",
+  "Couldn't reach Compass Manga. Check your connection and try again.":
+    "ما قدرنا نوصل لـ Compass Manga. تأكد من اتصالك وجرّب مرة ثانية.",
+  "Save key": "حفظ المفتاح",
+  "Get a key": "احصل على مفتاح",
+  "Key saved": "المفتاح محفوظ",
+  "Account page": "صفحة الحساب",
+  "Remove key": "إزالة المفتاح",
 };
 
 export default manga;

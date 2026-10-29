@@ -79,6 +79,8 @@ import contextActionsFallback from "./context-actions-fallback";
 
 import ebookSources from "./tr/ebook-sources";
 import settingsRefinements from "./tr/settings-refinements";
+import accountEmail from "./tr/account-email";
+import accountDiscord from "./tr/account-discord";
 import miscA from "./tr/misc-a";
 import miscB from "./tr/misc-b";
 import miscC from "./tr/misc-c";
@@ -293,6 +295,8 @@ const tr: Record<string, string> = {
   ...coverage,
   ...bingers,
   ...settingsRefinements,
+  ...accountEmail,
+  ...accountDiscord,
   ...plugins,
   ...brands,
   ...sportsHub,

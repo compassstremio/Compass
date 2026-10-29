@@ -67,6 +67,14 @@ export function trackEvent(id: string, kind: EventKind, meta?: ProfileSnapshot, 
   notify();
 }
 
+export function profileForId(id: string): ProfileSnapshot | undefined {
+  for (let i = mem.events.length - 1; i >= 0; i--) {
+    const e = mem.events[i];
+    if (e.id === id && e.meta) return e.meta;
+  }
+  return undefined;
+}
+
 export function getStore(): DiscoverStore {
   flushAffinity();
   return mem;

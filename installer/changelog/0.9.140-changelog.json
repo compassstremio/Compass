@@ -12,7 +12,8 @@
             "New installs keep the same source when the next episode starts, so quality and release group stay consistent through a series.",
             "Adult addons can no longer be shown. Adult content is always hidden.",
             "Song lyrics can now be translated into your language, with the original line kept above the translation.",
-            "Game logos that failed to load now come back instead of staying missing."
+            "Game logos that failed to load now come back instead of staying missing.",
+            "The music bar no longer opens by itself when Compass starts. It appears once you play something."
           ]
         },
         {

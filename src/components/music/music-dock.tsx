@@ -143,6 +143,7 @@ function useDockInset(
 }
 
 let sessionActivated = false;
+let restoredTrackId: string | null | undefined;
 
 export function MusicDock() {
   const t = useT();
@@ -286,7 +287,9 @@ export function MusicDock() {
     setDragging(false);
     setScrub(null);
   }, [current?.id]);
-  sessionActivated = dockActivated(sessionActivated, player.phase);
+  const currentTrackId = current ? `${current.connectorId ?? ""}:${current.id}` : null;
+  if (restoredTrackId === undefined) restoredTrackId = currentTrackId;
+  sessionActivated = dockActivated(sessionActivated, player.phase, restoredTrackId, currentTrackId);
   const visible =
     Boolean(current) && sessionActivated && topKind !== "player" && topKind !== "picker";
   const inset = useDockInset(dockRef, visible, collapsed, topKind === "games");

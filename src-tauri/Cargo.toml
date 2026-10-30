@@ -1,6 +1,6 @@
 [package]
 name = "compass"
-version = "0.9.139"
+version = "0.9.140"
 description = "A Stremio client built for adventure"
 edition = "2021"
 

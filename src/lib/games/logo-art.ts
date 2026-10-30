@@ -41,22 +41,25 @@ export type GameLogoArt = { src: string; white?: boolean; width: number; height:
 // only depends on the image, but rows mount and unmount constantly while scrolling, so the
 // same marks were being measured again on every remount. Keep the in-flight promise too, so
 // a row that appears twice in one frame does the work once.
-const decoded = new Map<string, Promise<GameLogoArt | undefined>>();
-const DECODE_CACHE_MAX = 400;
+// Failures are dropped as soon as they settle: a CDN hiccup must not hide a logo until restart.
+export function createLogoDecodeCache(measure: (src: string, steamId?: number) => Promise<GameLogoArt | undefined>, max = 400) {
+  const decoded = new Map<string, Promise<GameLogoArt | undefined>>();
+  return (src?: string, steamId?: number): Promise<GameLogoArt | undefined> => {
+    if (!src) return Promise.resolve(undefined);
+    const key = `${src}|${steamId ?? ""}`;
+    let pending = decoded.get(key);
+    if (!pending) {
+      pending = measure(src, steamId).catch(() => undefined);
+      decoded.set(key, pending);
+      void pending.then(art => { if (!art && decoded.get(key) === pending) decoded.delete(key); });
+      if (decoded.size > max) decoded.delete(decoded.keys().next().value!);
+    }
+    return pending;
+  };
+}
 
 /** Steam logos often contain large transparent margins. Fit the mark, not that empty canvas. */
-export function decodeGameLogo(src?: string, steamId?: number): Promise<GameLogoArt | undefined> {
-  if (!src) return Promise.resolve(undefined);
-  const key = `${src}|${steamId ?? ""}`;
-  let pending = decoded.get(key);
-  if (!pending) {
-    pending = measureGameLogo(src, steamId);
-    decoded.set(key, pending);
-    void pending.catch(() => decoded.delete(key));
-    if (decoded.size > DECODE_CACHE_MAX) decoded.delete(decoded.keys().next().value!);
-  }
-  return pending;
-}
+export const decodeGameLogo = createLogoDecodeCache((src, steamId) => measureGameLogo(src, steamId));
 
 async function measureGameLogo(src: string, steamId?: number): Promise<GameLogoArt | undefined> {
   const image = new Image();

@@ -1,6 +1,6 @@
 {
   "name": "compass-setup",
-  "version": "0.9.139",
+  "version": "0.9.140",
   "private": true,
   "type": "module",
   "scripts": {

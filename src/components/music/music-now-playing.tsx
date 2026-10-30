@@ -55,6 +55,8 @@ import {
   isMusicVideoActive,
 } from "@/lib/music/player";
 import { loadTrackLyrics, lyricIndexAt, type LyricLine } from "@/lib/music/lyrics";
+import { useLyricTranslation } from "@/lib/music/use-lyric-translation";
+import { LyricTranslateControl } from "./lyric-translate-control";
 import {
   LYRIC_OFFSET_STEP,
   getLyricOffset,
@@ -278,6 +280,7 @@ export function MusicNowPlaying({
     },
     [current],
   );
+  const lyricTranslation = useLyricTranslation(lyrics.length ? lyrics : null, current ? `${current.connectorId ?? ""}:${current.id ?? ""}:${current.title ?? ""}` : "");
   const activeLyric = lyricIndexAt(lyrics, shiftedLyricTime(player.currentTime, lyricOffset));
   useEffect(() => {
     if (!current) return;
@@ -690,8 +693,9 @@ export function MusicNowPlaying({
                           +
                         </button>
                       </div>
+                      <LyricTranslateControl translation={lyricTranslation} />
                       <ol ref={lyricsRef} className="music-now-lyrics">
-                        {lyrics.map((line, index) => (
+                        {lyricTranslation.shown.map((line, index) => (
                           <li
                             key={`${line.at}:${index}`}
                             data-active={index === activeLyric ? "1" : undefined}
@@ -699,6 +703,7 @@ export function MusicNowPlaying({
                             {line.text ? (
                               <button type="button" onClick={() => seekMusic(line.at)}>
                                 {line.text}
+                                {line.translation ? <span className="music-now-lyric-translation" lang={lyricTranslation.target}>{line.translation}</span> : null}
                               </button>
                             ) : (
                               <span className="music-now-lyric-rest" aria-hidden="true" />

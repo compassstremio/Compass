@@ -10,7 +10,9 @@
           "items": [
             "Rate a title 8 or higher and Discover suggests more like it. Rate it 4 or lower and it suggests less.",
             "New installs keep the same source when the next episode starts, so quality and release group stay consistent through a series.",
-            "Adult addons can no longer be shown. Adult content is always hidden."
+            "Adult addons can no longer be shown. Adult content is always hidden.",
+            "Song lyrics can now be translated into your language, with the original line kept above the translation.",
+            "Game logos that failed to load now come back instead of staying missing."
           ]
         },
         {
@@ -34,6 +36,22 @@
           "items": [
             "Removed the Adult button, the age check and the adult category from the Addons room. Adult addons are no longer listed in the catalog or spotlight.",
             "Removed Hide adult content from Settings, Library, because it can no longer be turned off. A synced profile cannot switch it off either."
+          ]
+        },
+        {
+          "heading": "Games",
+          "items": [
+            "Game logos that failed to load once now retry instead of staying missing until you restart Compass.",
+            "The game page now uses the current Steam library logo first, the same one the browse pages show, and falls back to the older logo only if it is missing.",
+            "The seasonal showcase now uses the corrected publisher logos, and a logo no longer carries over from the previous game.",
+            "Small emblem logos no longer hide the game name on the game page."
+          ]
+        },
+        {
+          "heading": "Music",
+          "items": [
+            "Lyrics can now be translated. Turn on Translate lyrics in the lyrics view or Karaoke and pick a language. The original line stays on screen with the translation under it, and the timing is unchanged. It is off by default and uses your AI key from Settings if you have one, otherwise a free online translator.",
+            "Compass now shares the artist, album, cover and playback time of the current song with Windows media controls, so tools such as WebNowPlaying and Rainmeter skins can show them. WebNowPlaying has no lyrics support, so lyrics are not shared."
           ]
         }
       ]

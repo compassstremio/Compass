@@ -1,0 +1,28 @@
+{
+  "channel": "beta",
+  "notes": {
+    "0.9.142": {
+      "title": "Compass Beta 0.9.142",
+      "intro": "Small motion polish across the interface. Switching rooms and pressing posters now feel smoother.",
+      "sections": [
+        {
+          "heading": "Search",
+          "items": [
+            "Search (Ctrl+K) can now jump straight to a room or a settings page. Type a name like \"anime\", \"downloads\" or \"subtitles\" and pick it from the new Go to and Settings lists. Locked tabs and kid profiles are left out."
+          ]
+        },
+        {
+          "heading": "Polish",
+          "items": [
+            "Switching between rooms now fades in quickly instead of cutting hard, and rooms that load for the first time fade in instead of popping in after a blank screen. Reduced-motion users keep the instant switch.",
+            "Poster cards respond to a press with a small dip, and their hover lift is a little snappier.",
+            "Overlays, scrims and lift-in panels now open with a snappier ease-out curve, and the search scrim closes the same way.",
+            "The badge pop animation grows in from a visible size instead of from nothing.",
+            "Hover transitions on the back button, top dock buttons, the Nord sidebar avatar ring, hero slide pips, the anime hero tooltip, avatar delete buttons, home hero arrows and pips, the source picker, addon install buttons and search suggestion chips now animate only the properties that change.",
+            "About 130 more hover and press transitions across the app (manga reader, library, live TV, profile picker, player menus, collections and more) now animate only the properties that actually change, which avoids needless repaints."
+          ]
+        }
+      ]
+    }
+  }
+}

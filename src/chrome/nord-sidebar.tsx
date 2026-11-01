@@ -268,7 +268,7 @@ function Station({
             ) : (
               <span
                 aria-hidden
-                className="absolute inset-0 rounded-full bg-canvas ring-[1.5px] ring-[#4c566a] transition-all duration-200 group-hover:ring-[#88c0d0]"
+                className="absolute inset-0 rounded-full bg-canvas ring-[1.5px] ring-[#4c566a] transition-shadow duration-200 group-hover:ring-[#88c0d0]"
               />
             )}
             <span className="relative overflow-hidden [&_svg]:h-[24px] [&_svg]:w-[24px]">

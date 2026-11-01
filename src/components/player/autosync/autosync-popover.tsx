@@ -321,7 +321,7 @@ function PrimaryBtn({ icon, label, onClick, busy }: { icon: ReactNode; label: st
       type="button"
       onClick={onClick}
       disabled={busy}
-      className="flex h-9 items-center gap-1.5 whitespace-nowrap rounded-md bg-accent px-3 text-[13px] font-semibold text-canvas transition-all hover:brightness-110 active:scale-95 disabled:opacity-70 motion-reduce:transition-none motion-reduce:active:scale-100"
+      className="flex h-9 items-center gap-1.5 whitespace-nowrap rounded-md bg-accent px-3 text-[13px] font-semibold text-canvas transition-[filter,transform,opacity] hover:brightness-110 active:scale-95 disabled:opacity-70 motion-reduce:transition-none motion-reduce:active:scale-100"
     >
       {busy ? <Loader2 size={14} strokeWidth={2.4} className="animate-spin motion-reduce:animate-none" /> : icon}
       {label}

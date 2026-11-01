@@ -83,14 +83,14 @@ export function CopyLinkButton({
       <Icon
         size={size}
         strokeWidth={2}
-        className={`absolute transition-all duration-200 ease-[cubic-bezier(0.34,1.56,0.64,1)] ${
+        className={`absolute transition-[transform,opacity] duration-200 ease-[cubic-bezier(0.34,1.56,0.64,1)] ${
           copied ? "scale-50 opacity-0" : "scale-100 opacity-100"
         }`}
       />
       <Check
         size={size + 1}
         strokeWidth={2.6}
-        className={`absolute transition-all duration-200 ease-[cubic-bezier(0.34,1.56,0.64,1)] ${
+        className={`absolute transition-[transform,opacity] duration-200 ease-[cubic-bezier(0.34,1.56,0.64,1)] ${
           copied ? "scale-100 opacity-100" : "scale-50 opacity-0"
         }`}
       />

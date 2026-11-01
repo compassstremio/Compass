@@ -181,7 +181,7 @@ export function StremioStep() {
       <div className="flex flex-col gap-2">
         <button
           onClick={goToForm}
-          className="group flex h-14 items-center justify-center gap-3 rounded-2xl border border-edge bg-canvas/60 px-6 transition-all hover:border-ink-subtle/40 hover:bg-canvas"
+          className="group flex h-14 items-center justify-center gap-3 rounded-2xl border border-edge bg-canvas/60 px-6 transition-[border-color,background-color] hover:border-ink-subtle/40 hover:bg-canvas"
         >
           <span className="text-[14.5px] font-medium text-ink">{t("Sign in with")}</span>
           <img

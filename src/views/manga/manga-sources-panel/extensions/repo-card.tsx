@@ -140,7 +140,7 @@ export function RepoCard({ url, onRemove }: { url: string; onRemove: () => void 
             type="button"
             onClick={() => setAttempt((n) => n + 1)}
             aria-label={t("Retry loading repository")}
-            className="grid h-9 w-9 shrink-0 place-items-center rounded-lg bg-raised text-ink-subtle ring-1 ring-edge-soft transition-all hover:text-ink active:scale-95"
+            className="grid h-9 w-9 shrink-0 place-items-center rounded-lg bg-raised text-ink-subtle ring-1 ring-edge-soft transition-[color,transform] hover:text-ink active:scale-95"
           >
             <RefreshCw size={16} />
           </button>
@@ -151,7 +151,7 @@ export function RepoCard({ url, onRemove }: { url: string; onRemove: () => void 
             onClick={updateAll}
             disabled={updateBusy}
             aria-label={t("Update all")}
-            className="flex h-9 shrink-0 items-center gap-1.5 rounded-lg bg-raised px-3 text-[13px] font-semibold text-accent ring-1 ring-edge-soft transition-all hover:opacity-90 active:scale-95 disabled:opacity-60"
+            className="flex h-9 shrink-0 items-center gap-1.5 rounded-lg bg-raised px-3 text-[13px] font-semibold text-accent ring-1 ring-edge-soft transition-[opacity,transform] hover:opacity-90 active:scale-95 disabled:opacity-60"
           >
             {updateBusy ? (
               <>
@@ -170,7 +170,7 @@ export function RepoCard({ url, onRemove }: { url: string; onRemove: () => void 
           type="button"
           onClick={remove}
           aria-label={t("Remove repository")}
-          className="grid h-9 w-9 shrink-0 place-items-center rounded-lg bg-raised text-ink-subtle ring-1 ring-edge-soft transition-all hover:text-danger active:scale-95"
+          className="grid h-9 w-9 shrink-0 place-items-center rounded-lg bg-raised text-ink-subtle ring-1 ring-edge-soft transition-[color,transform] hover:text-danger active:scale-95"
         >
           <Trash2 size={16} />
         </button>

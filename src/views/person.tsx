@@ -190,7 +190,7 @@ export function PersonView({ personId }: { personId: number }) {
                   onClick={() =>
                     openTopRank((person?.knownForDepartment as TopRankDept) ?? "Acting")
                   }
-                  className="flex items-center gap-1 rounded-md border border-accent/30 bg-accent/10 px-2 py-0.5 text-[11px] font-bold uppercase tracking-[0.14em] text-accent transition-all hover:scale-105 hover:border-accent/60 hover:bg-accent/20"
+                  className="flex items-center gap-1 rounded-md border border-accent/30 bg-accent/10 px-2 py-0.5 text-[11px] font-bold uppercase tracking-[0.14em] text-accent transition-[transform,border-color,background-color] hover:scale-105 hover:border-accent/60 hover:bg-accent/20"
                   title={t("Open Top 100 {dept}", { dept: departmentLabel ?? t("Actors") })}
                 >
                   {t("Top {n}", { n: personRank })}

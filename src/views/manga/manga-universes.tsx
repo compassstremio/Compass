@@ -117,7 +117,7 @@ export function UniversesCta({ onClick }: { onClick: () => void }) {
     <button
       type="button"
       onClick={onClick}
-      className="group relative flex min-h-[84px] items-center gap-4 overflow-hidden rounded-2xl border border-edge-soft bg-elevated/40 px-6 py-4 text-start transition-all duration-300 hover:bg-elevated/70 active:scale-[0.99]"
+      className="group relative flex min-h-[84px] items-center gap-4 overflow-hidden rounded-2xl border border-edge-soft bg-elevated/40 px-6 py-4 text-start transition-[background-color,transform] duration-300 hover:bg-elevated/70 active:scale-[0.99]"
     >
       {MANGA_UNIVERSES.map((u, idx) => (
         <BannerLayer key={u.id} name={u.query} backdrop={u.backdrop} active={idx === i} />
@@ -248,7 +248,7 @@ export function MangaUniverses({
       <button
         type="button"
         onClick={onBack}
-        className="inline-flex w-fit items-center gap-1.5 rounded-xl bg-elevated px-4 py-2.5 text-[15px] font-medium text-ink shadow-[0_2px_8px_-2px_rgba(0,0,0,0.4)] ring-1 ring-edge-soft transition-all hover:bg-raised active:scale-[0.97]"
+        className="inline-flex w-fit items-center gap-1.5 rounded-xl bg-elevated px-4 py-2.5 text-[15px] font-medium text-ink shadow-[0_2px_8px_-2px_rgba(0,0,0,0.4)] ring-1 ring-edge-soft transition-[background-color,transform] hover:bg-raised active:scale-[0.97]"
       >
         <ChevronLeft size={19} strokeWidth={2.4} />
         {t("Back")}

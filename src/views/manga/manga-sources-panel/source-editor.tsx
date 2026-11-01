@@ -105,7 +105,7 @@ export function SourceEditor({ source, onDone }: { source: MangaSource; onDone: 
           type="button"
           onClick={save}
           disabled={saving}
-          className="inline-flex h-11 items-center gap-2 rounded-xl bg-accent px-5 text-[14px] font-semibold text-canvas transition-all hover:brightness-110 active:scale-[0.97] disabled:opacity-70 motion-reduce:transition-none motion-reduce:active:scale-100"
+          className="inline-flex h-11 items-center gap-2 rounded-xl bg-accent px-5 text-[14px] font-semibold text-canvas transition-[filter,transform,opacity] hover:brightness-110 active:scale-[0.97] disabled:opacity-70 motion-reduce:transition-none motion-reduce:active:scale-100"
         >
           {saving ? (
             <Loader2 size={16} className="animate-spin motion-reduce:animate-none" />

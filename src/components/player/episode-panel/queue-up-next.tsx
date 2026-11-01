@@ -122,7 +122,7 @@ export function QueueUpNext({
               aria-label={t("Remove from queue")}
               title={t("Remove from queue")}
               onClick={() => queueRemove(item.id)}
-              className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg text-ink-subtle opacity-0 transition-all hover:bg-canvas/60 hover:text-ink focus-visible:opacity-100 group-hover:opacity-100"
+              className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg text-ink-subtle opacity-0 transition-[background-color,color,opacity] hover:bg-canvas/60 hover:text-ink focus-visible:opacity-100 group-hover:opacity-100"
             >
               <Trash2 size={14} strokeWidth={2} />
             </button>

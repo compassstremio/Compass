@@ -259,7 +259,7 @@ function ChapterMenu({
       </span>
       {open && (
         <div
-          className={`absolute top-[calc(100%+10px)] z-50 w-72 origin-top overflow-hidden rounded-2xl border border-edge bg-surface/95 shadow-[0_24px_60px_-20px_rgba(0,0,0,0.55)] backdrop-blur-xl transition-all duration-200 ${shown ? "scale-100 opacity-100" : "scale-[0.97] opacity-0"}`}
+          className={`absolute top-[calc(100%+10px)] z-50 w-72 origin-top overflow-hidden rounded-2xl border border-edge bg-surface/95 shadow-[0_24px_60px_-20px_rgba(0,0,0,0.55)] backdrop-blur-xl transition-[border-color,background-color,box-shadow,transform,opacity] duration-200 ${shown ? "scale-100 opacity-100" : "scale-[0.97] opacity-0"}`}
         >
           <div className="relative flex items-center justify-between gap-2 border-b border-edge-soft/70 px-3.5 py-2.5">
             {multiSource ? (

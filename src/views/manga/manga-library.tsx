@@ -260,7 +260,7 @@ export function MangaLibrary({ scrollRef }: { scrollRef: React.RefObject<HTMLEle
         <div className="relative flex flex-col gap-2">
           <span
             aria-hidden
-            className={`absolute left-0 top-0 h-10 w-10 rounded-full bg-accent transition-all duration-300 ease-[cubic-bezier(0.34,1.56,0.64,1)] motion-reduce:transition-none ${
+            className={`absolute left-0 top-0 h-10 w-10 rounded-full bg-accent transition-[background-color,transform,opacity] duration-300 ease-[cubic-bezier(0.34,1.56,0.64,1)] motion-reduce:transition-none ${
               active === "lists" ? "translate-y-[48px] opacity-100" : "translate-y-0 opacity-100"
             }`}
           />

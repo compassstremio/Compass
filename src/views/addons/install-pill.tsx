@@ -60,7 +60,7 @@ export function InstallPill({
     return (
       <button
         onClick={runUninstall}
-        className="group/pill flex h-9 shrink-0 items-center justify-center gap-1.5 rounded-full bg-elevated/70 px-5 text-[13.5px] font-semibold text-ink ring-1 ring-edge-soft transition-all duration-150 ease-out hover:bg-danger/15 hover:text-danger hover:ring-danger/30 active:scale-[0.96]"
+        className="group/pill flex h-9 shrink-0 items-center justify-center gap-1.5 rounded-full bg-elevated/70 px-5 text-[13.5px] font-semibold text-ink ring-1 ring-edge-soft transition-[background-color,color,box-shadow,transform] duration-150 ease-out hover:bg-danger/15 hover:text-danger hover:ring-danger/30 active:scale-[0.96]"
       >
         <Check size={14} strokeWidth={2.6} className="block text-accent group-hover/pill:hidden" />
         <X size={14} strokeWidth={2.6} className="hidden group-hover/pill:block" />
@@ -78,7 +78,7 @@ export function InstallPill({
           e.stopPropagation();
           onOpen();
         }}
-        className="flex h-9 shrink-0 items-center justify-center gap-1.5 rounded-full bg-ink px-5 text-[13.5px] font-semibold text-canvas transition-all duration-150 ease-out hover:opacity-90 active:scale-[0.96]"
+        className="flex h-9 shrink-0 items-center justify-center gap-1.5 rounded-full bg-ink px-5 text-[13.5px] font-semibold text-canvas transition-[opacity,transform] duration-150 ease-out hover:opacity-90 active:scale-[0.96]"
       >
         <Settings2 size={14} strokeWidth={2.2} />
         {t("Set up")}
@@ -88,7 +88,7 @@ export function InstallPill({
   return (
     <button
       onClick={runInstall}
-      className="flex h-9 shrink-0 items-center justify-center gap-1.5 rounded-full bg-ink px-5 text-[13.5px] font-semibold text-canvas transition-all duration-150 ease-out hover:opacity-90 active:scale-[0.96]"
+      className="flex h-9 shrink-0 items-center justify-center gap-1.5 rounded-full bg-ink px-5 text-[13.5px] font-semibold text-canvas transition-[opacity,transform] duration-150 ease-out hover:opacity-90 active:scale-[0.96]"
     >
       <Plus size={14} strokeWidth={2.6} />
       {t("Install")}

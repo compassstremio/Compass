@@ -128,7 +128,7 @@ function BookmarkRow({
         aria-label={t("Remove")}
         title={t("Remove")}
         onClick={onRemove}
-        className="flex h-7 w-7 items-center justify-center rounded-lg text-ink-subtle opacity-0 transition-all hover:bg-canvas/60 hover:text-ink focus-visible:opacity-100 group-hover:opacity-100"
+        className="flex h-7 w-7 items-center justify-center rounded-lg text-ink-subtle opacity-0 transition-[background-color,color,opacity] hover:bg-canvas/60 hover:text-ink focus-visible:opacity-100 group-hover:opacity-100"
       >
         <Trash2 size={14} strokeWidth={2} />
       </button>

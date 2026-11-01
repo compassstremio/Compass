@@ -65,7 +65,7 @@ export function TileCard({
       <button
         onClick={handle}
         disabled={installed || installing}
-        className={`relative mt-auto flex h-11 items-center justify-center gap-1.5 rounded-full px-5 text-[13.5px] font-semibold transition-all duration-150 ease-out active:scale-[0.96] ${
+        className={`relative mt-auto flex h-11 items-center justify-center gap-1.5 rounded-full px-5 text-[13.5px] font-semibold transition-[transform,background-color,color,box-shadow,opacity] duration-150 ease-out active:scale-[0.96] ${
           installed
             ? "bg-emerald-500/15 text-emerald-300 ring-1 ring-emerald-500/30"
             : installing

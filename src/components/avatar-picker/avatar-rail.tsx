@@ -154,7 +154,7 @@ function RailItem({
           type="button"
           onClick={onExport}
           aria-label={t("Export pack")}
-          className="absolute end-8 flex h-6 w-6 items-center justify-center rounded-md text-ink-subtle opacity-0 transition-all hover:bg-elevated hover:text-ink group-hover/row:opacity-100"
+          className="absolute end-8 flex h-6 w-6 items-center justify-center rounded-md text-ink-subtle opacity-0 transition-[background-color,color,opacity] hover:bg-elevated hover:text-ink group-hover/row:opacity-100"
         >
           <Download size={13} strokeWidth={2.2} />
         </button>
@@ -164,7 +164,7 @@ function RailItem({
           type="button"
           onClick={onDelete}
           aria-label={t("Remove pack")}
-          className="absolute end-1.5 flex h-6 w-6 items-center justify-center rounded-md text-ink-subtle opacity-0 transition-all hover:bg-danger/15 hover:text-danger group-hover/row:opacity-100"
+          className="absolute end-1.5 flex h-6 w-6 items-center justify-center rounded-md text-ink-subtle opacity-0 transition-[background-color,color,opacity] hover:bg-danger/15 hover:text-danger group-hover/row:opacity-100"
         >
           <Trash2 size={13} strokeWidth={2.2} />
         </button>

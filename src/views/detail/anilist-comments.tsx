@@ -517,7 +517,7 @@ export function AnilistComments({ compassId }: { compassId: string | null }) {
               <button
                 onClick={handleCreateThread}
                 disabled={!threadTitle.trim() || creatingThread}
-                className={`flex h-9 items-center gap-1.5 rounded-lg px-3.5 text-[13px] font-semibold transition-all ${
+                className={`flex h-9 items-center gap-1.5 rounded-lg px-3.5 text-[13px] font-semibold transition-[background-color,color,transform] ${
                   !threadTitle.trim() || creatingThread
                     ? "bg-ink-muted/20 text-ink-muted/50 cursor-not-allowed"
                     : "bg-ink text-canvas hover:scale-[1.02]"
@@ -582,7 +582,7 @@ export function AnilistComments({ compassId }: { compassId: string | null }) {
                     <button
                       onClick={handlePostComment}
                       disabled={!commentText.trim() || posting}
-                      className={`flex h-9 shrink-0 items-center gap-1.5 rounded-xl px-3.5 text-[13px] font-semibold transition-all ${
+                      className={`flex h-9 shrink-0 items-center gap-1.5 rounded-xl px-3.5 text-[13px] font-semibold transition-[background-color,color,transform] ${
                         !commentText.trim() || posting
                           ? "bg-ink-muted/20 text-ink-muted/50 cursor-not-allowed"
                           : "bg-ink text-canvas hover:scale-[1.02]"

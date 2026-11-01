@@ -646,7 +646,7 @@ function CommunityDetail({
                   <ResultPoster
                     id={item.id}
                     poster={item.poster}
-                    className="ring-1 ring-transparent transition-all duration-200 group-hover/poster:ring-edge"
+                    className="ring-1 ring-transparent transition-[box-shadow] duration-200 group-hover/poster:ring-edge"
                   />
                 </div>
                 <span className="line-clamp-2 text-[12.5px] leading-tight text-ink-muted">

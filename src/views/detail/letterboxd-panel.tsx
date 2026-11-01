@@ -321,7 +321,7 @@ function LetterboxdPanelInner({ meta, imdbId }: { meta: Meta; imdbId: string | n
                         const next = isFirstHalf ? starIndex - 0.5 : starIndex;
                         setPendingRating((prev) => (prev === next ? prev : next));
                       }}
-                      className="group/star relative flex h-11 w-11 items-center justify-center rounded-xl transition-all duration-150 hover:scale-110 hover:bg-amber-400/10 active:scale-95"
+                      className="group/star relative flex h-11 w-11 items-center justify-center rounded-xl transition-[transform,background-color] duration-150 hover:scale-110 hover:bg-amber-400/10 active:scale-95"
                       aria-label={`${(starIndex - 0.5).toFixed(1)} to ${starIndex}.0 stars`}
                     >
                       {isFull ? (
@@ -368,7 +368,7 @@ function LetterboxdPanelInner({ meta, imdbId }: { meta: Meta; imdbId: string | n
                   <button
                     onClick={() => pendingRating != null && performRate(pendingRating)}
                     disabled={!!actionBusy || pendingRating == null}
-                    className="flex items-center gap-1.5 rounded-lg bg-amber-400/90 px-4 py-2 text-[12.5px] font-semibold text-canvas transition-all hover:bg-amber-400 active:scale-95 disabled:opacity-40"
+                    className="flex items-center gap-1.5 rounded-lg bg-amber-400/90 px-4 py-2 text-[12.5px] font-semibold text-canvas transition-[background-color,transform,opacity] hover:bg-amber-400 active:scale-95 disabled:opacity-40"
                   >
                     {actionBusy === "rate" ? <Loader2 size={13} className="animate-spin" /> : <Star size={13} fill="currentColor" />}
                     {t("Submit")}

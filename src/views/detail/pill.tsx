@@ -10,7 +10,7 @@ export function Pill({
       <button
         type="button"
         onClick={onClick}
-        className="flex items-center gap-1.5 rounded-full bg-canvas/85 px-3 py-1 transition-all hover:scale-[1.04] hover:bg-canvas"
+        className="flex items-center gap-1.5 rounded-full bg-canvas/85 px-3 py-1 transition-[transform,background-color] hover:scale-[1.04] hover:bg-canvas"
       >
         {children}
       </button>

@@ -42,7 +42,7 @@ function AbLoopChip({ ab, visible }: { ab: AbLoopState; visible: boolean }) {
   const t = useT();
   return (
     <div
-      className={`pointer-events-none absolute start-7 top-24 z-30 transition-all duration-200 ease-out ${
+      className={`pointer-events-none absolute start-7 top-24 z-30 transition-[opacity,transform] duration-200 ease-out ${
         visible ? "opacity-100 translate-y-0" : "opacity-0 -translate-y-1"
       }`}
     >

@@ -216,7 +216,7 @@ export function FeedRow({
             type="button"
             onClick={dismiss}
             aria-label={t("Dismiss notification")}
-            className="absolute inset-0 grid place-items-center rounded-full text-ink-subtle opacity-0 outline-none transition-all duration-150 hover:bg-elevated hover:text-ink focus-visible:opacity-100 group-hover:opacity-100"
+            className="absolute inset-0 grid place-items-center rounded-full text-ink-subtle opacity-0 outline-none transition-[background-color,color,opacity] duration-150 hover:bg-elevated hover:text-ink focus-visible:opacity-100 group-hover:opacity-100"
           >
             <X size={14} strokeWidth={2.4} />
           </button>

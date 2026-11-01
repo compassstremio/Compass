@@ -136,7 +136,7 @@ export function LooksCluster({ settings, update }: { settings: Settings; update:
               : t("No unsaved changes")
             : t("Save this look")
         }
-        className={`flex h-8 items-center gap-1.5 rounded-[8px] px-3 text-[13px] font-semibold transition-all ${
+        className={`flex h-8 items-center gap-1.5 rounded-[8px] px-3 text-[13px] font-semibold transition-[color,background-color,filter] ${
           isSaved ? "cursor-default text-ink-subtle/55" : "bg-accent text-canvas hover:brightness-110"
         }`}
       >

@@ -134,7 +134,7 @@ function AwardChip({
       type="button"
       onClick={(e) => onClick(e.currentTarget.getBoundingClientRect())}
       title={tr("{label} details", { label: labelFor(type) })}
-      className="group relative flex h-14 shrink-0 items-center gap-2.5 rounded-full border border-edge-soft bg-canvas/50 ps-1.5 pe-4 transition-all hover:border-edge hover:bg-canvas/80 hover:scale-[1.03]"
+      className="group relative flex h-14 shrink-0 items-center gap-2.5 rounded-full border border-edge-soft bg-canvas/50 ps-1.5 pe-4 transition-[border-color,background-color,transform] hover:border-edge hover:bg-canvas/80 hover:scale-[1.03]"
     >
       <span className="text-ink-muted" style={tint ? { color: tint } : undefined}>
         <Laurel size={48}>

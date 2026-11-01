@@ -44,7 +44,7 @@ export function AnilistMangaRows({ onOpen }: { onOpen: (item: MangaSummary) => v
               type="button"
               onClick={() => setActive(i)}
               aria-pressed={i === idx}
-              className={`inline-flex items-center gap-1.5 rounded-full px-3 py-1 text-[12.5px] font-medium transition-all duration-200 active:scale-95 motion-reduce:transition-none motion-reduce:active:scale-100 ${
+              className={`inline-flex items-center gap-1.5 rounded-full px-3 py-1 text-[12.5px] font-medium transition-[transform,background-color,color,box-shadow] duration-200 active:scale-95 motion-reduce:transition-none motion-reduce:active:scale-100 ${
                 i === idx
                   ? "bg-accent text-canvas"
                   : "bg-elevated/40 text-ink-muted ring-1 ring-edge-soft hover:bg-elevated/70 hover:text-ink"

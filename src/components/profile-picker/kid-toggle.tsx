@@ -21,7 +21,7 @@ export function KidToggle({
     <div
       onMouseEnter={() => setHover(true)}
       onMouseLeave={() => setHover(false)}
-      className={`relative overflow-hidden rounded-2xl border p-4 transition-all duration-500 ${
+      className={`relative overflow-hidden rounded-2xl border p-4 transition-[border-color,box-shadow,background-color] duration-500 ${
         on
           ? "border-[#6bc5ca]/60 shadow-[0_14px_36px_-14px_rgba(15,82,119,0.7)]"
           : "border-edge-soft bg-canvas/40"

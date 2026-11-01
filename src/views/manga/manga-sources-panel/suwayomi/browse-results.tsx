@@ -23,7 +23,7 @@ function ModeTab({
     <button
       type="button"
       onClick={onClick}
-      className={`h-9 rounded-lg px-4 text-[13.5px] font-semibold transition-all active:scale-[0.97] motion-reduce:active:scale-100 ${
+      className={`h-9 rounded-lg px-4 text-[13.5px] font-semibold transition-[transform,background-color,color,box-shadow] active:scale-[0.97] motion-reduce:active:scale-100 ${
         active
           ? "bg-accent text-canvas"
           : "bg-raised text-ink-muted ring-1 ring-edge-soft hover:text-ink"
@@ -90,7 +90,7 @@ export function BrowseResults({
         <button
           type="button"
           onClick={onBack}
-          className="inline-flex items-center gap-1.5 rounded-xl bg-elevated px-3.5 py-2.5 text-[14px] font-medium text-ink ring-1 ring-edge-soft transition-all hover:bg-raised active:scale-[0.97] motion-reduce:active:scale-100"
+          className="inline-flex items-center gap-1.5 rounded-xl bg-elevated px-3.5 py-2.5 text-[14px] font-medium text-ink ring-1 ring-edge-soft transition-[background-color,transform] hover:bg-raised active:scale-[0.97] motion-reduce:active:scale-100"
         >
           <ChevronLeft size={18} strokeWidth={2.4} />
           {t("Sources")}
@@ -117,7 +117,7 @@ export function BrowseResults({
         <button
           type="button"
           onClick={query ? clear : submit}
-          className="absolute end-2 top-1/2 h-9 -translate-y-1/2 rounded-lg bg-raised px-3.5 text-[13px] font-semibold text-ink-muted ring-1 ring-edge-soft transition-all hover:text-ink active:scale-95 motion-reduce:active:scale-100"
+          className="absolute end-2 top-1/2 h-9 -translate-y-1/2 rounded-lg bg-raised px-3.5 text-[13px] font-semibold text-ink-muted ring-1 ring-edge-soft transition-[color,transform] hover:text-ink active:scale-95 motion-reduce:active:scale-100"
         >
           {query ? t("Clear") : t("Search")}
         </button>
@@ -152,7 +152,7 @@ export function BrowseResults({
           <button
             type="button"
             onClick={feed.retry}
-            className="inline-flex h-10 items-center gap-2 rounded-xl bg-raised px-5 text-[13.5px] font-semibold text-ink-muted ring-1 ring-edge-soft transition-all hover:text-ink active:scale-95 motion-reduce:active:scale-100"
+            className="inline-flex h-10 items-center gap-2 rounded-xl bg-raised px-5 text-[13.5px] font-semibold text-ink-muted ring-1 ring-edge-soft transition-[color,transform] hover:text-ink active:scale-95 motion-reduce:active:scale-100"
           >
             <RefreshCw size={15} strokeWidth={2.2} />
             {t("Retry")}

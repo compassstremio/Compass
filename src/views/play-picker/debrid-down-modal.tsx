@@ -44,7 +44,7 @@ export function DebridDownModal({
           <button
             type="button"
             onClick={onBack}
-            className="flex h-12 items-center gap-2 rounded-xl border border-white/15 bg-white/5 px-6 text-[14px] font-medium text-white/75 backdrop-blur-md transition-all hover:border-white/30 hover:bg-white/10 hover:text-white"
+            className="flex h-12 items-center gap-2 rounded-xl border border-white/15 bg-white/5 px-6 text-[14px] font-medium text-white/75 backdrop-blur-md transition-[border-color,background-color,color] hover:border-white/30 hover:bg-white/10 hover:text-white"
           >
             Back
           </button>

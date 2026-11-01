@@ -41,7 +41,7 @@ export function CategoryGrid({ onCategorySelect }: { onCategorySelect: (cat: str
             tabIndex={0}
             onClick={() => onCategorySelect(tile.cat)}
             onKeyDown={(e) => (e.key === "Enter" || e.key === " ") && onCategorySelect(tile.cat)}
-            className="group relative flex h-[120px] cursor-pointer overflow-hidden rounded-2xl border border-edge-soft transition-all hover:border-edge"
+            className="group relative flex h-[120px] cursor-pointer overflow-hidden rounded-2xl border border-edge-soft transition-[border-color] hover:border-edge"
           >
             <div className={`absolute inset-0 bg-gradient-to-br ${tile.accent}`} />
             <div className="absolute inset-0 bg-gradient-to-t from-canvas/85 via-canvas/30 to-transparent" />

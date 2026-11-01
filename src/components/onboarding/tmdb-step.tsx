@@ -112,7 +112,7 @@ export function TmdbStep() {
         <button
           onClick={validate}
           disabled={!draft.trim() || status === "checking" || status === "ok"}
-          className={`flex h-12 min-w-[112px] items-center justify-center gap-1.5 rounded-xl px-5 text-[14px] font-semibold transition-all duration-300 ${
+          className={`flex h-12 min-w-[112px] items-center justify-center gap-1.5 rounded-xl px-5 text-[14px] font-semibold transition-[background-color,color,transform,opacity] duration-300 ${
             status === "ok"
               ? "bg-accent-soft text-accent"
               : "bg-ink text-canvas hover:scale-[1.02] active:scale-[0.98] disabled:scale-100 disabled:opacity-50"

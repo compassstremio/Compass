@@ -70,7 +70,7 @@ export function SourceDrawer({
       <button
         onClick={onToggle}
         aria-expanded={open}
-        className="group flex w-fit items-center gap-3 rounded-full border border-edge-soft/70 bg-canvas/70 px-4 py-2 text-[11.5px] font-semibold uppercase tracking-[0.22em] text-ink-muted transition-all hover:border-edge hover:bg-canvas/90 hover:text-ink"
+        className="group flex w-fit items-center gap-3 rounded-full border border-edge-soft/70 bg-canvas/70 px-4 py-2 text-[11.5px] font-semibold uppercase tracking-[0.22em] text-ink-muted transition-[border-color,background-color,color] hover:border-edge hover:bg-canvas/90 hover:text-ink"
       >
         <ChevronDown
           size={14}
@@ -280,14 +280,14 @@ function SourceRow({
               <ExternalLink
                 size={14}
                 strokeWidth={2.2}
-                className="text-ink-muted/50 transition-all group-hover:text-ink"
+                className="text-ink-muted/50 transition-colors group-hover:text-ink"
               />
             ) : (
               <Play
                 size={15}
                 fill="currentColor"
                 strokeWidth={0}
-                className="text-ink-muted/50 transition-all group-hover:translate-x-0.5 group-hover:text-ink"
+                className="text-ink-muted/50 transition-[color,transform] group-hover:translate-x-0.5 group-hover:text-ink"
               />
             )}
           </div>

@@ -129,7 +129,7 @@ function Form({
       <div className="media-start-inner flex flex-col gap-8">
         <button
           onClick={onBack}
-          className="group inline-flex h-11 items-center gap-2 self-start rounded-lg border border-edge-soft bg-elevated/60 ps-3.5 pe-5 text-[14px] font-semibold text-ink-muted transition-all duration-150 ease-out hover:border-edge hover:bg-elevated hover:text-ink active:scale-[0.97]"
+          className="group inline-flex h-11 items-center gap-2 self-start rounded-lg border border-edge-soft bg-elevated/60 ps-3.5 pe-5 text-[14px] font-semibold text-ink-muted transition-[border-color,background-color,color,transform] duration-150 ease-out hover:border-edge hover:bg-elevated hover:text-ink active:scale-[0.97]"
         >
           <ArrowLeft
             size={16}
@@ -158,7 +158,7 @@ function Form({
                 type="button"
                 aria-pressed={selected}
                 onClick={() => setKind(k.id)}
-                className={`group flex items-center gap-4 rounded-lg border px-5 py-4 text-start transition-all duration-150 ${
+                className={`group flex items-center gap-4 rounded-lg border px-5 py-4 text-start transition-[border-color,background-color] duration-150 ${
                   selected
                     ? "border-ink/40 bg-elevated"
                     : "border-edge-soft/60 bg-elevated/30 hover:border-edge hover:bg-elevated/55"
@@ -298,7 +298,7 @@ function Form({
             <button
               disabled={!canSave}
               onClick={submit}
-              className="flex h-12 items-center gap-2 rounded-lg bg-ink px-6 text-[14px] font-semibold text-canvas transition-all duration-150 ease-out hover:opacity-90 active:scale-[0.97] disabled:cursor-not-allowed disabled:opacity-30"
+              className="flex h-12 items-center gap-2 rounded-lg bg-ink px-6 text-[14px] font-semibold text-canvas transition-[opacity,transform] duration-150 ease-out hover:opacity-90 active:scale-[0.97] disabled:cursor-not-allowed disabled:opacity-30"
             >
               {t("Save and continue")}
               <ArrowRight size={15} strokeWidth={2.4} className="dir-icon" />

@@ -318,7 +318,7 @@ export function HeroCarousel({
               <NavChevron
                 dir="left"
                 size={40}
-                className="text-white/90 opacity-0 drop-shadow-[0_2px_10px_rgba(0,0,0,0.8)] transition-all duration-200 group-hover/hl:opacity-100 group-active/hl:scale-90"
+                className="text-white/90 opacity-0 drop-shadow-[0_2px_10px_rgba(0,0,0,0.8)] transition-[opacity,transform] duration-200 group-hover/hl:opacity-100 group-active/hl:scale-90"
               />
             </button>
             <button
@@ -332,7 +332,7 @@ export function HeroCarousel({
               <NavChevron
                 dir="right"
                 size={40}
-                className="text-white/90 opacity-0 drop-shadow-[0_2px_10px_rgba(0,0,0,0.8)] transition-all duration-200 group-hover/hr:opacity-100 group-active/hr:scale-90"
+                className="text-white/90 opacity-0 drop-shadow-[0_2px_10px_rgba(0,0,0,0.8)] transition-[opacity,transform] duration-200 group-hover/hr:opacity-100 group-active/hr:scale-90"
               />
             </button>
           </>
@@ -349,7 +349,7 @@ export function HeroCarousel({
               data-tv-skip="true"
               onClick={() => setActive(i)}
               aria-label={t("Slide {n}", { n: i + 1 })}
-              className={`h-1.5 rounded-full transition-all duration-300 ${
+              className={`h-1.5 rounded-full transition-[width,background-color] duration-300 ${
                 i === safeActive ? "w-12 bg-ink" : "w-6 bg-ink-muted/70 hover:bg-ink-muted"
               }`}
             />

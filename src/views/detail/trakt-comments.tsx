@@ -756,7 +756,7 @@ export function TraktComments({ resolution }: { resolution: IdResolution | null 
                 <button
                   onClick={handlePost}
                   disabled={!text.trim() || posting}
-                  className={`flex h-9 shrink-0 items-center gap-1.5 rounded-xl px-3.5 text-[13px] font-semibold transition-all ${
+                  className={`flex h-9 shrink-0 items-center gap-1.5 rounded-xl px-3.5 text-[13px] font-semibold transition-[background-color,color,transform] ${
                     !text.trim() || posting
                       ? "bg-ink-muted/20 text-ink-muted/50 cursor-not-allowed"
                       : "bg-ink text-canvas hover:scale-[1.02]"

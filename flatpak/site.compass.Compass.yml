@@ -103,8 +103,8 @@ modules:
           - compass-core/target
           - src-tauri/target
       - type: archive
-        url: https://registry.npmjs.org/pnpm/-/pnpm-11.9.0.tgz
-        sha256: 2b567aa66026238078ac2e0a33bec3febd60e962987aac697456f3180819b287
+        url: https://registry.npmjs.org/pnpm/-/pnpm-12.16.1.tgz
+        sha256: ca362a16f2e1c3cfa81d406f3242446179a0e4aea457ba3e9e6c39e6476aba65
         dest: flatpak-node/pnpm-cli
       - node-sources.json
       - cargo-sources.json

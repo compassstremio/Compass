@@ -16,7 +16,7 @@ if [[ "$version" != "$tauri_version" ]]; then
   exit 1
 fi
 
-if [[ "$package_manager" != pnpm@11.* || ! "$pnpm_version" =~ ^[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
+if [[ "$package_manager" != pnpm@1[12].* || ! "$pnpm_version" =~ ^[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
   echo "unsupported packageManager $package_manager; review the pnpm source and store version" >&2
   exit 1
 fi
@@ -58,7 +58,7 @@ fi
 work=".flatpak-work/source-generator"
 tools_dir="$work/flatpak-builder-tools"
 venv="$work/venv"
-tools_commit="737c0085912f9f7dabf9341d4608e2a77a51a73a"
+tools_commit="9d86d336a39b9af38b86f114b6ce5820fe260f91"
 node_output="$work/node-sources.json.tmp"
 cargo_output="$work/cargo-sources.json.tmp"
 pnpm_archive="$work/pnpm-$pnpm_version.tgz"

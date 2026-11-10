@@ -3,6 +3,9 @@ name: Flatpak
 on:
   workflow_dispatch:
   push:
+    tags:
+      - "v*"
+      - "V*"
     branches: [main]
     paths:
       - flatpak/**
@@ -64,3 +67,29 @@ jobs:
           path: Compass.flatpak
           retention-days: 14
           if-no-files-found: error
+
+  publish-flatpak:
+    name: Publish the Flatpak
+    needs: build
+    if: ${{ !cancelled() && startsWith(github.ref, 'refs/tags/') }}
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    permissions:
+      contents: write
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v6
+      - name: Download the Flatpak bundle
+        uses: actions/download-artifact@v4
+        with:
+          name: Compass-flatpak-x86_64
+          path: flatpak-bundle
+      - name: Attach the Flatpak to the release
+        env:
+          GH_TOKEN: ${{ github.token }}
+          TAG: ${{ github.ref_name }}
+        run: |
+          set -euo pipefail
+          VERSION="$(node -p "JSON.parse(require('fs').readFileSync('src-tauri/tauri.conf.json')).version")"
+          mv flatpak-bundle/Compass.flatpak "flatpak-bundle/Compass_${VERSION}_x86_64.flatpak"
+          bash scripts/linux-release-assets.sh "$TAG" SHA256SUMS-flatpak '*.flatpak' '' flatpak-bundle

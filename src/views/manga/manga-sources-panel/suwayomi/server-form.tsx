@@ -154,7 +154,7 @@ export function ServerForm({
           type="button"
           onClick={test}
           disabled={probe.state === "testing"}
-          className="flex h-12 flex-1 items-center justify-center gap-2 rounded-xl bg-raised text-[14.5px] font-semibold text-ink-muted ring-1 ring-edge-soft transition-all hover:text-ink active:scale-[0.98] disabled:opacity-60 motion-reduce:active:scale-100"
+          className="flex h-12 flex-1 items-center justify-center gap-2 rounded-xl bg-raised text-[14.5px] font-semibold text-ink-muted ring-1 ring-edge-soft transition-[color,transform,opacity] hover:text-ink active:scale-[0.98] disabled:opacity-60 motion-reduce:active:scale-100"
         >
           {probe.state === "testing" ? <Loader2 size={16} className="animate-spin" /> : <CheckCircle2 size={16} />}
           {t("Test connection")}

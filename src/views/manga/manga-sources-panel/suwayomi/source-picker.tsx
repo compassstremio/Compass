@@ -75,7 +75,7 @@ export function SourcePicker({
           type="button"
           onClick={() => setReload((n) => n + 1)}
           aria-label={t("Refresh sources")}
-          className="grid h-8 w-8 place-items-center rounded-lg bg-raised text-ink-subtle ring-1 ring-edge-soft transition-all hover:text-ink active:scale-95 motion-reduce:active:scale-100"
+          className="grid h-8 w-8 place-items-center rounded-lg bg-raised text-ink-subtle ring-1 ring-edge-soft transition-[color,transform] hover:text-ink active:scale-95 motion-reduce:active:scale-100"
         >
           <RefreshCw size={15} className={state === "loading" ? "animate-spin" : ""} />
         </button>

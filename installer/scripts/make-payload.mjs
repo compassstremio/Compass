@@ -206,12 +206,29 @@ const compress = [
 const psEnv = Object.fromEntries(
   Object.entries(process.env).filter(([name]) => name.toLowerCase() !== "psmodulepath"),
 );
-try {
-  execFileSync("powershell", compress, { stdio: "inherit", env: psEnv });
-} catch {
-  console.log("Windows PowerShell could not compress the payload; retrying with pwsh.");
-  rmSync(OUT, { force: true });
-  execFileSync("pwsh", compress, { stdio: "inherit" });
+// Real-time antivirus scans freshly staged files and briefly holds them open, which makes
+// Compress-Archive fail with "being used by another process" on a different file each run.
+// The stage is intact, so waiting a few seconds and trying again is enough.
+const ATTEMPTS = 5;
+for (let attempt = 1; ; attempt++) {
+  try {
+    try {
+      execFileSync("powershell", compress, { stdio: "inherit", env: psEnv });
+    } catch {
+      console.log("Windows PowerShell could not compress the payload; retrying with pwsh.");
+      rmSync(OUT, { force: true });
+      execFileSync("pwsh", compress, { stdio: "inherit" });
+    }
+    // Compress-Archive reports a locked file as a non-terminating error and still exits 0,
+    // so the only reliable signal that it worked is the archive itself.
+    if (!existsSync(OUT)) throw new Error("Compress-Archive produced no archive");
+    break;
+  } catch (error) {
+    if (attempt >= ATTEMPTS) throw error;
+    console.log(`Compression failed (attempt ${attempt}/${ATTEMPTS}); waiting for file locks to clear.`);
+    rmSync(OUT, { force: true });
+    execFileSync("powershell", ["-NoProfile", "-Command", "Start-Sleep -Seconds 10"], { stdio: "ignore" });
+  }
 }
 
 rmSync(STAGE, { recursive: true, force: true });

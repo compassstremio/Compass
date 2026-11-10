@@ -2,7 +2,7 @@ import assert from "node:assert/strict";
 import test from "node:test";
 import { readFileSync } from "node:fs";
 import { heroLogoTitleKey, indexRetroLogoFiles, retroHeroLogos, steamLibraryLogo } from "../src/lib/games/hero-logo-data";
-import { darkMonochromeLogo, gameLogoShape } from "../src/lib/games/logo-art";
+import { createLogoDecodeCache, darkMonochromeLogo, gameLogoShape, gameLogoSource, type GameLogoArt } from "../src/lib/games/logo-art";
 import { romGameArtwork } from "../src/lib/games/rom-editorial";
 
 test("GTA V stacked title logos stand alone while unknown compact emblems retain text", () => {
@@ -79,4 +79,34 @@ test("only dark monochrome transparent logos receive the white variant", () => {
  assert.equal(darkMonochromeLogo(pixels([80,5,5,255])),false);
  assert.equal(darkMonochromeLogo(new Uint8ClampedArray([0,0,0,255])),false);
  assert.equal(darkMonochromeLogo(new Uint8ClampedArray(12)),false);
+});
+
+const art = (src: string): GameLogoArt => ({ src, width: 10, height: 10, viewBox: "0 0 10 10", shape: "compact" });
+
+test("logo decode cache shares in-flight work, keeps successes and retries failures", async () => {
+  let calls = 0, fail = true;
+  const decode = createLogoDecodeCache(async (src: string) => { calls++; return fail && src === "bad" ? undefined : art(src); });
+  const [a, b] = await Promise.all([decode("good", 1), decode("good", 1)]);
+  assert.equal(a, b); assert.equal(calls, 1);
+  await decode("good", 1); assert.equal(calls, 1);
+  assert.equal(await decode("bad", 2), undefined); assert.equal(calls, 2);
+  // A transient failure must not be remembered for the rest of the session.
+  fail = false;
+  assert.equal((await decode("bad", 2))?.src, "bad"); assert.equal(calls, 3);
+});
+
+test("logo decode cache survives measurer exceptions and evicts the oldest entry", async () => {
+  const decode = createLogoDecodeCache(async (src: string) => { if (src === "throws") throw new Error("boom"); return art(src); }, 2);
+  assert.equal(await decode("throws"), undefined);
+  assert.equal(await decode(""), undefined);
+  await decode("a"); await decode("b"); await decode("c");
+  let remeasured = 0;
+  const probe = createLogoDecodeCache(async (src: string) => { remeasured++; return art(src); }, 2);
+  await probe("a"); await probe("b"); await probe("c"); await probe("a");
+  assert.equal(remeasured, 4);
+});
+
+test("publisher logo overrides win over the legacy Steam URL", () => {
+  for (const id of [730, 1145350, 2406770, 1158310, 230410]) assert.notEqual(gameLogoSource(id), `https://cdn.akamai.steamstatic.com/steam/apps/${id}/logo.png`);
+  assert.equal(gameLogoSource(620), "https://cdn.akamai.steamstatic.com/steam/apps/620/logo.png");
 });

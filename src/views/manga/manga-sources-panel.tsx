@@ -93,7 +93,7 @@ function CustomRow({ source, flash, onRemove }: { source: MangaSource; flash: bo
               onClick={() => setEditing((v) => !v)}
               aria-label={t("Edit {name}", { name: source.name })}
               aria-expanded={editing}
-              className={`grid h-11 w-11 shrink-0 place-items-center rounded-xl ring-1 ring-edge-soft transition-all active:scale-95 motion-reduce:active:scale-100 ${
+              className={`grid h-11 w-11 shrink-0 place-items-center rounded-xl ring-1 ring-edge-soft transition-[box-shadow,transform,background-color,color] active:scale-95 motion-reduce:active:scale-100 ${
                 editing ? "bg-accent/15 text-accent" : "bg-raised text-ink-subtle hover:text-ink"
               }`}
             >
@@ -104,7 +104,7 @@ function CustomRow({ source, flash, onRemove }: { source: MangaSource; flash: bo
             type="button"
             onClick={remove}
             aria-label={t("Remove {name}", { name: source.name })}
-            className="grid h-11 w-11 shrink-0 place-items-center rounded-xl bg-raised text-ink-subtle ring-1 ring-edge-soft transition-all hover:text-danger active:scale-95 motion-reduce:active:scale-100"
+            className="grid h-11 w-11 shrink-0 place-items-center rounded-xl bg-raised text-ink-subtle ring-1 ring-edge-soft transition-[color,transform] hover:text-danger active:scale-95 motion-reduce:active:scale-100"
           >
             <Trash2 size={18} strokeWidth={2} />
           </button>
@@ -250,7 +250,7 @@ export function MangaSourcesView({
         <button
           type="button"
           onClick={onBack}
-          className="inline-flex items-center gap-1.5 rounded-xl bg-elevated px-4 py-2.5 text-[15px] font-medium text-ink shadow-[0_2px_8px_-2px_rgba(0,0,0,0.4)] ring-1 ring-edge-soft transition-all hover:bg-raised active:scale-[0.97]"
+          className="inline-flex items-center gap-1.5 rounded-xl bg-elevated px-4 py-2.5 text-[15px] font-medium text-ink shadow-[0_2px_8px_-2px_rgba(0,0,0,0.4)] ring-1 ring-edge-soft transition-[background-color,transform] hover:bg-raised active:scale-[0.97]"
         >
           <ChevronLeft size={19} strokeWidth={2.4} />
           {t("Back")}
@@ -259,7 +259,7 @@ export function MangaSourcesView({
           <button
             type="button"
             onClick={onBack}
-            className="inline-flex items-center gap-2 rounded-xl bg-accent px-5 py-2.5 text-[15px] font-semibold text-canvas shadow-[0_6px_18px_-8px_rgba(0,0,0,0.5)] transition-all hover:opacity-90 active:scale-[0.97]"
+            className="inline-flex items-center gap-2 rounded-xl bg-accent px-5 py-2.5 text-[15px] font-semibold text-canvas shadow-[0_6px_18px_-8px_rgba(0,0,0,0.5)] transition-[opacity,transform] hover:opacity-90 active:scale-[0.97]"
           >
             {t("Done")} <span className="text-canvas/80">· {total}</span>
             <ArrowRight size={18} strokeWidth={2.4} />

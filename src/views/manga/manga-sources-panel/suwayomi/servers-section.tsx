@@ -58,7 +58,7 @@ function ServerRow({ server, active }: { server: SuwayomiServer; active: boolean
           onClick={() => setEditing((v) => !v)}
           aria-label={t("Edit {name}", { name: server.name })}
           aria-expanded={editing}
-          className={`grid h-11 w-11 shrink-0 place-items-center rounded-xl ring-1 ring-edge-soft transition-all active:scale-95 motion-reduce:active:scale-100 ${
+          className={`grid h-11 w-11 shrink-0 place-items-center rounded-xl ring-1 ring-edge-soft transition-[box-shadow,transform,background-color,color] active:scale-95 motion-reduce:active:scale-100 ${
             editing ? "bg-accent/15 text-accent" : "bg-raised text-ink-subtle hover:text-ink"
           }`}
         >
@@ -68,7 +68,7 @@ function ServerRow({ server, active }: { server: SuwayomiServer; active: boolean
           type="button"
           onClick={remove}
           aria-label={t("Remove {name}", { name: server.name })}
-          className="grid h-11 w-11 shrink-0 place-items-center rounded-xl bg-raised text-ink-subtle ring-1 ring-edge-soft transition-all hover:text-danger active:scale-95 motion-reduce:active:scale-100"
+          className="grid h-11 w-11 shrink-0 place-items-center rounded-xl bg-raised text-ink-subtle ring-1 ring-edge-soft transition-[color,transform] hover:text-danger active:scale-95 motion-reduce:active:scale-100"
         >
           <Trash2 size={18} strokeWidth={2} />
         </button>

@@ -19,7 +19,7 @@ import { downloadText } from "@/lib/download-text";
 import { CARD } from "./shared";
 
 const FIELD =
-  "h-12 w-full rounded-xl border border-edge bg-canvas pe-4 text-[14.5px] text-ink outline-none transition-all duration-200 placeholder:text-ink-subtle hover:border-edge focus:border-ink-subtle focus:ring-1 focus:ring-inset focus:ring-ink-subtle";
+  "h-12 w-full rounded-xl border border-edge bg-canvas pe-4 text-[14.5px] text-ink outline-none transition-[color,border-color,box-shadow] duration-200 placeholder:text-ink-subtle hover:border-edge focus:border-ink-subtle focus:ring-1 focus:ring-inset focus:ring-ink-subtle";
 import { CustomSourceHelp } from "./custom-source-help";
 import { EXAMPLE, GUIDE_TXT, AI_PROMPT } from "./custom-source-content";
 import { useT } from "@/lib/i18n";
@@ -44,7 +44,7 @@ function ResourceChip({
     <button
       type="button"
       onClick={onClick}
-      className="group/chip flex items-center gap-2.5 rounded-xl border border-edge-soft bg-elevated/30 px-3 py-2.5 text-start transition-all duration-200 hover:border-edge hover:bg-elevated/60 active:scale-[0.97] motion-reduce:transition-none motion-reduce:active:scale-100"
+      className="group/chip flex items-center gap-2.5 rounded-xl border border-edge-soft bg-elevated/30 px-3 py-2.5 text-start transition-[border-color,background-color,transform] duration-200 hover:border-edge hover:bg-elevated/60 active:scale-[0.97] motion-reduce:transition-none motion-reduce:active:scale-100"
     >
       <span className="grid h-8 w-8 shrink-0 place-items-center rounded-lg bg-raised text-ink-muted ring-1 ring-edge-soft transition-colors group-hover/chip:text-ink">
         {done ? (
@@ -202,7 +202,7 @@ export function CustomSource() {
               placeholder={t("Paste your scraping config as JSON here, or grab the template above to start.")}
               spellCheck={false}
               autoCapitalize="off"
-              className="h-60 w-full resize-y rounded-xl border border-edge bg-canvas px-4 pb-3.5 pt-3.5 font-mono text-[12.5px] leading-[1.7] text-ink shadow-[inset_0_1px_3px_rgba(0,0,0,0.4)] outline-none transition-all duration-200 placeholder:text-ink-subtle/80 focus:border-ink-subtle focus:ring-1 focus:ring-inset focus:ring-ink-subtle"
+              className="h-60 w-full resize-y rounded-xl border border-edge bg-canvas px-4 pb-3.5 pt-3.5 font-mono text-[12.5px] leading-[1.7] text-ink shadow-[inset_0_1px_3px_rgba(0,0,0,0.4)] outline-none transition-[color,border-color,box-shadow] duration-200 placeholder:text-ink-subtle/80 focus:border-ink-subtle focus:ring-1 focus:ring-inset focus:ring-ink-subtle"
             />
             {help && <CustomSourceHelp />}
           </section>
@@ -245,7 +245,7 @@ export function CustomSource() {
               type="button"
               onClick={add}
               disabled={adding}
-              className="inline-flex h-12 w-full items-center justify-center gap-2 rounded-xl bg-accent text-[15px] font-semibold text-canvas transition-all duration-200 hover:brightness-110 active:scale-[0.98] disabled:opacity-70 motion-reduce:transition-none motion-reduce:active:scale-100"
+              className="inline-flex h-12 w-full items-center justify-center gap-2 rounded-xl bg-accent text-[15px] font-semibold text-canvas transition-[filter,transform,opacity] duration-200 hover:brightness-110 active:scale-[0.98] disabled:opacity-70 motion-reduce:transition-none motion-reduce:active:scale-100"
             >
               {adding ? (
                 <Loader2 size={18} className="animate-spin motion-reduce:animate-none" />

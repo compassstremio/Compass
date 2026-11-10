@@ -272,7 +272,7 @@ function ListView({
   return (
     <div className="flex flex-col items-center gap-10">
       <div
-        className={`flex flex-col items-center gap-2.5 transition-all duration-[360ms] ease-[cubic-bezier(0.16,1,0.3,1)] ${
+        className={`flex flex-col items-center gap-2.5 transition-[transform,opacity] duration-[360ms] ease-[cubic-bezier(0.16,1,0.3,1)] ${
           selecting
             ? "-translate-y-1 opacity-0"
             : "animate-in fade-in slide-in-from-bottom-2 duration-500"
@@ -291,7 +291,7 @@ function ListView({
           return (
             <div
               key={p.id}
-              className={`transition-all duration-[440ms] ease-[cubic-bezier(0.16,1,0.3,1)] ${
+              className={`transition-[transform,opacity,filter] duration-[440ms] ease-[cubic-bezier(0.16,1,0.3,1)] ${
                 chosen
                   ? "z-10 scale-[1.14]"
                   : dimmed
@@ -314,7 +314,7 @@ function ListView({
         })}
         {isPrimary && (
           <div
-            className={`transition-all duration-[360ms] ease-[cubic-bezier(0.16,1,0.3,1)] ${
+            className={`transition-[transform,opacity] duration-[360ms] ease-[cubic-bezier(0.16,1,0.3,1)] ${
               selecting
                 ? "scale-90 opacity-0"
                 : "animate-in fade-in zoom-in-95 slide-in-from-bottom-2 duration-500"
@@ -345,7 +345,7 @@ function AddProfileButton({ onClick }: { onClick: () => void }) {
       className="group flex flex-col items-center gap-2 outline-none"
       aria-label={t("Add profile")}
     >
-      <span className="flex h-24 w-24 items-center justify-center rounded-full border-2 border-dashed border-edge text-ink-subtle transition-all duration-200 group-hover:scale-[1.04] group-hover:border-ink group-hover:text-ink">
+      <span className="flex h-24 w-24 items-center justify-center rounded-full border-2 border-dashed border-edge text-ink-subtle transition-[transform,border-color,color] duration-200 group-hover:scale-[1.04] group-hover:border-ink group-hover:text-ink">
         <Plus size={28} strokeWidth={2.2} />
       </span>
       <span className="text-[14px] font-medium text-ink-muted transition-colors group-hover:text-ink">

@@ -100,7 +100,7 @@ export function AccountRecoverForm({
 
   const submitClass = inline
     ? `${ROW_ACTION_PRIMARY} self-end justify-center`
-    : "flex h-11 items-center justify-center gap-2 rounded-md bg-accent text-[14px] font-semibold text-canvas transition-all duration-150 hover:opacity-90 active:scale-[0.99] disabled:opacity-40 disabled:active:scale-100";
+    : "flex h-11 items-center justify-center gap-2 rounded-md bg-accent text-[14px] font-semibold text-canvas transition-[opacity,transform] duration-150 hover:opacity-90 active:scale-[0.99] disabled:opacity-40 disabled:active:scale-100";
 
   const linkClass =
     "min-h-11 self-start text-[14px] font-medium text-ink-muted transition-colors hover:text-ink";

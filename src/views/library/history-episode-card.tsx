@@ -231,7 +231,7 @@ function RemoveButton({ onRemove }: { onRemove: () => void }) {
         onRemove();
       }}
       aria-label={t("Clear Stremio watch history for this title…")}
-      className="absolute end-2 top-2 z-10 flex h-7 w-7 items-center justify-center gap-1 rounded-full bg-canvas/70 text-white opacity-0 shadow-[0_2px_8px_rgba(0,0,0,0.4)] backdrop-blur-sm transition-all duration-200 hover:bg-canvas/90 group-hover:opacity-100"
+      className="absolute end-2 top-2 z-10 flex h-7 w-7 items-center justify-center gap-1 rounded-full bg-canvas/70 text-white opacity-0 shadow-[0_2px_8px_rgba(0,0,0,0.4)] backdrop-blur-sm transition-[background-color,opacity] duration-200 hover:bg-canvas/90 group-hover:opacity-100"
     >
       <Trash2 size={12} strokeWidth={2.2} />
     </button>

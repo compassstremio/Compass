@@ -76,9 +76,10 @@ export function updateMediaControls(
   durationSec?: number | null,
   positionSec?: number | null,
   volume?: number | null,
+  music?: { album?: string | null } | null,
 ): void {
   if (!isTauri()) return;
-  requestedSession = [playing, title, subtitle, artUrl, durationSec, positionSec, volume];
+  requestedSession = [playing, title, subtitle, artUrl, durationSec, positionSec, volume, music];
   if (isWindowsDesktop() && !windowFocused && !playing) {
     withdrawSession();
     return;
@@ -97,7 +98,8 @@ export function updateMediaControls(
       : null;
 
   const now = Date.now();
-  const state = `${playing ? 1 : 0}|${title}|${subtitle}|${art ?? ""}|${dur ?? 0}|${volKey}`;
+  const album = music?.album?.trim() || null;
+  const state = `${playing ? 1 : 0}|${title}|${subtitle}|${art ?? ""}|${dur ?? 0}|${volKey}|${music ? 1 : 0}|${album ?? ""}`;
   const metadataChanged = state !== lastState;
 
   let positionDrift = false;
@@ -134,6 +136,8 @@ export function updateMediaControls(
     durationSec: dur,
     positionSec: pos,
     volume: vol,
+    album,
+    music: !!music,
   });
 }
 

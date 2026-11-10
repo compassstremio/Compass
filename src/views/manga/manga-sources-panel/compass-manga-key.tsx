@@ -15,7 +15,7 @@ import { useT } from "@/lib/i18n";
 import { CARD, INPUT, PRIMARY_BTN } from "./shared";
 
 const SECONDARY_BTN =
-  "flex h-12 items-center justify-center gap-2 rounded-xl bg-canvas px-4 text-[15px] font-medium text-ink ring-1 ring-edge-soft transition-all hover:bg-raised active:scale-[0.98]";
+  "flex h-12 items-center justify-center gap-2 rounded-xl bg-canvas px-4 text-[15px] font-medium text-ink ring-1 ring-edge-soft transition-[background-color,transform] hover:bg-raised active:scale-[0.98]";
 
 const FAILURE: Record<Exclude<SaveKeyResult, "saved">, string> = {
   malformed: "This doesn't look like a Compass Manga key.",

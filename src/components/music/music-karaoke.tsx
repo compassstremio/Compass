@@ -10,6 +10,8 @@ import {
   karaokeScrollMotion,
   karaokeScrollTop,
 } from "@/lib/music/karaoke-scroll";
+import { useLyricTranslation } from "@/lib/music/use-lyric-translation";
+import { LyricTranslateControl } from "./lyric-translate-control";
 import "./music-karaoke.css";
 
 const WAIT_MS = 14_000;
@@ -50,6 +52,7 @@ export function MusicKaraoke({
   const [lines, setLines] = useState<LyricLine[] | null>(null);
   const [status, setStatus] = useState<KaraokeStatus>("idle");
   const key = track ? `${track.connectorId ?? ""}:${track.id ?? ""}:${track.title ?? ""}` : "";
+  const translation = useLyricTranslation(lines, key);
   const offset = getLyricOffset(player.current);
   const active =
     status === "ready" && lines
@@ -195,6 +198,7 @@ export function MusicKaraoke({
             {artist ? <span>{artist}</span> : null}
           </div>
         </div>
+        {status === "ready" ? <LyricTranslateControl translation={translation} /> : null}
         <button
           ref={closer}
           type="button"
@@ -209,7 +213,7 @@ export function MusicKaraoke({
       <div className="music-karaoke-scroll" ref={scroller}>
         {status === "ready" && lines ? (
           <ol className="music-karaoke-lines" ref={column}>
-            {lines.map((line, index) => (
+            {translation.shown.map((line, index) => (
               <li key={`${line.at}-${index}`}>
                 <button
                   type="button"
@@ -219,6 +223,7 @@ export function MusicKaraoke({
                   onClick={() => seekMusic(line.at)}
                 >
                   {line.text.trim() || REST}
+                  {line.translation ? <span className="music-karaoke-translation" lang={translation.target}>{line.translation}</span> : null}
                 </button>
               </li>
             ))}

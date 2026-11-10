@@ -127,7 +127,7 @@ function PrimaryButton({
       type="button"
       onClick={onClick}
       disabled={disabled}
-      className="flex h-11 items-center justify-center gap-2 rounded-xl bg-ink text-[13.5px] font-semibold text-canvas transition-all duration-150 hover:opacity-90 active:scale-[0.99] disabled:opacity-40 disabled:active:scale-100"
+      className="flex h-11 items-center justify-center gap-2 rounded-xl bg-ink text-[13.5px] font-semibold text-canvas transition-[opacity,transform] duration-150 hover:opacity-90 active:scale-[0.99] disabled:opacity-40 disabled:active:scale-100"
     >
       {busy ? <Loader2 size={15} className="animate-spin" /> : null}
       {children}

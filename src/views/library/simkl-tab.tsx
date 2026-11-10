@@ -310,7 +310,7 @@ export function SimklTab() {
         <button
           type="button"
           onClick={() => setSubTab("movies")}
-          className={`rounded-lg px-4 py-2 text-[14px] font-semibold transition-all ${
+          className={`rounded-lg px-4 py-2 text-[14px] font-semibold transition-[background-color,color,border-color] ${
             subTab === "movies"
               ? "bg-accent/15 text-accent border border-accent/30"
               : "text-ink-muted hover:text-ink border border-transparent hover:bg-canvas/50"
@@ -321,7 +321,7 @@ export function SimklTab() {
         <button
           type="button"
           onClick={() => setSubTab("shows")}
-          className={`rounded-lg px-4 py-2 text-[14px] font-semibold transition-all ${
+          className={`rounded-lg px-4 py-2 text-[14px] font-semibold transition-[background-color,color,border-color] ${
             subTab === "shows"
               ? "bg-accent/15 text-accent border border-accent/30"
               : "text-ink-muted hover:text-ink border border-transparent hover:bg-canvas/50"
@@ -332,7 +332,7 @@ export function SimklTab() {
         <button
           type="button"
           onClick={() => setSubTab("anime")}
-          className={`rounded-lg px-4 py-2 text-[14px] font-semibold transition-all ${
+          className={`rounded-lg px-4 py-2 text-[14px] font-semibold transition-[background-color,color,border-color] ${
             subTab === "anime"
               ? "bg-accent/15 text-accent border border-accent/30"
               : "text-ink-muted hover:text-ink border border-transparent hover:bg-canvas/50"
@@ -352,7 +352,7 @@ export function SimklTab() {
               key={statusKey}
               type="button"
               onClick={() => setStatusFilter(statusKey)}
-              className={`rounded-full px-4 py-1.5 text-[13px] font-medium transition-all ${
+              className={`rounded-full px-4 py-1.5 text-[13px] font-medium transition-[background-color,color,box-shadow,border-color] ${
                 isActive
                   ? "bg-ink text-canvas font-semibold shadow-[0_2px_8px_rgba(0,0,0,0.15)]"
                   : "bg-canvas/50 border border-edge-soft text-ink-muted hover:border-edge hover:text-ink"

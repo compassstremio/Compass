@@ -64,7 +64,7 @@ export function MangayomiImport({ url, count }: { url: string; count: number }) 
           <button
             type="button"
             onClick={run}
-            className="inline-flex items-center gap-2 self-start rounded-xl bg-raised px-4 py-2.5 text-[14px] font-semibold text-ink ring-1 ring-edge-soft transition-all hover:bg-elevated active:scale-[0.97] motion-reduce:active:scale-100"
+            className="inline-flex items-center gap-2 self-start rounded-xl bg-raised px-4 py-2.5 text-[14px] font-semibold text-ink ring-1 ring-edge-soft transition-[background-color,transform] hover:bg-elevated active:scale-[0.97] motion-reduce:active:scale-100"
           >
             <RefreshCw size={16} />
             {t("Import failed, try again")}
@@ -74,7 +74,7 @@ export function MangayomiImport({ url, count }: { url: string; count: number }) 
             type="button"
             onClick={run}
             disabled={phase === "running"}
-            className="inline-flex items-center gap-2 self-start rounded-xl bg-accent px-4 py-2.5 text-[14px] font-semibold text-canvas transition-all hover:opacity-90 active:scale-[0.97] disabled:opacity-70 motion-reduce:active:scale-100"
+            className="inline-flex items-center gap-2 self-start rounded-xl bg-accent px-4 py-2.5 text-[14px] font-semibold text-canvas transition-[opacity,transform] hover:opacity-90 active:scale-[0.97] disabled:opacity-70 motion-reduce:active:scale-100"
           >
             {phase === "running" ? (
               <>

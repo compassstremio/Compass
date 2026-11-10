@@ -171,7 +171,7 @@ export function ExtensionsManager({ config }: { config: ServerConfig }) {
           type="button"
           onClick={() => setReload((n) => n + 1)}
           aria-label={t("Refresh extensions")}
-          className="grid h-8 w-8 place-items-center rounded-lg bg-raised text-ink-subtle ring-1 ring-edge-soft transition-all hover:text-ink active:scale-95 motion-reduce:active:scale-100"
+          className="grid h-8 w-8 place-items-center rounded-lg bg-raised text-ink-subtle ring-1 ring-edge-soft transition-[color,transform] hover:text-ink active:scale-95 motion-reduce:active:scale-100"
         >
           <RefreshCw size={15} className={load.state === "loading" ? "animate-spin" : ""} />
         </button>
@@ -244,7 +244,7 @@ export function ExtensionsManager({ config }: { config: ServerConfig }) {
                   onClick={() => void updateAll()}
                   disabled={updating}
                   aria-label={t("Update all")}
-                  className="flex shrink-0 items-center gap-1.5 rounded-lg bg-raised px-2.5 py-1.5 text-[12px] font-semibold text-accent ring-1 ring-edge-soft transition-all hover:bg-elevated active:scale-95 motion-reduce:active:scale-100 disabled:pointer-events-none disabled:opacity-60"
+                  className="flex shrink-0 items-center gap-1.5 rounded-lg bg-raised px-2.5 py-1.5 text-[12px] font-semibold text-accent ring-1 ring-edge-soft transition-[background-color,transform,opacity] hover:bg-elevated active:scale-95 motion-reduce:active:scale-100 disabled:pointer-events-none disabled:opacity-60"
                 >
                   {updating ? (
                     <Loader2 size={14} className="animate-spin" aria-hidden="true" />

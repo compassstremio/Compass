@@ -172,7 +172,7 @@ export function SetupGuide() {
               <button
                 type="button"
                 onClick={download}
-                className="inline-flex h-11 items-center gap-2 rounded-xl bg-accent px-5 text-[14px] font-semibold text-canvas transition-all hover:opacity-90 active:scale-95"
+                className="inline-flex h-11 items-center gap-2 rounded-xl bg-accent px-5 text-[14px] font-semibold text-canvas transition-[opacity,transform] hover:opacity-90 active:scale-95"
               >
                 <Download size={17} strokeWidth={2.2} />
                 {t("Download cheat sheet")}
@@ -180,7 +180,7 @@ export function SetupGuide() {
               <button
                 type="button"
                 onClick={copy}
-                className="inline-flex h-11 items-center gap-2 rounded-xl bg-raised px-5 text-[14px] font-semibold text-ink-muted ring-1 ring-edge-soft transition-all hover:text-ink active:scale-95"
+                className="inline-flex h-11 items-center gap-2 rounded-xl bg-raised px-5 text-[14px] font-semibold text-ink-muted ring-1 ring-edge-soft transition-[color,transform] hover:text-ink active:scale-95"
               >
                 {copied ? (
                   <Check size={17} strokeWidth={2.4} className="text-accent" />

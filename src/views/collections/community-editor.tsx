@@ -689,7 +689,7 @@ export function CommunityCollectionEditor({
                         <ResultPoster
                           id={hit.id}
                           poster={hit.poster}
-                          className={`ring-2 transition-all duration-200 ${inSet ? "ring-accent" : "ring-transparent group-hover/hit:ring-edge"}`}
+                          className={`ring-2 transition-[box-shadow] duration-200 ${inSet ? "ring-accent" : "ring-transparent group-hover/hit:ring-edge"}`}
                         />
                         <span className="pointer-events-none absolute start-1.5 top-1.5 inline-flex items-center gap-1 rounded-full bg-black/55 py-0.5 ps-1.5 pe-2 text-[10px] font-semibold text-white/90 backdrop-blur-md">
                           <span className={`h-1.5 w-1.5 rounded-full ${TYPE_DOT[hit.type]}`} />
@@ -868,7 +868,7 @@ function ImageField({
               className="absolute inset-0 h-full w-full object-cover"
             />
             {canUpload && (
-              <span className="absolute inset-0 flex items-center justify-center bg-black/0 text-[13px] font-semibold text-white opacity-0 transition-all duration-200 group-hover/img:bg-black/45 group-hover/img:opacity-100">
+              <span className="absolute inset-0 flex items-center justify-center bg-black/0 text-[13px] font-semibold text-white opacity-0 transition-[background-color,opacity] duration-200 group-hover/img:bg-black/45 group-hover/img:opacity-100">
                 <ImagePlus size={16} strokeWidth={2} className="me-2" />
                 {t("Change")}
               </span>

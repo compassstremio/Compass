@@ -90,7 +90,7 @@ export function LocalFolderTutorial({ onClose, onChoose }: { onClose: () => void
             onClose();
             onChoose();
           }}
-          className="flex h-12 items-center justify-center gap-2 rounded-xl bg-accent text-[15px] font-semibold text-canvas transition-all hover:opacity-90 active:scale-[0.98]"
+          className="flex h-12 items-center justify-center gap-2 rounded-xl bg-accent text-[15px] font-semibold text-canvas transition-[opacity,transform] hover:opacity-90 active:scale-[0.98]"
         >
           <FolderOpen size={18} />
           {t("Choose folder")}

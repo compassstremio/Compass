@@ -1,0 +1,23 @@
+{
+  "channel": "beta",
+  "notes": {
+    "0.9.141": {
+      "title": "Compass Beta 0.9.141",
+      "intro": "The music bar now shows up reliably when you play music.",
+      "sections": [
+        {
+          "heading": "Highlights",
+          "items": [
+            "Fixed the music bar not appearing when you play a song."
+          ]
+        },
+        {
+          "heading": "Music",
+          "items": [
+            "The music bar opens as soon as you play any track, switch to a different track, or hit a playback error. It still stays hidden at launch when the only thing there is the track restored from your last session."
+          ]
+        }
+      ]
+    }
+  }
+}

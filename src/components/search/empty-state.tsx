@@ -401,7 +401,7 @@ export function EmptyState({ onClose, onOpenGuide }: { onClose: () => void; onOp
                 setView(j.view);
                 onClose();
               }}
-              className="group flex h-12 items-center gap-2.5 rounded-full border border-edge-soft bg-elevated/50 px-5 text-[14.5px] font-semibold text-ink transition-all hover:border-edge hover:bg-elevated active:scale-[0.97]"
+              className="group flex h-12 items-center gap-2.5 rounded-full border border-edge-soft bg-elevated/50 px-5 text-[14.5px] font-semibold text-ink transition-[border-color,background-color,transform] hover:border-edge hover:bg-elevated active:scale-[0.97]"
             >
               <span className="flex h-5 w-5 items-center justify-center text-ink-muted transition-colors group-hover:text-accent">{j.icon}</span>
               {t(j.label)}
@@ -410,7 +410,7 @@ export function EmptyState({ onClose, onOpenGuide }: { onClose: () => void; onOp
           {!hiddenTabs.liveTv && (
             <button
               onClick={() => onOpenGuide()}
-              className="group flex h-12 items-center gap-2.5 rounded-full border border-edge-soft bg-elevated/50 px-5 text-[14.5px] font-semibold text-ink transition-all hover:border-edge hover:bg-elevated active:scale-[0.97]"
+              className="group flex h-12 items-center gap-2.5 rounded-full border border-edge-soft bg-elevated/50 px-5 text-[14.5px] font-semibold text-ink transition-[border-color,background-color,transform] hover:border-edge hover:bg-elevated active:scale-[0.97]"
             >
               <span className="flex h-5 w-5 items-center justify-center text-ink-muted transition-colors group-hover:text-accent">
                 <NavGlyph name="guide" className="h-[22px] w-[22px]" />
@@ -470,7 +470,7 @@ function FilterPill({
     <button
       type="button"
       onClick={onClick}
-      className={`h-8 rounded-full border px-3.5 text-[12px] font-semibold transition-all ${
+      className={`h-8 rounded-full border px-3.5 text-[12px] font-semibold transition-[border-color,background-color,color] ${
         active
           ? "border-ink bg-ink text-canvas"
           : "border-edge-soft bg-elevated/40 text-ink-muted hover:border-edge hover:text-ink"

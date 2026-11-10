@@ -99,7 +99,7 @@ function AvatarTile({
             onDelete(item);
           }}
           aria-label={t("Delete {name}", { name: item.name })}
-          className="absolute end-1.5 top-1.5 z-10 grid h-7 w-7 place-items-center rounded-full bg-canvas/85 text-ink-muted opacity-0 shadow-[0_4px_12px_-4px_rgba(0,0,0,0.6)] ring-1 ring-edge-soft backdrop-blur-sm transition-all duration-150 hover:bg-danger hover:text-white group-hover:opacity-100 focus-visible:opacity-100 active:scale-90 motion-reduce:active:scale-100"
+          className="absolute end-1.5 top-1.5 z-10 grid h-7 w-7 place-items-center rounded-full bg-canvas/85 text-ink-muted opacity-0 shadow-[0_4px_12px_-4px_rgba(0,0,0,0.6)] ring-1 ring-edge-soft backdrop-blur-sm transition-[opacity,background-color,color,transform] duration-150 hover:bg-danger hover:text-white group-hover:opacity-100 focus-visible:opacity-100 active:scale-90 motion-reduce:active:scale-100"
         >
           <Trash2 size={13} strokeWidth={2.2} />
         </button>

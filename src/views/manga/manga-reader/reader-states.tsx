@@ -93,7 +93,7 @@ export function EndOfChapterHint({
   return (
     <div
       aria-hidden={!visible}
-      className={`pointer-events-none fixed inset-x-0 bottom-24 z-[85] flex justify-center px-4 transition-all duration-300 ease-[cubic-bezier(0.32,0.72,0.24,1)] motion-reduce:transition-none ${
+      className={`pointer-events-none fixed inset-x-0 bottom-24 z-[85] flex justify-center px-4 transition-[transform,opacity] duration-300 ease-[cubic-bezier(0.32,0.72,0.24,1)] motion-reduce:transition-none ${
         visible ? "translate-y-0 opacity-100" : "translate-y-5 opacity-0"
       }`}
     >
@@ -140,7 +140,7 @@ export function PageNavButton({ dir, onClick }: { dir: "up" | "down"; onClick: (
       type="button"
       onClick={onClick}
       aria-label={dir === "up" ? t("Previous page") : t("Next page")}
-      className="flex h-14 w-14 items-center justify-center rounded-2xl border border-edge-soft/60 bg-canvas/65 text-ink shadow-[0_8px_24px_-8px_rgba(0,0,0,0.6)] backdrop-blur-md transition-all hover:scale-[1.06] hover:bg-canvas/90"
+      className="flex h-14 w-14 items-center justify-center rounded-2xl border border-edge-soft/60 bg-canvas/65 text-ink shadow-[0_8px_24px_-8px_rgba(0,0,0,0.6)] backdrop-blur-md transition-[transform,background-color] hover:scale-[1.06] hover:bg-canvas/90"
     >
       <Icon className="h-8 w-8" strokeWidth={2.6} />
     </button>

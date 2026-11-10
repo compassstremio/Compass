@@ -87,7 +87,7 @@ function Pick({
             />
           </span>
         )}
-        <div className="absolute inset-0 flex items-center justify-center bg-canvas/0 opacity-0 transition-all duration-200 group-hover/p:bg-canvas/35 group-hover/p:opacity-100">
+        <div className="absolute inset-0 flex items-center justify-center bg-canvas/0 opacity-0 transition-[background-color,opacity] duration-200 group-hover/p:bg-canvas/35 group-hover/p:opacity-100">
           <span className="flex h-11 w-11 items-center justify-center rounded-full bg-ink text-canvas shadow-[0_4px_14px_rgba(0,0,0,0.4)]">
             <Play size={17} fill="currentColor" />
           </span>

@@ -115,7 +115,7 @@ export function PeopleRow({
               className="group flex shrink-0 flex-col items-center gap-2 text-center [scroll-snap-align:start]"
               style={{ width: `${CARD_WIDTH}px` }}
             >
-              <div className="relative h-[84px] w-[84px] overflow-hidden rounded-full ring-1 ring-edge-soft transition-all duration-200 group-hover:ring-2 group-hover:ring-ink/40 group-active:scale-[0.97]">
+              <div className="relative h-[84px] w-[84px] overflow-hidden rounded-full ring-1 ring-edge-soft transition-[box-shadow,transform] duration-200 group-hover:ring-2 group-hover:ring-ink/40 group-active:scale-[0.97]">
                 {p.profile ? (
                   <img
                     src={`https://image.tmdb.org/t/p/h632${p.profile}`}

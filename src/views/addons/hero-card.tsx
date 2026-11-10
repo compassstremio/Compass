@@ -72,7 +72,7 @@ export function HeroCard({
               e.stopPropagation();
               installed ? onUninstall() : onInstall();
             }}
-            className={`h-9 rounded-full px-5 text-[13px] font-semibold transition-all ${
+            className={`h-9 rounded-full px-5 text-[13px] font-semibold transition-[background-color,color,box-shadow,opacity,transform] ${
               installed
                 ? "bg-elevated/70 text-ink ring-1 ring-edge-soft hover:bg-danger/15 hover:text-danger hover:ring-danger/30"
                 : "bg-ink text-canvas hover:opacity-90 active:scale-[0.97]"

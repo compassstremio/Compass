@@ -239,7 +239,7 @@ export function TextSyncOverlay({
                 type="button"
                 onClick={() => void handleSave()}
                 disabled={!api.dirty || saving}
-                className="flex h-12 flex-1 items-center justify-center gap-2 rounded-2xl bg-accent px-4 text-[14px] font-semibold text-canvas transition-all hover:brightness-110 active:scale-[0.98] disabled:opacity-40"
+                className="flex h-12 flex-1 items-center justify-center gap-2 rounded-2xl bg-accent px-4 text-[14px] font-semibold text-canvas transition-[filter,transform,opacity] hover:brightness-110 active:scale-[0.98] disabled:opacity-40"
               >
                 {saving ? (
                   <Loader2 size={16} className="animate-spin" />

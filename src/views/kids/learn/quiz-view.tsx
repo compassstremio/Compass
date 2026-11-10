@@ -125,7 +125,7 @@ export function QuizView({ topic, onDone }: { topic: LearnTopic; onDone: () => v
               key={`${qIdx}-${i}`}
               type="button"
               onClick={() => answer(i)}
-              className={`min-h-[64px] rounded-xl border-4 px-6 py-4 text-[17px] font-bold transition-all duration-150 active:scale-[0.97] ${
+              className={`min-h-[64px] rounded-xl border-4 px-6 py-4 text-[17px] font-bold transition-[border-width,transform,border-color,background-color,color] duration-150 active:scale-[0.97] ${
                 isRight
                   ? "border-[#4ade80] bg-[#4ade80] text-[#0c3a1e] scale-[1.03]"
                   : isWrong

@@ -226,7 +226,7 @@ export function ParentalPinModal({
             {[0, 1, 2, 3].map((i) => (
               <span
                 key={i}
-                className={`pointer-events-none h-4 w-4 rounded-full ring-1 transition-all ${
+                className={`pointer-events-none h-4 w-4 rounded-full ring-1 transition-[box-shadow,transform,background-color] ${
                   pin.length > i
                     ? kids
                       ? "scale-110 bg-white ring-white"
@@ -293,7 +293,7 @@ function PinKey({
       type="button"
       onClick={onClick}
       disabled={disabled}
-      className={`flex h-12 w-12 items-center justify-center rounded-full text-[20px] font-semibold tabular-nums transition-all active:scale-95 disabled:cursor-not-allowed disabled:opacity-40 ${
+      className={`flex h-12 w-12 items-center justify-center rounded-full text-[20px] font-semibold tabular-nums transition-[transform,opacity,background-color,color,box-shadow] active:scale-95 disabled:cursor-not-allowed disabled:opacity-40 ${
         kids
           ? "bg-white/15 text-white ring-1 ring-white/30 hover:bg-white/25"
           : "bg-canvas/55 text-ink ring-1 ring-edge-soft hover:bg-canvas/80"

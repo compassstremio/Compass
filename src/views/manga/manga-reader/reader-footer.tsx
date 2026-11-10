@@ -13,7 +13,7 @@ const SCRUB_CSS = `
 `;
 
 const BTN =
-  "flex h-9 min-w-9 items-center justify-center rounded-lg px-2 text-ink-muted transition-all hover:bg-elevated hover:text-ink active:scale-95 disabled:opacity-30 disabled:pointer-events-none";
+  "flex h-9 min-w-9 items-center justify-center rounded-lg px-2 text-ink-muted transition-[background-color,color,transform,opacity] hover:bg-elevated hover:text-ink active:scale-95 disabled:opacity-30 disabled:pointer-events-none";
 
 const round1 = (n: number) => Math.round(n * 10) / 10;
 
@@ -140,7 +140,7 @@ export function ReaderFooter({
               onClick={() => onZoom(1)}
               onMouseDown={(e) => e.preventDefault()}
               aria-label={t("Reset zoom")}
-              className="h-9 w-14 rounded-lg text-xs font-semibold tabular-nums text-ink-muted transition-all hover:bg-elevated hover:text-ink active:scale-95"
+              className="h-9 w-14 rounded-lg text-xs font-semibold tabular-nums text-ink-muted transition-[background-color,color,transform] hover:bg-elevated hover:text-ink active:scale-95"
             >
               {zoomPct}%
             </button>

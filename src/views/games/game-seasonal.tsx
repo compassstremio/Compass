@@ -17,7 +17,7 @@ import { useReducedMotion } from "@/lib/use-reduced-motion";
 import { GameHeroVideo } from "./game-hero-video";
 import { GameDiscoveryRatings } from "./game-discovery-ratings";
 import { Row } from "@/components/row";
-import { decodeGameLogo, type GameLogoArt } from "@/lib/games/logo-art";
+import { decodeGameLogo, gameLogoSource, type GameLogoArt } from "@/lib/games/logo-art";
 import { loadSteamHeroLogo } from "@/lib/games/hero-logo";
 
 export function GameSeasonal({open,browse,active}:{open:(game:GameSummary)=>void;browse:(filters:Partial<CatalogFilters>,query?:string)=>void;active:boolean}) {
@@ -52,12 +52,15 @@ export function GameSeasonal({open,browse,active}:{open:(game:GameSummary)=>void
 function SeasonalGameLogo({game,detail,active}:{game:GameSummary;detail:GameDetail|null;active:boolean}) {
   const [logo,setLogo]=useState<GameLogoArt>();
   useEffect(()=>{
+    setLogo(undefined);
     if(!active||!game.steamId)return;
     const controller=new AbortController();
     void (async()=>{
-      const src=await loadSteamHeroLogo(game.steamId!,AbortSignal.any([controller.signal,AbortSignal.timeout(8000)])).catch(()=>undefined);
+      // Verified publisher corrections beat both Steam sources; otherwise prefer the current library logo.
+      const publisher=gameLogoSource(game.steamId!,"");
+      const src=publisher||await loadSteamHeroLogo(game.steamId!,AbortSignal.any([controller.signal,AbortSignal.timeout(8000)])).catch(()=>undefined);
       if(controller.signal.aborted)return;
-      const art=await decodeGameLogo(src||detail?.logo,game.steamId);
+      const art=await decodeGameLogo(src||detail?.logo,game.steamId)??(src&&detail?.logo&&src!==detail.logo?await decodeGameLogo(detail.logo,game.steamId):undefined);
       if(!controller.signal.aborted)setLogo(art);
     })();
     return()=>controller.abort();

@@ -58,7 +58,7 @@ export function FloatingTop() {
           type="button"
           onClick={onBack}
           aria-label={t("common.back")}
-          className="pointer-events-auto flex h-10 shrink-0 items-center gap-2 rounded-full border border-edge-soft bg-surface ps-2.5 pe-4 text-[13px] font-semibold text-ink-muted shadow-[0_2px_8px_-4px_rgba(15,15,18,0.16)] transition-all hover:-translate-y-px hover:border-edge hover:text-ink hover:shadow-[0_4px_12px_-4px_rgba(15,15,18,0.22)]"
+          className="pointer-events-auto flex h-10 shrink-0 items-center gap-2 rounded-full border border-edge-soft bg-surface ps-2.5 pe-4 text-[13px] font-semibold text-ink-muted shadow-[0_2px_8px_-4px_rgba(15,15,18,0.16)] transition-[transform,border-color,color,box-shadow] hover:-translate-y-px hover:border-edge hover:text-ink hover:shadow-[0_4px_12px_-4px_rgba(15,15,18,0.22)]"
         >
           <ArrowLeft size={15} strokeWidth={2.2} className="dir-icon" />
           {t("common.back")}
@@ -156,7 +156,7 @@ function WinBtn({
       onClick={onClick}
       aria-label={label}
       title={label}
-      className={`flex h-9 w-9 items-center justify-center rounded-full border border-edge-soft bg-surface text-ink-muted shadow-[0_2px_6px_-4px_rgba(15,15,18,0.18)] transition-all hover:-translate-y-px ${danger ? "hover:border-danger/40 hover:text-danger" : "hover:border-edge hover:text-ink"}`}
+      className={`flex h-9 w-9 items-center justify-center rounded-full border border-edge-soft bg-surface text-ink-muted shadow-[0_2px_6px_-4px_rgba(15,15,18,0.18)] transition-[transform,border-color,color] hover:-translate-y-px ${danger ? "hover:border-danger/40 hover:text-danger" : "hover:border-edge hover:text-ink"}`}
     >
       <svg width="13" height="13" viewBox="0 0 13 13" fill="none">
         {children}

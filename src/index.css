@@ -731,7 +731,7 @@ main[data-kids="on"]::-webkit-scrollbar-thumb:hover {
 }
 
 .animate-scrim-in {
-  animation: compass-fade-in 160ms ease-in-out both;
+  animation: compass-fade-in 160ms var(--ease-out) both;
 }
 
 .animate-scrim-out {
@@ -805,7 +805,7 @@ main[data-kids="on"]::-webkit-scrollbar-thumb:hover {
 }
 
 .animate-lift-in {
-  animation: compass-lift-in 360ms ease-in-out backwards;
+  animation: compass-lift-in 360ms var(--ease-out) backwards;
 }
 
 @keyframes compass-sync-travel {
@@ -1301,10 +1301,12 @@ main[data-kids="on"]::-webkit-scrollbar-thumb:hover {
 
 @keyframes compass-badge-pop {
   0% {
-    transform: scale(0);
+    transform: scale(0.5);
+    opacity: 0;
   }
   55% {
     transform: scale(1.25);
+    opacity: 1;
   }
   78% {
     transform: scale(0.92);
@@ -3270,7 +3272,7 @@ html[data-theme-layout="minui"] .compass-together-pill {
 }
 
 .compass-search-scrim-out {
-  animation: compass-search-scrim-out 150ms ease-in both;
+  animation: compass-search-scrim-out 150ms ease-out both;
 }
 
 .compass-search-section {
@@ -3318,8 +3320,25 @@ html[data-theme-layout="minui"] .compass-together-pill {
     animation: none;
   }
 }
+@keyframes compass-layer-in {
+  from {
+    opacity: 0;
+  }
+}
+/* Switching rooms is a hard cut between kept-alive layers. A short opacity-only fade
+   (no movement, rooms are switched many times a day) softens the cut, and also fades a
+   lazily loaded room in instead of popping it in after the blank Suspense fallback. */
 .compass-layer-active > * {
   opacity: 1;
+}
+/* :where() keeps this at zero specificity so a room's own enter animation still wins. */
+:where(.compass-layer-active) > * {
+  animation: compass-layer-in 130ms var(--ease-out) backwards;
+}
+@media (prefers-reduced-motion: reduce) {
+  :where(.compass-layer-active) > * {
+    animation: none;
+  }
 }
 @keyframes queue-in-right {
   from {

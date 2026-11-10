@@ -93,7 +93,7 @@ export function ReaderPageJump({
           type="button"
           onClick={() => setEditing(true)}
           aria-label={t("Page {page} of {count}, tap to jump", { page: currentPage + 1, count: totalPages })}
-          className="group flex h-11 items-center gap-2 rounded-full border border-edge-soft bg-canvas/80 px-4 shadow-lg backdrop-blur-md transition-all duration-200 hover:-translate-y-0.5 hover:border-edge hover:bg-canvas/90 hover:shadow-xl active:translate-y-0 active:scale-[0.97]"
+          className="group flex h-11 items-center gap-2 rounded-full border border-edge-soft bg-canvas/80 px-4 shadow-lg backdrop-blur-md transition-[transform,border-color,background-color,box-shadow] duration-200 hover:-translate-y-0.5 hover:border-edge hover:bg-canvas/90 hover:shadow-xl active:translate-y-0 active:scale-[0.97]"
         >
           <FileText
             size={15}

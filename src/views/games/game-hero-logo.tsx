@@ -8,6 +8,10 @@ export function GameHeroLogo({ sources, name, steamId, platformIds, alternativeN
 }) {
   const [failed, setFailed] = useState<string[]>([]), [remote, setRemote] = useState<string[]>([]);
   const [art, setArt] = useState<GameLogoArt>();
+  // Callers recycle this component across games; never carry one game's logo or failures into the next.
+  const identity = `${steamId ?? ""}|${name}`;
+  const [owner, setOwner] = useState(identity);
+  if (owner !== identity) { setOwner(identity); setFailed([]); setRemote([]); setArt(undefined); }
   // Verified publisher corrections also take precedence over persisted Steam snapshots.
   const publisherLogo = steamId ? gameLogoSource(steamId, "") : "";
   const supplied = publisherLogo ? [publisherLogo] : sources;

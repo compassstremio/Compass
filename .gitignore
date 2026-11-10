@@ -130,3 +130,9 @@ gemini.key
 
 # Rotated dev-server logs: *.log covers dev.log but not its .prev rotation.
 dev.log*
+graphify-out/cache/ast/v0.9.100-s33-g7154a062ba57/fcce85feb9520e1f514c3fafc418be9a35b782af97ae098c356859e0f3b28acd.json
+/graphify-out
+
+# Build output of the Pokémon engine.
+/tools/pokemon-engine/obj/
+/tools/pokemon-engine/fixtures/obj/

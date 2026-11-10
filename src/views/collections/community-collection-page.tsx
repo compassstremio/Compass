@@ -329,7 +329,7 @@ export function CommunityCollectionPage({
                         <ResultPoster
                           id={item.id}
                           poster={item.poster}
-                          className="ring-1 ring-transparent transition-all duration-200 group-hover/poster:ring-edge"
+                          className="ring-1 ring-transparent transition-[box-shadow] duration-200 group-hover/poster:ring-edge"
                         />
                         {numbered && (
                           <span className="pointer-events-none absolute start-1.5 top-1.5 flex min-w-[1.55rem] items-center justify-center rounded-full bg-black/70 px-1.5 py-0.5 text-[12.5px] font-bold tabular-nums text-white shadow-sm backdrop-blur-md">

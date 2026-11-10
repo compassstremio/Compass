@@ -1085,7 +1085,7 @@ export function EBookView() {
               <button
                 type="button"
                 onClick={() => setScreen("collections")}
-                className="group flex h-full min-h-[84px] items-center gap-4 rounded-2xl border border-edge-soft bg-elevated/40 px-6 py-4 text-start transition-all duration-300 hover:bg-elevated/70 active:scale-[0.99]"
+                className="group flex h-full min-h-[84px] items-center gap-4 rounded-2xl border border-edge-soft bg-elevated/40 px-6 py-4 text-start transition-[background-color,transform] duration-300 hover:bg-elevated/70 active:scale-[0.99]"
               >
                 <span className="relative grid h-12 w-16 shrink-0 place-items-center">
                   <span className="absolute h-10 w-7 -translate-x-2.5 -rotate-[18deg] overflow-hidden rounded-[5px] bg-elevated shadow-[0_4px_10px_-4px_rgba(0,0,0,0.6)] ring-1 ring-edge-soft transition-transform duration-300 ease-out group-hover:-translate-x-4 group-hover:-rotate-[28deg]">
@@ -1130,7 +1130,7 @@ export function EBookView() {
               <button
                 type="button"
                 onClick={() => setScreen("shelf")}
-                className="group flex h-full min-h-[84px] items-center gap-4 rounded-2xl border border-edge-soft bg-elevated/40 px-6 py-4 text-start transition-all duration-300 hover:bg-elevated/70 active:scale-[0.99]"
+                className="group flex h-full min-h-[84px] items-center gap-4 rounded-2xl border border-edge-soft bg-elevated/40 px-6 py-4 text-start transition-[background-color,transform] duration-300 hover:bg-elevated/70 active:scale-[0.99]"
               >
                 <span className="relative flex h-12 w-16 shrink-0 items-end justify-center gap-0.5 pb-2">
                   {[0, 1, 2, 3].map((index) => {

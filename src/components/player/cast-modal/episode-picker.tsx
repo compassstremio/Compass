@@ -354,7 +354,7 @@ export function EpisodePicker({
                   onClick={() => queueToggle(meta, ep)}
                   aria-label={queued ? t("Remove from queue") : t("Add to queue")}
                   title={queued ? t("In your queue") : t("Add to queue")}
-                  className={`absolute right-1.5 top-1.5 flex h-8 w-8 items-center justify-center rounded-full ring-1 backdrop-blur-md transition-all duration-200 ${
+                  className={`absolute right-1.5 top-1.5 flex h-8 w-8 items-center justify-center rounded-full ring-1 backdrop-blur-md transition-[box-shadow,background-color,color,opacity] duration-200 ${
                     queued
                       ? "bg-accent text-black ring-black/10"
                       : "bg-black/55 text-white opacity-0 ring-white/25 hover:bg-black/80 group-hover:opacity-100"

@@ -86,7 +86,7 @@ export function ExtensionRow({
               onClick={() => void run(() => updateExtension(config, ext.pkgName))}
               disabled={busy}
               aria-label={t("Update {name}", { name: ext.name })}
-              className="grid h-9 w-9 place-items-center rounded-lg bg-raised text-accent ring-1 ring-edge-soft transition-all hover:opacity-90 active:scale-95 disabled:opacity-60 motion-reduce:active:scale-100"
+              className="grid h-9 w-9 place-items-center rounded-lg bg-raised text-accent ring-1 ring-edge-soft transition-[opacity,transform] hover:opacity-90 active:scale-95 disabled:opacity-60 motion-reduce:active:scale-100"
             >
               {busy ? <Loader2 size={16} className="animate-spin" /> : <ArrowUpCircle size={17} />}
             </button>
@@ -96,7 +96,7 @@ export function ExtensionRow({
             onClick={() => void run(() => uninstallExtension(config, ext.pkgName))}
             disabled={busy}
             aria-label={t("Uninstall {name}", { name: ext.name })}
-            className="grid h-9 w-9 place-items-center rounded-lg bg-raised text-ink-subtle ring-1 ring-edge-soft transition-all hover:text-danger active:scale-95 disabled:opacity-60 motion-reduce:active:scale-100"
+            className="grid h-9 w-9 place-items-center rounded-lg bg-raised text-ink-subtle ring-1 ring-edge-soft transition-[color,transform,opacity] hover:text-danger active:scale-95 disabled:opacity-60 motion-reduce:active:scale-100"
           >
             {busy ? <Loader2 size={16} className="animate-spin" /> : <Trash2 size={16} />}
           </button>
@@ -106,7 +106,7 @@ export function ExtensionRow({
           type="button"
           onClick={() => void run(() => installExtension(config, ext.pkgName))}
           disabled={busy}
-          className="flex h-9 min-w-[104px] shrink-0 items-center justify-center gap-1.5 rounded-xl bg-accent px-4 text-[13.5px] font-semibold text-canvas transition-all hover:opacity-90 active:scale-95 disabled:opacity-60 motion-reduce:active:scale-100"
+          className="flex h-9 min-w-[104px] shrink-0 items-center justify-center gap-1.5 rounded-xl bg-accent px-4 text-[13.5px] font-semibold text-canvas transition-[opacity,transform] hover:opacity-90 active:scale-95 disabled:opacity-60 motion-reduce:active:scale-100"
         >
           {busy ? (
             <Loader2 size={15} className="animate-spin" />

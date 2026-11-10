@@ -115,7 +115,7 @@ export function ExtensionsSection() {
             type="button"
             onClick={add}
             disabled={adding}
-            className="flex h-12 shrink-0 items-center justify-center gap-2 rounded-xl bg-accent px-5 text-[14.5px] font-semibold text-canvas transition-all hover:opacity-90 active:scale-[0.98] disabled:opacity-60"
+            className="flex h-12 shrink-0 items-center justify-center gap-2 rounded-xl bg-accent px-5 text-[14.5px] font-semibold text-canvas transition-[opacity,transform] hover:opacity-90 active:scale-[0.98] disabled:opacity-60"
           >
             {adding ? <Loader2 size={17} className="animate-spin" /> : <Plus size={17} strokeWidth={2.4} />}
             {t("Add")}
@@ -136,7 +136,7 @@ export function ExtensionsSection() {
         <button
           type="button"
           onClick={clearAll}
-          className={`mt-1 flex items-center justify-center gap-2 rounded-xl px-5 py-3 text-[14px] font-semibold ring-1 transition-all active:scale-[0.98] ${
+          className={`mt-1 flex items-center justify-center gap-2 rounded-xl px-5 py-3 text-[14px] font-semibold ring-1 transition-[box-shadow,transform,background-color,color] active:scale-[0.98] ${
             confirmClear
               ? "bg-danger/15 text-danger ring-danger/40"
               : "bg-raised text-ink-subtle ring-edge-soft hover:text-danger"

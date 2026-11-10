@@ -134,7 +134,7 @@ export function ExtensionRepos({
                 onClick={() => void remove(r.indexUrl)}
                 disabled={busy}
                 aria-label={t("Remove {name}", { name: r.name })}
-                className="grid h-9 w-9 shrink-0 place-items-center rounded-lg bg-raised text-ink-subtle ring-1 ring-edge-soft transition-all hover:text-danger active:scale-95 disabled:opacity-50 motion-reduce:active:scale-100"
+                className="grid h-9 w-9 shrink-0 place-items-center rounded-lg bg-raised text-ink-subtle ring-1 ring-edge-soft transition-[color,transform,opacity] hover:text-danger active:scale-95 disabled:opacity-50 motion-reduce:active:scale-100"
               >
                 <Trash2 size={16} strokeWidth={2} />
               </button>
@@ -160,7 +160,7 @@ export function ExtensionRepos({
           type="button"
           onClick={() => void add(url)}
           disabled={busy || !url.trim()}
-          className="flex h-12 shrink-0 items-center justify-center gap-2 rounded-xl bg-accent px-5 text-[14.5px] font-semibold text-canvas transition-all hover:opacity-90 active:scale-[0.98] disabled:opacity-50"
+          className="flex h-12 shrink-0 items-center justify-center gap-2 rounded-xl bg-accent px-5 text-[14.5px] font-semibold text-canvas transition-[opacity,transform] hover:opacity-90 active:scale-[0.98] disabled:opacity-50"
         >
           {busy ? (
             <Loader2 size={17} className="animate-spin" />
@@ -185,7 +185,7 @@ export function ExtensionRepos({
             type="button"
             onClick={() => void add(s.url)}
             disabled={busy}
-            className="flex flex-col items-start rounded-xl bg-raised px-3.5 py-2 text-start ring-1 ring-edge-soft transition-all hover:ring-edge active:scale-[0.98] disabled:opacity-50"
+            className="flex flex-col items-start rounded-xl bg-raised px-3.5 py-2 text-start ring-1 ring-edge-soft transition-[box-shadow,transform,opacity] hover:ring-edge active:scale-[0.98] disabled:opacity-50"
           >
             <span className="text-[13px] font-semibold text-ink">{s.label}</span>
             <span className="text-[11.5px] text-ink-subtle">{t(s.sub)}</span>

@@ -65,7 +65,7 @@ export function ImportBanner({ name }: { name: string }) {
   }, []);
   return (
     <div
-      className={`mx-2 mt-2 flex items-center gap-3 overflow-hidden rounded-xl border border-accent/35 bg-accent/10 px-3.5 py-2.5 transition-all duration-500 ease-[cubic-bezier(0.22,1,0.36,1)] ${
+      className={`mx-2 mt-2 flex items-center gap-3 overflow-hidden rounded-xl border border-accent/35 bg-accent/10 px-3.5 py-2.5 transition-[border-color,background-color,transform,opacity] duration-500 ease-[cubic-bezier(0.22,1,0.36,1)] ${
         shown ? "translate-y-0 scale-100 opacity-100" : "-translate-y-1 scale-[0.97] opacity-0"
       }`}
     >

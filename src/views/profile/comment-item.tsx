@@ -245,7 +245,7 @@ export function CommentItem({
           <ConfirmableAction
             source={{ actions: () => [deleteAction], isValid: () => isSocialActorCurrent(actor) }}
             actionId="comment:delete"
-            className="flex h-11 w-11 shrink-0 items-center justify-center rounded-md text-ink-subtle opacity-0 transition-all hover:bg-surface hover:text-danger focus-visible:opacity-100 group-hover:opacity-100"
+            className="flex h-11 w-11 shrink-0 items-center justify-center rounded-md text-ink-subtle opacity-0 transition-[background-color,color,opacity] hover:bg-surface hover:text-danger focus-visible:opacity-100 group-hover:opacity-100"
           >
             <Trash2 size={20} />
           </ConfirmableAction>

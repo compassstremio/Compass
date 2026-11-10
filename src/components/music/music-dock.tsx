@@ -5,6 +5,7 @@ import { useModalExit } from "@/components/modal-shell";
 import { artistCreditParts } from "@/lib/music/search-artists";
 import { MusicArtistLink } from "./music-artist-link";
 import { useRecordingProfile } from "@/lib/music/use-recording-profile";
+import { dockActivated } from "@/lib/music/dock-activation";
 import {
   useEffect,
   useCallback,
@@ -140,6 +141,9 @@ function useDockInset(
   }, [ref, visible, collapsed, gamesActive]);
   return inset;
 }
+
+let sessionActivated = false;
+let restoredTrackId: string | null | undefined;
 
 export function MusicDock() {
   const t = useT();
@@ -283,7 +287,11 @@ export function MusicDock() {
     setDragging(false);
     setScrub(null);
   }, [current?.id]);
-  const visible = Boolean(current) && topKind !== "player" && topKind !== "picker";
+  const currentTrackId = current ? `${current.connectorId ?? ""}:${current.id}` : null;
+  if (restoredTrackId === undefined) restoredTrackId = currentTrackId;
+  sessionActivated = dockActivated(sessionActivated, player.phase, restoredTrackId, currentTrackId);
+  const visible =
+    Boolean(current) && sessionActivated && topKind !== "player" && topKind !== "picker";
   const inset = useDockInset(dockRef, visible, collapsed, topKind === "games");
   const stuckError = player.error && !player.error.startsWith("music.cast.") ? player.error : null;
   const stuckKey = `${player.current?.connectorId ?? ""}:${player.current?.id ?? ""}`;

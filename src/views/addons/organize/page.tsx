@@ -322,7 +322,7 @@ export function OrganizeAddonsPage({
               <button
                 onClick={() => void handleSave()}
                 disabled={!dirty || phase.kind !== "ready" || moving != null}
-                className={`flex h-11 items-center gap-2 rounded-full bg-ink px-6 text-[14px] font-semibold text-canvas transition-all hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-40 ${
+                className={`flex h-11 items-center gap-2 rounded-full bg-ink px-6 text-[14px] font-semibold text-canvas transition-[background-color,color,opacity,box-shadow] hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-40 ${
                   dirty && !saving ? "ring-2 ring-accent/50" : ""
                 }`}
               >

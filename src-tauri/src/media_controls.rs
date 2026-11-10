@@ -1,13 +1,50 @@
+/// SMTC timelines are measured in 100 ns ticks. Returns (end, position), or None without a
+/// usable duration; the position is clamped into the track so a late tick can't exceed it.
+#[cfg_attr(not(windows), allow(dead_code))]
+fn timeline_ticks(duration_sec: Option<f64>, position_sec: Option<f64>) -> Option<(i64, i64)> {
+    const TICKS: f64 = 10_000_000.0;
+    let duration = duration_sec.filter(|d| d.is_finite() && *d > 0.0)?;
+    let end = (duration * TICKS) as i64;
+    let position = position_sec
+        .filter(|p| p.is_finite())
+        .map_or(0, |p| ((p.max(0.0) * TICKS) as i64).min(end));
+    Some((end, position))
+}
+
+#[cfg(test)]
+mod timeline_tests {
+    use super::timeline_ticks;
+
+    #[test]
+    fn converts_seconds_to_ticks_and_clamps_position() {
+        assert_eq!(timeline_ticks(Some(200.0), Some(12.5)), Some((2_000_000_000, 125_000_000)));
+        assert_eq!(timeline_ticks(Some(10.0), Some(99.0)), Some((100_000_000, 100_000_000)));
+        assert_eq!(timeline_ticks(Some(10.0), Some(-3.0)), Some((100_000_000, 0)));
+        assert_eq!(timeline_ticks(Some(10.0), None), Some((100_000_000, 0)));
+    }
+
+    #[test]
+    fn rejects_unusable_durations() {
+        assert_eq!(timeline_ticks(None, Some(1.0)), None);
+        assert_eq!(timeline_ticks(Some(0.0), Some(1.0)), None);
+        assert_eq!(timeline_ticks(Some(f64::NAN), Some(1.0)), None);
+        assert_eq!(timeline_ticks(Some(f64::INFINITY), Some(1.0)), None);
+        assert_eq!(timeline_ticks(Some(10.0), Some(f64::NAN)), Some((100_000_000, 0)));
+    }
+}
+
 #[cfg(windows)]
 mod win {
     use std::sync::{Mutex, OnceLock};
     use tauri::{AppHandle, Emitter, Manager};
     use windows::core::HSTRING;
-    use windows::Foundation::TypedEventHandler;
+    use windows::Foundation::{TimeSpan, TypedEventHandler, Uri};
     use windows::Media::{
         MediaPlaybackStatus, MediaPlaybackType, SystemMediaTransportControls,
         SystemMediaTransportControlsButton, SystemMediaTransportControlsButtonPressedEventArgs,
+        SystemMediaTransportControlsTimelineProperties,
     };
+    use windows::Storage::Streams::RandomAccessStreamReference;
     use windows::Win32::Foundation::HWND;
     use windows::Win32::System::WinRT::ISystemMediaTransportControlsInterop;
 
@@ -16,7 +53,17 @@ mod win {
     unsafe impl Sync for Holder {}
 
     static SMTC: OnceLock<Option<Holder>> = OnceLock::new();
-    static LAST_PUSHED: OnceLock<Mutex<Option<(bool, String, String)>>> = OnceLock::new();
+    static LAST_PUSHED: OnceLock<Mutex<Option<Pushed>>> = OnceLock::new();
+
+    #[derive(PartialEq)]
+    struct Pushed {
+        playing: bool,
+        title: String,
+        subtitle: String,
+        album: String,
+        music: bool,
+        art: String,
+    }
 
     fn controls() -> Option<&'static SystemMediaTransportControls> {
         SMTC.get().and_then(|h| h.as_ref()).map(|h| &h.0)
@@ -84,34 +131,82 @@ mod win {
             .collect()
     }
 
-    pub fn update(playing: bool, title: &str, subtitle: &str) {
-        let title = sanitize(title);
-        let subtitle = sanitize(subtitle);
-
+    /// Music is published as a Music session (title, artist, album) so desktop-player readers such
+    /// as WebNowPlaying see artist and album; video keeps the Video shape it always had.
+    pub fn update(
+        playing: bool,
+        title: &str,
+        subtitle: &str,
+        album: Option<&str>,
+        music: bool,
+        art_url: Option<&str>,
+        duration_sec: Option<f64>,
+        position_sec: Option<f64>,
+    ) {
         let Some(smtc) = controls() else { return };
+        let next = Pushed {
+            playing,
+            title: sanitize(title),
+            subtitle: sanitize(subtitle),
+            album: album.map(sanitize).unwrap_or_default(),
+            music,
+            art: art_url
+                .filter(|url| url.starts_with("https://"))
+                .unwrap_or_default()
+                .to_string(),
+        };
 
         let last = LAST_PUSHED.get_or_init(|| Mutex::new(None));
         let mut guard = last.lock().unwrap_or_else(|error| error.into_inner());
-        let next = (playing, title, subtitle);
-        if guard.as_ref() == Some(&next) {
-            return;
+        if guard.as_ref() != Some(&next) {
+            let result = (|| -> windows::core::Result<()> {
+                smtc.SetIsEnabled(true)?;
+                smtc.SetPlaybackStatus(if playing {
+                    MediaPlaybackStatus::Playing
+                } else {
+                    MediaPlaybackStatus::Paused
+                })?;
+                let du = smtc.DisplayUpdater()?;
+                if next.music {
+                    du.SetType(MediaPlaybackType::Music)?;
+                    let mp = du.MusicProperties()?;
+                    mp.SetTitle(&HSTRING::from(next.title.as_str()))?;
+                    mp.SetArtist(&HSTRING::from(next.subtitle.as_str()))?;
+                    mp.SetAlbumTitle(&HSTRING::from(next.album.as_str()))?;
+                } else {
+                    du.SetType(MediaPlaybackType::Video)?;
+                    let vp = du.VideoProperties()?;
+                    vp.SetTitle(&HSTRING::from(next.title.as_str()))?;
+                    vp.SetSubtitle(&HSTRING::from(next.subtitle.as_str()))?;
+                }
+                // The thumbnail is fetched by Windows itself; a bad URL must not fail the update.
+                if !next.art.is_empty() {
+                    if let Ok(uri) = Uri::CreateUri(&HSTRING::from(next.art.as_str())) {
+                        if let Ok(stream) = RandomAccessStreamReference::CreateFromUri(&uri) {
+                            let _ = du.SetThumbnail(&stream);
+                        }
+                    }
+                }
+                du.Update()
+            })();
+            // Failed pushes must remain retryable on the next update.
+            let pushed = result.is_ok();
+            *guard = if pushed { Some(next) } else { None };
         }
-        let result = (|| -> windows::core::Result<()> {
-            smtc.SetIsEnabled(true)?;
-            smtc.SetPlaybackStatus(if playing {
-                MediaPlaybackStatus::Playing
-            } else {
-                MediaPlaybackStatus::Paused
-            })?;
-            let du = smtc.DisplayUpdater()?;
-            du.SetType(MediaPlaybackType::Video)?;
-            let vp = du.VideoProperties()?;
-            vp.SetTitle(&HSTRING::from(next.1.as_str()))?;
-            vp.SetSubtitle(&HSTRING::from(next.2.as_str()))?;
-            du.Update()
-        })();
-        // Failed pushes must remain retryable on the next update.
-        *guard = result.ok().map(|_| next);
+        drop(guard);
+
+        // Position moves without any metadata change, so the timeline is refreshed every call.
+        if let Some((end, position)) = super::timeline_ticks(duration_sec, position_sec) {
+            if let Ok(props) = SystemMediaTransportControlsTimelineProperties::new() {
+                let span = |duration: i64| TimeSpan { Duration: duration };
+                let _ = props.SetStartTime(span(0));
+                let _ = props.SetMinSeekTime(span(0));
+                let _ = props.SetEndTime(span(end));
+                let _ = props.SetMaxSeekTime(span(end));
+                let _ = props.SetPosition(span(position));
+                let _ = smtc.UpdateTimelineProperties(&props);
+            }
+        }
     }
 
     pub fn clear() {
@@ -704,13 +799,26 @@ pub fn media_controls_update(
     duration_sec: Option<f64>,
     position_sec: Option<f64>,
     volume: Option<f64>,
+    album: Option<String>,
+    music: Option<bool>,
 ) {
     #[cfg(windows)]
-    win::update(playing, &title, &subtitle);
+    win::update(
+        playing,
+        &title,
+        &subtitle,
+        album.as_deref(),
+        music.unwrap_or(false),
+        art_url.as_deref(),
+        duration_sec,
+        position_sec,
+    );
     #[cfg(windows)]
     crate::taskbar::set_playing(playing);
     #[cfg(windows)]
-    let _ = (art_url, duration_sec, position_sec, volume);
+    let _ = volume;
+    #[cfg(not(windows))]
+    let _ = (&album, music);
     #[cfg(target_os = "linux")]
     linux::update(
         playing,

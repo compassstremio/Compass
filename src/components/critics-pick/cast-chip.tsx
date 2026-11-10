@@ -10,7 +10,7 @@ export function CastChip({ member, onClick }: { member: CastMember; onClick: () 
       className="group/chip flex w-[68px] flex-shrink-0 flex-col items-center gap-1.5"
       style={{ scrollSnapAlign: "start" }}
     >
-      <div className="h-12 w-12 overflow-hidden rounded-full border border-edge-soft bg-elevated/55 transition-all duration-200 group-hover/chip:border-ink group-hover/chip:ring-2 group-hover/chip:ring-ink/30">
+      <div className="h-12 w-12 overflow-hidden rounded-full border border-edge-soft bg-elevated/55 transition-[border-color,box-shadow] duration-200 group-hover/chip:border-ink group-hover/chip:ring-2 group-hover/chip:ring-ink/30">
         {member.profilePath ? (
           <img
             src={profileUrl(member.profilePath)}

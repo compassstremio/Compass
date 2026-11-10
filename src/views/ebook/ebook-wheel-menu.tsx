@@ -308,7 +308,7 @@ export function EBookWheelMenu({
               style={{ left: `${left}%`, top: `${top}%` }}
             >
               <span
-                className={`grid h-14 w-14 place-items-center rounded-full border shadow-[0_10px_28px_-14px_rgba(0,0,0,0.9)] transition-all duration-200 group-hover:-translate-y-1 group-hover:scale-105 group-focus-visible:ring-2 group-focus-visible:ring-accent group-active:scale-95 ${
+                className={`grid h-14 w-14 place-items-center rounded-full border shadow-[0_10px_28px_-14px_rgba(0,0,0,0.9)] transition-[box-shadow,transform,border-color,background-color,color] duration-200 group-hover:-translate-y-1 group-hover:scale-105 group-focus-visible:ring-2 group-focus-visible:ring-accent group-active:scale-95 ${
                   action.active
                     ? "border-accent/50 bg-accent text-canvas"
                     : "border-edge bg-elevated text-ink-muted group-hover:border-edge-strong group-hover:bg-raised group-hover:text-ink"

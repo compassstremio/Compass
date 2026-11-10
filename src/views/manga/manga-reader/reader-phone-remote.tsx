@@ -137,7 +137,7 @@ function PhoneRemoteModal({ onClose }: { onClose: () => void }) {
               <button
                 type="button"
                 onClick={copy}
-                className="flex h-8 shrink-0 items-center gap-1.5 rounded-lg bg-ink px-2.5 text-[12.5px] font-semibold text-canvas transition-all hover:opacity-90 active:scale-[0.97]"
+                className="flex h-8 shrink-0 items-center gap-1.5 rounded-lg bg-ink px-2.5 text-[12.5px] font-semibold text-canvas transition-[opacity,transform] hover:opacity-90 active:scale-[0.97]"
               >
                 {copied ? <Check size={14} strokeWidth={2.6} /> : <Copy size={14} />}
                 {copied ? t("Copied") : t("Copy")}

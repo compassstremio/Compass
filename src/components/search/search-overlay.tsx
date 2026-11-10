@@ -36,6 +36,7 @@ import { MagnetCard } from "./magnet-card";
 import { UrlCard } from "./url-card";
 import { AiSearchSection } from "./ai-search-section";
 import { AiModeButton } from "./ai-mode-button";
+import { GoToSection } from "./go-to-section";
 import { providerTabFor } from "@/lib/ai-models";
 import { getSearchDisplayState } from "@/lib/search-display-state";
 import { AiExampleHint, SEARCH_EXAMPLES } from "@/components/ai-example-hint";
@@ -542,6 +543,10 @@ export function SearchOverlay() {
                     </span>
                     <CornerDownLeft size={15} className="ms-auto text-ink-subtle" />
                   </button>
+                )}
+
+                {trimmed && !directInput && !aiMode && (
+                  <GoToSection query={trimmed} onClose={commit} />
                 )}
 
                 {tmdbUnavailable && !directInput && !aiActive && !aiMode && (

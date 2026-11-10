@@ -647,7 +647,7 @@ const PosterCard = memo(function PosterCard({
         className={`relative w-full ${
           tiltable
             ? ""
-            : "transition-transform duration-300 ease-[cubic-bezier(0.32,0.72,0.24,1)] motion-safe:group-hover:[transform:translate3d(0,-0.5rem,0)_scale(1.03)] motion-safe:group-hover:will-change-transform"
+            : "transition-transform duration-[220ms] ease-[cubic-bezier(0.32,0.72,0.24,1)] motion-safe:group-hover:[transform:translate3d(0,-0.5rem,0)_scale(1.03)] motion-safe:group-hover:will-change-transform motion-safe:group-active:duration-100 motion-safe:group-active:[transform:translate3d(0,-0.25rem,0)_scale(0.985)]"
         } ${expandingCard.enabled ? "expanding-card-poster-frame" : ""} ${
           expandingCard.focusEnabled
             ? "group-focus:[-webkit-transform:translate3d(0,-0.5rem,0)] group-focus:[transform:translate3d(0,-0.5rem,0)]"

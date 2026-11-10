@@ -32,7 +32,7 @@ export function NowCard({
       data-art={backdrop || channel.logo || ""}
       onClick={() => onPlay(channel)}
       aria-label={t("Play {name}", { name: channel.name })}
-      className="group/now relative flex aspect-[16/9] w-full flex-col justify-end overflow-hidden rounded-lg border border-edge-soft/55 bg-elevated text-start transition-all duration-200 hover:border-edge hover:shadow-[0_10px_30px_-12px_rgba(0,0,0,0.6)]"
+      className="group/now relative flex aspect-[16/9] w-full flex-col justify-end overflow-hidden rounded-lg border border-edge-soft/55 bg-elevated text-start transition-[border-color,box-shadow] duration-200 hover:border-edge hover:shadow-[0_10px_30px_-12px_rgba(0,0,0,0.6)]"
     >
       {art ? (
         <img
@@ -65,7 +65,7 @@ export function NowCard({
         <span className="h-1.5 w-1.5 animate-pulse rounded-full bg-danger" />
         {t("Live")}
       </span>
-      <span className="absolute end-3 top-3 flex h-9 w-9 items-center justify-center rounded-full bg-ink text-canvas opacity-0 shadow-[0_4px_14px_rgba(0,0,0,0.4)] transition-all duration-200 group-hover/now:opacity-100">
+      <span className="absolute end-3 top-3 flex h-9 w-9 items-center justify-center rounded-full bg-ink text-canvas opacity-0 shadow-[0_4px_14px_rgba(0,0,0,0.4)] transition-[opacity] duration-200 group-hover/now:opacity-100">
         <Play size={15} fill="currentColor" />
       </span>
 

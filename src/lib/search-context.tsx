@@ -504,12 +504,7 @@ export function SearchProvider({ children }: { children: ReactNode }) {
 
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => {
-      const k = (e.key ?? "").toLowerCase();
-      if ((e.metaKey || e.ctrlKey) && k === "k") {
-        e.preventDefault();
-        setOpen((o) => !o);
-        return;
-      }
+      // Ctrl/Cmd+K lives in SearchHotkey so it is layout independent and captured first.
       if (e.key === "Escape" && open) {
         e.preventDefault();
         setOpen(false);

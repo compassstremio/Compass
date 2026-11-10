@@ -148,7 +148,7 @@ export function PageImage({
           <button
             type="button"
             onClick={retry}
-            className="flex h-10 items-center gap-2 rounded-full border border-edge-soft bg-surface px-4 text-[13px] font-semibold text-ink-muted shadow-[0_2px_8px_-4px_rgba(15,15,18,0.22)] transition-all hover:-translate-y-px hover:border-edge hover:text-ink"
+            className="flex h-10 items-center gap-2 rounded-full border border-edge-soft bg-surface px-4 text-[13px] font-semibold text-ink-muted shadow-[0_2px_8px_-4px_rgba(15,15,18,0.22)] transition-[transform,border-color,color] hover:-translate-y-px hover:border-edge hover:text-ink"
           >
             <RefreshCw size={15} strokeWidth={2.2} />
             {t("Retry")}

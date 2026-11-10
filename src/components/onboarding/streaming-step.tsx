@@ -31,7 +31,7 @@ export function StreamingStep() {
               key={svc}
               onClick={() => toggleStreaming(svc)}
               aria-pressed={on}
-              className={`relative flex h-16 items-center justify-center overflow-hidden rounded-xl border px-2 transition-all ${
+              className={`relative flex h-16 items-center justify-center overflow-hidden rounded-xl border px-2 transition-[border-color,background-color,opacity] ${
                 on
                   ? "border-ink-subtle/50 bg-raised opacity-100"
                   : "border-edge-soft bg-canvas opacity-55 hover:opacity-90"

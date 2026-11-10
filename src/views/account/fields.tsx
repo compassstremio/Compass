@@ -129,7 +129,7 @@ export function PasswordField({
           type="button"
           onClick={() => setReveal((r) => !r)}
           aria-label={reveal ? t("Hide password") : t("Show password")}
-          className="absolute inset-y-0 end-0 flex w-11 items-center justify-center text-ink-subtle transition-all duration-150 hover:text-ink active:scale-90"
+          className="absolute inset-y-0 end-0 flex w-11 items-center justify-center text-ink-subtle transition-[color,transform] duration-150 hover:text-ink active:scale-90"
         >
           {reveal ? <EyeOff size={16} strokeWidth={2} /> : <Eye size={16} strokeWidth={2} />}
         </button>

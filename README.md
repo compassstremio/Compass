@@ -41,9 +41,6 @@ Offering things like a native player, a stream ranking engine, Wikidata, watch p
 > Stremio has released their **[Supporter tier](https://blog.stremio.com/stremio-supporters-a-way-to-sustain-our-development/)** PLEASE CONSIDER SUPPORTING THEM AND BUYING THIS. We heavily encourage you to use Stremio's Official Apps on Mobile, and Tvs. Compass is NOT a stremio competitor, it is a different flavor of player for the ecosystem. To get the most out of Compass, please sign up with a [stremio account](https://stremio.com) (it's free) To Support Stremio visit : https://www.stremio.com/donate (P.S.A Compass is not endorsed by or created by Stremio ltd or it's contributors it is a independent open sourced project)
 > <br/>
 
-> [!NOTE]
-> Unofficial Linux `.deb`, `.rpm`, and Flatpak packages are maintained at [AdityaHebballe/compass-linux-builds](https://github.com/AdityaHebballe/compass-linux-builds). Official Linux packages are coming soon.
-
 ATTENTION: COMPASS DOES NOT AND WILL NOT ASK YOU FOR DONATIONS! If someone claims to be us and asks you for donations, IT IS NOT US. Have an issue? Open it on GitHub so everyone can see the report and follow its resolution. Want to donate to a good cause? Consider the National Pediatric Cancer Foundation (https://nationalpcf.org/), Electronic Frontier Foundation (https://www.eff.org/), or St. Jude's (https://www.stjude.org/). You can also find a charity at https://www.charitynavigator.org/.
 <br/>
 <br/>
@@ -402,17 +399,24 @@ Compass is built to keep your data on your machine.
 
 ## Install
 
-Download the latest build for macOS or Windows from the [Releases page][releases], use the [unofficial Linux packages](https://github.com/AdityaHebballe/compass-linux-builds), or open Compass in your browser.
+Download the latest build for macOS, Windows or Linux from the [Releases page][releases], or open Compass in your browser.
 
 | Platform    | Format                                                                                                   |
 | ----------- | -------------------------------------------------------------------------------------------------------- |
 | **macOS**   | `.dmg` (macOS 15.0 or newer, Apple silicon)                                                              |
 | **Windows** | `.exe` NSIS installer (current user install), or `winget install CompassStremio.Compass`                   |
 | **Web**     | Open in any modern browser, nothing to install                                                           |
-| **Linux**   | [Unofficial `.deb`, `.rpm`, and Flatpak packages](https://github.com/AdityaHebballe/compass-linux-builds) |
+| **Linux**   | `.deb`, `.rpm`, `.AppImage` (x86_64 and aarch64) and Flatpak (x86_64), from the [Releases page][releases] |
+
+```bash
+sudo apt install ./Compass_*.deb                      # Debian, Ubuntu
+sudo dnf install ./Compass-*.rpm                      # Fedora, openSUSE
+chmod +x Compass_*.AppImage && ./Compass_*.AppImage   # any distro
+flatpak install --user ./Compass_*_x86_64.flatpak     # Flatpak
+```
 
 > [!NOTE]
-> Linux packages above are community-maintained. Official Compass Linux packages are coming soon.
+> Linux packages are unsigned and ship without extension support. Check your download against `SHA256SUMS-linux` (or `SHA256SUMS-flatpak` for the Flatpak) on the release page. [Community-maintained packages](https://github.com/AdityaHebballe/compass-linux-builds) also exist.
 
 > [!NOTE]
 > **First launch on macOS.** Compass's macOS builds carry an ad-hoc code signature rather than an Apple Developer ID, so Gatekeeper reports it as coming from an unidentified developer and some antivirus tools flag the download. Drag Compass to Applications, then either run `xattr -dr com.apple.quarantine /Applications/Compass.app` in Terminal, or open **System Settings > Privacy & Security** and choose **Open Anyway**. If you would rather not trust a binary, [build from source](#build-from-source).
@@ -576,7 +580,7 @@ Directional, not a set of promises. Priorities shift with feedback.
 - [x] First class anime room with Kitsu and AniZip
 - [x] Theme studio with custom layouts
 - [x] macOS, Windows, and web launch builds
-- [ ] Official Linux packages
+- [x] Official Linux packages
 - [ ] Expanded casting device matrix (AirPlay 2, more Roku and Chromecast targets)
 - [ ] More translations
 - [ ] A growing theme gallery
@@ -664,7 +668,7 @@ Thank you to everyone, named and unnamed, whose open work Compass builds upon.
 <!-- reference links -->
 
 [releases]: https://github.com/compassstremio/compass/releases
-[linux-packages]: https://github.com/AdityaHebballe/compass-linux-builds
+[linux-packages]: https://github.com/compassstremio/compass/releases
 [issues]: https://github.com/compassstremio/compass/issues
 [discussions]: https://github.com/compassstremio/compass/discussions
 [license]: ./LICENSE

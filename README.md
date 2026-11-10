@@ -406,17 +406,16 @@ Download the latest build for macOS, Windows or Linux from the [Releases page][r
 | **macOS**   | `.dmg` (macOS 15.0 or newer, Apple silicon)                                                              |
 | **Windows** | `.exe` NSIS installer (current user install), or `winget install CompassStremio.Compass`                   |
 | **Web**     | Open in any modern browser, nothing to install                                                           |
-| **Linux**   | `.deb`, `.rpm`, `.AppImage` (x86_64 and aarch64) and Flatpak (x86_64), from the [Releases page][releases] |
+| **Linux**   | `.deb`, `.rpm` and `.AppImage` (x86_64 and aarch64), from the [Releases page][releases] |
 
 ```bash
 sudo apt install ./Compass_*.deb                      # Debian, Ubuntu
 sudo dnf install ./Compass-*.rpm                      # Fedora, openSUSE
 chmod +x Compass_*.AppImage && ./Compass_*.AppImage   # any distro
-flatpak install --user ./Compass_*_x86_64.flatpak     # Flatpak
 ```
 
 > [!NOTE]
-> Linux packages are unsigned and ship without extension support. Check your download against `SHA256SUMS-linux` (or `SHA256SUMS-flatpak` for the Flatpak) on the release page. [Community-maintained packages](https://github.com/AdityaHebballe/compass-linux-builds) also exist.
+> Linux packages are unsigned and ship without extension support. Check your download against `SHA256SUMS-linux` on the release page. An official Flatpak is not available yet; [community-maintained Flatpak packages](https://github.com/AdityaHebballe/compass-linux-builds) exist in the meantime.
 
 > [!NOTE]
 > **First launch on macOS.** Compass's macOS builds carry an ad-hoc code signature rather than an Apple Developer ID, so Gatekeeper reports it as coming from an unidentified developer and some antivirus tools flag the download. Drag Compass to Applications, then either run `xattr -dr com.apple.quarantine /Applications/Compass.app` in Terminal, or open **System Settings > Privacy & Security** and choose **Open Anyway**. If you would rather not trust a binary, [build from source](#build-from-source).

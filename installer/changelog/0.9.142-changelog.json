@@ -12,6 +12,12 @@
           ]
         },
         {
+          "heading": "Manga",
+          "items": [
+            "Compass Manga now tells its server which app is reading (Compass PC and its version), so the service can tell Compass apps apart from other tools."
+          ]
+        },
+        {
           "heading": "Polish",
           "items": [
             "Switching between rooms now fades in quickly instead of cutting hard, and rooms that load for the first time fade in instead of popping in after a blank screen. Reduced-motion users keep the instant switch.",

@@ -1,4 +1,5 @@
 import { safeFetch } from "@/lib/safe-fetch";
+import { APP_VERSION } from "@/lib/build-info";
 import { getUiLanguage, subscribe as subscribeUiLanguage } from "@/lib/i18n/store";
 import { MANGA_PAGE, type MangaProvider } from "@/lib/manga/types";
 import { toChapters, toStrings, toSummaries, toSummary, toTags } from "@/lib/manga/plugins/adapter";
@@ -11,6 +12,11 @@ import { toChapters, toStrings, toSummaries, toSummary, toTags } from "@/lib/man
 
 export const COMPASS_MANGA_URL = "https://manga.compass.sarl";
 export const COMPASS_MANGA_ACCOUNT_URL = `${COMPASS_MANGA_URL}/account`;
+
+/** Names this app to the service, which counts requests per app and can refuse unknown ones. */
+export function mangaHeaders(key: string): Record<string, string> {
+  return { "X-Compass-Key": key, "X-Compass-App": `compass-pc/${APP_VERSION}` };
+}
 
 export type HostedSource = { id: string; name: string; lang: string; icon?: string };
 
@@ -101,7 +107,7 @@ export async function saveMangaKey(raw: string): Promise<SaveKeyResult> {
   if (!KEY.test(key)) return "malformed";
   let res: Response;
   try {
-    res = await safeFetch(`${COMPASS_MANGA_URL}/api/key`, { headers: { "X-Compass-Key": key } });
+    res = await safeFetch(`${COMPASS_MANGA_URL}/api/key`, { headers: mangaHeaders(key) });
   } catch {
     return "unreachable";
   }
@@ -129,7 +135,7 @@ function markRejected(key: string): void {
 async function keyedFetch(url: string, getKey: KeyGetter): Promise<Response> {
   const key = getKey();
   if (!key) throw new Error("add your Compass Manga key in Manga sources");
-  const res = await safeFetch(url, { headers: { "X-Compass-Key": key } });
+  const res = await safeFetch(url, { headers: mangaHeaders(key) });
   if (res.status === 401) markRejected(key);
   return res;
 }

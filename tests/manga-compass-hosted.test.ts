@@ -20,14 +20,14 @@ const KEY = "cmp_" + "a".repeat(43);
 const withKey = () => KEY;
 const realFetch = globalThis.fetch;
 
-type Seen = { url: string; key: string | null };
+type Seen = { url: string; key: string | null; app: string | null };
 
 function stubFetch(answer: (url: string, key: string | null) => { status?: number; body: unknown }): Seen[] {
   const seen: Seen[] = [];
   globalThis.fetch = (async (input: RequestInfo | URL, init?: RequestInit) => {
     const url = String(input);
     const key = new Headers(init?.headers).get("x-compass-key");
-    seen.push({ url, key });
+    seen.push({ url, key, app: new Headers(init?.headers).get("x-compass-app") });
     const { status = 200, body } = answer(url, key);
     return new Response(JSON.stringify(body), { status, headers: { "content-type": "application/json" } });
   }) as typeof fetch;
@@ -46,6 +46,7 @@ test("every request carries the key, and browse pages by the grid's page size", 
   assert.equal(p.id, hostedSourceId("3asq"));
   assert.deepEqual(items.map((m) => m.id), ["island-rock"]);
   assert.equal(seen[0].key, KEY);
+  assert.match(seen[0].app ?? "", /^compass-pc\/\S+$/, "the service learns which Compass app is calling");
   const url = new URL(seen[0].url);
   assert.equal(url.origin + url.pathname, `${COMPASS_MANGA_URL}/api/3asq/popular`);
   assert.equal(url.searchParams.get("offset"), String(MANGA_PAGE));

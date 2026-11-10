@@ -247,7 +247,7 @@ jobs:
       - name: Build Linux system packages
         if: contains(matrix.platform.runner, 'ubuntu')
         # --verbose: without it a linuxdeploy failure only says "failed to run linuxdeploy".
-        run: pnpm tauri:build:linux-system --target ${{ matrix.platform.target }} --bundles deb,appimage --verbose
+        run: pnpm tauri:build:linux-system --target ${{ matrix.platform.target }} --bundles deb,rpm,appimage --verbose
         env:
           # The staged Java runtime's lib/*.so list libjvm.so as needed, but it lives in lib/server and
           # the launcher loads it first, so linuxdeploy cannot resolve it without this path. It then
@@ -325,6 +325,7 @@ jobs:
           path: |
             src-tauri/target/${{ matrix.platform.target }}/release/bundle/**/*.dmg
             src-tauri/target/${{ matrix.platform.target }}/release/bundle/**/*.deb
+            src-tauri/target/${{ matrix.platform.target }}/release/bundle/**/*.rpm
             src-tauri/target/${{ matrix.platform.target }}/release/bundle/**/*.AppImage
             src-tauri/target/${{ matrix.platform.target }}/release/bundle/**/*.msi
             src-tauri/target/${{ matrix.platform.target }}/release/bundle/**/*.exe
@@ -368,3 +369,40 @@ jobs:
           gh release upload "$TAG" "$apple_silicon" --repo "$GITHUB_REPOSITORY" --clobber
           echo "::notice::The Intel dmg is built and kept as the compass-macOS-Intel workflow artifact, deliberately not attached to a release. Its bundled libmpv closure comes from Homebrew, which no longer builds Intel bottles, so the dmg declares macOS 15.0 or newer and would not launch on the Sonoma, Ventura and Monterey Macs that asked for it. To ship it, add its *_x64.dmg to this upload and drop the Intel entry's continue-on-error in the build job."
           gh release view "$TAG" --repo "$GITHUB_REPOSITORY" --json assets --jq '.assets[].name'
+
+  publish-linux:
+    name: Publish the Linux packages
+    needs: build
+    if: ${{ !cancelled() && startsWith(github.ref, 'refs/tags/') }}
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    permissions:
+      contents: write
+
+    steps:
+      - uses: actions/checkout@v4
+
+      # A failed leg leaves no artifact. continue-on-error lets the script report which file is
+      # missing instead of this step failing with a generic "artifact not found".
+      - name: Download the x86_64 packages
+        continue-on-error: true
+        uses: actions/download-artifact@v4
+        with:
+          name: compass-Linux-x86_64
+          path: linux-bundles/x86_64
+
+      - name: Download the aarch64 packages
+        continue-on-error: true
+        uses: actions/download-artifact@v4
+        with:
+          name: compass-Linux-aarch64
+          path: linux-bundles/aarch64
+
+      - name: Attach the Linux packages to the release
+        shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
+          TAG: ${{ github.ref_name }}
+        run: |
+          mkdir -p linux-bundles/x86_64 linux-bundles/aarch64
+          bash scripts/linux-release-assets.sh "$TAG" SHA256SUMS-linux '*.deb,*.AppImage' '*.rpm' linux-bundles/x86_64 linux-bundles/aarch64

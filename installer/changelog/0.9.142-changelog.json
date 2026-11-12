@@ -27,6 +27,20 @@
             "Hover transitions on the back button, top dock buttons, the Nord sidebar avatar ring, hero slide pips, the anime hero tooltip, avatar delete buttons, home hero arrows and pips, the source picker, addon install buttons and search suggestion chips now animate only the properties that change.",
             "About 130 more hover and press transitions across the app (manga reader, library, live TV, profile picker, player menus, collections and more) now animate only the properties that actually change, which avoids needless repaints."
           ]
+        },
+        {
+          "heading": "Performance",
+          "items": [
+            "Compass no longer waits for the music library to restore before it draws the first screen. The restore now runs alongside startup.",
+            "Installs without the Music feature no longer open the music database or set up the music taskbar buttons at startup."
+          ]
+        },
+        {
+          "heading": "Fixes",
+          "items": [
+            "The playback cache folder you choose in Settings is now used by the player. It was being ignored, so the cache always went to the default location.",
+            "Returning to Compass while a video is paused, or pausing right after returning, no longer resets the audio output when playback resumes."
+          ]
         }
       ]
     }

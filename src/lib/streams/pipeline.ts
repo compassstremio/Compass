@@ -333,7 +333,9 @@ export async function runPipeline(
   const [librarySettled, addonSettled] = await Promise.allSettled([
     fetchLibraryStreams(input.debrids, input.query, signal, libraryListsPromise).then((s) => {
       library = s;
-      emitPartialNow();
+      // Preset streams skip the addon fetch, so the final result lands with the library and an
+      // early partial would only race it.
+      if (presets.length === 0) emitPartialNow();
       return s;
     }),
     presets.length > 0

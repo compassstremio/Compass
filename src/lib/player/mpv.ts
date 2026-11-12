@@ -145,8 +145,14 @@ export type MpvOptions = {
   fullDownload?: boolean;
   separateDisplay?: MonitorInfo | null;
   separateCoverTaskbar?: boolean;
+  cacheDir?: string;
   getEmbedRect?: () => Promise<MpvRect | null> | MpvRect | null;
 };
+
+/** The folder the user picked for playback cache, or null for the default. */
+function mpvCacheDir(options: MpvOptions | undefined): string | null {
+  return options?.cacheDir?.trim() || null;
+}
 
 function mpvReuseConfigKey(options: MpvOptions | undefined, hdrToSdr: boolean): string {
   return JSON.stringify({
@@ -162,6 +168,7 @@ function mpvReuseConfigKey(options: MpvOptions | undefined, hdrToSdr: boolean): 
     forceYuv420p: options?.forceYuv420p === true,
     extraOptions: options?.extraOptions ?? "",
     fullDownload: options?.fullDownload === true,
+    cacheDir: mpvCacheDir(options),
   });
 }
 
@@ -605,27 +612,39 @@ export function createMpvBridge(mpvOptions?: MpvOptions): PlayerBridge {
   // or session ends.
   let pendingAudioDeviceReload = false;
   let forceAudioDeviceReload = false;
+  // Set when the only thing waiting for the reload timer is a window-focus guess. Pausing cancels
+  // that guess; a wake from sleep or a real device change is kept for the next resume.
+  let speculativeFocusReload = false;
+  // True only while the audio-device-list handler schedules, so its forced request counts as a real device change.
+  let deviceListSignal = false;
   let audioDeviceReloadGeneration = 0;
   const clearAudioDeviceReload = () => {
     if (audioDeviceReloadTimer != null) window.clearTimeout(audioDeviceReloadTimer);
     audioDeviceReloadTimer = null;
     pendingAudioDeviceReload = false;
     forceAudioDeviceReload = false;
+    speculativeFocusReload = false;
     audioDeviceReloadGeneration += 1;
   };
   const scheduleAudioDeviceReload = (forced = false, deviceChanged = true) => {
     if (!isWindowsDesktop()) return;
     if (!mpvStarted) return;
     if (snap.status !== "playing" && snap.status !== "paused") return;
+    const paused = observedPaused === true || snap.status === "paused";
+    // A wake or focus signal that arrives while paused is dropped: the device may well be healthy,
+    // and resuming should not reset it on a guess. A device-list change is still kept for resume.
+    if (forced && !deviceListSignal && paused) return;
+    if (!forced) speculativeFocusReload = false;
     if (forced) forceAudioDeviceReload = true;
     pendingAudioDeviceReload ||= deviceChanged || forced;
-    if (observedPaused === true || snap.status === "paused") return;
+    if (paused) return;
     if (audioDeviceReloadTimer != null) window.clearTimeout(audioDeviceReloadTimer);
     const generation = audioDeviceReloadGeneration;
     const isCurrentMedia = () => mpvStarted && generation === audioDeviceReloadGeneration;
     const canReload = () => isCurrentMedia() && observedPaused !== true && snap.status === "playing";
     audioDeviceReloadTimer = window.setTimeout(() => {
       audioDeviceReloadTimer = null;
+      speculativeFocusReload = false;
       if (!canReload()) return;
       const mustReload = forceAudioDeviceReload;
       forceAudioDeviceReload = false;
@@ -711,8 +730,10 @@ export function createMpvBridge(mpvOptions?: MpvOptions): PlayerBridge {
     lastWindowBlur = Date.now();
   };
   const onWindowFocusRestore = () => {
+    const hadPending = pendingAudioDeviceReload;
     if (Date.now() - lastWindowBlur < FOCUS_RELOAD_MIN_ABSENT_MS) return;
     scheduleAudioDeviceReload(true);
+    if (!hadPending && pendingAudioDeviceReload) speculativeFocusReload = true;
   };
   if (typeof window !== "undefined") {
     window.addEventListener("blur", onWindowBlur);
@@ -767,6 +788,13 @@ export function createMpvBridge(mpvOptions?: MpvOptions): PlayerBridge {
       if (name === "pause" && typeof data === "boolean") {
         observedPaused = data;
         snap.status = data ? "paused" : "playing";
+        if (data && speculativeFocusReload) {
+          if (audioDeviceReloadTimer != null) window.clearTimeout(audioDeviceReloadTimer);
+          audioDeviceReloadTimer = null;
+          pendingAudioDeviceReload = false;
+          forceAudioDeviceReload = false;
+          speculativeFocusReload = false;
+        }
         if (!data && pendingAudioDeviceReload) scheduleAudioDeviceReload();
       }
       if (name === "eof-reached" && data === true) {
@@ -779,7 +807,9 @@ export function createMpvBridge(mpvOptions?: MpvOptions): PlayerBridge {
         const sig = audioDeviceListSig(data);
         if (sig == null) {
           // No usable list payload; keep the legacy always-reload behavior.
+          deviceListSignal = true;
           scheduleAudioDeviceReload(true);
+          deviceListSignal = false;
         } else if (sig !== observedAudioDeviceListSig) {
           observedAudioDeviceListSig = sig;
           if (lastAudioDeviceListSig == null) {
@@ -1123,6 +1153,7 @@ export function createMpvBridge(mpvOptions?: MpvOptions): PlayerBridge {
             macEdr: opts.macEdr === true,
             isLive: src.isLive === true,
             fullDownload: opts.fullDownload === true,
+            cacheDir: mpvCacheDir(opts),
             startupProfile: nextStartupProfile,
             headers: src.headers ?? null,
             renderer: opts.renderer ?? "gpu-next",

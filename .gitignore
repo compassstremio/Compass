@@ -97,6 +97,8 @@ audit-rest.txt
 *.md
 # Imported as ?raw by the ebook translator, so a checkout without it cannot build.
 !src/lib/ebook/translation-instructions.md
+# Records where the vendored Twitch script came from; tests/stream-blocker.test.mjs reads it.
+!src-tauri/resources/compass-stream-blocker/README.md
 
 installer/src-tauri/payload/
 installer/payload-stage/

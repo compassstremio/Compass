@@ -1,6 +1,12 @@
 export class AnilistApiError extends Error {
-  constructor(public status: number, public body: string) {
+  status: number;
+  body: string;
+
+  // Plain fields, not parameter properties: Node's type stripping (used by the tests) rejects the latter.
+  constructor(status: number, body: string) {
     super(`AniList HTTP ${status}: ${body.slice(0, 200)}`);
+    this.status = status;
+    this.body = body;
   }
 
   get isAuthenticationError(): boolean {

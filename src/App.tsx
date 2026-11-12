@@ -176,7 +176,7 @@ import { SpooktoberHome } from "@/views/spooktober/spooktober-home";
 // profiler measured rendering ~18 times a second while the user was on other tabs.
 const MemoSpooktoberHome = memo(SpooktoberHome);
 import { MusicDock } from "@/components/music/music-dock";
-import { useInstallFeatures } from "@/lib/features/install";
+import { musicInstalled, useInstallFeatures } from "@/lib/features/install";
 import { MusicSurprisePrompt } from "@/components/music/music-surprise-prompt";
 import { ParentalProvider } from "@/lib/parental";
 import { TraktProvider } from "@/lib/trakt/provider";
@@ -1561,9 +1561,23 @@ function Shell({ onReady }: { onReady?: () => void }) {
   });
 
   useEffect(() => startMediaSessionWindowTracking(), []);
-  useEffect(() => startMusicTaskbarButtons(), []);
+  // Music startup waits for the installer's answer, so an install without Music never opens the
+  // music database or the taskbar buttons.
+  const [musicReady, setMusicReady] = useState(false);
+  useEffect(() => {
+    let live = true;
+    void musicInstalled().then((installed) => {
+      if (live) setMusicReady(installed);
+    });
+    return () => {
+      live = false;
+    };
+  }, []);
+  useEffect(() => (musicReady ? startMusicTaskbarButtons() : undefined), [musicReady]);
   useEffect(() => syncMusicTaskbarArtwork(), [settings.musicArtworkAppIcon]);
-  useEffect(() => resetMusicForProfile(), [activeProfileForMusic]);
+  useEffect(() => {
+    if (musicReady) resetMusicForProfile();
+  }, [musicReady, activeProfileForMusic]);
 
   const overlayPinned = useOverlayPinned();
   const homeAlive = useIdleEvict(homeTop);
@@ -1730,7 +1744,7 @@ function Shell({ onReady }: { onReady?: () => void }) {
             </div>
           )}
           {installFeatures.music && <MusicDock />}
-          <MusicSurprisePrompt />
+          {installFeatures.music && <MusicSurprisePrompt />}
           {!playerActive && <WindowResizeEdges />}
           <HybridTitleBar suppressed={playerActive || immersive || chromeHidden} />
           <div

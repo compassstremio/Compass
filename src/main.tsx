@@ -10,6 +10,7 @@ import { applyOsDataset } from "@/lib/platform";
 import { loadSecrets } from "@/lib/secret-store";
 import { migrateHarborDatabases } from "@/lib/harbor-migration";
 import { initializeMusic } from "@/lib/music/player";
+import { musicInstalled } from "@/lib/features/install";
 import { initSubtitleCache } from "@/lib/subtitles/subtitle-cache";
 import { CaptionsApp } from "@/views/captions-app";
 import { DjDeckApp } from "@/views/dj-deck-app";
@@ -233,13 +234,16 @@ async function mount() {
     returnPreferencesReady = completeBetaReturnPreferences(__APP_VERSION__);
     await migrateHarborDatabases().catch(() => {});
   }
+  // The music restore starts now but the first render does not wait for it: the player publishes
+  // its state when the restore lands, and the splash is still up when it does.
+  if (!isHdrOverlay && !isModal && !isCaptions && !isPip && !isVideoPip && !isDjDeck)
+    void musicInstalled()
+      .then((installed) => (installed ? initializeMusic() : undefined))
+      .catch(() => {});
   await Promise.all([
     loadSecrets(),
     hydrateCustomThemes().catch(() => {}),
     ensureUiLocale(getUiLanguage()),
-    !isHdrOverlay && !isModal && !isCaptions && !isPip && !isVideoPip && !isDjDeck
-      ? initializeMusic()
-      : Promise.resolve(),
   ]);
   if (!isHdrOverlay && !isModal && !isCaptions && !isDjDeck) void initSubtitleCache();
   if (!isHdrOverlay && !isModal && !isCaptions && !isPip && !isVideoPip && !isDjDeck)

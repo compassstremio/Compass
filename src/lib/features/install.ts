@@ -21,6 +21,17 @@ export async function readInstallFeatures(): Promise<InstallFeatures> {
   return { ...ALL_ON, ...value };
 }
 
+/** Whether Music startup should run. Fails open like the rest of the gating: no marker, no removal. */
+export async function musicInstalled(
+  read: () => Promise<InstallFeatures> = readInstallFeatures,
+): Promise<boolean> {
+  try {
+    return (await read()).music;
+  } catch {
+    return true;
+  }
+}
+
 export function getInstallFeatures(): InstallFeatures {
   ensureLoaded();
   return snapshot;

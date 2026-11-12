@@ -2,6 +2,7 @@ import assert from "node:assert/strict";
 import { readFileSync } from "node:fs";
 import test from "node:test";
 import ts from "typescript";
+import { musicPlayerDependencies } from "./helpers/music-player-dependencies.ts";
 import { castOwnershipFixture } from "./helpers/cast-ownership.ts";
 import { queueTrackKey } from "../src/lib/music/queue-order.ts";
 import { dedupeMusicTracks, sameMusicTrack } from "../src/lib/music/track-identity.ts";
@@ -48,6 +49,7 @@ function fixture(respond?: (command: string, args?: any) => unknown, realCasting
     listener();
   };
   const mocks: Record<string, any> = {
+    ...musicPlayerDependencies(),
     "@/lib/cast-ownership": castOwnershipFixture(),
     "@tauri-apps/api/core": {
       invoke: async (command: string, args?: any) => {
@@ -78,8 +80,10 @@ function fixture(respond?: (command: string, args?: any) => unknown, realCasting
       broadcastDeckState: () => {},
       sendDeckAdopted: () => {},
       serveDeckCommands: () => () => {},
+      isDeckWindow: () => false,
+      sendDeckCommand: () => {},
     },
-    "./deck-primary": { createDeckAdoption: () => ({ deck: () => 0, adopt: () => false }) },
+    "./deck-primary": { createDeckAdoption: () => ({ deck: () => 0, adopt: () => false }), nativePlaybackAdoption: () => null },
     "./liked": {
       isMusicLiked: (ids: readonly string[], t: any) => !!t && ids.includes(t.id),
       likedIdsFor: (t: any) => (t ? [t.id] : []),
@@ -109,6 +113,7 @@ function fixture(respond?: (command: string, args?: any) => unknown, realCasting
       writeCheckpointToDb: () => {},
     },
     "./playback-origin": {
+      beginMusicQueue: () => {},
       getMusicPlaybackOrigin: () => null,
       restoreMusicPlaybackOrigin: () => {},
     },

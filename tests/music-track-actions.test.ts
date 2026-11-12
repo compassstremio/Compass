@@ -3,6 +3,7 @@ import assert from "node:assert/strict";
 import { readFileSync } from "node:fs";
 import ts from "typescript";
 import { splitArtistCredit, resolveDisplayCredits } from "../src/lib/music/artist-credit";
+import * as trackIdentity from "../src/lib/music/track-identity";
 const track = {
   id: "soundcloud:123456",
   connectorId: "soundcloud",
@@ -54,6 +55,8 @@ function radio(candidates: any[], related: any[]) {
       normalizeTitle: (value: string) => value.toLowerCase(),
     },
     "./sources": { searchMusic: async () => [] },
+    "./source-consent": { musicSourceAllowed: () => true },
+    "./track-identity": trackIdentity,
     "./player": { getMusicState: () => ({ recents: [], likedTracks: [] }) },
     "./catalog": {
       stationTracks: async (station: any) => {

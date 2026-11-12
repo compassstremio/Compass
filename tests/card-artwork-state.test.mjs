@@ -196,7 +196,9 @@ test("provider warning does not retain a previous account result during a switch
   });
   const warning = () => {
     const tree = h.render(ProvidersTab, {});
-    const titlesSection = tree.props.children[3];
+    const titlesSection = tree.props.children.find(
+      (child) => child?.props?.title === "Titles and descriptions",
+    );
     return titlesSection.props.children.props.children[0].props.warn;
   };
   assert.ok(warning());

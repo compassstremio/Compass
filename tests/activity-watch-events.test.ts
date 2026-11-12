@@ -43,8 +43,8 @@ test("finishing playback records a watch event for every content type", () => {
 test("mark as watched records an event for both movies and shows", () => {
   const hits = marker.match(/recordWatchEvent\(/g) ?? [];
   assert.ok(hits.length >= 2, `expected movie and series paths, found ${hits.length}`);
-  assert.match(marker, /recordWatchEvent\(\{ id: meta\.id, type: "movie"/);
-  assert.match(marker, /recordWatchEvent\(\{ id: meta\.id, type: "series"/);
+  assert.match(marker, /recordWatchEvent\(\{\s*id: meta\.id,\s*type: "movie"/);
+  assert.match(marker, /recordWatchEvent\(\{\s*id: meta\.id,\s*type: "series"/);
 });
 
 test("the sync hook re-pushes when a watch event lands", () => {

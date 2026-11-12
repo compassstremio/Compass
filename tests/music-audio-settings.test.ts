@@ -27,6 +27,12 @@ test("audio defaults are neutral and boost requires affirmative enablement", () 
     dspBypass: false,
     exclusive: false,
     sampleRate: 0,
+    broadcastDevice: "auto",
+    broadcastEnabled: false,
+    keepPitch: false,
+    pitch: 0,
+    reverb: 0,
+    speed: 1,
   });
   assert.equal(normalizeMusicAudio({ volumeLimit: 5 }).volumeLimit, 1);
   const value = normalizeMusicAudio({

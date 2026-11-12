@@ -2,6 +2,7 @@ import assert from "node:assert/strict";
 import { readFileSync } from "node:fs";
 import test from "node:test";
 import ts from "typescript";
+import { musicPlayerDependencies } from "./helpers/music-player-dependencies.ts";
 import { queueTrackKey } from "../src/lib/music/queue-order.ts";
 import { dedupeMusicTracks, sameMusicTrack } from "../src/lib/music/track-identity.ts";
 import type { MusicTrack } from "../src/lib/music/types.ts";
@@ -27,6 +28,7 @@ function player() {
   const callbacks = new Map<string, (event: { payload: Record<string, unknown> }) => void>();
   const module = { exports: {} };
   const mocks: Record<string, unknown> = {
+    ...musicPlayerDependencies(),
     "@/lib/cast-ownership": { stopCastOwner: async () => {} },
     "@tauri-apps/api/core": {
       invoke: async (command: string) =>
@@ -52,8 +54,10 @@ function player() {
       broadcastDeckState: () => {},
       sendDeckAdopted: () => {},
       serveDeckCommands: () => () => {},
+      isDeckWindow: () => false,
+      sendDeckCommand: () => {},
     },
-    "./deck-primary": { createDeckAdoption: () => ({ deck: () => 0, adopt: () => false }) },
+    "./deck-primary": { createDeckAdoption: () => ({ deck: () => 0, adopt: () => false }), nativePlaybackAdoption: () => null },
     "./liked": {
       isMusicLiked: (ids: readonly string[], t: any) => !!t && ids.includes(t.id),
       likedIdsFor: (t: any) => (t ? [t.id] : []),
@@ -83,6 +87,7 @@ function player() {
       writeCheckpointToDb: () => {},
     },
     "./playback-origin": {
+      beginMusicQueue: () => {},
       getMusicPlaybackOrigin: () => null,
       restoreMusicPlaybackOrigin: () => {},
     },

@@ -8,7 +8,7 @@ const item = (id: string, external?: string) => ({
   state: { timeOffset: 100000, duration: 1000000, season: 1, episode: 1 },
 });
 function harness(bigPicture: boolean, sources: any, privateProfile = false) {
-  const settings = { cwSources: sources, cwPerProfile: privateProfile };
+  const settings = { cwSources: { publicmetadb: false, ...sources }, cwPerProfile: privateProfile };
   let enabled = false;
   const masks: any[] = [];
   let trackerItems = [item("kitsu:100", "simkl"), item("kitsu:200", "trakt")];
@@ -55,7 +55,8 @@ for (const bigPicture of [false, true]) {
     assert.deepEqual(h.ids(), ["kitsu:101"]);
     h.settings.cwSources = { ...h.settings.cwSources, simkl: false };
     assert.deepEqual(h.ids(), []); assert.equal(h.enabled, false);
-    assert.deepEqual(h.masks.at(-1), { trakt: false, simkl: false });
+    // The shared hook also reports PublicMetaDB; the Big Picture anime hook reads only the two trackers.
+    assert.deepEqual(h.masks.at(-1), bigPicture ? { trakt: false, simkl: false } : { trakt: false, simkl: false, publicmetadb: false });
   });
   test(`${bigPicture ? "Big Picture anime" : "shared CW"}: private profile excludes shared trackers`, () => {
     const h = harness(bigPicture, { library: false, local: true, simkl: true, trakt: true }, true);

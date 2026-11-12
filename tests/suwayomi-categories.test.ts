@@ -55,7 +55,8 @@ function setup(mode: "rest" | "graphql", options: { failCategories?: boolean; fa
   });
   model.makeClient = () => client;
   const rest = load("sources/suwayomi/rest", { "./model": model });
-  const graphql = load("sources/suwayomi/graphql", { "./model": model });
+  const serverMessage = load("sources/suwayomi/server-message", {});
+  const graphql = load("sources/suwayomi/graphql", { "./model": model, "./server-message": serverMessage });
   const transport = load("sources/suwayomi/transport", {
     "./model": model, "./rest": rest, "./graphql": graphql,
     "./auth-registry": { registerSuwayomiSourceBase: () => {} },

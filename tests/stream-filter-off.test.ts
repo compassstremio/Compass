@@ -29,6 +29,7 @@ function fixture(native = false, supplied = streams) {
     "./anitomy": { enhanceAnimeStreams: async () => {} },
     "./anime-identity-core": { partitionByExactAnimeEpisode },
     "./library": { fetchLibraryStreams: async () => [] },
+    "./torbox-discovery": { discoverTorboxStreams: async () => ({ streams: [], checked: [], cached: [] }) },
     "./parser": { parseStream },
     "./trust": { applyTrust },
     "./scoring": scoring,

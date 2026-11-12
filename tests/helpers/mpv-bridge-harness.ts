@@ -172,6 +172,8 @@ export function mpvBridgeHarness(prefs = { volume: 0.35, muted: false }, options
   });
   return {
     bridge,
+    /** Another bridge from the same module, so state it retains between bridges is shared. */
+    createBridge: (next?: MpvOptions) => module.exports.createMpvBridge(next),
     commands,
     errors,
     emitWindow(name: string) { windowEvents.dispatchEvent(new Event(name)); },

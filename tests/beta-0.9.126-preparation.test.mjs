@@ -39,6 +39,7 @@ test("beta 0.9.126 notes load offline without substituting stable notes", async 
       },
     },
     "@/lib/config/endpoints": { COMPASS_API_BASE: "https://example.invalid" },
+    "@/lib/i18n": { getUiLanguage: () => "en" },
     "./bundled-release-notes.json": { default: notes },
   };
   const { outputText } = ts.transpileModule(read("src/lib/updater/release-notes.ts"), {

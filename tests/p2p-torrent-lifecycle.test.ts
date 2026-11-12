@@ -237,7 +237,8 @@ test("completed P2P downloads are reused by exact torrent identity", () => {
   const add = resolve.indexOf("torrentEngineAdd(");
   assert.ok(lookup >= 0 && add > lookup, "completed download lookup must run before torrent add");
   assert.match(resolve, /via: "local-download"/);
-  assert.match(resolve, /subtitles: stream\.subtitles\?\.map/);
+  assert.match(resolve, /subtitles: streamSubtitles\(stream\)/);
+  assert.match(resolve, /import \{ streamSubtitles \} from "\.\/stream-subtitles"/);
   assert.match(pickHandler, /r\.via === "local-download"/);
   assert.match(pickHandler, /intent !== "download"/);
   assert.match(episodePanel, /r\.via === "local-download"/);

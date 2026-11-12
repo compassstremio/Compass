@@ -22,6 +22,7 @@ function harness() {
       },
     },
     "@/lib/config/endpoints": { COMPASS_API_BASE: "https://example.invalid" },
+    "@/lib/i18n": { getUiLanguage: () => "en" },
     "./bundled-release-notes.json": { default: bundled },
   };
   const module = { exports: {} };

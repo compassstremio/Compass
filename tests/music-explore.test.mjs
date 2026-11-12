@@ -10,7 +10,12 @@ function load(file, mocks={}) {
 const genres=load('genre-catalog');
 const track=(id,title='Song',artist='Artist')=>({id,title,artist,artwork:'https://example.com/cover.jpg',durationSeconds:180,durationLabel:'3:00',connectorId:'catalog'});
 const entry=(id,rank=10)=>({id,title:`Song ${id}`,rank,duration:180,artist:{id:4,name:'Artist',picture_big:'https://example.com/artist.jpg'},album:{id:55,title:'Album',cover_big:'https://example.com/cover.jpg'}});
-const discovery=(fetch)=>load('discovery',{'@/lib/safe-fetch':{safeFetch:fetch},'./genre-catalog':genres});
+const discovery=(fetch)=>{
+ const editorial=load('genre-editorial',{'./genre-catalog':genres});
+ return load('discovery',{'@/lib/safe-fetch':{safeFetch:fetch},'./genre-catalog':genres,'./genre-editorial':editorial,
+  './genre-editorial-loader':load('genre-editorial-loader',{'./genre-catalog':genres,'./genre-editorial':editorial}),
+  './genre-playlist-pool':load('genre-playlist-pool',{'./genre-catalog':genres})});
+};
 const response=data=>({ok:true,json:async()=>data});
 
 test('genre artist roster follows tagged artists beyond the first page and retries failed pages',async()=>{
@@ -31,7 +36,7 @@ test('genre artist roster follows tagged artists beyond the first page and retri
 });
 test('shared catalog preserves all legacy taste IDs and adds the requested specific scenes',()=>{
  const legacy=[132,116,122,152,113,165,85,186,106,466,144,129,84,67,65,98,173,464,169,2,16,153,75,71,81,95,197];
- assert.equal(genres.MUSIC_GENRES.length,134);assert.equal(new Set(genres.MUSIC_GENRES.map(g=>g.id)).size,134);
+ assert.equal(genres.MUSIC_GENRES.length,159);assert.equal(new Set(genres.MUSIC_GENRES.map(g=>g.id)).size,159);
  legacy.forEach(id=>assert.equal(genres.musicGenre(id)?.deezerId,id));
  for(const slug of ['nightcore','jumpstyle','hardstyle','funk-carioca','pagode'])assert.ok(genres.MUSIC_GENRES.some(g=>g.slug===slug));
 });
@@ -95,13 +100,13 @@ test('unknown artist counts stay unknown; real listeners and plays stay separate
 });
 test('all Explore labels exist in every locale with matching placeholders',()=>{
  const base=new URL('../src/lib/i18n/locales/',import.meta.url);const table=lang=>Object.fromEntries([...fs.readFileSync(new URL(`${lang}/music-taste.ts`,base),'utf8').matchAll(/"(music\.explore\.[^"]+)":\s*("(?:[^"\\]|\\.)*")/g)].map(m=>[m[1],JSON.parse(m[2])]));
- const en=table('en');assert.equal(Object.keys(en).length,48);
+ const en=table('en');assert.equal(Object.keys(en).length,49);
  for(const lang of ['ar','de','es','fr','hi','id','it','ja','ko','pl','pt','ru','tr','vi','zh']){const local=table(lang);assert.deepEqual(Object.keys(local).sort(),Object.keys(en).sort(),lang);for(const key in en)assert.deepEqual(local[key].match(/\{[^}]+\}/g)?.sort(),en[key].match(/\{[^}]+\}/g)?.sort(),`${lang}:${key}`);}
 });
-test('every genre has artwork and its own Illustrator-exported vector',()=>{
+test('every genre has artwork and its own original vector',()=>{
  const art=load('genre-artwork').MUSIC_GENRE_ARTWORK;const shapes=[];
- for(const genre of genres.MUSIC_GENRES){assert.match(art[genre.id],/^https:\/\//);const svg=fs.readFileSync(new URL(`../src/assets/music-genres/${genre.slug}.svg`,import.meta.url),'utf8');assert.match(svg,/Adobe Illustrator/);assert.match(svg,/viewBox="0 0 48 48"/);assert.match(svg,/currentColor/);assert.doesNotMatch(svg,/<text|<font|<script/);shapes.push(svg);}
- assert.equal(new Set(shapes).size,134);
+ for(const genre of genres.MUSIC_GENRES){assert.match(art[genre.id],/^https:\/\//);const svg=fs.readFileSync(new URL(`../src/assets/music-genres/${genre.slug}.svg`,import.meta.url),'utf8');assert.match(svg,/Compass original/);assert.match(svg,/viewBox="0 0 48 48"/);assert.match(svg,/currentColor/);assert.doesNotMatch(svg,/<text|<font|<script/);shapes.push(svg);}
+ assert.equal(new Set(shapes).size,159);
 });
 
 const artistEntry=id=>({...entry(id),artist:{id,name:`Artist ${id}`,picture_big:'https://example.com/artist.jpg'}});
@@ -139,8 +144,8 @@ test('artist statistics enrich every artist and preserve the browsing order',asy
  const artists=Array.from({length:25},(_,i)=>({id:`deezer:artist:${i+1}`,connectorId:'catalog',name:`Artist ${i+1}`}));
  const result=await stats.loadGenreArtistStats(artists);assert.equal(result.length,25);assert.deepEqual(result.map(r=>r.artist.id),artists.map(a=>a.id));assert.equal(result.at(-1).fans,25);
 });
-test('Hip-hop scene browsing exposes ten distinct rap branches using existing genres',()=>{
+test('Hip-hop scene browsing exposes distinct rap branches using existing genres',()=>{
  const api=load('genre-scenes',{'./genre-catalog':genres});const branches=api.genreSceneBranches(genres.musicGenre(116));
- assert.equal(branches.length,10);assert.equal(new Set(branches.map(g=>g.id)).size,10);
+ assert.ok(branches.length>=10);assert.equal(new Set(branches.map(g=>g.id)).size,branches.length);
  for(const slug of ['trap','uk-drill','phonk','french-rap','brazilian-trap'])assert.ok(branches.some(g=>g.slug===slug));
 });

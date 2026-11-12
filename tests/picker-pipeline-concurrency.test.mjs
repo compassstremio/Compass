@@ -85,6 +85,9 @@ function harness({ anime = false, deferredParse = false } = {}) {
         partitionByExactAnimeEpisode: (streams) => ({ keep: streams, drop: [] }),
       },
       "./library": library,
+      "./torbox-discovery": {
+        discoverTorboxStreams: async () => ({ streams: [], checked: [], cached: [] }),
+      },
       "./parser": { parseStream: (s) => ({ ...s, cached: {}, inLibrary: {}, cacheVerified: {} }) },
       "./trust": { applyTrust: (streams) => ({ keep: streams, rejected: [] }) },
       "./scoring": {

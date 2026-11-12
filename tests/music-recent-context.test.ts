@@ -73,14 +73,14 @@ describe("music recent contexts", () => {
   });
 
   it("caps the context list and drops links whose context fell off", () => {
-    for (let n = 0; n < 20; n += 1) {
+    for (let n = 0; n < 210; n += 1) {
       recordMusicRecentContext({ kind: "playlist", id: `x${n}`, name: `Mix ${n}`, artwork: [] }, [
         track({ id: `t${n}`, connectorId: "deezer", title: `T${n}`, artist: "A" }),
       ]);
     }
     const contexts = getMusicRecentContexts();
-    assert.ok(contexts.length <= 12, `expected at most 12 contexts, got ${contexts.length}`);
-    assert.equal(contexts[0]?.id, "x19");
+    assert.ok(contexts.length <= 200, `expected at most 200 contexts, got ${contexts.length}`);
+    assert.equal(contexts[0]?.id, "x209");
     assert.equal(
       getMusicTrackContext(track({ id: "t0", connectorId: "deezer", title: "T0", artist: "A" })),
       null,

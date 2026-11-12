@@ -6,6 +6,7 @@ import test from "node:test";
 import { readFileSync } from "node:fs";
 import ts from "typescript";
 import { dedupeMusicTracks, sameMusicTrack } from "../src/lib/music/track-identity.ts";
+import { musicPlayerDependencies } from "./helpers/music-player-dependencies.ts";
 
 function read(path: string): string {
   return readFileSync(new URL(`../src/${path}`, import.meta.url), "utf8");
@@ -33,13 +34,14 @@ function loadPlayer() {
   const source = ts.transpileModule(read("lib/music/player.ts"), {
     compilerOptions: { module: ts.ModuleKind.CommonJS, target: ts.ScriptTarget.ES2022 },
   }).outputText;
+  const playerDependencies = musicPlayerDependencies();
   const resolve = (name: string): any => {
     if (name === "@tauri-apps/api/core")
       return {
         invoke: async (command: string, args: any) => {
           calls.push({ command, args });
           if (command === "music_db_init")
-            return { likedIds: [], likedTracks: [], recents: [], queue: [one, two] };
+            return { likedIds: [], likedTracks: [], recents: [one], queue: [one, two] };
           if (command === "music_source_candidates") return [];
           return undefined;
         },
@@ -86,7 +88,7 @@ function loadPlayer() {
       };
     if (name === "./hidden-recents") return { unhideMusicRecent: () => {} };
     if (name === "./playback-origin")
-      return { getMusicPlaybackOrigin: () => null, restoreMusicPlaybackOrigin: () => {} };
+      return { beginMusicQueue: () => {}, getMusicPlaybackOrigin: () => null, restoreMusicPlaybackOrigin: () => {} };
     if (name === "@/lib/cast-ownership") return { stopCastOwner: () => {} };
     if (name === "./track-identity") return { dedupeMusicTracks, sameMusicTrack };
     if (name === "./deck-sync")
@@ -95,9 +97,11 @@ function loadPlayer() {
         broadcastDeckState: () => {},
         sendDeckAdopted: () => {},
         serveDeckCommands: () => () => {},
+        isDeckWindow: () => false,
+        sendDeckCommand: () => {},
       };
     if (name === "./deck-primary")
-      return { createDeckAdoption: () => ({ deck: () => 0, adopt: () => false }) };
+      return { createDeckAdoption: () => ({ deck: () => 0, adopt: () => false }), nativePlaybackAdoption: () => null };
     if (name === "./casting")
       return {
         getMusicSpeakerState: () => ({ active: false, device: null, positionSec: 0 }),
@@ -109,6 +113,8 @@ function loadPlayer() {
         stopMusicSpeaker: async () => {},
         subscribeMusicSpeakerState: () => () => {},
       };
+    const inert = playerDependencies[name];
+    if (inert) return inert;
     throw Error(name);
   };
   const module = { exports: {} as any };

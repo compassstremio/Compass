@@ -38,6 +38,7 @@ test("native Base64 fetch preserves bytes and forwards native policy limits", as
       },
     },
     "./privacy/blocklist": { isBlockedUrl: () => false },
+    "./fetch-bridge-stats": { recordBridge() {}, bridgeOutcome: () => "error" },
     "./subtitles/provider-url": {
       SUBTITLE_PUBLIC_NETWORK_HEADER: "x-public-only",
       isSafeProviderSubtitleUrl: (url) => !url.includes("127.0.0.1"),

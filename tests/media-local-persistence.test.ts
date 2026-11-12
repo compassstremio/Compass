@@ -19,6 +19,18 @@ function storageHarness() {
     const mocks = {
       react: { createContext: () => ({}) },
       "./profiles": {},
+      // Recovery pruning is not under test: a rejected write surfaces the storage error itself.
+      "@/lib/storage-recovery": {
+        persistCritical: (key: string, value: string) => {
+          try {
+            storage.setItem(key, value);
+            return true;
+          } catch {
+            return false;
+          }
+        },
+        setItemOrThrow: (key: string, value: string) => storage.setItem(key, value),
+      },
       "@/lib/render-cause": { noteNotify: (label: string) => notifications.push(label) },
       "./cinemeta": { persistableAddonOrigin: () => undefined, persistableVideos: () => undefined },
       "./membership-operations": {

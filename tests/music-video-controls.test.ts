@@ -30,7 +30,7 @@ function load(): Controls {
       if (name === "@/lib/i18n") return { useT: () => (key: string) => key };
       if (name === "@/lib/music/appearance")
         return { setMusicAppearance: () => {}, useMusicAppearance: () => ({ immersive: false }) };
-      if (name === "lucide-react") return new Proxy({}, { get: () => icon });
+      if (name === "lucide-react" || name === "@/components/icons/music-icons") return new Proxy({}, { get: () => icon });
       if (name === "react/jsx-runtime" || name === "react")
         return { jsx: () => null, jsxs: () => null, Fragment: null };
       if (name.endsWith(".css")) return {};

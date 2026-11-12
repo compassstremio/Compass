@@ -17,6 +17,6 @@ test('native library paths display without extended-path prefixes; identity rema
  assert.equal(libraryName('\\\\?\\W:\\Steam\\'),'W:\\Steam');
  assert.equal(libraryName('/home/person/.steam/steam/'),'/home/person/.steam/steam');
  assert.equal(installedSummary(games[0]).id,'steam:1');
- assert.equal(gameSize(1024**3),'1 GB');
+ assert.equal(gameSize(1024**3),`${new Intl.NumberFormat(undefined,{maximumFractionDigits:1}).format(1)} GB`);
  assert.equal(gameSize(0),'—');
 });

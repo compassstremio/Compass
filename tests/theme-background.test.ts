@@ -48,6 +48,6 @@ test("every path that changes the preset also resolves the wallpaper", () => {
   const studio = at("src/views/settings/theme-panel/theme-studio.tsx");
   assert.match(section, /backgroundImage: nextBackgroundImage\(settings\.theme\.backgroundImage/);
   assert.match(section, /const image = wasActive/);
-  assert.match(studio, /const image = nextBackgroundImage\(settings\.theme\.backgroundImage/);
+  assert.match(studio, /const image = nextBackgroundImage\(\s*settings\.theme\.backgroundImage/);
   assert.match(section, /const image = wasActive[\s\S]{0,200}?removeCustomTheme\(id\);/);
 });

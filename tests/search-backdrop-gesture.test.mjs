@@ -91,6 +91,9 @@ function harness(t, options = {}) {
       });
     },
   };
+  react.useLayoutEffect = react.useEffect;
+  react.lazy = () => () => null;
+  react.Suspense = Symbol("suspense");
   const jsx = (type, props) => ({ type, props });
   const mocks = {
     react,
@@ -99,6 +102,7 @@ function harness(t, options = {}) {
     "@/lib/search-context": { useSearch: () => search },
     "@/lib/settings": { useSettings: () => ({ settings, update() {} }) },
     "@/lib/view": { useView: () => ({}) },
+    "@/lib/profiles": { useProfiles: () => ({ activeProfile: null }) },
     "@/lib/i18n": { useT: () => (value) => value },
     "@/lib/use-exit-presence": {
       useExitPresence: () => ({ mounted: search.open, closing: false }),

@@ -40,13 +40,15 @@ test("unknown debrid links receive one short probe and transient failures are no
   assert.match(preflight, /if \(r\.ok \|\| r\.reason === "stub"\) memo\.set/);
 });
 
-test("warm resume lookup overlaps loading while uncached deep links remain gated", () => {
-  const resumeStart = bridgeLoad.indexOf("const resumePromise");
-  const mediaStart = bridgeLoad.indexOf("const loadMedia = () =>");
-  const join = bridgeLoad.indexOf("Promise.all([resumePromise, loadMedia()])");
-  assert.ok(resumeStart >= 0 && mediaStart > resumeStart && join > mediaStart);
-  assert.match(bridgeLoad, /!isResumeStartReady\(resumeIdentity\)/);
-  assert.match(bridgeLoad, /if \(waitBeforeLoad\)/);
+test("the resume position is resolved first and handed to the initial load", () => {
+  // The picker warms the cache with prefetchResumeStart, so this await is a cache hit on the warm path.
+  // The position goes into the first load: loading from zero and seeking later races intro skipping.
+  const resumePromise = bridgeLoad.indexOf("const resumePromise");
+  const resumed = bridgeLoad.indexOf("resolved = await resumePromise");
+  const load = bridgeLoad.indexOf("await bridge.load({");
+  assert.ok(resumePromise >= 0 && resumed > resumePromise && load > resumed);
+  assert.match(bridgeLoad, /startAtSec:\s*!guestInRoom/);
+  assert.match(read("src/views/play-picker.tsx"), /prefetchResumeStart\(/);
 });
 
 test("Windows embedded mpv is retained across compatible VOD bitrate profiles", () => {

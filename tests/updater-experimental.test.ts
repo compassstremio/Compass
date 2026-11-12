@@ -9,6 +9,7 @@ import * as experimental from "../src/lib/updater/experimental.ts";
 import ar from "../src/lib/i18n/locales/ar/experimental-updates.ts";
 import pt from "../src/lib/i18n/locales/pt/experimental-updates.ts";
 import ru from "../src/lib/i18n/locales/ru/experimental-updates.ts";
+import * as harborMigration from "../src/lib/harbor-migration.ts";
 
 type Updater = typeof import("../src/lib/updater/use-update");
 type Channels = typeof import("../src/lib/updater/channel");
@@ -1021,6 +1022,7 @@ test("backups neither enroll another device nor erase this device's channel or s
       "@/lib/theme-storage": empty,
       "@/lib/profiles": { readAllProfilesIdentity: () => [] },
       "@/lib/active-profile-id": { activeProfileId: () => "local" },
+      "@/lib/harbor-migration": harborMigration,
       "@/lib/secret-store": {
         getAllSecrets: () => ({}),
         isSecretKey: () => false,

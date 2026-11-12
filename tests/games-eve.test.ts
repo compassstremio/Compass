@@ -1,10 +1,14 @@
 import assert from "node:assert/strict";
-import test from "node:test";
-import { readFileSync } from "node:fs";
+import baseTest from "node:test";
+import { existsSync, readFileSync } from "node:fs";
 import { defaultEvePlan, eveName, evePlan, evePlanKey, eveSecurity, eveSecurityClass, filterEveSystems, isEve, parseEveIncursions, parseEveKills, parseEveRoute, parseEveStatus, parseEveUniverse, readEvePlan } from "../src/lib/games/eve-data.ts";
 
-const raw = JSON.parse(readFileSync(new URL("../public/games/eve/universe-3569502.json", import.meta.url), "utf8"));
-const universe = parseEveUniverse(raw);
+// public/games is gitignored artwork and data, so a clean checkout lacks it and these tests are skipped.
+const dataUrl = new URL("../public/games/eve/universe-3569502.json", import.meta.url);
+const hasData = existsSync(dataUrl);
+const raw = hasData ? JSON.parse(readFileSync(dataUrl, "utf8")) : null;
+const universe = hasData ? parseEveUniverse(raw) : (null as never);
+const test = hasData ? baseTest : baseTest.skip;
 const plan = defaultEvePlan();
 test("EVE exact identity excludes conflicting Steam editions", () => {
   assert.ok(isEve({ steamId: 8500 })); assert.ok(isEve({ igdbId: 2584 })); assert.equal(isEve({ steamId: 1, igdbId: 2584 }), false); assert.equal(isEve({ igdbId: 1 }), false);

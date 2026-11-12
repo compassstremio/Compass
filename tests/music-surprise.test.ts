@@ -338,6 +338,8 @@ function playerEntries() {
     stopCastOwner: async () => {}, ensureNativeEvents: async () => {}, updateMediaSession: () => {},
     likedIdsFor: () => [], isMusicLiked: () => false, getMusicSpeakerState: () => ({ active: false }),
     skipUnavailableTrack: () => false,
+    musicPlaybackSourceAllowed: () => true,
+    peekPinnedSource: () => null, pinSourceFor: () => {}, unpinSourceFor: () => {},
     deckAdoption: { deck: () => 0 }, require: () => ({ unhideMusicRecent: () => {} }),
   };
   new Function(...Object.keys(scope), "exports", code)(...Object.values(scope), module.exports);

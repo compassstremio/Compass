@@ -29,6 +29,7 @@ const track = (title: string, artist = "Artist A", id = title) => ({ id, title, 
 function fresh(loadArtistFreshTracks: (artist: string) => Promise<unknown[]>) {
   return load("sources", {
     "./source-version": { compatibleVocalVersion: () => true },
+    "./source-consent": { filterMusicSourceCandidates: (candidates: unknown[]) => candidates },
     "@tauri-apps/api/core": { invoke: () => { throw Error("Must not replace releases with ordinary search"); } },
     "@/lib/progressive-rows": { withTimeout },
     "./artist-releases": { loadArtistFreshTracks },

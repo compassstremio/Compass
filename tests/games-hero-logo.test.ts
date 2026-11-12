@@ -1,6 +1,6 @@
 import assert from "node:assert/strict";
 import test from "node:test";
-import { readFileSync } from "node:fs";
+import { existsSync, readFileSync } from "node:fs";
 import { heroLogoTitleKey, indexRetroLogoFiles, retroHeroLogos, steamLibraryLogo } from "../src/lib/games/hero-logo-data";
 import { createLogoDecodeCache, darkMonochromeLogo, gameLogoShape, gameLogoSource, type GameLogoArt } from "../src/lib/games/logo-art";
 import { romGameArtwork } from "../src/lib/games/rom-editorial";
@@ -58,7 +58,7 @@ test("Expanded retro index resolves original Sega and GameCube titles without cr
   assert.deepEqual(retroHeroLogos(index,["Sonic the Hedgehog 2"],[29],5),[]);
 });
 
-test("ROM hero gaps use distinct exact-game assets, never a collection or remake substitution", () => {
+test("ROM hero gaps use distinct exact-game assets, never a collection or remake substitution", { skip: !existsSync(new URL("../public/games/roms/", import.meta.url)) && "public/games is gitignored and not in this checkout" }, () => {
   const expected=new Map([[375,"metal-gear-solid.png"],[427,"final-fantasy-vii.png"],[421,"final-fantasy-ix.png"],[1128,"symphony-of-the-night.png"],[1185,"crash-bandicoot.png"],[125,"diablo.svg"],[358,"super-mario-bros.svg"],[1068,"super-mario-bros-3.svg"],[4438,"sonic-the-hedgehog-2.png"]]);
   const paths=new Set<string>();
   for(const [id,file] of expected){

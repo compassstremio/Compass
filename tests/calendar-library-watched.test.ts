@@ -63,7 +63,9 @@ const TOUGEN_S2 = {
   },
 };
 
-test("a locally started anime reaches the library calendar without a Stremio entry", async () => {
+test("a locally started anime reaches the library calendar without a Stremio entry", async (t) => {
+  // The calendar drops episodes older than 31 days, so the clock is pinned next to the fixture dates.
+  t.mock.method(Date, "now", () => Date.parse("2026-10-10T00:00:00Z"));
   const api = load({
     "./local-cw": {
       listLocalCw: () => [{ id: "mal:63181", type: "series", name: "Tougen Anki", t: Date.now() }],
@@ -81,7 +83,9 @@ test("a locally started anime reaches the library calendar without a Stremio ent
   assert.equal(out[0].releaseDate, "2026-10-02");
 });
 
-test("manual-watched anime also becomes a candidate", async () => {
+test("manual-watched anime also becomes a candidate", async (t) => {
+  // The calendar drops episodes older than 31 days, so the clock is pinned next to the fixture dates.
+  t.mock.method(Date, "now", () => Date.parse("2026-10-10T00:00:00Z"));
   const api = load({
     "./manual-watched": {
       manualWatchedLibraryItems: () => [

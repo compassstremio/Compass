@@ -8,6 +8,7 @@ import { sanitizeScreensaverMedia } from "../src/lib/screensaver/media.ts";
 import * as controllerCursor from "../src/lib/gamepad/cursor.ts";
 import * as monitors from "../src/lib/monitors.ts";
 import * as relayVersion from "../src/lib/together/relay-version.ts";
+import * as adultPolicy from "../src/lib/settings/adult-policy.ts";
 
 function fixture() {
   const data = new Map<string, string>();
@@ -41,6 +42,8 @@ function fixture() {
     "@/lib/gamepad/cursor": controllerCursor,
     "@/lib/monitors": monitors,
     "@/lib/together/relay-version": relayVersion,
+    "./adult-policy": adultPolicy,
+    "@/lib/harbor-migration": { adoptHarborSettingsFields: () => {} },
     "@/lib/iptv/playlists-store": {
       readPlaylists: () => playlists,
       adoptLegacyPlaylists: () => {

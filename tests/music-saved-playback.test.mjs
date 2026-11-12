@@ -37,9 +37,21 @@ function fixture({ preferred = null, candidates = [] } = {}) {
     "./liked-artists": { hydrateLikedArtistStore: async () => {} },
     "./recent-context": { hydrateMusicContextTracks: async () => {}, hydrateMusicRecentContexts: async () => {} },
     "./recent-destinations": { hydrateMusicDestinations: async () => {} },
-    "./source-consent": { hydrateMusicSourceConsent: async () => {} },
+    "./source-consent": {
+      hydrateMusicSourceConsent: async () => {}, subscribeMusicSourceConsent: () => noop,
+      musicPlaybackSourceAllowed: () => true, filterMusicSourceCandidates: candidates => candidates,
+    },
     "./source-version": load("source-version", {}),
     "./queue-source": load("queue-source", {}),
+    "./queue-automation": load("queue-automation", {}),
+    "./explicit-preference": load("explicit-preference", {}),
+    "./pinned-sources": {
+      loadPinnedSources: async () => {}, peekPinnedSource: () => null,
+      pinSourceFor: noop, unpinSourceFor: noop,
+    },
+    "./pinned-playlists": { hydratePinnedMusicPlaylists: async () => {} },
+    "./decks": { engineSnapshot: async () => null },
+    "@/lib/platform": { isWindowsDesktop: () => false },
     "./transport": { resetMusicOrder: noop, musicWarmTargets: () => [], musicAdvance: () => null, musicPrevious: () => null },
     "./liked": load("liked", {}),
     "./track-identity": {
@@ -51,7 +63,7 @@ function fixture({ preferred = null, candidates = [] } = {}) {
       answerDeckRequests: noop, broadcastDeckState: noop, isDeckWindow: () => false,
       sendDeckAdopted: noop, sendDeckCommand: noop, serveDeckCommands: noop,
     },
-    "./deck-primary": { createDeckAdoption: () => ({ deck: () => 0, adopt: () => false }) },
+    "./deck-primary": { createDeckAdoption: () => ({ deck: () => 0, adopt: () => false }), nativePlaybackAdoption: () => null },
     "./queue-insert": {},
     "@tauri-apps/api/core": { invoke: async (command, args) => {
       calls.push({ command, args });

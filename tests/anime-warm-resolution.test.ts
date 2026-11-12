@@ -41,6 +41,7 @@ test("the top-match warm resolves only anime-looking catalog metas", async () =>
       },
     },
     "@/lib/storage-recovery": { setItemWithRecovery: () => {} },
+    "@/lib/render-cause": { noteNotify: () => {} },
   });
   warmAnimeResolution({
     id: "tmdb:tv:45790",

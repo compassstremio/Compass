@@ -30,6 +30,7 @@ const profile = {
 function client(fetcher: (url: string) => Promise<unknown>) {
   const modules: Record<string, any> = {
     "./recording-profile": { scheduleMusicBrainzRequest: (task: () => Promise<unknown>) => task() },
+    "./artist-genre-cache": { rememberArtistGenres: () => {} },
     "@/lib/safe-fetch": {
       safeFetch: async (url: string) => ({ ok: true, json: () => fetcher(url) }),
     },

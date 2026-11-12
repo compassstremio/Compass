@@ -21,7 +21,7 @@ test("an explicit IGDB edition keeps original metadata even when its Steam port 
   assert.deepEqual(result.detail?.platforms, ["Super Nintendo"]);
   assert.deepEqual(result.detail?.developers, ["Original studio"]);
   assert.deepEqual(result.detail?.requirements, { minimum: "", recommended: "" });
-  assert.ok(result.detail?.release.includes("1992"));
+  assert.ok(result.detail?.release.includes(new Intl.NumberFormat(undefined, { useGrouping: false }).format(1992)));
   assert.equal(result.steamLinkId, 99);
 });
 
